@@ -6,6 +6,7 @@ export default function Home() {
     <div className={styles.screen}>
       <div className={styles.box}>
         <div className={styles.inner_box}>
+          <img src="logo" alt="logo" />
           <h1>Bienvenue Dans Votre Compte Personnel</h1>
         </div>
       </div>
