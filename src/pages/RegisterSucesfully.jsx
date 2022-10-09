@@ -14,7 +14,7 @@ const config = {
     headers: { "Content-type": "application/json" },
   };
 
-const fields = {companyName:"", sede:"", address:""}
+const fields = {companyName:"",  address:""}
 const RegisterSuccesfully= () =>{
     const [country, setCountry] = useState([]);
     const [inputValueCountry, setInputValueCountry] = useState("");
@@ -29,22 +29,33 @@ const RegisterSuccesfully= () =>{
     const [inputValueDocumentType, setInputValueDocumentType] = useState("");
 
     const [exampleInput, setExampleInput] = useState(fields);
-    const [helperText, setHelperText] = useState("");
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [helperText, setHelperText] = useState({});
+    const [errorMessage, setErrorMessage] = useState({});
 
     const inputValue = (event) =>{
         const {name, value} = event.target
-        setExampleInput({ ...exampleInput, name: value})
-        console.log(exampleInput)
+        setExampleInput({ ...exampleInput, [name]: value})
     }
     const example = ()=>{
-      if (exampleInput === ""){
-        setHelperText("El campo no puede ir vacio")
-        setErrorMessage(true)
+      debugger;
+      const helperText = {}
+      const error = {}
+      if (exampleInput.companyName === ""){
+        helperText.companyName = "El campo no puede ir vacio"
+        error.companyName = true
       }else{
-        setHelperText("")
-        setErrorMessage(false)
+        helperText.companyName = ""
+        error.companyName = false
       }
+      if(exampleInput.address === ""){
+        helperText.address = "El campo no puede ir vacio"
+        error.address = true
+      }else{
+        helperText.address  = ""
+        error.address = false
+      }
+      setErrorMessage(error)
+      setHelperText(helperText)
     }
     const countryConsume = async () => {
         try {
@@ -55,7 +66,6 @@ const RegisterSuccesfully= () =>{
             })
             .get("",config)
             .then((res) => {
-              console.log(res)
                 let filter = [];
                 res.data.map((val, key) => {
                     if (!filter.includes(val.pais)) {
@@ -102,7 +112,6 @@ const RegisterSuccesfully= () =>{
             })
             .get("",config)
             .then((res) => {
-              console.log(res)
                 let filter = [];
                 res.data.map((val, key) => {
                     if (!filter.includes(val.Sector)) {
@@ -126,7 +135,6 @@ const RegisterSuccesfully= () =>{
                 })
                 .get("",config)
                 .then((res) => {
-                   console.log(res)
                     let filter = [];
                     res.data.map((val, key) => {
                         if (!filter.includes(val.tipoDocumento)) {
@@ -238,11 +246,12 @@ const RegisterSuccesfully= () =>{
         <TextField
           id="outlined-error"
           label="Example"
-          defaultValue={exampleInput}
-          error={errorMessage}
-          helperText={helperText}
+          defaultValue={exampleInput.companyName}
+          error={errorMessage.companyName}
+          helperText={helperText.companyName}
           onChange={inputValue}
           onBlur={example}
+          name="companyName"
         />
       </div>
 
@@ -250,11 +259,12 @@ const RegisterSuccesfully= () =>{
         <TextField
           id="outlined-error"
           label="Example2"
-          defaultValue={exampleInput}
-          error={errorMessage}
-          helperText={helperText}
+          defaultValue={exampleInput.address}
+          error={errorMessage.address}
+          helperText={helperText.address}
           onChange={inputValue}
           onBlur={example}
+          name="address"
         />
       </div>
       <Button variant="outlined" onClick={example}>Next</Button>
