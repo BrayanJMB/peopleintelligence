@@ -6,6 +6,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import {
     Autocomplete,
+    keyframes,
     TextField
   } from "@mui/material";
 
@@ -14,7 +15,7 @@ const config = {
     headers: { "Content-type": "application/json" },
   };
 
-const fields = {companyName:"",  address:""}
+const fields = {companyName:"",  sector:"", country:"", sede:"", address:"", sizeCompany:""}
 const RegisterSuccesfully= () =>{
     const [country, setCountry] = useState([]);
     const [inputValueCountry, setInputValueCountry] = useState("");
@@ -40,6 +41,15 @@ const RegisterSuccesfully= () =>{
       debugger;
       const helperText = {}
       const error = {}
+      for (const [key, value] of Object.entries(exampleInput)) {
+        if (exampleInput[key] === ""){
+          helperText[key]  = "El campo no puede ir vacio"
+          error[key] = true
+        }else{
+          helperText[key]  = ""
+          error[key] = false
+        }
+      }/*
       if (exampleInput.companyName === ""){
         helperText.companyName = "El campo no puede ir vacio"
         error.companyName = true
@@ -53,7 +63,7 @@ const RegisterSuccesfully= () =>{
       }else{
         helperText.address  = ""
         error.address = false
-      }
+      }*/
       setErrorMessage(error)
       setHelperText(helperText)
     }
