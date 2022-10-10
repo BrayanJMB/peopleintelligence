@@ -19,6 +19,12 @@ export default function Home() {
   const [one, setOne] = useState(false);
   const [multiple, setMultiple] = useState(false);
   const [register, setRegister] = useState(false);
+  const [data, setData] = useState({
+    documentType: [],
+    country: [],
+    sizeCompany: [],
+    sector: [],
+  });
   const [sector, setSector] = useState([]);
   const [country, setCountry] = useState([]);
   const [sizeCompany, setSizeCompany] = useState([]);
@@ -61,12 +67,15 @@ export default function Home() {
         .get("Sector/", config)
         .then((res) => {
           let filter = [];
+          let holder = [];
           res.data.forEach((val) => {
             if (!filter.includes(val.Sector)) {
               filter.push(val.Sector);
+              holder.push(val);
             }
           });
           setSector(filter);
+          setData({ ...data, sector: holder });
         });
     } catch (error) {
       console.log(error);
@@ -83,12 +92,15 @@ export default function Home() {
         .get("", config)
         .then((res) => {
           let filter = [];
+          let holder = [];
           res.data.forEach((val) => {
             if (!filter.includes(val.nameSizeOfCompany)) {
               filter.push(val.nameSizeOfCompany);
+              holder.push(val);
             }
           });
           setSizeCompany(filter);
+          setData({ ...data, sizeCompany: holder });
         });
     } catch (error) {
       console.log(error);
@@ -106,12 +118,15 @@ export default function Home() {
         .get("", config)
         .then((res) => {
           let filter = [];
+          let holder = [];
           res.data.forEach((val) => {
             if (!filter.includes(val.pais)) {
               filter.push(val.pais);
+              holder.push(val);
             }
           });
           setCountry(filter);
+          setData({ ...data, country: holder });
         });
     } catch (error) {
       console.log(error);
@@ -129,12 +144,15 @@ export default function Home() {
         .get("", config)
         .then((res) => {
           let filter = [];
+          let holder = [];
           res.data.forEach((val) => {
             if (!filter.includes(val.tipoDocumento)) {
               filter.push(val.tipoDocumento);
+              holder.push(val);
             }
           });
           setDocumentType(filter);
+          setData({ ...data, documentType: holder });
         });
     } catch (error) {
       console.log(error);
@@ -185,9 +203,9 @@ export default function Home() {
     setBegin(true);
   };
   const handleRegister = () => {
-    setRegister(true);
+    /*setRegister(true);
     setOne(false);
-    setMultiple(false);
+    setMultiple(false);*/
   };
 
   useEffect(() => {
@@ -298,6 +316,7 @@ export default function Home() {
                   documentType={documentType}
                   handleCancel={handleCancel}
                   handleRegister={handleRegister}
+                  data={data}
                 />
               </div>
             ) : (

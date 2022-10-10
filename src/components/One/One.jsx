@@ -9,6 +9,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import ReCAPTCHA from "react-google-recaptcha";
+import axios from "axios";
 
 function a11yProps(index) {
   return {
@@ -76,7 +77,8 @@ export default function One(props) {
       setValue(1);
     }
   };
-  const checkuser = () => {
+  const submitHandler = async (e) => {
+    e.preventDefault();
     let helperText = {};
     let error = {};
     let bad = false;
@@ -109,9 +111,36 @@ export default function One(props) {
         }
       }
       if (!test) {
+        try {
+          const response = await axios
+            .create({
+              baseURL:
+                "https://dynamicliveconversationapi.azurewebsites.net/api",
+            })
+            .post("/Autenticacion", {
+              Compania: props.info.Compania,
+              Usuario: props.info.Usuario,
+            });
+          console.log(response);
+        } catch (error) {
+          console.log(error);
+        }
         props.handleRegister();
       }
     }
+  };
+  const handleBlur = (event) => {
+    let helperText = {};
+    let error = {};
+    if (event.target.value === "") {
+      helperText[event.target.name] = "El campo no puede ir vacio";
+      error[event.target.name] = true;
+    } else {
+      helperText[event.target.name] = "";
+      error[event.target.name] = false;
+    }
+    setErrorMessage(error);
+    setHelperText(helperText);
   };
 
   const handleCaptcha = () => {
@@ -127,292 +156,316 @@ export default function One(props) {
   };
 
   return (
-    <div className={styles.content}>
-      <div className={styles.image}>
-        <Box
-          component="img"
-          sx={{
-            backgroundColor: "white",
-          }}
-          alt="Your logo."
-          src={Logo}
-        />
-      </div>
-      <div style={{ width: "100%", marginTop: "0.5rem" }}>
-        <div style={{ border: "none" }}>
-          <Tabs
-            value={value}
-            onChange={handletab}
-            aria-label="basic tabs example"
-            centered
-          >
-            <Tab
-              label="INFORMACIÓN DE LA EMPRESA"
-              style={{
-                width: "100%",
-                color: "#03aae4",
-              }}
-              {...a11yProps(0)}
-            />
-            <Tab
-              label="DATOS DEL ADMINISTRADOR"
-              style={{ width: "100%", color: "#03aae4" }}
-              disabled={checked}
-              {...a11yProps(1)}
-            />
-          </Tabs>
+    <form onSubmit={submitHandler}>
+      <div className={styles.content}>
+        <div className={styles.image}>
+          <Box
+            component="img"
+            sx={{
+              backgroundColor: "white",
+            }}
+            alt="Your logo."
+            src={Logo}
+          />
         </div>
-        <TabPanel value={value} index={0}>
-          <div className={styles.profile}>
-            <img
-              src={props.info.Compania.Logotipo}
-              alt="profile"
-              className={styles.photo}
-            />
-            <Button variant="text" component="label" color="blue">
-              Cargar logo de la compañía
-              <input
-                type="file"
-                onChange={props.handlePhoto}
-                accept="image/*"
-                name="profile_image"
-                hidden
-              />
-            </Button>
-          </div>
-          <div className={styles.form}>
-            <div className={styles.input}>
-              <TextField
-                id="outlined-name"
-                label="Nombre de la empresa"
-                value={props.info.Compania.nombreCompania}
-                name="nombreCompania"
-                onChange={props.handleChange("Compania")}
-                style={{ flexBasis: "40%" }}
-                error={errorMessage.nombreCompania}
-                helperText={helperText.nombreCompania}
-                size="small"
-              />
-              <Autocomplete
-                id="combo-box-demo"
-                style={{ flexBasis: "40%" }}
-                options={props.sector}
-                clearOnEscape
-                value={props.info.Compania.SectorId}
-                onChange={(e, value) => {
-                  props.handleAutocomplete("Compania", "SectorId", value);
-                }}
-                noOptionsText={"No se ha encontrado ningún Sector"}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                renderInput={(params) => (
-                  <TextField {...params} label="Sector" />
-                )}
-                size="small"
-              />
-            </div>
-            <div className={styles.input}>
-              <Autocomplete
-                style={{ flexBasis: "40%" }}
-                id="combo-box-demo"
-                options={props.country}
-                clearOnEscape
-                value={props.info.Compania.IdPais}
-                onChange={(e, value) => {
-                  props.handleAutocomplete("Compania", "IdPais", value);
-                }}
-                noOptionsText={"No se ha encontrado ningún Sector"}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                renderInput={(params) => <TextField {...params} label="País" />}
-                size="small"
-              />
-              <TextField
-                style={{ flexBasis: "40%" }}
-                id="outlined-name"
-                label="Sede"
-                value={props.info.Compania.Sede}
-                name="Sede"
-                onChange={props.handleChange("Compania")}
-                error={errorMessage.Sede}
-                helperText={helperText.Sede}
-                size="small"
-              />
-            </div>
-            <div className={styles.input}>
-              <TextField
-                style={{ flexBasis: "40%" }}
-                id="outlined-name"
-                label="Dirección"
-                value={props.info.Compania.direccion}
-                name="direccion"
-                onChange={props.handleChange("Compania")}
-                error={errorMessage.direccion}
-                helperText={helperText.direccion}
-                size="small"
-              />
-              <Autocomplete
-                style={{ flexBasis: "40%" }}
-                id="combo-box-demo"
-                options={props.sizeCompany}
-                clearOnEscape
-                value={props.info.Compania.IdTamanoCompania}
-                onChange={(e, value) => {
-                  props.handleAutocomplete(
-                    "Compania",
-                    "IdTamanoCompania",
-                    value
-                  );
-                }}
-                size="small"
-                noOptionsText={"No se ha encontrado ningún Sector"}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                renderInput={(params) => (
-                  <TextField {...params} label="Tamaño de la empresa" />
-                )}
-              />
-            </div>
-          </div>
-          <div className={styles.navigation}>
-            <Button
-              variant="text"
-              style={{ marginRight: "1.5rem" }}
-              onClick={props.handleCancel}
-              color="blue"
+        <div style={{ width: "100%", marginTop: "0.5rem" }}>
+          <div style={{ border: "none" }}>
+            <Tabs
+              value={value}
+              onChange={handletab}
+              aria-label="basic tabs example"
+              centered
             >
-              CANCELAR
-            </Button>
-            <Button
-              variant="contained"
-              onClick={checkcompany}
-              color="blue"
-              sx={{
-                color: "white",
-              }}
-            >
-              SIGUIENTE
-            </Button>
-          </div>
-        </TabPanel>
-        <TabPanel value={value} index={1}>
-          <div className={styles.form}>
-            <div className={styles.input}>
-              <Autocomplete
-                id="combo-box-demo"
-                style={{ flexBasis: "40%" }}
-                options={props.documentType}
-                clearOnEscape
-                value={props.info.Usuario.IdTipoDocumento}
-                onChange={(e, value) => {
-                  props.handleAutocomplete("Usuario", "IdTipoDocumento", value);
+              <Tab
+                label="INFORMACIÓN DE LA EMPRESA"
+                style={{
+                  width: "100%",
+                  color: "#03aae4",
                 }}
-                noOptionsText={"No se ha encontrado ningún IdTipoDocumento"}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Tipo de documento de identidad"
-                  />
-                )}
-                size="small"
+                {...a11yProps(0)}
               />
-              <TextField
-                id="outlined-name"
-                label="Documento de identidad"
-                value={props.info.Usuario.numeroDocumento}
-                name="numeroDocumento"
-                onChange={props.handleChange("Usuario")}
-                style={{ flexBasis: "40%" }}
-                error={errorMessage.numeroDocumento}
-                helperText={helperText.numeroDocumento}
-                size="small"
+              <Tab
+                label="DATOS DEL ADMINISTRADOR"
+                style={{ width: "100%", color: "#03aae4" }}
+                disabled={checked}
+                {...a11yProps(1)}
+              />
+            </Tabs>
+          </div>
+          <TabPanel value={value} index={0}>
+            <div className={styles.profile}>
+              <img
+                src={props.info.Compania.Logotipo}
+                alt="profile"
+                className={styles.photo}
+              />
+              <Button variant="text" component="label" color="blue">
+                Cargar logo de la compañía
+                <input
+                  type="file"
+                  onChange={props.handlePhoto}
+                  accept="image/*"
+                  name="profile_image"
+                  hidden
+                />
+              </Button>
+            </div>
+            <div className={styles.form}>
+              <div className={styles.input}>
+                <TextField
+                  id="outlined-name"
+                  label="Nombre de la empresa"
+                  value={props.info.Compania.nombreCompania}
+                  name="nombreCompania"
+                  onChange={props.handleChange("Compania")}
+                  style={{ flexBasis: "40%" }}
+                  error={errorMessage.nombreCompania}
+                  helperText={helperText.nombreCompania}
+                  size="small"
+                  onBlur={handleBlur}
+                />
+                <Autocomplete
+                  id="combo-box-demo"
+                  style={{ flexBasis: "40%" }}
+                  options={props.sector}
+                  clearOnEscape
+                  value={props.info.Compania.SectorId}
+                  onChange={(e, value) => {
+                    props.handleAutocomplete("Compania", "SectorId", value);
+                  }}
+                  noOptionsText={"No se ha encontrado ningún Sector"}
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
+                  renderInput={(params) => (
+                    <TextField {...params} label="Sector" />
+                  )}
+                  size="small"
+                />
+              </div>
+              <div className={styles.input}>
+                <Autocomplete
+                  style={{ flexBasis: "40%" }}
+                  id="combo-box-demo"
+                  options={props.country}
+                  clearOnEscape
+                  value={props.info.Compania.IdPais}
+                  onChange={(e, value) => {
+                    props.handleAutocomplete("Compania", "IdPais", value);
+                  }}
+                  noOptionsText={"No se ha encontrado ningún Sector"}
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
+                  renderInput={(params) => (
+                    <TextField {...params} label="País" />
+                  )}
+                  size="small"
+                />
+                <TextField
+                  style={{ flexBasis: "40%" }}
+                  id="outlined-name"
+                  label="Sede"
+                  value={props.info.Compania.Sede}
+                  name="Sede"
+                  onChange={props.handleChange("Compania")}
+                  error={errorMessage.Sede}
+                  helperText={helperText.Sede}
+                  size="small"
+                  onBlur={handleBlur}
+                />
+              </div>
+              <div className={styles.input}>
+                <TextField
+                  style={{ flexBasis: "40%" }}
+                  id="outlined-name"
+                  label="Dirección"
+                  value={props.info.Compania.direccion}
+                  name="direccion"
+                  onChange={props.handleChange("Compania")}
+                  error={errorMessage.direccion}
+                  helperText={helperText.direccion}
+                  size="small"
+                  onBlur={handleBlur}
+                />
+                <Autocomplete
+                  style={{ flexBasis: "40%" }}
+                  id="combo-box-demo"
+                  options={props.sizeCompany}
+                  clearOnEscape
+                  value={props.info.Compania.IdTamanoCompania}
+                  onChange={(e, value) => {
+                    props.handleAutocomplete(
+                      "Compania",
+                      "IdTamanoCompania",
+                      value
+                    );
+                  }}
+                  size="small"
+                  noOptionsText={"No se ha encontrado ningún Sector"}
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
+                  renderInput={(params) => (
+                    <TextField {...params} label="Tamaño de la empresa" />
+                  )}
+                />
+              </div>
+            </div>
+            <div className={styles.navigation}>
+              <Button
+                variant="text"
+                style={{ marginRight: "1.5rem" }}
+                onClick={props.handleCancel}
+                color="blue"
+              >
+                CANCELAR
+              </Button>
+              <Button
+                variant="contained"
+                onClick={checkcompany}
+                color="blue"
+                sx={{
+                  color: "white",
+                }}
+              >
+                SIGUIENTE
+              </Button>
+            </div>
+          </TabPanel>
+          <TabPanel value={value} index={1}>
+            <div className={styles.form}>
+              <div className={styles.input}>
+                <Autocomplete
+                  id="combo-box-demo"
+                  style={{ flexBasis: "40%" }}
+                  options={props.documentType}
+                  clearOnEscape
+                  value={props.info.Usuario.IdTipoDocumento}
+                  onChange={(e, value) => {
+                    props.handleAutocomplete(
+                      "Usuario",
+                      "IdTipoDocumento",
+                      value
+                    );
+                  }}
+                  noOptionsText={"No se ha encontrado ningún IdTipoDocumento"}
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Tipo de documento de identidad"
+                    />
+                  )}
+                  size="small"
+                />
+                <TextField
+                  id="outlined-name"
+                  label="Documento de identidad"
+                  value={props.info.Usuario.numeroDocumento}
+                  name="numeroDocumento"
+                  onChange={props.handleChange("Usuario")}
+                  style={{ flexBasis: "40%" }}
+                  error={errorMessage.numeroDocumento}
+                  helperText={helperText.numeroDocumento}
+                  size="small"
+                  onBlur={handleBlur}
+                />
+              </div>
+              <div className={styles.input}>
+                <TextField
+                  style={{ flexBasis: "40%" }}
+                  id="outlined-name"
+                  label="Nombre Completo"
+                  value={props.info.Usuario.NombreCompleto}
+                  name="NombreCompleto"
+                  onChange={props.handleChange("Usuario")}
+                  error={errorMessage.NombreCompleto}
+                  helperText={helperText.NombreCompleto}
+                  size="small"
+                  onBlur={handleBlur}
+                />
+                <TextField
+                  style={{ flexBasis: "40%" }}
+                  id="outlined-name"
+                  label="Cargo"
+                  value={props.info.Usuario.Cargo}
+                  name="Cargo"
+                  onChange={props.handleChange("Usuario")}
+                  error={errorMessage.Cargo}
+                  helperText={helperText.Cargo}
+                  size="small"
+                  onBlur={handleBlur}
+                />
+              </div>
+              <div className={styles.input}>
+                <TextField
+                  style={{ flexBasis: "40%" }}
+                  id="outlined-name"
+                  label="Correo electrónico"
+                  value={props.info.Usuario.correoElectronico}
+                  name="correoElectronico"
+                  onChange={props.handleChange("Usuario")}
+                  error={errorMessage.correoElectronico}
+                  helperText={helperText.correoElectronico}
+                  size="small"
+                  onBlur={handleBlur}
+                />
+                <TextField
+                  style={{ flexBasis: "40%" }}
+                  id="outlined-name"
+                  label="Número de teléfono"
+                  value={props.info.Usuario.phoneNumber}
+                  name="phoneNumber"
+                  onChange={props.handleChange("Usuario")}
+                  error={errorMessage.phoneNumber}
+                  helperText={helperText.phoneNumber}
+                  size="small"
+                  onBlur={handleBlur}
+                />
+              </div>
+            </div>
+            <div className={styles.check}>
+              <Checkbox onChange={handlecheck1} checked={check1} />
+              <p style={{ color: "grey " }}>
+                Acepto los términos y condiciones
+              </p>
+            </div>
+            <div className={styles.check}>
+              <Checkbox onChange={handlecheck2} checked={check2} />
+              <p style={{ color: "grey " }}>
+                Acepto las políticas de protección de datos
+              </p>
+            </div>
+            <div className={styles.captcha}>
+              <ReCAPTCHA
+                sitekey={process.env.REACT_APP_SITE_KEY}
+                onChange={handleCaptcha}
               />
             </div>
-            <div className={styles.input}>
-              <TextField
-                style={{ flexBasis: "40%" }}
-                id="outlined-name"
-                label="Nombre Completo"
-                value={props.info.Usuario.NombreCompleto}
-                name="NombreCompleto"
-                onChange={props.handleChange("Usuario")}
-                error={errorMessage.NombreCompleto}
-                helperText={helperText.NombreCompleto}
-                size="small"
-              />
-              <TextField
-                style={{ flexBasis: "40%" }}
-                id="outlined-name"
-                label="Cargo"
-                value={props.info.Usuario.Cargo}
-                name="Cargo"
-                onChange={props.handleChange("Usuario")}
-                error={errorMessage.Cargo}
-                helperText={helperText.Cargo}
-                size="small"
-              />
+            <div className={styles.navigation}>
+              <Button
+                variant="text"
+                style={{ marginRight: "1.5rem" }}
+                onClick={handlePrevious}
+                color="blue"
+              >
+                REGRESAR
+              </Button>
+              <Button
+                variant="contained"
+                type="submit"
+                color="blue"
+                style={{ color: "white" }}
+              >
+                SIGUIENTE
+              </Button>
             </div>
-            <div className={styles.input}>
-              <TextField
-                style={{ flexBasis: "40%" }}
-                id="outlined-name"
-                label="Correo electrónico"
-                value={props.info.Usuario.correoElectronico}
-                name="correoElectronico"
-                onChange={props.handleChange("Usuario")}
-                error={errorMessage.correoElectronico}
-                helperText={helperText.correoElectronico}
-                size="small"
-              />
-              <TextField
-                style={{ flexBasis: "40%" }}
-                id="outlined-name"
-                label="Número de teléfono"
-                value={props.info.Usuario.phoneNumber}
-                name="phoneNumber"
-                onChange={props.handleChange("Usuario")}
-                error={errorMessage.phoneNumber}
-                helperText={helperText.phoneNumber}
-                size="small"
-              />
-            </div>
-          </div>
-          <div className={styles.check}>
-            <Checkbox onChange={handlecheck1} checked={check1} />
-            <p style={{ color: "grey ", marginLeft: "2rem" }}>
-              Acepto los términos y condiciones
-            </p>
-          </div>
-          <div className={styles.check}>
-            <Checkbox onChange={handlecheck2} checked={check2} />
-            <p style={{ color: "grey ", marginLeft: "2rem" }}>
-              Acepto las políticas de protección de datos
-            </p>
-          </div>
-          <div className={styles.captcha}>
-            <ReCAPTCHA
-              sitekey={process.env.REACT_APP_SITE_KEY}
-              onChange={handleCaptcha}
-            />
-          </div>
-          <div className={styles.navigation}>
-            <Button
-              variant="text"
-              style={{ marginRight: "1.5rem" }}
-              onClick={handlePrevious}
-              color="blue"
-            >
-              REGRESAR
-            </Button>
-            <Button
-              variant="contained"
-              onClick={checkuser}
-              color="blue"
-              style={{ color: "white" }}
-            >
-              SIGUIENTE
-            </Button>
-          </div>
-        </TabPanel>
+          </TabPanel>
+        </div>
       </div>
-    </div>
+    </form>
   );
 }
