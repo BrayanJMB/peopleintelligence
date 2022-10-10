@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Checkbox from "@mui/material/Checkbox";
-//import ReCAPTCHA from "react-google-recaptcha";
+import ReCAPTCHA from "react-google-recaptcha";
 import axios from "axios";
 
 export default function Multiple(props) {
@@ -23,9 +23,9 @@ export default function Multiple(props) {
     setCheck2(!check2);
   };
 
-  /*const handleCaptcha = () => {
+  const handleCaptcha = () => {
     setCaptcha(!captcha);
-  };*/
+  };
   const handleBlur = (event) => {
     let helperText = {};
     let error = {};
@@ -39,6 +39,10 @@ export default function Multiple(props) {
     setErrorMessage(error);
     setHelperText(helperText);
   };
+
+  const validEmail = new RegExp(
+    "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
+  );
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -64,8 +68,7 @@ export default function Multiple(props) {
     if (bad) {
       setErrorMessage(error);
       setHelperText(helperText);
-      // && captcha
-    } else if (check1 && check2) {
+    } else if (check1 && check2 && captcha) {
       let test = false;
       for (const [index, content] of Object.entries(props.info.Usuario)) {
         if (content === "" || content === null) {
@@ -73,33 +76,37 @@ export default function Multiple(props) {
         }
       }
       if (!test) {
-        let match = search(
-          props.info.Usuario.IdTipoDocumento,
-          props.data.documentType
-        );
-
-        let field = match.documentTypeId;
-        try {
-          const response = await axios
-            .create({
-              baseURL:
-                "https://dynamicliveconversationapi.azurewebsites.net/api",
-            })
-            .post("/Autenticacion", {
-              Usuario: {
-                IdTipoDocumento: field,
-                numeroDocumento: props.info.Usuario.numeroDocumento,
-                NombreCompleto: props.info.Usuario.NombreCompleto,
-                Cargo: props.info.Usuario.Cargo,
-                correoElectronico: props.info.Usuario.correoElectronico,
-                phoneNumber: props.info.Usuario.phoneNumber,
-              },
-            });
-          console.log(response);
-        } catch (error) {
-          console.log(error);
+        if (!validEmail.test(props.info.Usuario.correoElectronico)) {
+          console.log("error");
+          let helperText = {};
+          let error = {};
+          helperText.correoElectronico = "El correo ingresado no es válido";
+          error.correoElectronico = true;
+          setErrorMessage(error);
+          setHelperText(helperText);
+        } else {
+          try {
+            const response = await axios
+              .create({
+                baseURL:
+                  "https://dynamicliveconversationapi.azurewebsites.net/api",
+              })
+              .post("/Autenticacion", {
+                Usuario: {
+                  IdTipoDocumento: props.info.Usuario.IdTipoDocumento,
+                  numeroDocumento: props.info.Usuario.numeroDocumento,
+                  NombreCompleto: props.info.Usuario.NombreCompleto,
+                  Cargo: props.info.Usuario.Cargo,
+                  correoElectronico: props.info.Usuario.correoElectronico,
+                  phoneNumber: props.info.Usuario.phoneNumber,
+                },
+              });
+            console.log(response);
+          } catch (error) {
+            console.log(error);
+          }
+          props.handleRegister();
         }
-        props.handleRegister();
       }
     }
   };
@@ -209,26 +216,27 @@ export default function Multiple(props) {
               error={errorMessage.phoneNumber}
               helperText={helperText.phoneNumber}
               size="small"
+              type="number"
               onBlur={handleBlur}
             />
           </div>
         </div>
         <div className={styles.check}>
           <Checkbox onChange={handlecheck1} />
-          <p style={{ color: "grey " }}>Acepto los términos y condiciones</p>
+          <p style={{ color: "grey" }}>Acepto los términos y condiciones</p>
         </div>
         <div className={styles.check}>
           <Checkbox onChange={handlecheck2} />
-          <p style={{ color: "grey " }}>
+          <p style={{ color: "grey" }}>
             Acepto las políticas de protección de datos
           </p>
         </div>
-        {/*<div className={styles.captcha}>
+        <div className={styles.captcha}>
           <ReCAPTCHA
-            sitekey={process.env.REACT_APP_SITE_KEY}
+            sitekey="6LcRRGsiAAAAAA8SOkyGQoKbGXASXitY2gfKKUup"
             onChange={handleCaptcha}
           />
-        </div>*/}
+        </div>
         <div className={styles.navigation}>
           <Button
             variant="text"
