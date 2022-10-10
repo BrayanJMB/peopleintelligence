@@ -33,7 +33,15 @@ export default function Register() {
         </p>
       </div>
       <div className={styles.end}>
-        <Button variant="contained" sx={{ backgroundColor: "#03aae4" }}>
+        <Button
+          variant="contained"
+          sx={{ backgroundColor: "#03aae4" }}
+          onClick={() => {
+            window.location.replace(
+              "https://pruebaapib2c.b2clogin.com/PruebaAPib2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_SignInSingUp&client_id=08cfdf65-11e3-45b6-a745-3c0bd35777ae&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fjwt.ms%2F&scope=openid&response_type=id_token&prompt=login"
+            );
+          }}
+        >
           Volver al inicio de sesión
         </Button>
       </div>

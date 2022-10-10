@@ -76,33 +76,37 @@ export default function Multiple(props) {
         }
       }
       if (!test) {
-        let match = search(
-          props.info.Usuario.IdTipoDocumento,
-          props.data.documentType
-        );
-
-        let field = match.documentTypeId;
-        try {
-          const response = await axios
-            .create({
-              baseURL:
-                "https://dynamicliveconversationapi.azurewebsites.net/api",
-            })
-            .post("/Autenticacion", {
-              Usuario: {
-                IdTipoDocumento: field,
-                numeroDocumento: props.info.Usuario.numeroDocumento,
-                NombreCompleto: props.info.Usuario.NombreCompleto,
-                Cargo: props.info.Usuario.Cargo,
-                correoElectronico: props.info.Usuario.correoElectronico,
-                phoneNumber: props.info.Usuario.phoneNumber,
-              },
-            });
-          console.log(response);
-        } catch (error) {
-          console.log(error);
+        if (!validEmail.test(props.info.Usuario.correoElectronico)) {
+          console.log("error");
+          let helperText = {};
+          let error = {};
+          helperText.correoElectronico = "El correo ingresado no es válido";
+          error.correoElectronico = true;
+          setErrorMessage(error);
+          setHelperText(helperText);
+        } else {
+          try {
+            const response = await axios
+              .create({
+                baseURL:
+                  "https://dynamicliveconversationapi.azurewebsites.net/api",
+              })
+              .post("/Autenticacion", {
+                Usuario: {
+                  IdTipoDocumento: props.info.Usuario.IdTipoDocumento,
+                  numeroDocumento: props.info.Usuario.numeroDocumento,
+                  NombreCompleto: props.info.Usuario.NombreCompleto,
+                  Cargo: props.info.Usuario.Cargo,
+                  correoElectronico: props.info.Usuario.correoElectronico,
+                  phoneNumber: props.info.Usuario.phoneNumber,
+                },
+              });
+            console.log(response);
+          } catch (error) {
+            console.log(error);
+          }
+          props.handleRegister();
         }
-        props.handleRegister();
       }
     }
   };
