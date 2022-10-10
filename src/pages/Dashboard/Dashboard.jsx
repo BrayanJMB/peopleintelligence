@@ -13,12 +13,21 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import MailIcon from "@mui/icons-material/Mail";
 import Toolbar from "@mui/material/Toolbar";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const drawerWidth = 240;
 
 export default function Dashboard(props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const theme = createTheme({
+    palette: {
+      white: {
+        main: "white",
+      },
+    },
+  });
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -60,14 +69,18 @@ export default function Dashboard(props) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-        }}
-      >
-        <Navbar />
-      </AppBar>
+      <ThemeProvider theme={theme}>
+        <AppBar
+          sx={{
+            width: { sm: `calc(100% - ${drawerWidth}px)` },
+            ml: { sm: `${drawerWidth}px` },
+          }}
+          color="white"
+        >
+          <Navbar />
+        </AppBar>
+      </ThemeProvider>
+
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
