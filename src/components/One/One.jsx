@@ -8,7 +8,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Checkbox from "@mui/material/Checkbox";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-//import ReCAPTCHA from "react-google-recaptcha";
+import ReCAPTCHA from "react-google-recaptcha";
 import axios from "axios";
 
 function a11yProps(index) {
@@ -35,12 +35,16 @@ function TabPanel(props) {
   );
 }
 
+const validEmail = new RegExp(
+  "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
+);
+
 export default function One(props) {
   const [value, setValue] = useState(0);
   const [checked, setChecked] = useState(true);
   const [check1, setCheck1] = useState(false);
   const [check2, setCheck2] = useState(false);
-  //const [captcha, setCaptcha] = useState(false);
+  const [captcha, setCaptcha] = useState(false);
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
 
@@ -101,8 +105,7 @@ export default function One(props) {
     if (bad) {
       setErrorMessage(error);
       setHelperText(helperText);
-      // && captcha
-    } else if (check1 && check2) {
+    } else if (check1 && check2 && captcha) {
       let test = false;
       for (const [key, value] of Object.entries(props.info)) {
         for (const [index, content] of Object.entries(value)) {
@@ -112,12 +115,36 @@ export default function One(props) {
         }
       }
       if (!test) {
-        let matchsector = search(
+        if (!validEmail.test(props.info.Usuario.correoElectronico)) {
+          console.log("error");
+          let helperText = {};
+          let error = {};
+          helperText.correoElectronico = "El correo ingresado no es válido";
+          error.correoElectronico = true;
+          setErrorMessage(error);
+          setHelperText(helperText);
+        } else {
+          try {
+            const response = await axios
+              .create({
+                baseURL:
+                  "https://dynamicliveconversationapi.azurewebsites.net/api",
+              })
+              .post("/Autenticacion", {
+                Compania: props.info.Compania,
+                Usuario: props.info.Usuario,
+              });
+            console.log(response);
+          } catch (error) {
+            console.log(error);
+          }
+          props.handleRegister();
+        }
+        /*let matchsector = search(
           props.info.Compania.SectorId,
           props.data.sector,
           "Sector"
         );
-        console.log(props.data);
         let matchcountry = search(
           props.info.Compania.IdPais,
           props.data.country
@@ -130,26 +157,7 @@ export default function One(props) {
           props.info.Usuario.IdTipoDocumento,
           props.data.documentType,
           "tipoDocumento"
-        );
-        console.log(matchcountry);
-        console.log(matchsize);
-        console.log(matchsector);
-        console.log(matchdocument);
-        try {
-          const response = await axios
-            .create({
-              baseURL:
-                "https://dynamicliveconversationapi.azurewebsites.net/api",
-            })
-            .post("/Autenticacion", {
-              Compania: props.info.Compania,
-              Usuario: props.info.Usuario,
-            });
-          console.log(response);
-        } catch (error) {
-          console.log(error);
-        }
-        props.handleRegister();
+        );*/
       }
     }
   };
@@ -174,9 +182,9 @@ export default function One(props) {
     setHelperText(helperText);
   };
 
-  /* const handleCaptcha = () => {
+  const handleCaptcha = () => {
     setCaptcha(!captcha);
-  };*/
+  };
 
   const handletab = (event, newValue) => {
     setValue(newValue);
@@ -402,6 +410,7 @@ export default function One(props) {
                   error={errorMessage.numeroDocumento}
                   helperText={helperText.numeroDocumento}
                   size="small"
+                  type="number"
                   onBlur={handleBlur}
                 />
               </div>
@@ -454,6 +463,7 @@ export default function One(props) {
                   error={errorMessage.phoneNumber}
                   helperText={helperText.phoneNumber}
                   size="small"
+                  type="number"
                   onBlur={handleBlur}
                 />
               </div>
@@ -470,12 +480,12 @@ export default function One(props) {
                 Acepto las políticas de protección de datos
               </p>
             </div>
-            {/* <div className={styles.captcha}>
+            <div className={styles.captcha}>
               <ReCAPTCHA
-                sitekey={process.env.REACT_APP_SITE_KEY}
+                sitekey="6LcRRGsiAAAAAA8SOkyGQoKbGXASXitY2gfKKUup"
                 onChange={handleCaptcha}
               />
-            </div> */}
+            </div>
             <div className={styles.navigation}>
               <Button
                 variant="text"
