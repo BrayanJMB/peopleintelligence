@@ -5,18 +5,48 @@
   flex-direction: column;
 }
 .image {
-  margin-top: 1.5rem;
   width: 25%;
+  margin-bottom: 1rem;
 }
 .tab {
+  margin-top: 1rem;
+}
+.photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #03aae4;
+}
+.profile {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
-.photo {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid green;
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.input {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: nowrap;
+  width: 90%;
+  padding: 0.4rem;
+}
+.navigation {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: right;
+  padding: 1rem;
+}
+.check {
+  display: flex;
+  align-items: center;
+  margin-left: 4.6rem;
 }

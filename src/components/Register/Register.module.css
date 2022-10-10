@@ -1,0 +1,22 @@
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.image {
+  width: 25%;
+  margin-bottom: 1rem;
+}
+.register {
+  width: 80%;
+  margin-top: 2rem;
+}
+.succesfully {
+  text-align: center;
+}
+.end {
+  display: flex;
+  justify-content: center;
+  margin-top: 5rem;
+}
