@@ -1,1 +1,15 @@
-
+.photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid grey;
+  margin: 1rem auto;
+}
+.content {
+  background-color: red;
+  width: 100vw;
+  height: 92vh;
+  display: flex;
+  margin-top: 4rem;
+}

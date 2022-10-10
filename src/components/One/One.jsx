@@ -111,6 +111,29 @@ export default function One(props) {
         }
       }
       if (!test) {
+        let matchsector = search(
+          props.info.Compania.SectorId,
+          props.data.sector,
+          "Sector"
+        );
+        console.log(props.data);
+        let matchcountry = search(
+          props.info.Compania.IdPais,
+          props.data.country
+        );
+        let matchsize = search(
+          props.info.Compania.IdTamanoCompania,
+          props.data.sizeCompany
+        );
+        let matchdocument = search(
+          props.info.Usuario.IdTipoDocumento,
+          props.data.documentType,
+          "tipoDocumento"
+        );
+        console.log(matchcountry);
+        console.log(matchsize);
+        console.log(matchsector);
+        console.log(matchdocument);
         try {
           const response = await axios
             .create({
@@ -126,6 +149,13 @@ export default function One(props) {
           console.log(error);
         }
         props.handleRegister();
+      }
+    }
+  };
+  const search = (key, inputArray, index) => {
+    for (let i = 0; i < inputArray.length; i++) {
+      if (inputArray[i][index] === key) {
+        return inputArray[i];
       }
     }
   };

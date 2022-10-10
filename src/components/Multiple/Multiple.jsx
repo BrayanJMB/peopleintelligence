@@ -40,14 +40,6 @@ export default function Multiple(props) {
     setHelperText(helperText);
   };
 
-  const search = (key, inputArray) => {
-    for (let i = 0; i < inputArray.length; i++) {
-      if (inputArray[i].tipoDocumento === key) {
-        return inputArray[i];
-      }
-    }
-  };
-
   const submitHandler = async (e) => {
     e.preventDefault();
     let helperText = {};
@@ -74,32 +66,47 @@ export default function Multiple(props) {
       setHelperText(helperText);
     } else if (check1 && check2 && captcha) {
       let test = false;
-
       for (const [index, content] of Object.entries(props.info.Usuario)) {
         if (content === "" || content === null) {
           test = true;
         }
       }
-
       if (!test) {
-        let IdTipoDocumento = search(
+        let match = search(
           props.info.Usuario.IdTipoDocumento,
           props.data.documentType
         );
-        let holder = props.info.Usuario;
-        holder.IdTipoDocumento = IdTipoDocumento.documentTypeId;
+
+        let field = match.documentTypeId;
         try {
           const response = await axios
             .create({
               baseURL:
                 "https://dynamicliveconversationapi.azurewebsites.net/api",
             })
-            .post("/Autenticacion", { Usuario: holder });
+            .post("/Autenticacion", {
+              Usuario: {
+                IdTipoDocumento: field,
+                numeroDocumento: props.info.Usuario.numeroDocumento,
+                NombreCompleto: props.info.Usuario.NombreCompleto,
+                Cargo: props.info.Usuario.Cargo,
+                correoElectronico: props.info.Usuario.correoElectronico,
+                phoneNumber: props.info.Usuario.phoneNumber,
+              },
+            });
           console.log(response);
         } catch (error) {
           console.log(error);
         }
         props.handleRegister();
+      }
+    }
+  };
+
+  const search = (key, inputArray) => {
+    for (let i = 0; i < inputArray.length; i++) {
+      if (inputArray[i].tipoDocumento === key) {
+        return inputArray[i];
       }
     }
   };
@@ -131,8 +138,8 @@ export default function Multiple(props) {
               onChange={(e, value) => {
                 props.handleAutocomplete("Usuario", "IdTipoDocumento", value);
               }}
+              getOptionLabel={(option) => option}
               noOptionsText={"No se ha encontrado ningún IdTipoDocumento"}
-              isOptionEqualToValue={(option, value) => option.id === value.id}
               renderInput={(params) => (
                 <TextField {...params} label="Tipo de documento de identidad" />
               )}

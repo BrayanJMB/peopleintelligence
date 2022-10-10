@@ -86,10 +86,9 @@ export default function Home() {
     try {
       await axios
         .create({
-          baseURL:
-            "https://dynamicliveconversationapi.azurewebsites.net/api/TamanoCompania/",
+          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
         })
-        .get("", config)
+        .get("TamanoCompania/", config)
         .then((res) => {
           let filter = [];
           let holder = [];
@@ -130,7 +129,6 @@ export default function Home() {
         });
     } catch (error) {
       console.log(error);
-      console.log("eror");
     }
   };
 
@@ -156,7 +154,6 @@ export default function Home() {
         });
     } catch (error) {
       console.log(error);
-      console.log("eror");
     }
   };
 
@@ -168,6 +165,7 @@ export default function Home() {
     },
     [info]
   );
+
   const handlechange = useCallback(
     (part) => (event) => {
       let holder = info[part];
@@ -203,9 +201,9 @@ export default function Home() {
     setBegin(true);
   };
   const handleRegister = () => {
-    /*setRegister(true);
+    setRegister(true);
     setOne(false);
-    setMultiple(false);*/
+    setMultiple(false);
   };
 
   useEffect(() => {
@@ -302,6 +300,7 @@ export default function Home() {
                   sizeCompany={sizeCompany}
                   handleCancel={handleCancel}
                   handleRegister={handleRegister}
+                  data={data}
                 />
               </div>
             ) : (
