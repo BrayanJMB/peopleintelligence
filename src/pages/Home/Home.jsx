@@ -1,12 +1,12 @@
 import React, { useState, useCallback, useEffect } from "react";
 import styles from "./Home.module.css";
 import Box from "@mui/material/Box";
-import Logo from "../assets/Logo.svg";
-import Building from "../assets/Building.svg";
+import Logo from "../../assets/Logo.svg";
+import Building from "../../assets/Building.svg";
 import Button from "@mui/material/Button";
-import One from "../components/One/One";
-import Multiple from "../components/Multiple/Multiple";
-import Register from "../components/Register/Register";
+import One from "../../components/One/One";
+import Multiple from "../../components/Multiple/Multiple";
+import Register from "../../components/Register/Register";
 import axios from "axios";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 

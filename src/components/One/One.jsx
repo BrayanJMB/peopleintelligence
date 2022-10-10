@@ -8,6 +8,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Checkbox from "@mui/material/Checkbox";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import ReCAPTCHA from "react-google-recaptcha";
 
 function a11yProps(index) {
   return {
@@ -38,6 +39,7 @@ export default function One(props) {
   const [checked, setChecked] = useState(true);
   const [check1, setCheck1] = useState(false);
   const [check2, setCheck2] = useState(false);
+  const [captcha, setCaptcha] = useState(false);
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
 
@@ -97,7 +99,7 @@ export default function One(props) {
     if (bad) {
       setErrorMessage(error);
       setHelperText(helperText);
-    } else if (check1 && check2) {
+    } else if (check1 && check2 && captcha) {
       let test = false;
       for (const [key, value] of Object.entries(props.info)) {
         for (const [index, content] of Object.entries(value)) {
@@ -110,6 +112,10 @@ export default function One(props) {
         props.handleRegister();
       }
     }
+  };
+
+  const handleCaptcha = () => {
+    setCaptcha(!captcha);
   };
 
   const handletab = (event, newValue) => {
@@ -185,6 +191,7 @@ export default function One(props) {
                 style={{ flexBasis: "40%" }}
                 error={errorMessage.nombreCompania}
                 helperText={helperText.nombreCompania}
+                size="small"
               />
               <Autocomplete
                 id="combo-box-demo"
@@ -200,6 +207,7 @@ export default function One(props) {
                 renderInput={(params) => (
                   <TextField {...params} label="Sector" />
                 )}
+                size="small"
               />
             </div>
             <div className={styles.input}>
@@ -215,6 +223,7 @@ export default function One(props) {
                 noOptionsText={"No se ha encontrado ningún Sector"}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => <TextField {...params} label="País" />}
+                size="small"
               />
               <TextField
                 style={{ flexBasis: "40%" }}
@@ -225,6 +234,7 @@ export default function One(props) {
                 onChange={props.handleChange("Compania")}
                 error={errorMessage.Sede}
                 helperText={helperText.Sede}
+                size="small"
               />
             </div>
             <div className={styles.input}>
@@ -237,6 +247,7 @@ export default function One(props) {
                 onChange={props.handleChange("Compania")}
                 error={errorMessage.direccion}
                 helperText={helperText.direccion}
+                size="small"
               />
               <Autocomplete
                 style={{ flexBasis: "40%" }}
@@ -251,6 +262,7 @@ export default function One(props) {
                     value
                   );
                 }}
+                size="small"
                 noOptionsText={"No se ha encontrado ningún Sector"}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => (
@@ -300,6 +312,7 @@ export default function One(props) {
                     label="Tipo de documento de identidad"
                   />
                 )}
+                size="small"
               />
               <TextField
                 id="outlined-name"
@@ -310,6 +323,7 @@ export default function One(props) {
                 style={{ flexBasis: "40%" }}
                 error={errorMessage.numeroDocumento}
                 helperText={helperText.numeroDocumento}
+                size="small"
               />
             </div>
             <div className={styles.input}>
@@ -322,6 +336,7 @@ export default function One(props) {
                 onChange={props.handleChange("Usuario")}
                 error={errorMessage.NombreCompleto}
                 helperText={helperText.NombreCompleto}
+                size="small"
               />
               <TextField
                 style={{ flexBasis: "40%" }}
@@ -332,6 +347,7 @@ export default function One(props) {
                 onChange={props.handleChange("Usuario")}
                 error={errorMessage.Cargo}
                 helperText={helperText.Cargo}
+                size="small"
               />
             </div>
             <div className={styles.input}>
@@ -344,6 +360,7 @@ export default function One(props) {
                 onChange={props.handleChange("Usuario")}
                 error={errorMessage.correoElectronico}
                 helperText={helperText.correoElectronico}
+                size="small"
               />
               <TextField
                 style={{ flexBasis: "40%" }}
@@ -354,6 +371,7 @@ export default function One(props) {
                 onChange={props.handleChange("Usuario")}
                 error={errorMessage.phoneNumber}
                 helperText={helperText.phoneNumber}
+                size="small"
               />
             </div>
           </div>
@@ -368,6 +386,12 @@ export default function One(props) {
             <p style={{ color: "grey ", marginLeft: "2rem" }}>
               Acepto las políticas de protección de datos
             </p>
+          </div>
+          <div className={styles.captcha}>
+            <ReCAPTCHA
+              sitekey={process.env.REACT_APP_SITE_KEY}
+              onChange={handleCaptcha}
+            />
           </div>
           <div className={styles.navigation}>
             <Button

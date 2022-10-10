@@ -50,3 +50,7 @@
   align-items: center;
   margin-left: 4.6rem;
 }
+.captcha {
+  display: flex;
+  justify-content: center;
+}
