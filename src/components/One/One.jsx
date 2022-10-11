@@ -39,6 +39,10 @@ const validEmail = new RegExp(
   "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
 );
 
+const config = {
+  headers: { "Content-type": "application/json" },
+};
+
 export default function One(props) {
   const [value, setValue] = useState(0);
   const [checked, setChecked] = useState(true);
@@ -86,6 +90,7 @@ export default function One(props) {
     let helperText = {};
     let error = {};
     let bad = false;
+
     for (const [key, value] of Object.entries({
       numeroDocumento: props.info.Usuario.numeroDocumento,
       NombreCompleto: props.info.Usuario.NombreCompleto,
@@ -102,6 +107,13 @@ export default function One(props) {
         error[key] = false;
       }
     }
+
+    if (!validEmail.test(props.info.Usuario.correoElectronico)) {
+      helperText.correoElectronico = "El correo ingresado no es válido";
+      error.correoElectronico = true;
+      bad = true;
+    }
+
     if (bad) {
       setErrorMessage(error);
       setHelperText(helperText);
@@ -109,55 +121,73 @@ export default function One(props) {
       let test = false;
       for (const [key, value] of Object.entries(props.info)) {
         for (const [index, content] of Object.entries(value)) {
+          if (index === "Logotipo") {
+            continue;
+          }
           if (content === "" || content === null) {
             test = true;
           }
         }
       }
       if (!test) {
-        if (!validEmail.test(props.info.Usuario.correoElectronico)) {
-          console.log("error");
-          let helperText = {};
-          let error = {};
-          helperText.correoElectronico = "El correo ingresado no es válido";
-          error.correoElectronico = true;
-          setErrorMessage(error);
-          setHelperText(helperText);
-        } else {
-          try {
-            const response = await axios
-              .create({
-                baseURL:
-                  "https://dynamicliveconversationapi.azurewebsites.net/api",
-              })
-              .post("/Autenticacion", {
-                Compania: props.info.Compania,
-                Usuario: props.info.Usuario,
-              });
-            console.log(response);
-          } catch (error) {
-            console.log(error);
-          }
-          props.handleRegister();
-        }
-        /*let matchsector = search(
+        let matchsector = search(
           props.info.Compania.SectorId,
-          props.data.sector,
+          props.ids.sector,
           "Sector"
         );
         let matchcountry = search(
           props.info.Compania.IdPais,
-          props.data.country
+          props.ids.country,
+          "pais"
         );
         let matchsize = search(
           props.info.Compania.IdTamanoCompania,
-          props.data.sizeCompany
+          props.ids.sizeCompany,
+          "nameSizeOfCompany"
         );
         let matchdocument = search(
           props.info.Usuario.IdTipoDocumento,
-          props.data.documentType,
+          props.ids.documentType,
           "tipoDocumento"
-        );*/
+        );
+        let sectorid = matchsector.id;
+        let countryid = matchcountry.id;
+        let sizeid = matchsize.id;
+        let documentid = matchdocument.documentTypeId;
+        try {
+          const response = await axios
+            .create({
+              baseURL:
+                "https://dynamicliveconversationapi.azurewebsites.net/api",
+            })
+            .post(
+              "/Autenticacion",
+              {
+                Compania: {
+                  nombreCompania: props.info.Compania.nombreCompania,
+                  Logotipo: props.info.Compania.Logotipo,
+                  IdPais: countryid,
+                  Sede: props.info.Compania.Sede,
+                  direccion: props.info.Compania.direccion,
+                  IdTamanoCompania: sizeid,
+                  SectorId: sectorid,
+                },
+                Usuario: {
+                  IdTipoDocumento: documentid,
+                  numeroDocumento: props.info.Usuario.numeroDocumento,
+                  NombreCompleto: props.info.Usuario.NombreCompleto,
+                  Cargo: props.info.Usuario.Cargo,
+                  correoElectronico: props.info.Usuario.correoElectronico,
+                  phoneNumber: props.info.Usuario.phoneNumber,
+                },
+              },
+              config
+            );
+          console.log(response);
+        } catch (error) {
+          console.log(error);
+        }
+        props.handleRegister();
       }
     }
   };
@@ -266,7 +296,7 @@ export default function One(props) {
                 <Autocomplete
                   id="combo-box-demo"
                   style={{ flexBasis: "40%" }}
-                  options={props.sector}
+                  options={props.content.sector}
                   clearOnEscape
                   value={props.info.Compania.SectorId}
                   onChange={(e, value) => {
@@ -286,7 +316,7 @@ export default function One(props) {
                 <Autocomplete
                   style={{ flexBasis: "40%" }}
                   id="combo-box-demo"
-                  options={props.country}
+                  options={props.content.country}
                   clearOnEscape
                   value={props.info.Compania.IdPais}
                   onChange={(e, value) => {
@@ -330,7 +360,7 @@ export default function One(props) {
                 <Autocomplete
                   style={{ flexBasis: "40%" }}
                   id="combo-box-demo"
-                  options={props.sizeCompany}
+                  options={props.content.sizeCompany}
                   clearOnEscape
                   value={props.info.Compania.IdTamanoCompania}
                   onChange={(e, value) => {
@@ -378,7 +408,7 @@ export default function One(props) {
                 <Autocomplete
                   id="combo-box-demo"
                   style={{ flexBasis: "40%" }}
-                  options={props.documentType}
+                  options={props.content.documentType}
                   clearOnEscape
                   value={props.info.Usuario.IdTipoDocumento}
                   onChange={(e, value) => {
