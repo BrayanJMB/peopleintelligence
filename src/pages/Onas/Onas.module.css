@@ -1,0 +1,101 @@
+.photo {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid grey;
+  top: 1rem;
+  left: 1rem;
+}
+.content {
+  border-top-left-radius: 50px;
+  width: 100vw;
+  height: 92vh;
+  margin-top: 4rem;
+}
+.icon {
+  position: absolute;
+  height: 35px;
+  width: 35px;
+  top: -2rem;
+}
+.onas {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  height: 91vh;
+}
+.heading {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 1.8rem;
+}
+.books {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.8rem;
+}
+.book {
+  padding: 2rem;
+  color: #04b8f4;
+}
+.operations {
+  background-color: rgb(235, 230, 230);
+  margin-left: 9vw;
+  height: 68vh;
+  padding: 3rem;
+}
+.inside {
+  height: 50vh;
+  display: flex;
+}
+.crud {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 75%;
+}
+.holder {
+  background-color: white;
+  display: flex;
+  position: relative;
+  padding: 0.5rem;
+  height: 30%;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 95%;
+}
+.sticker {
+  background-color: #04b8f4;
+  position: absolute;
+  color: white;
+  font-weight: 400;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  left: 2rem;
+  top: -1.25rem;
+  font-size: 0.8rem;
+}
+.text {
+  display: flex;
+  flex-direction: column;
+}
+.info {
+  width: 85%;
+}
+.button {
+  width: 30%;
+}
+.space {
+  letter-spacing: 1px;
+}
+.right {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}

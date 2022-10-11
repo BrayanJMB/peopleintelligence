@@ -11,12 +11,12 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import Aletter from "../../assets/icons/Aletter.png";
-import Rletter from "../../assets/icons/Dletter.png";
-import Oletter from "../../assets/icons/Jletter.png";
-import Dletter from "../../assets/icons/Oletter.png";
-import Jletter from "../../assets/icons/Rletter.png";
+import Rletter from "../../assets/icons/Rletter.png";
+import Oletter from "../../assets/icons/Oletter.png";
+import Dletter from "../../assets/icons/Dletter.png";
+import Jletter from "../../assets/icons/Jletter.png";
 import Tletter from "../../assets/icons/Tletter.png";
-import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -30,6 +30,7 @@ const names = [
   "Sentimental Analysis",
 ];
 export default function Dashboard() {
+  const navigate = useNavigate();
   const drawer = (
     <>
       <Toolbar>
@@ -43,7 +44,7 @@ export default function Dashboard() {
         {names.map((text, index) => (
           <ListItem key={index} disablePadding style={{ margin: "1rem 0" }}>
             <ListItemButton>
-              <ListItemIcon>
+              <ListItemIcon style={{ position: "relative" }}>
                 <img src={list[index]} alt="oletter" className={styles.icon} />
               </ListItemIcon>
               <ListItemText primary={text} style={{ color: "grey" }} />
@@ -53,6 +54,10 @@ export default function Dashboard() {
       </List>
     </>
   );
+
+  const handleOnas = () => {
+    navigate("/onas");
+  };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -89,12 +94,7 @@ export default function Dashboard() {
         <div className={styles.content}>
           <div className={styles.cases}>
             <div className={styles.case}>
-              <div
-                className={styles.project}
-                onClick={() => {
-                  console.log("test");
-                }}
-              >
+              <div className={styles.project}>
                 <div>
                   <img src={Aletter} alt="oletter" className={styles.image} />
                 </div>
@@ -112,7 +112,7 @@ export default function Dashboard() {
                 <div>
                   <img src={Oletter} alt="oletter" className={styles.image} />
                 </div>
-                <div className={styles.title}>
+                <div className={styles.title} onClick={handleOnas}>
                   Análisis de Redes Organizacionales
                 </div>
               </div>
@@ -129,12 +129,14 @@ export default function Dashboard() {
                   <img src={Jletter} alt="oletter" className={styles.image} />
                 </div>
                 <div className={styles.title}>Journey Employee</div>
+                <div className={styles.sticker}>En Diseño</div>
               </div>
               <div className={styles.project}>
                 <div>
                   <img src={Tletter} alt="oletter" className={styles.image} />
                 </div>
                 <div className={styles.title}>Sentimental Analysis</div>
+                <div className={styles.sticker}>En Diseño</div>
               </div>
             </div>
           </div>
