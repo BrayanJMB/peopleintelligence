@@ -106,13 +106,13 @@ export default function Dashboard() {
                   Information Management
                 </div>
               </div>
-              <div className={styles.project}>
+              <div className={styles.project} onClick={handlePowerBI}>
                 <div>
                   <img src={Rletter} alt="oletter" className={styles.image} />
                 </div>
                 <div className={styles.title}>Reporting Module</div>
               </div>
-              <div className={styles.project}  onClick={handlePowerBI}>
+              <div className={styles.project}  >
                 <div>
                   <img src={Oletter} alt="oletter" className={styles.image} />
                 </div>
