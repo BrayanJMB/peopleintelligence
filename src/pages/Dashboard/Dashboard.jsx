@@ -22,9 +22,9 @@ const drawerWidth = 240;
 
 const list = [Aletter, Rletter, Oletter, Dletter, Jletter, Tletter];
 const names = [
-  "Administración de Información",
-  "Reporting Module",
-  "Análisis de Redes Organizacionales",
+  "Information Managment",
+  "Advanced Analytics & Dashboards ",
+  "Organizational Network Analysis",
   "Dynamic Live Conversation",
   "Journey Employee",
   "Sentimental Analysis",
@@ -57,6 +57,10 @@ export default function Dashboard() {
 
   const handleOnas = () => {
     navigate("/onas");
+  };
+
+  const handlePowerBI = () => {
+    navigate("/powerBI");
   };
 
   return (
@@ -99,7 +103,7 @@ export default function Dashboard() {
                   <img src={Aletter} alt="oletter" className={styles.image} />
                 </div>
                 <div className={styles.title}>
-                  Administración de Información
+                  Information Management
                 </div>
               </div>
               <div className={styles.project}>
@@ -108,12 +112,12 @@ export default function Dashboard() {
                 </div>
                 <div className={styles.title}>Reporting Module</div>
               </div>
-              <div className={styles.project}>
+              <div className={styles.project}  onClick={handlePowerBI}>
                 <div>
                   <img src={Oletter} alt="oletter" className={styles.image} />
                 </div>
                 <div className={styles.title} onClick={handleOnas}>
-                  Análisis de Redes Organizacionales
+                  Advanced Analytics & Dashboards 
                 </div>
               </div>
             </div>
@@ -122,7 +126,7 @@ export default function Dashboard() {
                 <div>
                   <img src={Dletter} alt="oletter" className={styles.image} />
                 </div>
-                <div className={styles.title}>Dynamic Live Conversation</div>
+                <div className={styles.title}>Organizational Network Analysis</div>
               </div>
               <div className={styles.project}>
                 <div>
