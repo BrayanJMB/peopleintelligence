@@ -9,6 +9,13 @@ import Checkbox from "@mui/material/Checkbox";
 import ReCAPTCHA from "react-google-recaptcha";
 import axios from "axios";
 
+const validEmail = new RegExp(
+  "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
+);
+const config = {
+  headers: { "Content-type": "application/json" },
+};
+
 export default function Multiple(props) {
   const [check1, setCheck1] = useState(false);
   const [check2, setCheck2] = useState(false);
@@ -40,15 +47,12 @@ export default function Multiple(props) {
     setHelperText(helperText);
   };
 
-  const validEmail = new RegExp(
-    "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
-  );
-
   const submitHandler = async (e) => {
     e.preventDefault();
     let helperText = {};
     let error = {};
     let bad = false;
+
     for (const [key, value] of Object.entries({
       numeroDocumento: props.info.Usuario.numeroDocumento,
       NombreCompleto: props.info.Usuario.NombreCompleto,
@@ -65,6 +69,12 @@ export default function Multiple(props) {
         error[key] = false;
       }
     }
+    if (!validEmail.test(props.info.Usuario.correoElectronico)) {
+      helperText.correoElectronico = "El correo ingresado no es válido";
+      error.correoElectronico = true;
+      bad = true;
+    }
+
     if (bad) {
       setErrorMessage(error);
       setHelperText(helperText);
@@ -75,38 +85,38 @@ export default function Multiple(props) {
           test = true;
         }
       }
+
       if (!test) {
-        if (!validEmail.test(props.info.Usuario.correoElectronico)) {
-          console.log("error");
-          let helperText = {};
-          let error = {};
-          helperText.correoElectronico = "El correo ingresado no es válido";
-          error.correoElectronico = true;
-          setErrorMessage(error);
-          setHelperText(helperText);
-        } else {
-          try {
-            const response = await axios
-              .create({
-                baseURL:
-                  "https://dynamicliveconversationapi.azurewebsites.net/api",
-              })
-              .post("/Autenticacion", {
+        let matchdocumentid = search(
+          props.info.Usuario.IdTipoDocumento,
+          props.ids.documentType
+        );
+        let field = matchdocumentid.documentTypeId;
+        try {
+          const response = await axios
+            .create({
+              baseURL:
+                "https://dynamicliveconversationapi.azurewebsites.net/api",
+            })
+            .post(
+              "/Autenticacion",
+              {
                 Usuario: {
-                  IdTipoDocumento: props.info.Usuario.IdTipoDocumento,
+                  IdTipoDocumento: field,
                   numeroDocumento: props.info.Usuario.numeroDocumento,
                   NombreCompleto: props.info.Usuario.NombreCompleto,
                   Cargo: props.info.Usuario.Cargo,
                   correoElectronico: props.info.Usuario.correoElectronico,
                   phoneNumber: props.info.Usuario.phoneNumber,
                 },
-              });
-            console.log(response);
-          } catch (error) {
-            console.log(error);
-          }
-          props.handleRegister();
+              },
+              config
+            );
+          console.log(response);
+        } catch (error) {
+          console.log(error);
         }
+        props.handleRegister();
       }
     }
   };
@@ -140,12 +150,13 @@ export default function Multiple(props) {
             <Autocomplete
               id="combo-box-demo"
               style={{ flexBasis: "40%" }}
-              options={props.documentType}
+              options={props.content.documentType}
               clearOnEscape
               value={props.info.Usuario.IdTipoDocumento}
               onChange={(e, value) => {
                 props.handleAutocomplete("Usuario", "IdTipoDocumento", value);
               }}
+              required
               getOptionLabel={(option) => option}
               noOptionsText={"No se ha encontrado ningún IdTipoDocumento"}
               renderInput={(params) => (

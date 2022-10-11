@@ -20,15 +20,9 @@ export default function Home() {
   const [multiple, setMultiple] = useState(false);
   const [register, setRegister] = useState(false);
   const [data, setData] = useState({
-    documentType: [],
-    country: [],
-    sizeCompany: [],
-    sector: [],
+    content: { documentType: [], country: [], sizeCompany: [], sector: [] },
+    ids: { documentType: [], country: [], sizeCompany: [], sector: [] },
   });
-  const [sector, setSector] = useState([]);
-  const [country, setCountry] = useState([]);
-  const [sizeCompany, setSizeCompany] = useState([]);
-  const [documentType, setDocumentType] = useState([]);
   const [info, setInfo] = useState({
     Usuario: {
       IdTipoDocumento: "",
@@ -66,16 +60,18 @@ export default function Home() {
         })
         .get("Sector/", config)
         .then((res) => {
-          let filter = [];
-          let holder = [];
+          let fetch = [];
+          let id = [];
           res.data.forEach((val) => {
-            if (!filter.includes(val.Sector)) {
-              filter.push(val.Sector);
-              holder.push(val);
+            if (!fetch.includes(val.Sector)) {
+              fetch.push(val.Sector);
+              id.push(val);
             }
           });
-          setSector(filter);
-          setData({ ...data, sector: holder });
+          let holder = data;
+          holder.content.sector = fetch;
+          holder.ids.sector = id;
+          setData(holder);
         });
     } catch (error) {
       console.log(error);
@@ -90,16 +86,18 @@ export default function Home() {
         })
         .get("TamanoCompania/", config)
         .then((res) => {
-          let filter = [];
-          let holder = [];
+          let fetch = [];
+          let id = [];
           res.data.forEach((val) => {
-            if (!filter.includes(val.nameSizeOfCompany)) {
-              filter.push(val.nameSizeOfCompany);
-              holder.push(val);
+            if (!fetch.includes(val.nameSizeOfCompany)) {
+              fetch.push(val.nameSizeOfCompany);
+              id.push(val);
             }
           });
-          setSizeCompany(filter);
-          setData({ ...data, sizeCompany: holder });
+          let holder = data;
+          holder.content.sizeCompany = fetch;
+          holder.ids.sizeCompany = id;
+          setData(holder);
         });
     } catch (error) {
       console.log(error);
@@ -116,16 +114,18 @@ export default function Home() {
         })
         .get("", config)
         .then((res) => {
-          let filter = [];
-          let holder = [];
+          let fetch = [];
+          let id = [];
           res.data.forEach((val) => {
-            if (!filter.includes(val.pais)) {
-              filter.push(val.pais);
-              holder.push(val);
+            if (!fetch.includes(val.pais)) {
+              fetch.push(val.pais);
+              id.push(val);
             }
           });
-          setCountry(filter);
-          setData({ ...data, country: holder });
+          let holder = data;
+          holder.content.country = fetch;
+          holder.ids.country = id;
+          setData(holder);
         });
     } catch (error) {
       console.log(error);
@@ -141,16 +141,18 @@ export default function Home() {
         })
         .get("", config)
         .then((res) => {
-          let filter = [];
-          let holder = [];
+          let fetch = [];
+          let id = [];
           res.data.forEach((val) => {
-            if (!filter.includes(val.tipoDocumento)) {
-              filter.push(val.tipoDocumento);
-              holder.push(val);
+            if (!fetch.includes(val.tipoDocumento)) {
+              fetch.push(val.tipoDocumento);
+              id.push(val);
             }
           });
-          setDocumentType(filter);
-          setData({ ...data, documentType: holder });
+          let holder = data;
+          holder.content.documentType = fetch;
+          holder.ids.documentType = id;
+          setData(holder);
         });
     } catch (error) {
       console.log(error);
@@ -207,19 +209,19 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (country.length === 0) {
+    if (data.content.country.length === 0) {
       countryConsume();
     }
-    if (sizeCompany.length === 0) {
+    if (data.content.sizeCompany.length === 0) {
       sizeCompanyConsume();
     }
-    if (sector.length === 0) {
+    if (data.content.sector.length === 0) {
       sectorConsume();
     }
-    if (documentType.length === 0) {
+    if (data.content.documentType.length === 0) {
       documentTypeConsume();
     }
-  }, [country.length, sizeCompany.length, sector.length, documentType.length]);
+  }, []);
   return (
     <div className={styles.screen}>
       <ThemeProvider theme={theme}>
@@ -293,14 +295,11 @@ export default function Home() {
                   handleAutocomplete={handleautocomplete}
                   handleChange={handlechange}
                   handlePhoto={handlephoto}
-                  info={info}
-                  country={country}
-                  sector={sector}
-                  documentType={documentType}
-                  sizeCompany={sizeCompany}
                   handleCancel={handleCancel}
                   handleRegister={handleRegister}
-                  data={data}
+                  info={info}
+                  content={data.content}
+                  ids={data.ids}
                 />
               </div>
             ) : (
@@ -311,11 +310,11 @@ export default function Home() {
                 <Multiple
                   handleAutocomplete={handleautocomplete}
                   handleChange={handlechange}
-                  info={info}
-                  documentType={documentType}
                   handleCancel={handleCancel}
                   handleRegister={handleRegister}
-                  data={data}
+                  info={info}
+                  content={data.content}
+                  ids={data.ids}
                 />
               </div>
             ) : (
