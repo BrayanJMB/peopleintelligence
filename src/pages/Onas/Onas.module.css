@@ -77,6 +77,7 @@
   left: 2rem;
   top: -1.25rem;
   font-size: 0.8rem;
+  width: 7rem;
 }
 .text {
   display: flex;
@@ -87,6 +88,7 @@
 }
 .button {
   width: 30%;
+  display: flex;
 }
 .space {
   letter-spacing: 1px;

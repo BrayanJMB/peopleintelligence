@@ -92,7 +92,12 @@ export default function Onas() {
                       </div>
                     </div>
                     <div className={styles.holder}>
-                      <div className={styles.sticker}>PASO 2</div>
+                      <div
+                        className={styles.sticker}
+                        style={{ textAlign: "center" }}
+                      >
+                        PASO 2
+                      </div>
                       <div className={styles.text}>
                         <div className={styles.info}>
                           <strong className={styles.space}>
