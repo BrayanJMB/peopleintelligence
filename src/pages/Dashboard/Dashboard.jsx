@@ -102,8 +102,9 @@ export default function Dashboard() {
                 <div>
                   <img src={Aletter} alt="oletter" className={styles.image} />
                 </div>
-                <div className={styles.title}>
-                  Information Management
+                <div className={styles.title}>Information Management</div>
+                <div className={styles.subtitle}>
+                  Module de carga y administracion de bases de datos
                 </div>
               </div>
               <div className={styles.project}>
@@ -111,13 +112,19 @@ export default function Dashboard() {
                   <img src={Rletter} alt="oletter" className={styles.image} />
                 </div>
                 <div className={styles.title}>Reporting Module</div>
+                <div className={styles.subtitle}>
+                  Tableros interactivos de informacion corporativa
+                </div>
               </div>
-              <div className={styles.project}  onClick={handlePowerBI}>
+              <div className={styles.project} onClick={handlePowerBI}>
                 <div>
                   <img src={Oletter} alt="oletter" className={styles.image} />
                 </div>
                 <div className={styles.title} onClick={handleOnas}>
-                  Advanced Analytics & Dashboards 
+                  Advanced Analytics & Dashboards
+                </div>
+                <div className={styles.subtitle}>
+                  analisis de Redes Oranizacionaies
                 </div>
               </div>
             </div>
@@ -126,13 +133,22 @@ export default function Dashboard() {
                 <div>
                   <img src={Dletter} alt="oletter" className={styles.image} />
                 </div>
-                <div className={styles.title}>Organizational Network Analysis</div>
+                <div className={styles.title}>
+                  Organizational Network Analysis
+                </div>
+                <div className={styles.subtitle}>
+                  Herramienta de conversaciones virtuales masivas con
+                  intelligencia artificial
+                </div>
               </div>
               <div className={styles.project}>
                 <div>
                   <img src={Jletter} alt="oletter" className={styles.image} />
                 </div>
                 <div className={styles.title}>Journey Employee</div>
+                <div className={styles.subtitle}>
+                  Medicion del ciclo de experiencia del colavorador
+                </div>
                 <div className={styles.sticker}>En Diseño</div>
               </div>
               <div className={styles.project}>
@@ -140,6 +156,9 @@ export default function Dashboard() {
                   <img src={Tletter} alt="oletter" className={styles.image} />
                 </div>
                 <div className={styles.title}>Sentimental Analysis</div>
+                <div className={styles.subtitle}>
+                  Medicion y analisis de sentimientos de los colaboradores
+                </div>
                 <div className={styles.sticker}>En Diseño</div>
               </div>
             </div>
