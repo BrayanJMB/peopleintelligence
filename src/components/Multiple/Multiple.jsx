@@ -53,7 +53,6 @@ export default function Multiple(props) {
       error[event.target.name] = false;
     }
     if (event.target.name === "phoneNumber") {
-      console.log(event.target.value);
       if (!validphone.test(event.target.value)) {
         helperText[event.target.name] = "Solo puede escirbir números";
         error[event.target.name] = true;
