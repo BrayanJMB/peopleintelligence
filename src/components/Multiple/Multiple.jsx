@@ -7,11 +7,17 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Checkbox from "@mui/material/Checkbox";
 import ReCAPTCHA from "react-google-recaptcha";
+import Notification from "../../components/Notification";
 import axios from "axios";
 
 const validEmail = new RegExp(
   "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
 );
+
+const validphone = new RegExp(
+  "^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{1}[-s.]?[0-9]{4,6}$"
+);
+
 const config = {
   headers: { "Content-type": "application/json" },
 };
@@ -22,6 +28,11 @@ export default function Multiple(props) {
   const [captcha, setCaptcha] = useState(false);
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
+  const [values, setValues] = useState({
+    isOpen: false,
+    message: "",
+    severity: "",
+  });
 
   const handlecheck1 = () => {
     setCheck1(!check1);
@@ -43,8 +54,19 @@ export default function Multiple(props) {
       helperText[event.target.name] = "";
       error[event.target.name] = false;
     }
+    if (event.target.name === "phoneNumber") {
+      console.log(event.target.value);
+      if (!validphone.test(event.target.value)) {
+        helperText[event.target.name] = "Solo puede escirbir números";
+        error[event.target.name] = true;
+      }
+    }
     setErrorMessage(error);
     setHelperText(helperText);
+  };
+
+  const handleClose = () => {
+    setValues({ ...values, isOpen: false });
   };
 
   const submitHandler = async (e) => {
@@ -72,6 +94,11 @@ export default function Multiple(props) {
     if (!validEmail.test(props.info.Usuario.correoElectronico)) {
       helperText.correoElectronico = "El correo ingresado no es válido";
       error.correoElectronico = true;
+      bad = true;
+    }
+    if (props.info.Usuario.numeroDocumento.length < 8) {
+      helperText["numeroDocumento"] = "El tamaño minimo del campo es 8 digitos";
+      error["numeroDocumento"] = true;
       bad = true;
     }
 
@@ -112,11 +139,18 @@ export default function Multiple(props) {
               },
               config
             );
-          console.log(response);
+          props.handleRegister(response.data.message);
         } catch (error) {
+          if (typeof error.response.data === "string") {
+            setValues({
+              ...values,
+              message: error.response.data,
+              isOpen: true,
+              severity: "error",
+            });
+          }
           console.log(error);
         }
-        props.handleRegister();
       }
     }
   };
@@ -160,7 +194,12 @@ export default function Multiple(props) {
               getOptionLabel={(option) => option}
               noOptionsText={"No se ha encontrado ningún IdTipoDocumento"}
               renderInput={(params) => (
-                <TextField {...params} label="Tipo de documento de identidad" />
+                <TextField
+                  {...params}
+                  error={errorMessage.numeroDocumento}
+                  helperText={helperText.numeroDocumento}
+                  label="Tipo de documento de identidad"
+                />
               )}
               size="small"
             />
@@ -174,7 +213,6 @@ export default function Multiple(props) {
               error={errorMessage.numeroDocumento}
               helperText={helperText.numeroDocumento}
               size="small"
-              type="number"
               onBlur={handleBlur}
             />
           </div>
@@ -227,7 +265,6 @@ export default function Multiple(props) {
               error={errorMessage.phoneNumber}
               helperText={helperText.phoneNumber}
               size="small"
-              type="number"
               onBlur={handleBlur}
             />
           </div>
@@ -267,6 +304,12 @@ export default function Multiple(props) {
           </Button>
         </div>
       </div>
+      <Notification
+        severity={values.severity}
+        message={values.message}
+        isOpen={values.isOpen}
+        onClose={handleClose}
+      />
     </form>
   );
 }

@@ -6,7 +6,6 @@ import Building from "../../assets/Building.svg";
 import Button from "@mui/material/Button";
 import One from "../../components/One/One";
 import Multiple from "../../components/Multiple/Multiple";
-import Register from "../../components/Register/Register";
 import axios from "axios";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
@@ -23,6 +22,7 @@ export default function Home() {
     content: { documentType: [], country: [], sizeCompany: [], sector: [] },
     ids: { documentType: [], country: [], sizeCompany: [], sector: [] },
   });
+  const [response, setResponse] = useState("");
   const [info, setInfo] = useState({
     Usuario: {
       IdTipoDocumento: "",
@@ -34,8 +34,7 @@ export default function Home() {
     },
     Compania: {
       nombreCompania: "",
-      Logotipo:
-        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+      Logotipo: null,
       IdPais: "",
       Sede: "",
       direccion: "",
@@ -90,7 +89,7 @@ export default function Home() {
           let id = [];
           res.data.forEach((val) => {
             if (!fetch.includes(val.nameSizeOfCompany)) {
-              fetch.push(val.nameSizeOfCompany);
+              fetch.push(val.quantityOfEmployees);
               id.push(val);
             }
           });
@@ -202,7 +201,8 @@ export default function Home() {
     setMultiple(false);
     setBegin(true);
   };
-  const handleRegister = () => {
+  const handleRegister = (message) => {
+    setResponse(message);
     setRegister(true);
     setOne(false);
     setMultiple(false);
@@ -324,7 +324,40 @@ export default function Home() {
         )}
         {register ? (
           <div className={styles.inner_box}>
-            <Register />
+            <div className={styles.content}>
+              <div className={styles.image}>
+                <Box
+                  component="img"
+                  sx={{
+                    backgroundColor: "white",
+                  }}
+                  alt="Your logo."
+                  src={Logo}
+                />
+              </div>
+              <div className={styles.register}>
+                <h2
+                  className={styles.succesfully}
+                  style={{ color: "#03aae4", marginBottom: "3.5rem" }}
+                >
+                  ¡Tu registro ha sido exitoso!
+                </h2>
+                <p>{response}</p>
+              </div>
+              <div className={styles.end}>
+                <Button
+                  variant="contained"
+                  sx={{ backgroundColor: "#03aae4" }}
+                  onClick={() => {
+                    window.location.replace(
+                      "https://pruebaapib2c.b2clogin.com/PruebaAPib2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_SignInSingUp&client_id=08cfdf65-11e3-45b6-a745-3c0bd35777ae&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fjwt.ms%2F&scope=openid&response_type=id_token&prompt=login"
+                    );
+                  }}
+                >
+                  Volver al inicio de sesión
+                </Button>
+              </div>
+            </div>
           </div>
         ) : (
           <></>
