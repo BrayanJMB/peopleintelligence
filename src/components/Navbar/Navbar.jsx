@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import styles from "./Navbar.module.css";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -11,6 +10,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Logout from "@mui/icons-material/Logout";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { useNavigate } from "react-router-dom";
 
 function stringToColor(string) {
   let hash = 0;
@@ -42,6 +42,7 @@ function stringAvatar(name) {
 }
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -50,11 +51,14 @@ export default function Navbar() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const handleHome = () => {
+    navigate("/dashboard");
+  };
   return (
     <Container maxWidth="xl">
       <Toolbar disableGutters>
         <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "flex-end" }}>
-          <IconButton>
+          <IconButton onClick={handleHome}>
             <HomeOutlinedIcon sx={{ fontSize: "40px" }} />
           </IconButton>
           <IconButton style={{ marginRight: "1rem" }}>
