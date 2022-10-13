@@ -132,6 +132,12 @@ export default function One(props) {
       bad = true;
     }
 
+    if (!validphone.test(props.info.Usuario.phoneNumber)) {
+      helperText["phoneNumber"] = "Escriba un numero telefonico válido";
+      error["phoneNumber"] = true;
+      bad = true;
+    }
+
     if (bad) {
       setErrorMessage(error);
       setHelperText(helperText);

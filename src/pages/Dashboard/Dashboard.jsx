@@ -10,33 +10,46 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
+import Iletter from "../../assets/icons/Iletter.png";
 import Aletter from "../../assets/icons/Aletter.png";
-import Rletter from "../../assets/icons/Rletter.png";
 import Oletter from "../../assets/icons/Oletter.png";
 import Dletter from "../../assets/icons/Dletter.png";
 import Jletter from "../../assets/icons/Jletter.png";
-import Tletter from "../../assets/icons/Tletter.png";
+import Sletter from "../../assets/icons/Sletter.png";
 import { useNavigate } from "react-router-dom";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 
 const drawerWidth = 240;
 
-const list = [Aletter, Rletter, Oletter, Dletter, Jletter, Tletter];
+const list = [Iletter, Aletter, Oletter, Dletter, Jletter, Sletter];
 
 const names = [
-  "Information Managment",
-  "Advanced Analytics & Dashboards ",
+  "Information Management",
+  "Advanced Analytics & Dashboards",
   "Organizational Network Analysis",
-  "Dynamic Live Conversation",
-  "Journey Employee",
-  "Sentimental Analysis",
+  "Dynamic Live Conversations",
+  "Employee Journey",
+  "Sentiment Analysis",
 ];
 
 const drop = [
+  [
+    "Information Management",
+    "Empresas",
+    "Empleados",
+    "Oficinas",
+    "Departamentos",
+    "Otros campos",
+  ],
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
-  ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
-  ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
+  [
+    "Organizational Network Analysis",
+    "Cargar Información audiencia",
+    "Envío de correo electrónico",
+    "Monitor de avance ",
+    "Analítica",
+  ],
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
@@ -132,7 +145,7 @@ export default function Dashboard() {
             >
               {drop[index].map((val, key) => {
                 return (
-                  <MenuItem key={key}>
+                  <MenuItem key={key} disabled={key === 0}>
                     <div onClick={() => handleRedirect(index, key)}>{val}</div>
                   </MenuItem>
                 );
@@ -181,7 +194,7 @@ export default function Dashboard() {
             <div className={styles.case}>
               <div className={styles.project}>
                 <div>
-                  <img src={Aletter} alt="oletter" className={styles.image} />
+                  <img src={Iletter} alt="oletter" className={styles.image} />
                 </div>
                 <div className={styles.title}>Information Management</div>
                 <div className={styles.subtitle}>
@@ -190,9 +203,11 @@ export default function Dashboard() {
               </div>
               <div className={styles.project} onClick={handlePowerBI}>
                 <div>
-                  <img src={Rletter} alt="oletter" className={styles.image} />
+                  <img src={Aletter} alt="oletter" className={styles.image} />
                 </div>
-                <div className={styles.title}>Reporting Module</div>
+                <div className={styles.title}>
+                  Advanced Analytics & Dashboards
+                </div>
                 <div className={styles.subtitle}>
                   Tableros interactivos de informacion corporativa
                 </div>
@@ -202,7 +217,7 @@ export default function Dashboard() {
                   <img src={Oletter} alt="oletter" className={styles.image} />
                 </div>
                 <div className={styles.title} onClick={handleOnas}>
-                  Advanced Analytics & Dashboards
+                  Organizational Network Analysis
                 </div>
                 <div className={styles.subtitle}>
                   analisis de Redes Oranizacionaies
@@ -214,9 +229,7 @@ export default function Dashboard() {
                 <div>
                   <img src={Dletter} alt="oletter" className={styles.image} />
                 </div>
-                <div className={styles.title}>
-                  Organizational Network Analysis
-                </div>
+                <div className={styles.title}>Dynamic Live Conversations</div>
                 <div className={styles.subtitle}>
                   Herramienta de conversaciones virtuales masivas con
                   intelligencia artificial
@@ -226,7 +239,7 @@ export default function Dashboard() {
                 <div>
                   <img src={Jletter} alt="oletter" className={styles.image} />
                 </div>
-                <div className={styles.title}>Journey Employee</div>
+                <div className={styles.title}>Employee Journey</div>
                 <div className={styles.subtitle}>
                   Medicion del ciclo de experiencia del colavorador
                 </div>
@@ -234,9 +247,9 @@ export default function Dashboard() {
               </div>
               <div className={styles.project}>
                 <div>
-                  <img src={Tletter} alt="oletter" className={styles.image} />
+                  <img src={Sletter} alt="oletter" className={styles.image} />
                 </div>
-                <div className={styles.title}>Sentimental Analysis</div>
+                <div className={styles.title}>Sentiment Analysis</div>
                 <div className={styles.subtitle}>
                   Medicion y analisis de sentimientos de los colaboradores
                 </div>
