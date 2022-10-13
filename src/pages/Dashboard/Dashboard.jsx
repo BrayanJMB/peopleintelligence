@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./Dashboard.module.css";
 import Navbar from "../../components/Navbar/Navbar";
 import AppBar from "@mui/material/AppBar";
@@ -17,10 +17,13 @@ import Dletter from "../../assets/icons/Dletter.png";
 import Jletter from "../../assets/icons/Jletter.png";
 import Tletter from "../../assets/icons/Tletter.png";
 import { useNavigate } from "react-router-dom";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 const drawerWidth = 240;
 
 const list = [Aletter, Rletter, Oletter, Dletter, Jletter, Tletter];
+
 const names = [
   "Information Managment",
   "Advanced Analytics & Dashboards ",
@@ -29,8 +32,45 @@ const names = [
   "Journey Employee",
   "Sentimental Analysis",
 ];
+
+const drop = [
+  ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
+  ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
+  ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
+  ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
+  ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
+  ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
+];
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(Array(6).fill(null));
+
+  const handleItemClick = (index) => (event) => {
+    let tmp = anchorEl.map((val, key) => {
+      if (index === key) {
+        return event.currentTarget;
+      } else {
+        return val;
+      }
+    });
+    setAnchorEl(tmp);
+  };
+
+  const handleClose = (index) => {
+    let tmp = anchorEl.map((val, key) => {
+      if (index === key) {
+        return null;
+      } else {
+        return val;
+      }
+    });
+    setAnchorEl(tmp);
+  };
+
+  const handleRedirect = (index, key) => {
+    console.log(drop[index][key]);
+  };
+
   const drawer = (
     <>
       <Toolbar>
@@ -43,12 +83,43 @@ export default function Dashboard() {
       <List style={{ marginTop: "0.5rem" }}>
         {names.map((text, index) => (
           <ListItem key={index} disablePadding style={{ margin: "1rem 0" }}>
-            <ListItemButton>
+            <ListItemButton
+              onClick={handleItemClick(index)}
+              id={"demo-positioned-button" + index}
+              aria-controls={
+                Boolean(anchorEl[index]) ? "demo-positioned-menu" : undefined
+              }
+              aria-haspopup="true"
+              aria-expanded={Boolean(anchorEl[index]) ? "true" : undefined}
+            >
               <ListItemIcon style={{ position: "relative" }}>
                 <img src={list[index]} alt="oletter" className={styles.icon} />
               </ListItemIcon>
               <ListItemText primary={text} style={{ color: "grey" }} />
             </ListItemButton>
+            <Menu
+              id="demo-positioned-menu"
+              aria-labelledby="demo-positioned-button"
+              anchorEl={anchorEl[index]}
+              open={Boolean(anchorEl[index])}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "left",
+              }}
+              onClose={() => handleClose(index)}
+            >
+              {drop[index].map((val, key) => {
+                return (
+                  <MenuItem key={key}>
+                    <div onClick={() => handleRedirect(index, key)}>{val}</div>
+                  </MenuItem>
+                );
+              })}
+            </Menu>
           </ListItem>
         ))}
       </List>
@@ -60,7 +131,7 @@ export default function Dashboard() {
   };
 
   const handlePowerBI = () => {
-    navigate("/powerBI");
+    navigate("/powerbi");
   };
 
   return (
@@ -116,7 +187,7 @@ export default function Dashboard() {
                   Tableros interactivos de informacion corporativa
                 </div>
               </div>
-              <div className={styles.project}  >
+              <div className={styles.project}>
                 <div>
                   <img src={Oletter} alt="oletter" className={styles.image} />
                 </div>

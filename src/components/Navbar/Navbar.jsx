@@ -5,13 +5,12 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
-import Tooltip from "@mui/material/Tooltip";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import Logout from "@mui/icons-material/Logout";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 function stringToColor(string) {
   let hash = 0;
@@ -61,57 +60,37 @@ export default function Navbar() {
           <IconButton style={{ marginRight: "1rem" }}>
             <SettingsOutlinedIcon sx={{ fontSize: "30px" }} />
           </IconButton>
-          <Tooltip title="Logout">
-            <IconButton
-              onClick={handleClick}
-              size="small"
-              sx={{ ml: 2 }}
-              aria-controls={open ? "account-menu" : undefined}
-              aria-haspopup="true"
-              aria-expanded={open ? "true" : undefined}
-            >
-              <Avatar {...stringAvatar("Testing User")} />
-            </IconButton>
-          </Tooltip>
+
+          <IconButton
+            size="small"
+            sx={{ ml: 2 }}
+            aria-controls={open ? "account-menu" : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? "true" : undefined}
+          >
+            <Avatar {...stringAvatar("Testing User")} />
+          </IconButton>
+
+          <IconButton
+            aria-label="more"
+            id="long-button"
+            aria-controls={open ? "long-menu" : undefined}
+            aria-expanded={open ? "true" : undefined}
+            aria-haspopup="true"
+            onClick={handleClick}
+          >
+            <KeyboardArrowDownIcon />
+          </IconButton>
           <Menu
+            id="long-menu"
             anchorEl={anchorEl}
-            id="account-menu"
             open={open}
             onClose={handleClose}
-            onClick={handleClose}
-            PaperProps={{
-              elevation: 0,
-              sx: {
-                overflow: "visible",
-                filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-                mt: 1.5,
-                "& .MuiAvatar-root": {
-                  width: 32,
-                  height: 32,
-                  ml: -0.5,
-                  mr: 1,
-                },
-                "&:before": {
-                  content: '""',
-                  display: "block",
-                  position: "absolute",
-                  top: 0,
-                  right: 14,
-                  width: 10,
-                  height: 10,
-                  bgcolor: "background.paper",
-                  transform: "translateY(-50%) rotate(45deg)",
-                  zIndex: 0,
-                },
-              },
-            }}
-            transformOrigin={{ horizontal: "right", vertical: "top" }}
-            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           >
-            <MenuItem>
-              <ListItemIcon>
-                <Logout fontSize="small" />
-              </ListItemIcon>
+            <MenuItem onClick={handleClose}>
+              <IconButton>
+                <Logout />
+              </IconButton>
               Logout
             </MenuItem>
           </Menu>
