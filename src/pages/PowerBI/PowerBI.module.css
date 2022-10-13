@@ -1,6 +1,26 @@
 .Embed_container {
   height: 90vh;
-  width: 100vw;
-  background-color: white;
+  width: 85vw;
 }
-
+.Embed_container iframe {
+  border: none;
+}
+.photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid grey;
+  margin: 1rem auto;
+}
+.content {
+  height: 92vh;
+  margin-top: 4rem;
+  overflow-y: scroll;
+}
+.icon {
+  position: absolute;
+  height: 35px;
+  width: 35px;
+  top: -2rem;
+}
