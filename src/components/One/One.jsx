@@ -10,6 +10,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import ReCAPTCHA from "react-google-recaptcha";
 import axios from "axios";
+import Notification from "../../components/Notification";
 
 function a11yProps(index) {
   return {
@@ -38,6 +39,9 @@ function TabPanel(props) {
 const validEmail = new RegExp(
   "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
 );
+const validphone = new RegExp(
+  "^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{1}[-s.]?[0-9]{4,6}$"
+);
 
 const config = {
   headers: { "Content-type": "application/json" },
@@ -51,6 +55,11 @@ export default function One(props) {
   const [captcha, setCaptcha] = useState(false);
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
+  const [values, setValues] = useState({
+    isOpen: false,
+    message: "",
+    severity: "",
+  });
 
   const handlecheck1 = () => {
     setCheck1(!check1);
@@ -58,7 +67,9 @@ export default function One(props) {
   const handlecheck2 = () => {
     setCheck2(!check2);
   };
-
+  const handleClose = () => {
+    setValues({ ...values, isOpen: false });
+  };
   const checkcompany = () => {
     const helperText = {};
     const error = {};
@@ -85,6 +96,7 @@ export default function One(props) {
       setValue(1);
     }
   };
+
   const submitHandler = async (e) => {
     e.preventDefault();
     let helperText = {};
@@ -111,6 +123,12 @@ export default function One(props) {
     if (!validEmail.test(props.info.Usuario.correoElectronico)) {
       helperText.correoElectronico = "El correo ingresado no es válido";
       error.correoElectronico = true;
+      bad = true;
+    }
+
+    if (props.info.Usuario.numeroDocumento < 10000000) {
+      helperText["numeroDocumento"] = "El tamaño minimo del campo es 8 digitos";
+      error["numeroDocumento"] = true;
       bad = true;
     }
 
@@ -143,7 +161,7 @@ export default function One(props) {
         let matchsize = search(
           props.info.Compania.IdTamanoCompania,
           props.ids.sizeCompany,
-          "nameSizeOfCompany"
+          "quantityOfEmployees"
         );
         let matchdocument = search(
           props.info.Usuario.IdTipoDocumento,
@@ -183,11 +201,18 @@ export default function One(props) {
               },
               config
             );
-          console.log(response);
+          props.handleRegister(response.data.message);
         } catch (error) {
+          if (typeof error.response.data === "string") {
+            setValues({
+              ...values,
+              message: error.response.data,
+              isOpen: true,
+              severity: "error",
+            });
+          }
           console.log(error);
         }
-        props.handleRegister();
       }
     }
   };
@@ -207,6 +232,12 @@ export default function One(props) {
     } else {
       helperText[event.target.name] = "";
       error[event.target.name] = false;
+    }
+    if (event.target.name === "phoneNumber") {
+      if (!validphone.test(event.target.value)) {
+        helperText[event.target.name] = "Escriba un numero telefonico válido";
+        error[event.target.name] = true;
+      }
     }
     setErrorMessage(error);
     setHelperText(helperText);
@@ -440,7 +471,6 @@ export default function One(props) {
                   error={errorMessage.numeroDocumento}
                   helperText={helperText.numeroDocumento}
                   size="small"
-                  type="number"
                   onBlur={handleBlur}
                 />
               </div>
@@ -493,7 +523,6 @@ export default function One(props) {
                   error={errorMessage.phoneNumber}
                   helperText={helperText.phoneNumber}
                   size="small"
-                  type="number"
                   onBlur={handleBlur}
                 />
               </div>
@@ -537,6 +566,12 @@ export default function One(props) {
           </TabPanel>
         </div>
       </div>
+      <Notification
+        severity={values.severity}
+        message={values.message}
+        isOpen={values.isOpen}
+        onClose={handleClose}
+      />
     </form>
   );
 }

@@ -45,3 +45,15 @@
   text-align: center;
   margin: 0.5rem 1rem;
 }
+.register {
+  width: 80%;
+  margin-top: 2rem;
+}
+.succesfully {
+  text-align: center;
+}
+.end {
+  display: flex;
+  justify-content: center;
+  margin-top: 5rem;
+}

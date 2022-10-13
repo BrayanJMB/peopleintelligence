@@ -41,6 +41,16 @@ const drop = [
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
 ];
+
+const root = [
+  "infoadmin",
+  "powerbi",
+  "onas",
+  "dynamiclive",
+  "journey",
+  "analysis",
+];
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(Array(6).fill(null));
@@ -68,7 +78,15 @@ export default function Dashboard() {
   };
 
   const handleRedirect = (index, key) => {
-    console.log(drop[index][key]);
+    navigate("/" + root[index] + "/" + drop[index][key]);
+  };
+
+  const handleOnas = () => {
+    navigate("/onas");
+  };
+
+  const handlePowerBI = () => {
+    navigate("/powerbi");
   };
 
   const drawer = (
@@ -125,14 +143,6 @@ export default function Dashboard() {
       </List>
     </>
   );
-
-  const handleOnas = () => {
-    navigate("/onas");
-  };
-
-  const handlePowerBI = () => {
-    navigate("/powerbi");
-  };
 
   return (
     <Box sx={{ display: "flex" }}>
