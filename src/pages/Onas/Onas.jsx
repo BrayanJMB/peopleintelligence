@@ -206,16 +206,16 @@ export default function Onas() {
       await axios
         .create({
           baseURL:
-            "https://dynamicliveconversationapi.azurewebsites.net/api/OnasSurvey/",
+            "https://dynamicliveconversationapi.azurewebsites.net/api/OnasSurvey/EnvioMAilOnas/",
         })
-        .post("" + companyId + "/" + versionId, config2)
+        .get(versionId, config)
         .then((res) => {
           console.log(res);
         });
     } catch (error) {
       setValues({
         ...values,
-        message: "Hubo un error al momento de cargar los empleados",
+        message: "Error",
         isOpen: true,
         severity: "error",
       });
