@@ -14,9 +14,7 @@ const validEmail = new RegExp(
   "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
 );
 
-const validphone = new RegExp(
-  "^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{1}[-s.]?[0-9]{4,6}$"
-);
+const validphone = new RegExp("^[0-9]{12,15}$");
 
 const config = {
   headers: { "Content-type": "application/json" },
@@ -55,7 +53,6 @@ export default function Multiple(props) {
       error[event.target.name] = false;
     }
     if (event.target.name === "phoneNumber") {
-      console.log(event.target.value);
       if (!validphone.test(event.target.value)) {
         helperText[event.target.name] = "Solo puede escirbir números";
         error[event.target.name] = true;
