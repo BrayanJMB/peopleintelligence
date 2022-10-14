@@ -154,9 +154,9 @@ export default function Onas() {
       await axios
         .create({
           baseURL:
-            "https://dynamicliveconversationapi.azurewebsites.net//api/OnasSurvey/",
+            "https://dynamicliveconversationapi.azurewebsites.net//api/OnasSurvey/OnasDownloadBase",
         })
-        .get("/home/officiel/Downloads/mails.csv", config)
+        .get("", config)
         .then((res) => {
           setDatetime(formatDate(new Date()));
           setTransactionData(res.data);
@@ -210,12 +210,17 @@ export default function Onas() {
         })
         .get(versionId, config)
         .then((res) => {
-          console.log(res);
+          setValues({
+            ...values,
+            message: "Los correos se han enviado satisfactoriamente",
+            isOpen: true,
+            severity: "success",
+          });
         });
     } catch (error) {
       setValues({
         ...values,
-        message: "Error",
+        message: "Hubo un error al momento de enviar los correos",
         isOpen: true,
         severity: "error",
       });
