@@ -198,7 +198,7 @@ export default function Dashboard() {
                 </div>
                 <div className={styles.title}>Information Management</div>
                 <div className={styles.subtitle}>
-                  Module de carga y administracion de bases de datos
+                  Módulo de carga y administración de bases de datos
                 </div>
               </div>
               <div className={styles.project} onClick={handlePowerBI}>
@@ -209,7 +209,7 @@ export default function Dashboard() {
                   Advanced Analytics & Dashboards
                 </div>
                 <div className={styles.subtitle}>
-                  Tableros interactivos de informacion corporativa
+                  Tableros interactivos de información corporativa
                 </div>
               </div>
               <div className={styles.project}>
@@ -220,7 +220,7 @@ export default function Dashboard() {
                   Organizational Network Analysis
                 </div>
                 <div className={styles.subtitle}>
-                  analisis de Redes Oranizacionaies
+                  Análisis de Redes Organizacionales
                 </div>
               </div>
             </div>
@@ -232,7 +232,7 @@ export default function Dashboard() {
                 <div className={styles.title}>Dynamic Live Conversations</div>
                 <div className={styles.subtitle}>
                   Herramienta de conversaciones virtuales masivas con
-                  intelligencia artificial
+                  inteligencia artificial
                 </div>
               </div>
               <div className={styles.project}>
@@ -241,7 +241,7 @@ export default function Dashboard() {
                 </div>
                 <div className={styles.title}>Employee Journey</div>
                 <div className={styles.subtitle}>
-                  Medicion del ciclo de experiencia del colavorador
+                  Medición del ciclo de experiencia del colaborador
                 </div>
                 <div className={styles.sticker}>En Diseño</div>
               </div>
@@ -251,7 +251,7 @@ export default function Dashboard() {
                 </div>
                 <div className={styles.title}>Sentiment Analysis</div>
                 <div className={styles.subtitle}>
-                  Medicion y analisis de sentimientos de los colaboradores
+                  Medición y análisis de sentimientos de los colaboradores
                 </div>
                 <div className={styles.sticker}>En Diseño</div>
               </div>
