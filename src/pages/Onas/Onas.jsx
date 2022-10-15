@@ -320,7 +320,7 @@ export default function Onas() {
             <div className={styles.onas}>
               <div className={styles.heading}>
                 <strong>
-                  Dar de altos audiencia para ONAS y envío de correo de
+                  Dar de alta audiencia para ONAS y envío de correo de
                   invitación
                 </strong>
               </div>
@@ -390,13 +390,13 @@ export default function Onas() {
                           <strong className={styles.space}>
                             Ya tengo una plantilla completa{" "}
                           </strong>
-                          ista para subir
+                          lista para subir
                         </div>
                         <div
                           className={styles.info}
                           style={{ marginTop: "1rem" }}
                         >
-                          Ahora si, ya puedes subirla para que podamos procesar
+                          Ahora sí, ya puedes subirla para que podamos procesar
                           los datos y luego confirmar la importación.
                         </div>
                       </div>
@@ -433,7 +433,7 @@ export default function Onas() {
                       <div className={styles.text}>
                         <div className={styles.info}>
                           <strong className={styles.space}>Compartir </strong>{" "}
-                          Por correo electrónico
+                          por correo electrónico
                         </div>
                       </div>
 
@@ -460,7 +460,7 @@ export default function Onas() {
                       Tienes dudas?{" "}
                       <strong style={{ color: "#03aae4" }}>
                         {" "}
-                        Mira este video tutorial
+                        Mira este vídeo tutorial
                       </strong>
                     </div>
                     <div style={{ display: "flex" }}>
@@ -472,14 +472,14 @@ export default function Onas() {
                       </p>
                     </div>
                     <div style={{ lineHeight: "1.5rem" }}>
-                      Recuerda que cuanto mas completos sean los datos de los
+                      Recuerda que cuánto mas completos sean los datos de los
                       empleados , mejores reportes de encuestas obtendras cuando
-                      quieras filtrar por departamentos , oficinas , genero ,
+                      quieras filtrar por departamentos , oficinas , género ,
                       edad , etc.
                     </div>
                     <div style={{ lineHeight: "1.5rem" }}>
                       Podras actualizarlos cuando quieras , pero recuerda que
-                      los combios entraran en vigencia para las encuestas
+                      los cambios entrarán en vigencia para las encuestas
                       posteriores
                     </div>
                   </div>
