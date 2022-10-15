@@ -154,7 +154,7 @@ export default function Onas() {
       await axios
         .create({
           baseURL:
-            "https://dynamicliveconversationapi.azurewebsites.net//api/OnasSurvey/OnasDownloadBase",
+            "https://dynamicliveconversationapi.azurewebsites.net/api/OnasSurvey/OnasDownloadBase",
         })
         .get("", config)
         .then((res) => {
