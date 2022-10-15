@@ -38,8 +38,8 @@
   padding: 0.6rem;
 }
 .image {
-  width: 65px;
-  height: 65px;
+  width: 3.5rem;
+  height: 3.5rem;
 }
 .title {
   font-weight: bold;
@@ -73,4 +73,25 @@
   right: -1rem;
   top: -1.5rem;
   font-size: 1.1rem;
+}
+
+@media screen and (max-width: 900px) {
+  .image {
+    height: 2rem;
+    width: 2rem;
+  }
+  .title {
+    font-size: 0.7rem;
+    margin-top: 0.4rem;
+  }
+  .subtitle {
+    margin-top: 1rem;
+    font-size: 0.6rem;
+  }
+  .project {
+    height: 100%;
+  }
+  .photo {
+    margin-top: 3.5rem;
+  }
 }
