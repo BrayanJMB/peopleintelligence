@@ -212,11 +212,11 @@ export default function Dashboard() {
                   Tableros interactivos de informacion corporativa
                 </div>
               </div>
-              <div className={styles.project}>
+              <div className={styles.project} onClick={handleOnas}>
                 <div>
                   <img src={Oletter} alt="oletter" className={styles.image} />
                 </div>
-                <div className={styles.title} onClick={handleOnas}>
+                <div className={styles.title}>
                   Organizational Network Analysis
                 </div>
                 <div className={styles.subtitle}>

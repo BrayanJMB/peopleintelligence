@@ -210,6 +210,7 @@ export default function Onas() {
         })
         .get(versionId, config)
         .then((res) => {
+          console.log(res);
           setValues({
             ...values,
             message: "Los correos se han enviado satisfactoriamente",

@@ -187,7 +187,6 @@ export default function Multiple(props) {
               onChange={(e, value) => {
                 props.handleAutocomplete("Usuario", "IdTipoDocumento", value);
               }}
-              required
               getOptionLabel={(option) => option}
               noOptionsText={"No se ha encontrado ningún IdTipoDocumento"}
               renderInput={(params) => (
