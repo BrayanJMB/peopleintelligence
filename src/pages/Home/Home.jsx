@@ -302,9 +302,7 @@ export default function Home() {
                   ids={data.ids}
                 />
               </div>
-            ) : (
-              <></>
-            )}
+            ) : null}
             {multiple ? (
               <div className={styles.inner_box}>
                 <Multiple
@@ -317,9 +315,7 @@ export default function Home() {
                   ids={data.ids}
                 />
               </div>
-            ) : (
-              <></>
-            )}
+            ) : null}
           </>
         )}
         {register ? (
@@ -359,9 +355,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-        ) : (
-          <></>
-        )}
+        ) : null}
       </ThemeProvider>
     </div>
   );
