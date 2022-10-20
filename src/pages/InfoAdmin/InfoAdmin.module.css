@@ -1,22 +1,8 @@
-.photo {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid grey;
-  margin: 1rem auto;
-}
 .content {
   border-top-left-radius: 50px;
   width: 83vw;
   height: 92vh;
   margin-top: 4rem;
-}
-.icon {
-  position: absolute;
-  height: 35px;
-  width: 35px;
-  top: -2rem;
 }
 .crud {
   display: flex;

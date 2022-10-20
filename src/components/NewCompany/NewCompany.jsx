@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import styles from "./NewCompany.module.css";
 
 const validphone = new RegExp("^[0-9]{12,15}$");

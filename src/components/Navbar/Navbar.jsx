@@ -11,6 +11,7 @@ import Logout from "@mui/icons-material/Logout";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useNavigate } from "react-router-dom";
+import AppBar from "@mui/material/AppBar";
 
 function stringToColor(string) {
   let hash = 0;
@@ -41,6 +42,8 @@ function stringAvatar(name) {
   };
 }
 
+const drawerWidth = 240;
+
 export default function Navbar() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -55,51 +58,62 @@ export default function Navbar() {
     navigate("/dashboard");
   };
   return (
-    <Container maxWidth="xl">
-      <Toolbar disableGutters>
-        <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "flex-end" }}>
-          <IconButton onClick={handleHome}>
-            <HomeOutlinedIcon sx={{ fontSize: "40px" }} />
-          </IconButton>
-          <IconButton style={{ marginRight: "1rem" }}>
-            <SettingsOutlinedIcon sx={{ fontSize: "30px" }} />
-          </IconButton>
+    <AppBar
+      sx={{
+        width: { sm: `calc(100% - ${drawerWidth}px)` },
+        ml: { sm: `${drawerWidth}px` },
+      }}
+      elevation={0}
+      style={{ backgroundColor: "white" }}
+    >
+      <Container maxWidth="xl">
+        <Toolbar disableGutters>
+          <Box
+            sx={{ flexGrow: 1, display: "flex", justifyContent: "flex-end" }}
+          >
+            <IconButton onClick={handleHome}>
+              <HomeOutlinedIcon sx={{ fontSize: "40px" }} />
+            </IconButton>
+            <IconButton style={{ marginRight: "1rem" }}>
+              <SettingsOutlinedIcon sx={{ fontSize: "30px" }} />
+            </IconButton>
 
-          <IconButton
-            size="small"
-            sx={{ ml: 2 }}
-            aria-controls={open ? "account-menu" : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? "true" : undefined}
-          >
-            <Avatar {...stringAvatar("Testing User")} />
-          </IconButton>
+            <IconButton
+              size="small"
+              sx={{ ml: 2 }}
+              aria-controls={open ? "account-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? "true" : undefined}
+            >
+              <Avatar {...stringAvatar("Testing User")} />
+            </IconButton>
 
-          <IconButton
-            aria-label="more"
-            id="long-button"
-            aria-controls={open ? "long-menu" : undefined}
-            aria-expanded={open ? "true" : undefined}
-            aria-haspopup="true"
-            onClick={handleClick}
-          >
-            <KeyboardArrowDownIcon />
-          </IconButton>
-          <Menu
-            id="long-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={handleClose}>
-              <IconButton>
-                <Logout />
-              </IconButton>
-              Logout
-            </MenuItem>
-          </Menu>
-        </Box>
-      </Toolbar>
-    </Container>
+            <IconButton
+              aria-label="more"
+              id="long-button"
+              aria-controls={open ? "long-menu" : undefined}
+              aria-expanded={open ? "true" : undefined}
+              aria-haspopup="true"
+              onClick={handleClick}
+            >
+              <KeyboardArrowDownIcon />
+            </IconButton>
+            <Menu
+              id="long-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleClose}>
+                <IconButton>
+                  <Logout />
+                </IconButton>
+                Logout
+              </MenuItem>
+            </Menu>
+          </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
   );
 }
