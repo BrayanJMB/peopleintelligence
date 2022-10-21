@@ -2,9 +2,9 @@ import React from "react";
 import { PowerBIEmbed } from "powerbi-client-react";
 import { models } from "powerbi-client";
 import styles from "./PowerBI.module.css";
-import Navbar from "../../components/Navbar/Navbar";
+import Navbar from "../../Layout/Navbar/Navbar";
 import Box from "@mui/material/Box";
-import Sidebar from "../../components/Sidebar/Sidebar";
+import Sidebar from "../../Layout/Sidebar/Sidebar";
 
 export default function PowerBI() {
   return (

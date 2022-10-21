@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./Conversation.module.css";
 import Box from "@mui/material/Box";
-import ConSidebar from "../../components/ConSidebar/ConSidebar";
+import ConSidebar from "../../Layout/ConSidebar/ConSidebar";
 import Build from "../../components/Build/Build";
 import Live from "../../components/Live/Live";
 import { useParams } from "react-router-dom";

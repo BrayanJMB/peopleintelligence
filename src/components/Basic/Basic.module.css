@@ -1,0 +1,25 @@
+.basic {
+  width: 100%;
+  height: 85%;
+}
+.info {
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+  flex-wrap: nowrap;
+  height: 100%;
+}
+.left {
+  width: 48%;
+}
+.right {
+  width: 48%;
+  background-color: rgb(233, 229, 229);
+}
+.general {
+  display: flex;
+}
+.required {
+  display: flex;
+  flex-direction: column;
+}

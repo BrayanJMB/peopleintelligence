@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import styles from "./InfoAdmin.module.css";
 import { useParams } from "react-router-dom";
-import Navbar from "../../components/Navbar/Navbar";
+import Navbar from "../../Layout/Navbar/Navbar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Building from "../../assets/Building.svg";
@@ -9,7 +9,7 @@ import Modal from "@mui/material/Modal";
 import ClearIcon from "@mui/icons-material/Clear";
 import IconButton from "@mui/material/IconButton";
 import NewCompany from "../../components/NewCompany/NewCompany";
-import Sidebar from "../../components/Sidebar/Sidebar";
+import Sidebar from "../../Layout/Sidebar/Sidebar";
 import axios from "axios";
 
 const config = {

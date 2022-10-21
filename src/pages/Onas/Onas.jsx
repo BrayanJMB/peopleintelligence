@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import styles from "./Onas.module.css";
-import Navbar from "../../components/Navbar/Navbar";
+import Navbar from "../../Layout/Navbar/Navbar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import ImportContactsIcon from "@mui/icons-material/ImportContacts";
@@ -12,7 +12,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { CSVLink } from "react-csv";
 import axios from "axios";
 import Notification from "../../components/Notification";
-import Sidebar from "../../components/Sidebar/Sidebar";
+import Sidebar from "../../Layout/Sidebar/Sidebar";
 
 const config = {
   headers: { "Content-type": "application/csv" },

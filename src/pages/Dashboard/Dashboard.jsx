@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Dashboard.module.css";
-import Navbar from "../../components/Navbar/Navbar";
+import Navbar from "../../Layout/Navbar/Navbar";
 import Box from "@mui/material/Box";
 import Iletter from "../../assets/icons/Iletter.png";
 import Aletter from "../../assets/icons/Aletter.png";
@@ -9,7 +9,7 @@ import Dletter from "../../assets/icons/Dletter.png";
 import Jletter from "../../assets/icons/Jletter.png";
 import Sletter from "../../assets/icons/Sletter.png";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../components/Sidebar/Sidebar";
+import Sidebar from "../../Layout/Sidebar/Sidebar";
 
 export default function Dashboard() {
   const navigate = useNavigate();

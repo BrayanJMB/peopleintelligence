@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import styles from "./Build.module.css";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Box from "@mui/material/Box";
-import ConNavbar from "../../components/ConNavbar/ConNavbar";
+import Basic from "../../components/Basic/Basic";
+import Button from "@mui/material/Button";
+
 const list = [
   "Basic Details",
   "Schedule",
@@ -26,6 +28,13 @@ const root = [
 
 export default function Build() {
   const [stage, setStage] = useState("basic");
+  const [info, setInfo] = useState({
+    title: "",
+    language: "",
+    name: "",
+    avatar: "",
+    cover: "",
+  });
 
   const handleMove = (val) => {
     setStage(val);
@@ -34,7 +43,7 @@ export default function Build() {
   const renderSwitch = (type) => {
     switch (type) {
       case "basic":
-        return null;
+        return <Basic info={info} handleChange={handlechange} />;
       case "schedule":
         return null;
       case "audience":
@@ -49,6 +58,13 @@ export default function Build() {
         return null;
     }
   };
+
+  const handlechange = useCallback(
+    (event) => {
+      setInfo({ ...info, [event.target.name]: event.target.value });
+    },
+    [info]
+  );
 
   return (
     <div className={styles.build}>
@@ -93,7 +109,40 @@ export default function Build() {
         </List>
       </Box>
       <div className={styles.content}>
-        <ConNavbar />
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            marginTop: "1rem",
+          }}
+        >
+          <div
+            style={{
+              color: "black",
+              flexGrow: 1,
+              display: "flex",
+              justifyContent: "flex-start",
+              marginLeft: "1rem",
+            }}
+          >
+            <p>title after cick save button</p>
+          </div>
+          <div
+            style={{
+              flexGrow: 1,
+              display: "flex",
+              justifyContent: "flex-end",
+              marginRight: "2rem",
+            }}
+          >
+            <Button variant="text" style={{ marginRight: "1.5rem" }} disabled>
+              Share
+            </Button>
+            <Button variant="contained" disabled>
+              Publish
+            </Button>
+          </div>
+        </div>
         {renderSwitch(stage)}
       </div>
     </div>
