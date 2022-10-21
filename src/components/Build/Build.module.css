@@ -1,0 +1,6 @@
+.build {
+  display: flex;
+  width: 96vw;
+  height: 100vh;
+  background-color: white;
+}

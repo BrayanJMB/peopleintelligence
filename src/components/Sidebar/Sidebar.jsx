@@ -34,9 +34,18 @@ const drop = [
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
+  ["Build", "Live", "Analysis"],
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
-  ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
+];
+
+const project = [
+  "infoadmin",
+  "powerbi",
+  "onas",
+  "conversation",
+  "journey",
+  "analysis",
 ];
 
 const drawerWidth = 240;
@@ -44,8 +53,9 @@ const drawerWidth = 240;
 export default function Sidebar() {
   const [anchorEl, setAnchorEl] = useState(Array(6).fill(null));
   const navigate = useNavigate();
+
   const handleRedirect = (index, key) => {
-    navigate("/infoadmin/" + drop[index][key]);
+    navigate("/" + project[index] + "/" + drop[index][key]);
     handleClose(index);
   };
 
@@ -82,7 +92,6 @@ export default function Sidebar() {
           display: { xs: "none", sm: "block" },
           "& .MuiDrawer-paper": {
             width: drawerWidth,
-
             overflow: "hidden",
             border: "none",
           },
