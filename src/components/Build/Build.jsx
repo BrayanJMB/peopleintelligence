@@ -3,7 +3,6 @@ import styles from "./Build.module.css";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
 import Box from "@mui/material/Box";
 import Basic from "../../components/Basic/Basic";
 import Button from "@mui/material/Button";
@@ -34,7 +33,18 @@ export default function Build() {
     name: "",
     avatar: "",
     cover: "",
+    introduction: "",
   });
+
+  const handlephoto = (event) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setInfo({ ...info, [event.target.name]: reader.result });
+      }
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  };
 
   const handleMove = (val) => {
     setStage(val);
@@ -43,7 +53,13 @@ export default function Build() {
   const renderSwitch = (type) => {
     switch (type) {
       case "basic":
-        return <Basic info={info} handleChange={handlechange} />;
+        return (
+          <Basic
+            info={info}
+            handleChange={handlechange}
+            handlePhoto={handlephoto}
+          />
+        );
       case "schedule":
         return null;
       case "audience":
@@ -89,7 +105,17 @@ export default function Build() {
               textAlign: "center",
             }}
           >
-            <ListItemText>Title</ListItemText>
+            <p
+              style={{
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                width: "70%",
+                margin: "0 auto",
+              }}
+            >
+              Lorem ipsum dolor sit, amet
+            </p>
           </ListItem>
 
           {list.map((val, index) => {
@@ -125,7 +151,7 @@ export default function Build() {
               marginLeft: "1rem",
             }}
           >
-            <p>title after cick save button</p>
+            <p>Title after click save button</p>
           </div>
           <div
             style={{
