@@ -48,7 +48,7 @@
 }
 .phone {
   position: absolute;
-  top: 50%;
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
   height: 80%;
@@ -99,4 +99,12 @@
 .bottom {
   display: flex;
   flex-direction: column;
+}
+.avatarleft {
+  width: 35px;
+  height: 35px;
+}
+.coverleft {
+  width: 35px;
+  height: 35px;
 }

@@ -9,6 +9,11 @@ import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import TextareaAutosize from "@mui/material/TextareaAutosize";
 import TagFacesIcon from "@mui/icons-material/TagFaces";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
+import Alert from "@mui/material/Alert";
 
 export default function Basic(props) {
   return (
@@ -35,15 +40,21 @@ export default function Basic(props) {
               />
             </div>
             <div className={styles.input}>
-              <TextField
-                id="outlined-name"
-                label="Language"
-                value={props.info.language}
-                name="language"
-                onChange={props.handleChange}
-                size="small"
-                style={{ width: "100%" }}
-              />
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Language</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={props.info.language}
+                  label="Language"
+                  onChange={props.handleChange}
+                  name="language"
+                >
+                  <MenuItem value={""}>None</MenuItem>
+                  <MenuItem value={"english"}>English</MenuItem>
+                  <MenuItem value={"spanish"}>Spanish</MenuItem>
+                </Select>
+              </FormControl>
             </div>
             <div className={styles.input}>
               <TextField
@@ -66,60 +77,92 @@ export default function Basic(props) {
           <div className={styles.images}>
             <div className={styles.avatar}>
               <span>Moderator Avatar (optional)</span>
-              <div>
+              {props.info.avatar ? (
                 <Button
-                  variant="outlined"
-                  component="label"
-                  fullWidth
-                  startIcon={
-                    <FileUploadOutlinedIcon
-                      sx={{
-                        position: "absolute",
-                        left: 15,
-                        top: 6,
-                      }}
-                    />
-                  }
-                  style={{ marginTop: "0.5rem" }}
+                  variant="text"
+                  onClick={() => props.handleReset("avatar")}
                 >
-                  Upload Image
-                  <input
-                    type="file"
-                    onChange={props.handlePhoto}
-                    accept="image/*"
-                    name="avatar"
-                    hidden
-                  />
+                  reset
                 </Button>
+              ) : null}
+              <div>
+                {props.info.avatar ? (
+                  <img
+                    src={props.info.avatar}
+                    alt="profile"
+                    className={styles.avatarleft}
+                  />
+                ) : (
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    fullWidth
+                    startIcon={
+                      <FileUploadOutlinedIcon
+                        sx={{
+                          position: "absolute",
+                          left: 15,
+                          top: 6,
+                        }}
+                      />
+                    }
+                    style={{ marginTop: "0.5rem" }}
+                  >
+                    Upload Image
+                    <input
+                      type="file"
+                      onChange={props.handlePhoto}
+                      accept="image/*"
+                      name="avatar"
+                      hidden
+                    />
+                  </Button>
+                )}
               </div>
             </div>
             <div className={styles.cover}>
               <span>Cover Image (optional)</span>
-              <div>
+              {props.info.cover ? (
                 <Button
-                  variant="outlined"
-                  component="label"
-                  fullWidth
-                  startIcon={
-                    <FileUploadOutlinedIcon
-                      sx={{
-                        position: "absolute",
-                        left: 15,
-                        top: 6,
-                      }}
-                    />
-                  }
-                  style={{ marginTop: "0.5rem" }}
+                  variant="text"
+                  onClick={() => props.handleReset("cover")}
                 >
-                  Upload Image
-                  <input
-                    type="file"
-                    onChange={props.handlePhoto}
-                    accept="image/*"
-                    name="cover"
-                    hidden
-                  />
+                  reset
                 </Button>
+              ) : null}
+              <div>
+                {props.info.cover ? (
+                  <img
+                    src={props.info.cover}
+                    alt="profile"
+                    className={styles.avatarleft}
+                  />
+                ) : (
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    fullWidth
+                    startIcon={
+                      <FileUploadOutlinedIcon
+                        sx={{
+                          position: "absolute",
+                          left: 15,
+                          top: 6,
+                        }}
+                      />
+                    }
+                    style={{ marginTop: "0.5rem" }}
+                  >
+                    Upload Image
+                    <input
+                      type="file"
+                      onChange={props.handlePhoto}
+                      accept="image/*"
+                      name="cover"
+                      hidden
+                    />
+                  </Button>
+                )}
               </div>
             </div>
             <div className={styles.intro}>
@@ -147,13 +190,26 @@ export default function Basic(props) {
                   onChange={props.handleChange}
                 />
               </div>
+              <div>
+                {props.info.open ? (
+                  <Alert sx={{ mb: 2 }}>Details saved successfully</Alert>
+                ) : null}
+              </div>
               <div style={{ marginTop: "1rem" }}>
-                <Button fullWidth variant="contained">
+                <Button
+                  fullWidth
+                  variant="contained"
+                  onClick={props.handleSave}
+                >
                   Save
                 </Button>
               </div>
-              <div style={{ marginTop: "1rem" }}>
-                <Button fullWidth variant="text">
+              <div style={{ marginTop: "1rem", marginBottom: "2rem" }}>
+                <Button
+                  fullWidth
+                  variant="text"
+                  onClick={() => props.handleMove("schedule")}
+                >
                   Next: Schedule
                 </Button>
               </div>

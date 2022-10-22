@@ -5,6 +5,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import Box from "@mui/material/Box";
 import Basic from "../../components/Basic/Basic";
+import Discussion from "../../components/Discussion/Discussion";
 import Button from "@mui/material/Button";
 
 const list = [
@@ -28,6 +29,7 @@ const root = [
 export default function Build() {
   const [stage, setStage] = useState("basic");
   const [info, setInfo] = useState({
+    open: false,
     title: "",
     language: "",
     name: "",
@@ -46,8 +48,23 @@ export default function Build() {
     reader.readAsDataURL(event.target.files[0]);
   };
 
-  const handleMove = (val) => {
+  const handlemove = (val) => {
     setStage(val);
+  };
+
+  const handlereset = (name) => {
+    setInfo({ ...info, [name]: "" });
+  };
+
+  const handlechange = useCallback(
+    (event) => {
+      setInfo({ ...info, [event.target.name]: event.target.value });
+    },
+    [info]
+  );
+
+  const handlesave = () => {
+    setInfo({ ...info, open: true });
   };
 
   const renderSwitch = (type) => {
@@ -58,6 +75,9 @@ export default function Build() {
             info={info}
             handleChange={handlechange}
             handlePhoto={handlephoto}
+            handleReset={handlereset}
+            handleMove={handlemove}
+            handleSave={handlesave}
           />
         );
       case "schedule":
@@ -65,7 +85,7 @@ export default function Build() {
       case "audience":
         return null;
       case "discussion":
-        return null;
+        return <Discussion />;
       case "segments":
         return null;
       case "quota":
@@ -74,13 +94,6 @@ export default function Build() {
         return null;
     }
   };
-
-  const handlechange = useCallback(
-    (event) => {
-      setInfo({ ...info, [event.target.name]: event.target.value });
-    },
-    [info]
-  );
 
   return (
     <div className={styles.build}>
@@ -120,7 +133,7 @@ export default function Build() {
 
           {list.map((val, index) => {
             return (
-              <ListItem onClick={() => handleMove(root[index])} key={index}>
+              <ListItem onClick={() => handlemove(root[index])} key={index}>
                 <ListItemButton
                   style={{
                     color: stage === root[index] ? "blue" : "grey",
@@ -151,7 +164,7 @@ export default function Build() {
               marginLeft: "1rem",
             }}
           >
-            <p>Title after click save button</p>
+            {info.open ? <p>{info.title}</p> : null}
           </div>
           <div
             style={{
@@ -161,10 +174,23 @@ export default function Build() {
               marginRight: "2rem",
             }}
           >
-            <Button variant="text" style={{ marginRight: "1.5rem" }} disabled>
+            <Button
+              variant="text"
+              style={{ marginRight: "1.5rem" }}
+              disabled={!info.open}
+            >
               Share
             </Button>
-            <Button variant="contained" disabled>
+            {stage === "discussion" ? (
+              <Button
+                variant="text"
+                style={{ marginRight: "1.5rem" }}
+                disabled={!info.open}
+              >
+                Practice
+              </Button>
+            ) : null}
+            <Button variant="outlined" disabled={!info.open}>
               Publish
             </Button>
           </div>
