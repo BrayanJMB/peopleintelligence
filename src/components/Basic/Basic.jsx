@@ -7,6 +7,8 @@ import InterestsOutlinedIcon from "@mui/icons-material/InterestsOutlined";
 import Button from "@mui/material/Button";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import TextareaAutosize from "@mui/material/TextareaAutosize";
+import TagFacesIcon from "@mui/icons-material/TagFaces";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 export default function Basic(props) {
   return (
@@ -140,6 +142,9 @@ export default function Basic(props) {
                     height: "100px",
                     marginTop: "0.5rem",
                   }}
+                  name="introduction"
+                  value={props.info.introduction}
+                  onChange={props.handleChange}
                 />
               </div>
               <div style={{ marginTop: "1rem" }}>
@@ -155,7 +160,103 @@ export default function Basic(props) {
             </div>
           </div>
         </div>
-        <div className={styles.right}>right</div>
+        <div className={styles.right}>
+          <div className={styles.phone}>
+            <p
+              style={{
+                fontSize: "0.8rem",
+                fontWeight: "500",
+                color: "rgb(0, 0, 150)",
+              }}
+            >
+              PARTICIPANTS PREVIEW
+            </p>
+            <div className={styles.preview}>
+              <div className={styles.inside}>
+                <div
+                  style={{
+                    backgroundColor: "grey",
+                    width: "24%",
+                    height: "4px",
+                    borderRadius: "1rem",
+                    marginTop: "0.5rem",
+                  }}
+                ></div>
+                <div
+                  style={{
+                    backgroundColor: "grey",
+                    width: "90%",
+                    height: "2px",
+                    borderRadius: "1rem",
+                    marginTop: "1rem",
+                    marginBottom: "1rem",
+                  }}
+                ></div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "flex-start",
+                    width: "100%",
+                  }}
+                >
+                  <div style={{ marginBottom: "0.2rem" }}>
+                    <img
+                      src="https://media.glassdoor.com/sqll/2135917/remesh-squarelogo-1547826220454.png"
+                      alt="profile"
+                      className={styles.photo}
+                    />
+                  </div>
+                  <div>
+                    <span style={{ color: "grey", fontSize: "0.7rem" }}>
+                      remesh Conversation
+                    </span>
+                  </div>
+                  <div className={styles.covers}>
+                    <img
+                      src={
+                        props.info.cover
+                          ? props.info.cover
+                          : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlNXd9tJhoyJMieolHXk9y6MmWuT7Y2bBv7ftTIS0U7Q&s"
+                      }
+                      alt="profile"
+                      className={styles.coverright}
+                    />
+                  </div>
+                  <h2>{props.info.title}</h2>
+                  <div className={styles.bottom}>
+                    <div className={styles.avatarright}>
+                      <div>
+                        {props.info.avatar ? (
+                          <img
+                            src={props.info.avatar}
+                            alt="profile"
+                            className={styles.little}
+                          />
+                        ) : (
+                          <IconButton>
+                            <TagFacesIcon color="warning" />
+                          </IconButton>
+                        )}
+                      </div>
+                      <div>
+                        {props.info.name ? props.info.name : "Moderator"}
+                      </div>
+                    </div>
+                    <div className={styles.avatarright}>
+                      <div>
+                        <IconButton>
+                          <AccessTimeIcon />
+                        </IconButton>
+                      </div>
+                      <div>Not scheduled yet</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
