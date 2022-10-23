@@ -30,9 +30,9 @@
   display: flex;
   justify-content: center;
   margin: 0 auto;
-  background-color: rgb(228, 225, 225);
+  background-color: rgb(233, 229, 229);
   width: 80%;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   border-radius: 1rem;
 }
 .layout {
@@ -45,14 +45,19 @@
   justify-content: center;
 }
 .photo {
-  width: 9rem;
-  height: 9rem;
+  width: 8rem;
+  height: 8rem;
   object-fit: cover;
   border-radius: 0.5rem;
+  padding: 1rem;
 }
 .rightbox {
   display: flex;
   flex-direction: column;
   flex-grow: 4;
   margin-left: 2rem;
+}
+.forms {
+  background-color: brown;
+  height: 100%;
 }

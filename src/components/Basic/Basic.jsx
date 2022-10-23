@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "./Basic.module.css";
 import IconButton from "@mui/material/IconButton";
 import NotesIcon from "@mui/icons-material/Notes";
@@ -18,12 +17,20 @@ import Alert from "@mui/material/Alert";
 export default function Basic(props) {
   return (
     <div className={styles.basic}>
-      <h3 style={{ marginLeft: "2rem" }}>Basic Details</h3>
+      <span
+        style={{
+          marginLeft: "2rem",
+          fontWeight: "bold",
+          fontSize: "1.2rem",
+        }}
+      >
+        Basic Details
+      </span>
       <div className={styles.info}>
         <div className={styles.left}>
           <div className={styles.general}>
             <IconButton style={{ marginRight: "1rem" }}>
-              <NotesIcon color="primary" />
+              <NotesIcon color="blue" />
             </IconButton>
             <p>General Information (Required)</p>
           </div>
@@ -70,7 +77,7 @@ export default function Basic(props) {
           </div>
           <div className={styles.optional}>
             <IconButton style={{ marginRight: "1rem" }}>
-              <InterestsOutlinedIcon color="primary" />
+              <InterestsOutlinedIcon color="blue" />
             </IconButton>
             <p>Personalize (Optional)</p>
           </div>
@@ -81,6 +88,7 @@ export default function Basic(props) {
                 <Button
                   variant="text"
                   onClick={() => props.handleReset("avatar")}
+                  color="blue"
                 >
                   reset
                 </Button>
@@ -107,6 +115,7 @@ export default function Basic(props) {
                       />
                     }
                     style={{ marginTop: "0.5rem" }}
+                    color="blue"
                   >
                     Upload Image
                     <input
@@ -126,6 +135,7 @@ export default function Basic(props) {
                 <Button
                   variant="text"
                   onClick={() => props.handleReset("cover")}
+                  color="blue"
                 >
                   reset
                 </Button>
@@ -152,6 +162,7 @@ export default function Basic(props) {
                       />
                     }
                     style={{ marginTop: "0.5rem" }}
+                    color="blue"
                   >
                     Upload Image
                     <input
@@ -200,15 +211,18 @@ export default function Basic(props) {
                   fullWidth
                   variant="contained"
                   onClick={props.handleSave}
+                  style={{ color: "white" }}
+                  color="blue"
                 >
                   Save
                 </Button>
               </div>
-              <div style={{ marginTop: "1rem", marginBottom: "2rem" }}>
+              <div style={{ marginTop: "1rem", marginBottom: "0.5rem" }}>
                 <Button
                   fullWidth
                   variant="text"
                   onClick={() => props.handleMove("schedule")}
+                  color="blue"
                 >
                   Next: Schedule
                 </Button>

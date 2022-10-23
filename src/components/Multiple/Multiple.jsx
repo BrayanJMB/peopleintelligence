@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styles from "./Multiple.module.css";
 import Box from "@mui/material/Box";
 import Logo from "../../assets/Logo.svg";

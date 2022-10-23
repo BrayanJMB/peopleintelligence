@@ -1,4 +1,3 @@
-import React from "react";
 import { PowerBIEmbed } from "powerbi-client-react";
 import { models } from "powerbi-client";
 import styles from "./PowerBI.module.css";

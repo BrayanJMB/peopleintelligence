@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import styles from "./InfoAdmin.module.css";
 import { useParams } from "react-router-dom";
 import Navbar from "../../Layout/Navbar/Navbar";

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import styles from "./Onas.module.css";
 import Navbar from "../../Layout/Navbar/Navbar";
 import Box from "@mui/material/Box";

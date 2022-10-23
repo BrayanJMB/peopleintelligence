@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import styles from "./NewCompany.module.css";

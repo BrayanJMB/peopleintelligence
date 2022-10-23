@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import styles from "./Build.module.css";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -103,7 +103,7 @@ export default function Build() {
           width: "200px",
         }}
         style={{
-          backgroundColor: "rgb(224, 219, 219)",
+          backgroundColor: "rgb(233, 229, 229)",
           borderRight: "2px solid grey",
           borderLeft: "2px solid grey",
         }}
@@ -136,7 +136,7 @@ export default function Build() {
               <ListItem onClick={() => handlemove(root[index])} key={index}>
                 <ListItemButton
                   style={{
-                    color: stage === root[index] ? "blue" : "grey",
+                    color: stage === root[index] ? "#00b0f0" : "grey",
                     fontWeight: "bold",
                   }}
                 >
@@ -152,16 +152,15 @@ export default function Build() {
           style={{
             width: "100%",
             display: "flex",
-            marginTop: "1rem",
+            marginTop: "0.5rem",
           }}
         >
           <div
             style={{
-              color: "black",
               flexGrow: 1,
               display: "flex",
               justifyContent: "flex-start",
-              marginLeft: "1rem",
+              marginLeft: "2rem",
             }}
           >
             {info.open ? <p>{info.title}</p> : null}
@@ -178,11 +177,13 @@ export default function Build() {
               variant="text"
               style={{ marginRight: "1.5rem" }}
               disabled={!info.open}
+              size="small"
             >
               Share
             </Button>
             {stage === "discussion" ? (
               <Button
+                size="small"
                 variant="text"
                 style={{ marginRight: "1.5rem" }}
                 disabled={!info.open}
@@ -190,7 +191,7 @@ export default function Build() {
                 Practice
               </Button>
             ) : null}
-            <Button variant="outlined" disabled={!info.open}>
+            <Button size="small" variant="outlined" disabled={!info.open}>
               Publish
             </Button>
           </div>

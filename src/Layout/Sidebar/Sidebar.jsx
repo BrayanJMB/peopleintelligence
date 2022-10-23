@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styles from "./Sidebar.module.css";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";

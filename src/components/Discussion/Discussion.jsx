@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styles from "./Discussion.module.css";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
@@ -33,10 +33,10 @@ function stringAvatar(name) {
 }
 
 export default function Discussion() {
-  const [alignment, setAlignment] = useState("edit");
+  const [toogle, setToggle] = useState("edit");
 
   const handletoggle = (event, newAlignment) => {
-    setAlignment(newAlignment);
+    setToggle(newAlignment);
   };
 
   return (
@@ -45,7 +45,15 @@ export default function Discussion() {
         <div className={styles.header}>
           <div className={styles.left}>
             <div>
-              <h3 style={{ marginLeft: "2rem" }}>Discussion Guide</h3>
+              <span
+                style={{
+                  marginLeft: "2rem",
+                  fontWeight: "bold",
+                  fontSize: "1.2rem",
+                }}
+              >
+                Discussion Guide
+              </span>
             </div>
             <div>
               <AvatarGroup max={6} className={styles.group}>
@@ -61,19 +69,24 @@ export default function Discussion() {
           </div>
           <div className={styles.right}>
             <div style={{ marginRight: "1rem" }}>
-              <p>Unsaved Changes</p>
+              <p style={{ color: "grey" }}>Unsaved Changes</p>
             </div>
             <div>
               <ToggleButtonGroup
-                color="primary"
-                value={alignment}
+                color="blue"
+                value={toogle}
                 exclusive
                 onChange={handletoggle}
                 aria-label="Platform"
                 size="small"
+                style={{ width: "100%", padding: "0 0.5rem" }}
               >
-                <ToggleButton value="edit">Edit</ToggleButton>
-                <ToggleButton value="review">Review</ToggleButton>
+                <ToggleButton value="edit" style={{ width: "100%" }}>
+                  Edit
+                </ToggleButton>
+                <ToggleButton value="review" style={{ width: "50%" }}>
+                  Review
+                </ToggleButton>
               </ToggleButtonGroup>
             </div>
           </div>
@@ -103,6 +116,7 @@ export default function Discussion() {
             </div>
           </div>
         </div>
+        <div className={styles.forms}>div</div>
       </div>
     </div>
   );

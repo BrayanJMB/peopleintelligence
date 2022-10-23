@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styles from "./One.module.css";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";

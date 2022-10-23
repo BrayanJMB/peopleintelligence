@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "./Dashboard.module.css";
 import Navbar from "../../Layout/Navbar/Navbar";
 import Box from "@mui/material/Box";

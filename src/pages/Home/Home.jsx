@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import styles from "./Home.module.css";
 import Box from "@mui/material/Box";
 import Logo from "../../assets/Logo.svg";

@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "./ConSidebar.module.css";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -82,7 +81,7 @@ export default function ConSidebar(props) {
             >
               <ListItemIcon style={{ position: "relative" }}>
                 <RateReviewOutlinedIcon
-                  color={props.type === "Build" ? "primary" : "inherit"}
+                  color={props.type === "Build" ? "blue" : "inherit"}
                 />
               </ListItemIcon>
             </ListItemButton>
@@ -95,7 +94,7 @@ export default function ConSidebar(props) {
             >
               <ListItemIcon style={{ position: "relative" }}>
                 <ForumOutlinedIcon
-                  color={props.type === "Live" ? "primary" : "inherit"}
+                  color={props.type === "Live" ? "blue" : "inherit"}
                 />
               </ListItemIcon>
             </ListItemButton>
@@ -108,7 +107,7 @@ export default function ConSidebar(props) {
             >
               <ListItemIcon style={{ position: "relative" }}>
                 <DonutSmallRoundedIcon
-                  color={props.type === "Analysis" ? "primary" : "inherit"}
+                  color={props.type === "Analysis" ? "blue" : "inherit"}
                 />
               </ListItemIcon>
             </ListItemButton>
