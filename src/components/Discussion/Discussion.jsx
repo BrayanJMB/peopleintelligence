@@ -4,6 +4,14 @@ import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import Button from "@mui/material/Button";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import ClearIcon from "@mui/icons-material/Clear";
+import IconButton from "@mui/material/IconButton";
+import ClassIcon from "@mui/icons-material/Class";
+import ForumOutlinedIcon from "@mui/icons-material/ForumOutlined";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 
 function stringToColor(string) {
   let hash = 0;
@@ -33,6 +41,9 @@ function stringAvatar(name) {
 }
 
 export default function Discussion() {
+  const [open, setOpen] = useState(false);
+  const handleOpenModal = () => setOpen(true);
+  const handleCloseModal = () => setOpen(false);
   const [toogle, setToggle] = useState("edit");
 
   const handletoggle = (event, newAlignment) => {
@@ -101,22 +112,88 @@ export default function Discussion() {
               />
             </div>
             <div className={styles.rightbox}>
-              <div style={{ height: "50%", width: "60%" }}>
-                <p>
-                  Prepare messages and questions you will ask participants
-                  during this Conversation.
-                </p>
-              </div>
-              <div style={{ height: "50%", width: "60%" }}>
-                <p>
-                  Not sur where to start? Try a free template crafted by your
-                  Remesh Research Team
-                </p>
-              </div>
+              <p style={{ width: "60%" }}>
+                Prepare messages and questions you will ask participants during
+                this Conversation.
+              </p>
+              <p style={{ width: "60%" }}>
+                Not sur where to start? Try a free template crafted by your
+                Remesh Research Team
+              </p>
             </div>
           </div>
         </div>
-        <div className={styles.forms}>div</div>
+        <div className={styles.impexp}>
+          <Modal
+            open={open}
+            onClose={handleCloseModal}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box className={styles.modal}>
+              <div className={styles.modaltop}>
+                <p style={{ fontWeight: "bold", marginTop: "0.8rem" }}>
+                  Select how you would to import:
+                </p>
+                <div>
+                  <IconButton onClick={handleCloseModal}>
+                    <ClearIcon sx={{ fontSize: "40px" }} />
+                  </IconButton>
+                </div>
+              </div>
+              <div className={styles.modalbuttom}>
+                <div className={styles.blocks}>
+                  <ClassIcon sx={{ fontSize: "40px" }} />
+                  <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                    Template
+                  </p>
+                  <p
+                    style={{
+                      color: "grey",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    Use an available template
+                  </p>
+                </div>
+                <div className={styles.blocks}>
+                  <ForumOutlinedIcon sx={{ fontSize: "40px" }} />
+                  <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                    Existing Conversation
+                  </p>
+                  <p
+                    style={{
+                      color: "grey",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    Grab the discussion guide from another conversation
+                  </p>
+                </div>
+                <div className={styles.blocks}>
+                  <DescriptionOutlinedIcon sx={{ fontSize: "40px" }} />
+                  <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                    Excel file
+                  </p>
+                  <p
+                    style={{
+                      color: "grey",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    Import an axcel file from your computer
+                  </p>
+                </div>
+              </div>
+            </Box>
+          </Modal>
+          <Button variant="text" size="small" onClick={handleOpenModal}>
+            Import
+          </Button>
+          <Button variant="text" size="small">
+            Export
+          </Button>
+        </div>
       </div>
     </div>
   );

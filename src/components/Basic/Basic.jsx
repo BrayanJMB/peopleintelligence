@@ -270,7 +270,7 @@ export default function Basic(props) {
                     width: "100%",
                   }}
                 >
-                  <div style={{ marginBottom: "0.2rem" }}>
+                  <div style={{ marginBottom: "0.2rem", marginLeft: "0.5rem" }}>
                     <img
                       src="https://media.glassdoor.com/sqll/2135917/remesh-squarelogo-1547826220454.png"
                       alt="profile"
@@ -278,7 +278,13 @@ export default function Basic(props) {
                     />
                   </div>
                   <div>
-                    <span style={{ color: "grey", fontSize: "0.7rem" }}>
+                    <span
+                      style={{
+                        color: "grey",
+                        fontSize: "0.7rem",
+                        marginLeft: "0.8rem",
+                      }}
+                    >
                       remesh Conversation
                     </span>
                   </div>
@@ -293,7 +299,7 @@ export default function Basic(props) {
                       className={styles.coverright}
                     />
                   </div>
-                  <h2>{props.info.title}</h2>
+                  <h2 style={{ marginLeft: "0.8rem" }}>{props.info.title}</h2>
                   <div className={styles.bottom}>
                     <div className={styles.avatarright}>
                       <div>

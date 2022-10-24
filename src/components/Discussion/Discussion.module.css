@@ -5,6 +5,7 @@
 .content {
   display: flex;
   flex-direction: column;
+  margin-top: 1rem;
 }
 .header {
   display: flex;
@@ -40,7 +41,7 @@
   width: 100%;
 }
 .leftbox {
-  flex-grow: 1;
+  flex: 2;
   display: flex;
   justify-content: center;
 }
@@ -54,10 +55,45 @@
 .rightbox {
   display: flex;
   flex-direction: column;
-  flex-grow: 4;
+  flex: 8;
   margin-left: 2rem;
+  justify-content: space-evenly;
 }
-.forms {
-  background-color: brown;
-  height: 100%;
+.impexp {
+  padding: 0 4rem;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 35%;
+  transform: translate(-50%, -50%);
+  width: 45%;
+  background-color: white;
+  padding: 1rem;
+  border-radius: 1rem;
+}
+
+.modaltop {
+  display: flex;
+  justify-content: space-between;
+}
+.modalbuttom {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 75%;
+}
+.blocks {
+  padding: 1rem;
+  flex-basis: 23%;
+  height: 75%;
+  border: 2px rgb(219, 215, 215) solid;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
