@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styles from "./Multiple.module.css";
 import Box from "@mui/material/Box";
 import Logo from "../../assets/Logo.svg";
@@ -41,6 +41,22 @@ export default function Multiple(props) {
 
   const handleCaptcha = () => {
     setCaptcha(!captcha);
+  };
+  const handleBlurAuto = () => {
+    let helperText = {};
+    let error = {};
+    if (
+      props.info.Usuario.IdTipoDocumento === "" ||
+      props.info.Usuario.IdTipoDocumento === null
+    ) {
+      helperText["IdTipoDocumento"] = "El campo no puede ir vacio";
+      error["IdTipoDocumento"] = true;
+    } else {
+      helperText["IdTipoDocumento"] = "";
+      error["IdTipoDocumento"] = false;
+    }
+    setErrorMessage(error);
+    setHelperText(helperText);
   };
   const handleBlur = (event) => {
     let helperText = {};
@@ -187,14 +203,14 @@ export default function Multiple(props) {
               onChange={(e, value) => {
                 props.handleAutocomplete("Usuario", "IdTipoDocumento", value);
               }}
-              required
+              onBlur={handleBlurAuto}
               getOptionLabel={(option) => option}
               noOptionsText={"No se ha encontrado ningún IdTipoDocumento"}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  error={errorMessage.numeroDocumento}
-                  helperText={helperText.numeroDocumento}
+                  error={errorMessage.IdTipoDocumento}
+                  helperText={helperText.IdTipoDocumento}
                   label="Tipo de documento de identidad"
                 />
               )}

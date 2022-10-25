@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styles from "./One.module.css";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -248,6 +248,19 @@ export default function One(props) {
     setErrorMessage(error);
     setHelperText(helperText);
   };
+  const handleBlurAuto = (name, info) => {
+    let helperText = {};
+    let error = {};
+    if (props.info[info][name] === "" || props.info[info][name] === null) {
+      helperText[name] = "El campo no puede ir vacio";
+      error[name] = true;
+    } else {
+      helperText[name] = "";
+      error[name] = false;
+    }
+    setErrorMessage(error);
+    setHelperText(helperText);
+  };
 
   const handleCaptcha = () => {
     setCaptcha(!captcha);
@@ -343,8 +356,14 @@ export default function One(props) {
                   isOptionEqualToValue={(option, value) =>
                     option.id === value.id
                   }
+                  onBlur={() => handleBlurAuto("SectorId", "Compania")}
                   renderInput={(params) => (
-                    <TextField {...params} label="Sector" />
+                    <TextField
+                      {...params}
+                      label="Sector"
+                      error={errorMessage.SectorId}
+                      helperText={helperText.SectorId}
+                    />
                   )}
                   size="small"
                 />
@@ -363,8 +382,14 @@ export default function One(props) {
                   isOptionEqualToValue={(option, value) =>
                     option.id === value.id
                   }
+                  onBlur={() => handleBlurAuto("IdPais", "Compania")}
                   renderInput={(params) => (
-                    <TextField {...params} label="País" />
+                    <TextField
+                      {...params}
+                      label="País"
+                      error={errorMessage.IdPais}
+                      helperText={helperText.IdPais}
+                    />
                   )}
                   size="small"
                 />
@@ -407,13 +432,19 @@ export default function One(props) {
                       value
                     );
                   }}
+                  onBlur={() => handleBlurAuto("IdTamanoCompania", "Compania")}
                   size="small"
                   noOptionsText={"No se ha encontrado ningún Sector"}
                   isOptionEqualToValue={(option, value) =>
                     option.id === value.id
                   }
                   renderInput={(params) => (
-                    <TextField {...params} label="Tamaño de la empresa" />
+                    <TextField
+                      {...params}
+                      label="Tamaño de la empresa"
+                      error={errorMessage.IdTamanoCompania}
+                      helperText={helperText.IdTamanoCompania}
+                    />
                   )}
                 />
               </div>
@@ -459,10 +490,13 @@ export default function One(props) {
                   isOptionEqualToValue={(option, value) =>
                     option.id === value.id
                   }
+                  onBlur={() => handleBlurAuto("IdTipoDocumento", "Usuario")}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Tipo de documento de identidad"
+                      error={errorMessage.IdTipoDocumento}
+                      helperText={helperText.IdTipoDocumento}
                     />
                   )}
                   size="small"

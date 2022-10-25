@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import styles from "./Home.module.css";
 import Box from "@mui/material/Box";
 import Logo from "../../assets/Logo.svg";
@@ -302,9 +302,7 @@ export default function Home() {
                   ids={data.ids}
                 />
               </div>
-            ) : (
-              <></>
-            )}
+            ) : null}
             {multiple ? (
               <div className={styles.inner_box}>
                 <Multiple
@@ -317,9 +315,7 @@ export default function Home() {
                   ids={data.ids}
                 />
               </div>
-            ) : (
-              <></>
-            )}
+            ) : null}
           </>
         )}
         {register ? (
@@ -359,9 +355,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-        ) : (
-          <></>
-        )}
+        ) : null}
       </ThemeProvider>
     </div>
   );

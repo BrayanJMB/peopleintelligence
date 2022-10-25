@@ -1,0 +1,11 @@
+.build {
+  display: flex;
+  width: 96vw;
+  height: 100vh;
+  background-color: white;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}

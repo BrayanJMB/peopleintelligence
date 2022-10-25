@@ -1,21 +1,48 @@
-.photo {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid grey;
-  margin: 1rem auto;
-}
 .content {
-  background-color: rgb(224, 219, 219);
   border-top-left-radius: 50px;
-  width: 100vw;
+  width: 83vw;
   height: 92vh;
   margin-top: 4rem;
 }
-.icon {
+.crud {
+  display: flex;
+  flex-direction: column;
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem;
+}
+
+.type {
+  display: flex;
+  align-items: center;
+}
+.new {
+  display: flex;
+  align-items: center;
+  margin-right: 2rem;
+}
+.icontype {
+  width: 5rem;
+  height: 5rem;
+  margin-right: 1rem;
+}
+.modal {
   position: absolute;
-  height: 35px;
-  width: 35px;
-  top: -2rem;
+  top: 50%;
+  left: 50%;
+  height: 70vh;
+  transform: translate(-50%, -50%);
+  width: 65vw;
+  background-color: white;
+  box-shadow: 24px;
+  padding: 1rem;
+}
+.modaltop {
+  display: flex;
+  justify-content: space-between;
+}
+.modalbuttom {
+  display: block;
 }
