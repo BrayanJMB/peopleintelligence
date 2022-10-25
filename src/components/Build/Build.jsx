@@ -39,6 +39,22 @@ export default function Build() {
     cover: "",
     introduction: "",
     segments: [{ gender: "Female", range: "31-40" }],
+    quotas: [
+      {
+        type: "gender",
+        gender: { male: "40", female: "40", nothing: "20" },
+      },
+      {
+        type: "range",
+        range: {
+          under21: "10",
+          r21_30: "20",
+          r31_40: "30",
+          r41_50: "20",
+          r51_60: "20",
+        },
+      },
+    ],
   });
 
   const handlephoto = (event) => {
@@ -92,7 +108,7 @@ export default function Build() {
       case "segments":
         return <Segment info={info} />;
       case "quota":
-        return <Quota />;
+        return <Quota info={info} />;
       default:
         return null;
     }

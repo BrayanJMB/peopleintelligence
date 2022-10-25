@@ -12,6 +12,9 @@ export default function Conversation() {
       blue: {
         main: "#00b0f0",
       },
+      grey: {
+        main: "#808080",
+      },
     },
   });
 
