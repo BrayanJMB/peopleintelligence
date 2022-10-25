@@ -42,8 +42,17 @@ function stringAvatar(name) {
 
 export default function Discussion() {
   const [open, setOpen] = useState(false);
+  const [opentemplate, setOpentemplate] = useState(false);
   const handleOpenModal = () => setOpen(true);
   const handleCloseModal = () => setOpen(false);
+  const handleOpenModaltemplate = () => setOpentemplate(true);
+  const handleCloseModaltemplate = () => setOpentemplate(false);
+  const handleTemplateModal = () => {
+    console.log("test");
+    handleCloseModal();
+    handleOpenModaltemplate();
+  };
+
   const [toogle, setToggle] = useState("edit");
 
   const handletoggle = (event, newAlignment) => {
@@ -124,6 +133,12 @@ export default function Discussion() {
           </div>
         </div>
         <div className={styles.impexp}>
+          <Button variant="text" size="small" onClick={handleOpenModal}>
+            Import
+          </Button>
+          <Button variant="text" size="small">
+            Export
+          </Button>
           <Modal
             open={open}
             onClose={handleCloseModal}
@@ -142,7 +157,7 @@ export default function Discussion() {
                 </div>
               </div>
               <div className={styles.modalbuttom}>
-                <div className={styles.blocks}>
+                <div className={styles.blocks} onClick={handleTemplateModal}>
                   <ClassIcon sx={{ fontSize: "40px" }} />
                   <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
                     Template
@@ -187,12 +202,129 @@ export default function Discussion() {
               </div>
             </Box>
           </Modal>
-          <Button variant="text" size="small" onClick={handleOpenModal}>
-            Import
-          </Button>
-          <Button variant="text" size="small">
-            Export
-          </Button>
+          <Modal
+            open={opentemplate}
+            onClose={handleCloseModaltemplate}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box className={styles.templatemodal}>
+              <div className={styles.modaltop}>
+                <p style={{ fontWeight: "bold", marginTop: "0.8rem" }}>
+                  Choose Template
+                </p>
+                <div>
+                  <IconButton onClick={handleCloseModaltemplate}>
+                    <ClearIcon sx={{ fontSize: "40px" }} />
+                  </IconButton>
+                </div>
+              </div>
+              <div className={styles.templatemodalbuttom}>
+                <div className={styles.templateblocks}>
+                  <div className={styles.templatelayout}>
+                    <img
+                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKSHmKbYqNH4C6moYAK585TIJwLGSPNUl79A&usqp=CAU"
+                      alt="profile"
+                      className={styles.templatephoto}
+                    />
+                    <div className={styles.templatecontent}>
+                      <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                        Concept Test (Single)
+                      </p>
+                      <p style={{ color: "grey", fontSize: "0.8rem" }}>
+                        Evaluate consumer reactions to a single product concept
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className={styles.templateblocks}>
+                  <div className={styles.templatelayout}>
+                    <img
+                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKSHmKbYqNH4C6moYAK585TIJwLGSPNUl79A&usqp=CAU"
+                      alt="profile"
+                      className={styles.templatephoto}
+                    />
+                    <div className={styles.templatecontent}>
+                      <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                        Concept Test (Single)
+                      </p>
+                      <p style={{ color: "grey", fontSize: "0.8rem" }}>
+                        Evaluate consumer reactions to a single product concept
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className={styles.templateblocks}>
+                  <div className={styles.templatelayout}>
+                    <img
+                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKSHmKbYqNH4C6moYAK585TIJwLGSPNUl79A&usqp=CAU"
+                      alt="profile"
+                      className={styles.templatephoto}
+                    />
+                    <div className={styles.templatecontent}>
+                      <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                        Concept Test (Single)
+                      </p>
+                      <p style={{ color: "grey", fontSize: "0.8rem" }}>
+                        Evaluate consumer reactions to a single product concept
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className={styles.templateblocks}>
+                  <div className={styles.templatelayout}>
+                    <img
+                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKSHmKbYqNH4C6moYAK585TIJwLGSPNUl79A&usqp=CAU"
+                      alt="profile"
+                      className={styles.templatephoto}
+                    />
+                    <div className={styles.templatecontent}>
+                      <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                        Concept Test (Single)
+                      </p>
+                      <p style={{ color: "grey", fontSize: "0.8rem" }}>
+                        Evaluate consumer reactions to a single product concept
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className={styles.templateblocks}>
+                  <div className={styles.templatelayout}>
+                    <img
+                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKSHmKbYqNH4C6moYAK585TIJwLGSPNUl79A&usqp=CAU"
+                      alt="profile"
+                      className={styles.templatephoto}
+                    />
+                    <div className={styles.templatecontent}>
+                      <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                        Concept Test (Single)
+                      </p>
+                      <p style={{ color: "grey", fontSize: "0.8rem" }}>
+                        Evaluate consumer reactions to a single product concept
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className={styles.templateblocks}>
+                  <div className={styles.templatelayout}>
+                    <img
+                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKSHmKbYqNH4C6moYAK585TIJwLGSPNUl79A&usqp=CAU"
+                      alt="profile"
+                      className={styles.templatephoto}
+                    />
+                    <div className={styles.templatecontent}>
+                      <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                        Concept Test (Single)
+                      </p>
+                      <p style={{ color: "grey", fontSize: "0.8rem" }}>
+                        Evaluate consumer reactions to a single product concept
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Box>
+          </Modal>
         </div>
       </div>
     </div>

@@ -29,9 +29,7 @@ export default function Basic(props) {
       <div className={styles.info}>
         <div className={styles.left}>
           <div className={styles.general}>
-            <IconButton style={{ marginRight: "1rem" }}>
-              <NotesIcon color="blue" />
-            </IconButton>
+            <NotesIcon color="blue" style={{ marginRight: "1rem" }} />
             <p>General Information (Required)</p>
           </div>
           <div className={styles.required}>
@@ -76,9 +74,11 @@ export default function Basic(props) {
             </div>
           </div>
           <div className={styles.optional}>
-            <IconButton style={{ marginRight: "1rem" }}>
-              <InterestsOutlinedIcon color="blue" />
-            </IconButton>
+            <InterestsOutlinedIcon
+              color="blue"
+              style={{ marginRight: "1rem" }}
+            />
+
             <p>Personalize (Optional)</p>
           </div>
           <div className={styles.images}>

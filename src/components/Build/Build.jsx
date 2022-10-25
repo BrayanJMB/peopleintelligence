@@ -6,6 +6,8 @@ import ListItemButton from "@mui/material/ListItemButton";
 import Box from "@mui/material/Box";
 import Basic from "../../components/Basic/Basic";
 import Discussion from "../../components/Discussion/Discussion";
+import Quota from "../../components/Quota/Quota";
+import Segment from "../../components/Segment/Segment";
 import Button from "@mui/material/Button";
 
 const list = [
@@ -36,6 +38,7 @@ export default function Build() {
     avatar: "",
     cover: "",
     introduction: "",
+    segments: [{ gender: "Female", range: "31-40" }],
   });
 
   const handlephoto = (event) => {
@@ -87,9 +90,9 @@ export default function Build() {
       case "discussion":
         return <Discussion />;
       case "segments":
-        return null;
+        return <Segment info={info} />;
       case "quota":
-        return null;
+        return <Quota />;
       default:
         return null;
     }
