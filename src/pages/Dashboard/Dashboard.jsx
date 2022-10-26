@@ -21,6 +21,10 @@ export default function Dashboard() {
     navigate("/powerbi");
   };
 
+  const handleConversation = () => {
+    navigate("/conversation/Build");
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <Navbar />
@@ -62,7 +66,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className={styles.case}>
-              <div className={styles.project}>
+              <div className={styles.project} onClick={handleConversation}>
                 <div>
                   <img src={Dletter} alt="oletter" className={styles.image} />
                 </div>

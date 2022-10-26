@@ -4,10 +4,10 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import Box from "@mui/material/Box";
-import Basic from "../../components/Basic/Basic";
-import Discussion from "../../components/Discussion/Discussion";
-import Quota from "../../components/Quota/Quota";
-import Segment from "../../components/Segment/Segment";
+import Basic from "./Basic/Basic";
+import Discussion from "./Discussion/Discussion";
+import Quota from "./Quota/Quota";
+import Segment from "./Segment/Segment";
 import Button from "@mui/material/Button";
 
 const list = [
