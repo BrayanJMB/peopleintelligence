@@ -9,6 +9,9 @@ import Checkbox from "@mui/material/Checkbox";
 import ReCAPTCHA from "react-google-recaptcha";
 import Notification from "../../components/Notification";
 import axios from "axios";
+import Modal from "@mui/material/Modal";
+import Fade from "@mui/material/Fade";
+import Typography from "@mui/material/Typography";
 
 const validEmail = new RegExp(
   "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@(?!gmail.com)(?!yahoo.com)(?!hotmail.com)(?!yahoo.co.in)(?!aol.com)(?!live.com)(?!outlook.com)[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
@@ -20,9 +23,23 @@ const config = {
   headers: { "Content-type": "application/json" },
 };
 
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
+
 export default function Multiple(props) {
   const [check1, setCheck1] = useState(false);
   const [check2, setCheck2] = useState(false);
+  const [checktext1, setChecktext1] = useState(false);
+  const [checktext2, setChecktext2] = useState(false);
   const [captcha, setCaptcha] = useState(false);
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
@@ -31,6 +48,9 @@ export default function Multiple(props) {
     message: "",
     severity: "",
   });
+  const [open, setOpen] = useState(false);
+  const handlemodalOpen = () => setOpen(true);
+  const handlemodalClose = () => setOpen(false);
 
   const handlecheck1 = () => {
     setCheck1(!check1);
@@ -43,7 +63,6 @@ export default function Multiple(props) {
     setCaptcha(!captcha);
   };
 
-
   const handleClose = () => {
     setValues({ ...values, isOpen: false });
   };
@@ -54,7 +73,19 @@ export default function Multiple(props) {
     let error = {};
     let bad = false;
 
+    if (check1 === false) {
+      setChecktext1(true);
+    } else {
+      setChecktext1(false);
+    }
+    if (check2 === false) {
+      setChecktext2(true);
+    } else {
+      setChecktext2(false);
+    }
+
     for (const [key, value] of Object.entries({
+      IdTipoDocumento: props.info.Usuario.IdTipoDocumento,
       numeroDocumento: props.info.Usuario.numeroDocumento,
       NombreCompleto: props.info.Usuario.NombreCompleto,
       Cargo: props.info.Usuario.Cargo,
@@ -108,7 +139,7 @@ export default function Multiple(props) {
               "/Autenticacion",
               {
                 Usuario: {
-                  IdTipoDocumento: field,
+                  IdTipoDocumento: props.info.Usuario.IdTipoDocumento,
                   numeroDocumento: props.info.Usuario.numeroDocumento,
                   NombreCompleto: props.info.Usuario.NombreCompleto,
                   Cargo: props.info.Usuario.Cargo,
@@ -144,6 +175,27 @@ export default function Multiple(props) {
 
   return (
     <form onSubmit={submitHandler}>
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={open}>
+          <Box sx={style}>
+            <Typography id="transition-modal-title" variant="h6" component="h2">
+              Text in a modal
+            </Typography>
+            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+            </Typography>
+          </Box>
+        </Fade>
+      </Modal>
       <div className={styles.content}>
         <div className={styles.image}>
           <Box
@@ -244,12 +296,28 @@ export default function Multiple(props) {
         </div>
         <div className={styles.check}>
           <Checkbox onChange={handlecheck1} />
-          <p style={{ color: "grey" }}>Acepto los términos y condiciones</p>
+          <p style={{ color: checktext1 ? "red" : "grey" }}>
+            Acepto los{" "}
+            <span
+              className={styles.spanhover}
+              style={{ color: "blue" }}
+              onClick={handlemodalOpen}
+            >
+              términos y condiciones
+            </span>
+          </p>
         </div>
         <div className={styles.check}>
           <Checkbox onChange={handlecheck2} />
-          <p style={{ color: "grey" }}>
-            Acepto las políticas de protección de datos
+          <p style={{ color: checktext2 ? "red" : "grey" }}>
+            Acepto las{" "}
+            <span
+              className={styles.spanhover}
+              style={{ color: "blue" }}
+              onClick={handlemodalOpen}
+            >
+              políticas de protección de datos
+            </span>
           </p>
         </div>
         <div className={styles.captcha}>

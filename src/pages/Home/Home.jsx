@@ -37,7 +37,7 @@ export default function Home() {
       Logotipo: null,
       IdPais: "",
       Sede: "",
-      direccdsaion: "",
+      direccion: "",
       IdTamanoCompania: "",
       SectorId: "",
     },

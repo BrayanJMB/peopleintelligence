@@ -52,3 +52,9 @@
   align-items: center;
   margin-left: 9rem;
 }
+.check:hover > p {
+  color: red;
+}
+.spanhover {
+  cursor: pointer;
+}

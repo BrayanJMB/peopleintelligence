@@ -11,6 +11,9 @@ import Tab from "@mui/material/Tab";
 import ReCAPTCHA from "react-google-recaptcha";
 import axios from "axios";
 import Notification from "../../components/Notification";
+import Modal from "@mui/material/Modal";
+import Fade from "@mui/material/Fade";
+import Typography from "@mui/material/Typography";
 
 function a11yProps(index) {
   return {
@@ -36,6 +39,18 @@ function TabPanel(props) {
   );
 }
 
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
+
 const validEmail = new RegExp(
   "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@(?!gmail.com)(?!yahoo.com)(?!hotmail.com)(?!yahoo.co.in)(?!aol.com)(?!live.com)(?!outlook.com)[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
 );
@@ -52,6 +67,8 @@ export default function One(props) {
   const [checked, setChecked] = useState(true);
   const [check1, setCheck1] = useState(false);
   const [check2, setCheck2] = useState(false);
+  const [checktext1, setChecktext1] = useState(false);
+  const [checktext2, setChecktext2] = useState(false);
   const [captcha, setCaptcha] = useState(false);
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
@@ -60,6 +77,9 @@ export default function One(props) {
     message: "",
     severity: "",
   });
+  const [open, setOpen] = useState(false);
+  const handlemodalOpen = () => setOpen(true);
+  const handlemodalClose = () => setOpen(false);
 
   const handlecheck1 = () => {
     setCheck1(!check1);
@@ -76,8 +96,11 @@ export default function One(props) {
     let bad = false;
     for (const [key, value] of Object.entries({
       nombreCompania: props.info.Compania.nombreCompania,
+      IdPais: props.info.Compania.IdPais,
       Sede: props.info.Compania.Sede,
       direccion: props.info.Compania.direccion,
+      IdTamanoCompania: props.info.Compania.IdTamanoCompania,
+      SectorId: props.info.Compania.SectorId,
     })) {
       if (props.info.Compania[key] === "") {
         helperText[key] = "El campo no puede ir vacio";
@@ -104,6 +127,7 @@ export default function One(props) {
     let bad = false;
 
     for (const [key, value] of Object.entries({
+      IdTipoDocumento: props.info.Usuario.IdTipoDocumento,
       numeroDocumento: props.info.Usuario.numeroDocumento,
       NombreCompleto: props.info.Usuario.NombreCompleto,
       Cargo: props.info.Usuario.Cargo,
@@ -395,6 +419,7 @@ export default function One(props) {
                       value
                     );
                   }}
+                  getOptionLabel={(option) => option}
                   size="small"
                   noOptionsText={"No se ha encontrado ningún Sector"}
                   isOptionEqualToValue={(option, value) =>
@@ -524,15 +549,29 @@ export default function One(props) {
               </div>
             </div>
             <div className={styles.check}>
-              <Checkbox onChange={handlecheck1} checked={check1} />
-              <p style={{ color: "grey " }}>
-                Acepto los términos y condiciones
+              <Checkbox onChange={handlecheck1} />
+              <p style={{ color: checktext1 ? "red" : "grey" }}>
+                Acepto los{" "}
+                <span
+                  className={styles.spanhover}
+                  style={{ color: "blue" }}
+                  onClick={handlemodalOpen}
+                >
+                  términos y condiciones
+                </span>
               </p>
             </div>
             <div className={styles.check}>
-              <Checkbox onChange={handlecheck2} checked={check2} />
-              <p style={{ color: "grey " }}>
-                Acepto las políticas de protección de datos
+              <Checkbox onChange={handlecheck2} />
+              <p style={{ color: checktext2 ? "red" : "grey" }}>
+                Acepto las{" "}
+                <span
+                  className={styles.spanhover}
+                  style={{ color: "blue" }}
+                  onClick={handlemodalOpen}
+                >
+                  políticas de protección de datos
+                </span>
               </p>
             </div>
             <div className={styles.captcha}>
