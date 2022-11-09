@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import styles from "./Onas.module.css";
 import Navbar from "../../Layout/Navbar/Navbar";
 import Box from "@mui/material/Box";
@@ -52,7 +52,7 @@ const companyId = "1";
 const versionId = "5f244111-b80a-421a-b11d-ea59e8156fde";
 
 export default function Onas() {
-  const [transactionData, setTransactionData] = useState([]);
+  const [transactionData, setTransactionData] = useState("");
   const [datetime, setDatetime] = useState(formatDate(new Date()));
   const csvLink = useRef();
   const [values, setValues] = useState({
@@ -72,7 +72,6 @@ export default function Onas() {
         .then((res) => {
           setDatetime(formatDate(new Date()));
           setTransactionData(res.data);
-          csvLink.current.link.click();
         });
     } catch (error) {
       console.log(error);
@@ -140,6 +139,12 @@ export default function Onas() {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (transactionData) {
+      csvLink.current.link.click();
+    }
+  }, [transactionData]);
 
   return (
     <ThemeProvider theme={theme}>
