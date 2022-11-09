@@ -52,7 +52,7 @@ const companyId = "1";
 const versionId = "5f244111-b80a-421a-b11d-ea59e8156fde";
 
 export default function Onas() {
-  const [transactionData, setTransactionData] = useState("");
+  const [transactionData, setTransactionData] = useState([]);
   const [datetime, setDatetime] = useState(formatDate(new Date()));
   const csvLink = useRef();
   const [values, setValues] = useState({

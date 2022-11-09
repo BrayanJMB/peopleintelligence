@@ -179,7 +179,7 @@ export default function Multiple(props) {
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={open}
-        onClose={handleClose}
+        onClose={handlemodalClose}
         closeAfterTransition
         BackdropProps={{
           timeout: 500,
