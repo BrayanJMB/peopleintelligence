@@ -37,7 +37,7 @@ function TabPanel(props) {
 }
 
 const validEmail = new RegExp(
-  "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
+  "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@(?!gmail.com)(?!yahoo.com)(?!hotmail.com)(?!yahoo.co.in)(?!aol.com)(?!live.com)(?!outlook.com)[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
 );
 const validphone = new RegExp(
   "^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{1}[-s.]?[0-9]{4,6}$"
@@ -229,38 +229,6 @@ export default function One(props) {
       }
     }
   };
-  const handleBlur = (event) => {
-    let helperText = {};
-    let error = {};
-    if (event.target.value === "") {
-      helperText[event.target.name] = "El campo no puede ir vacio";
-      error[event.target.name] = true;
-    } else {
-      helperText[event.target.name] = "";
-      error[event.target.name] = false;
-    }
-    if (event.target.name === "phoneNumber") {
-      if (!validphone.test(event.target.value)) {
-        helperText[event.target.name] = "Escriba un numero telefonico válido";
-        error[event.target.name] = true;
-      }
-    }
-    setErrorMessage(error);
-    setHelperText(helperText);
-  };
-  const handleBlurAuto = (name, info) => {
-    let helperText = {};
-    let error = {};
-    if (props.info[info][name] === "" || props.info[info][name] === null) {
-      helperText[name] = "El campo no puede ir vacio";
-      error[name] = true;
-    } else {
-      helperText[name] = "";
-      error[name] = false;
-    }
-    setErrorMessage(error);
-    setHelperText(helperText);
-  };
 
   const handleCaptcha = () => {
     setCaptcha(!captcha);
@@ -341,7 +309,6 @@ export default function One(props) {
                   error={errorMessage.nombreCompania}
                   helperText={helperText.nombreCompania}
                   size="small"
-                  onBlur={handleBlur}
                 />
                 <Autocomplete
                   id="combo-box-demo"
@@ -356,7 +323,6 @@ export default function One(props) {
                   isOptionEqualToValue={(option, value) =>
                     option.id === value.id
                   }
-                  onBlur={() => handleBlurAuto("SectorId", "Compania")}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -382,7 +348,6 @@ export default function One(props) {
                   isOptionEqualToValue={(option, value) =>
                     option.id === value.id
                   }
-                  onBlur={() => handleBlurAuto("IdPais", "Compania")}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -403,7 +368,6 @@ export default function One(props) {
                   error={errorMessage.Sede}
                   helperText={helperText.Sede}
                   size="small"
-                  onBlur={handleBlur}
                 />
               </div>
               <div className={styles.input}>
@@ -417,7 +381,6 @@ export default function One(props) {
                   error={errorMessage.direccion}
                   helperText={helperText.direccion}
                   size="small"
-                  onBlur={handleBlur}
                 />
                 <Autocomplete
                   style={{ flexBasis: "40%" }}
@@ -432,7 +395,6 @@ export default function One(props) {
                       value
                     );
                   }}
-                  onBlur={() => handleBlurAuto("IdTamanoCompania", "Compania")}
                   size="small"
                   noOptionsText={"No se ha encontrado ningún Sector"}
                   isOptionEqualToValue={(option, value) =>
@@ -490,7 +452,6 @@ export default function One(props) {
                   isOptionEqualToValue={(option, value) =>
                     option.id === value.id
                   }
-                  onBlur={() => handleBlurAuto("IdTipoDocumento", "Usuario")}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -511,7 +472,6 @@ export default function One(props) {
                   error={errorMessage.numeroDocumento}
                   helperText={helperText.numeroDocumento}
                   size="small"
-                  onBlur={handleBlur}
                 />
               </div>
               <div className={styles.input}>
@@ -525,7 +485,6 @@ export default function One(props) {
                   error={errorMessage.NombreCompleto}
                   helperText={helperText.NombreCompleto}
                   size="small"
-                  onBlur={handleBlur}
                 />
                 <TextField
                   style={{ flexBasis: "40%" }}
@@ -537,7 +496,6 @@ export default function One(props) {
                   error={errorMessage.Cargo}
                   helperText={helperText.Cargo}
                   size="small"
-                  onBlur={handleBlur}
                 />
               </div>
               <div className={styles.input}>
@@ -551,7 +509,6 @@ export default function One(props) {
                   error={errorMessage.correoElectronico}
                   helperText={helperText.correoElectronico}
                   size="small"
-                  onBlur={handleBlur}
                 />
                 <TextField
                   style={{ flexBasis: "40%" }}
@@ -563,7 +520,6 @@ export default function One(props) {
                   error={errorMessage.phoneNumber}
                   helperText={helperText.phoneNumber}
                   size="small"
-                  onBlur={handleBlur}
                 />
               </div>
             </div>

@@ -11,7 +11,7 @@ import Notification from "../../components/Notification";
 import axios from "axios";
 
 const validEmail = new RegExp(
-  "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
+  "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@(?!gmail.com)(?!yahoo.com)(?!hotmail.com)(?!yahoo.co.in)(?!aol.com)(?!live.com)(?!outlook.com)[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
 );
 
 const validphone = new RegExp("^[0-9]{12,15}$");
@@ -42,41 +42,7 @@ export default function Multiple(props) {
   const handleCaptcha = () => {
     setCaptcha(!captcha);
   };
-  const handleBlurAuto = () => {
-    let helperText = {};
-    let error = {};
-    if (
-      props.info.Usuario.IdTipoDocumento === "" ||
-      props.info.Usuario.IdTipoDocumento === null
-    ) {
-      helperText["IdTipoDocumento"] = "El campo no puede ir vacio";
-      error["IdTipoDocumento"] = true;
-    } else {
-      helperText["IdTipoDocumento"] = "";
-      error["IdTipoDocumento"] = false;
-    }
-    setErrorMessage(error);
-    setHelperText(helperText);
-  };
-  const handleBlur = (event) => {
-    let helperText = {};
-    let error = {};
-    if (event.target.value === "") {
-      helperText[event.target.name] = "El campo no puede ir vacio";
-      error[event.target.name] = true;
-    } else {
-      helperText[event.target.name] = "";
-      error[event.target.name] = false;
-    }
-    if (event.target.name === "phoneNumber") {
-      if (!validphone.test(event.target.value)) {
-        helperText[event.target.name] = "Solo puede escirbir números";
-        error[event.target.name] = true;
-      }
-    }
-    setErrorMessage(error);
-    setHelperText(helperText);
-  };
+
 
   const handleClose = () => {
     setValues({ ...values, isOpen: false });
@@ -203,7 +169,6 @@ export default function Multiple(props) {
               onChange={(e, value) => {
                 props.handleAutocomplete("Usuario", "IdTipoDocumento", value);
               }}
-              onBlur={handleBlurAuto}
               getOptionLabel={(option) => option}
               noOptionsText={"No se ha encontrado ningún IdTipoDocumento"}
               renderInput={(params) => (
@@ -226,7 +191,6 @@ export default function Multiple(props) {
               error={errorMessage.numeroDocumento}
               helperText={helperText.numeroDocumento}
               size="small"
-              onBlur={handleBlur}
             />
           </div>
           <div className={styles.input}>
@@ -240,7 +204,6 @@ export default function Multiple(props) {
               error={errorMessage.NombreCompleto}
               helperText={helperText.NombreCompleto}
               size="small"
-              onBlur={handleBlur}
             />
             <TextField
               style={{ flexBasis: "40%" }}
@@ -252,7 +215,6 @@ export default function Multiple(props) {
               error={errorMessage.Cargo}
               helperText={helperText.Cargo}
               size="small"
-              onBlur={handleBlur}
             />
           </div>
           <div className={styles.input}>
@@ -266,7 +228,6 @@ export default function Multiple(props) {
               error={errorMessage.correoElectronico}
               helperText={helperText.correoElectronico}
               size="small"
-              onBlur={handleBlur}
             />
             <TextField
               style={{ flexBasis: "40%" }}
@@ -278,7 +239,6 @@ export default function Multiple(props) {
               error={errorMessage.phoneNumber}
               helperText={helperText.phoneNumber}
               size="small"
-              onBlur={handleBlur}
             />
           </div>
         </div>
