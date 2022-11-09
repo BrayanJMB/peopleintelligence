@@ -139,7 +139,7 @@ export default function Multiple(props) {
               "/Autenticacion",
               {
                 Usuario: {
-                  IdTipoDocumento: props.info.Usuario.IdTipoDocumento,
+                  IdTipoDocumento: field,
                   numeroDocumento: props.info.Usuario.numeroDocumento,
                   NombreCompleto: props.info.Usuario.NombreCompleto,
                   Cargo: props.info.Usuario.Cargo,

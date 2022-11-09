@@ -54,3 +54,7 @@
   display: flex;
   justify-content: center;
 }
+
+.spanhover {
+  cursor: pointer;
+}
