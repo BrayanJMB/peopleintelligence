@@ -24,6 +24,9 @@ export default function Dashboard() {
   const handleConversation = () => {
     navigate("/conversation/Build");
   };
+  const handleJourney = () => {
+    navigate("/journey");
+  };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -76,7 +79,7 @@ export default function Dashboard() {
                   inteligencia artificial
                 </div>
               </div>
-              <div className={styles.project}>
+              <div className={styles.project} onClick={handleJourney}>
                 <div>
                   <img src={Jletter} alt="oletter" className={styles.image} />
                 </div>
