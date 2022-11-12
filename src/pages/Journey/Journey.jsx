@@ -16,6 +16,7 @@ import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
 import SettingsInputCompositeIcon from "@mui/icons-material/SettingsInputComposite";
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
 import Card from "../../components/CardSlider/CardSlider";
+import { useNavigate } from "react-router-dom";
 
 const theme = createTheme({
   palette: {
@@ -71,6 +72,7 @@ const settings = {
   slidesToShow: 2,
   slidesToScroll: 1,
   dots: true,
+  infinity: true,
   responsive: [
     {
       breakpoint: 1100,
@@ -88,6 +90,12 @@ const settings = {
 };
 
 export default function Journey() {
+  const navigate = useNavigate();
+
+  const handleExplorar = () => {
+    navigate("/journey/survey-template");
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
@@ -119,6 +127,7 @@ export default function Journey() {
                     color: "white",
                   }}
                   color="blue"
+                  onClick={handleExplorar}
                 >
                   Explorar plantillas
                 </Button>
