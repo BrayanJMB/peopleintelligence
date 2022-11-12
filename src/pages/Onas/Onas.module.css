@@ -1,21 +1,7 @@
-.photo {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid grey;
-  margin: 1rem auto;
-}
 .content {
   height: 92vh;
   margin-top: 4rem;
   overflow-y: scroll;
-}
-.icon {
-  position: absolute;
-  height: 35px;
-  width: 35px;
-  top: -2rem;
 }
 .onas {
   display: flex;
