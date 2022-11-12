@@ -1,0 +1,25 @@
+.title {
+  padding-bottom: 80px;
+  margin-top: 0.5rem;
+  flex-basis: 100%;
+}
+.questions {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.left {
+  display: flex;
+  flex-direction: column;
+}
+.data {
+  border-radius: 8px;
+  box-shadow: rgb(79 81 110 / 30%) 0px 2px 4px;
+  transition: box-shadow 0.2s ease-in-out 0s;
+  width: 100%;
+}
