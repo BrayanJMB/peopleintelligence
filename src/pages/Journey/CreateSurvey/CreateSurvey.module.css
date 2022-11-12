@@ -9,6 +9,7 @@
 .survey_template {
   display: flex;
   flex-direction: column;
+  margin-bottom: 3em;
 }
 .heading {
   display: flex;
@@ -31,13 +32,34 @@
 .text {
   flex: 1 1 0%;
 }
+
+.data {
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+  margin: 0 4em;
+  padding: 0;
+  max-width: 100%;
+  flex: 0 0 100%;
+  position: relative;
+}
+
 .display {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
   background-color: white;
-  margin: 0 4em;
   border-radius: 8px;
-  padding: 1.5em;
+  padding: 20px;
   box-shadow: rgb(79 81 110 / 30%) 0px 2px 4px;
+}
+.stepper {
+  display: flex;
+  flex-basis: 70%;
+  max-width: 100%;
+}
+.impexp {
+  display: flex;
+  flex-basis: 100%;
+  justify-content: flex-end;
+  gap: 1em;
+  margin-bottom: 0.5em;
 }

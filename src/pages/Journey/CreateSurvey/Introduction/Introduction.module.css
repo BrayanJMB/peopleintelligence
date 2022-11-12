@@ -1,0 +1,9 @@
+.form {
+  display: flex;
+  flex-basis: 100%;
+  flex-direction: column;
+  padding: 0.2em 0.4em;
+}
+.input {
+  margin: 1em 0;
+}
