@@ -14,24 +14,31 @@ export default function Introduction(props) {
           value={props.data.title}
           name="title"
           onChange={props.handleChange}
+          error={props.errorMessage.title}
+          helperText={props.helperText.title}
           fullWidth
           size="small"
         />
       </div>
       <div className={styles.input}>
-        <span style={{ color: "#03aae4", fontSize: "0.8rem" }}>
-          Propósito de esta encuesta
-        </span>
-        <TextareaAutosize
+        <TextField
           id="outlined-name"
-          label="Proposito de la encuesta "
+          label="Propósito de esta encuesta"
           placeholder="Proposito de la encuesta aqui..."
+          InputProps={{
+            inputComponent: TextareaAutosize,
+            inputProps: {
+              style: {
+                height: "90px",
+              },
+            },
+          }}
           value={props.data.description}
+          error={props.errorMessage.description}
+          helperText={props.helperText.description}
           style={{
             width: "100%",
-            height: "100px",
             marginTop: "0.5rem",
-            padding: "0.5em",
           }}
           name="description"
           onChange={props.handleChange}
