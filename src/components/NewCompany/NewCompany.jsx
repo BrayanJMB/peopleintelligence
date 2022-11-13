@@ -32,36 +32,71 @@ export default function NewCompany(props) {
   return (
     <div className={styles.form}>
       <div className={styles.input}>
+        <TextField
+          id="outlined-name"
+          label="Nombre de la empresa"
+          value={props.info.nombreCompania}
+          name="nombreCompania"
+          onChange={props.handleChange}
+          style={{ flexBasis: "40%" }}
+          error={errorMessage.nombreCompania}
+          helperText={helperText.nombreCompania}
+          size="small"
+          onBlur={handleBlur}
+        />
         <Autocomplete
           id="combo-box-demo"
           style={{ flexBasis: "40%" }}
-          options={props.content.documentType}
+          options={props.content.sector}
           clearOnEscape
-          value={props.info.Usuario.IdTipoDocumento}
+          value={props.info.SectorId}
           onChange={(e, value) => {
-            props.handleAutocomplete("Usuario", "IdTipoDocumento", value);
+            props.handleAutocomplete("SectorId", value);
           }}
           getOptionLabel={(option) => option}
-          noOptionsText={"No se ha encontrado ningún IdTipoDocumento"}
+          noOptionsText={"No se ha encontrado ningún Sector"}
           renderInput={(params) => (
             <TextField
               {...params}
               error={errorMessage.numeroDocumento}
               helperText={helperText.numeroDocumento}
-              label="Tipo de documento de identidad"
+              label="Sector"
+            />
+          )}
+          size="small"
+        />
+      </div>
+      <div className={styles.input}>
+        <Autocomplete
+          id="combo-box-demo"
+          style={{ flexBasis: "40%" }}
+          options={props.content.country}
+          clearOnEscape
+          value={props.info.IdPais}
+          onChange={(e, value) => {
+            props.handleAutocomplete("IdPais", value);
+          }}
+          getOptionLabel={(option) => option}
+          noOptionsText={"No se ha encontrado ningún País"}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              error={errorMessage.IdPais}
+              helperText={helperText.IdPais}
+              label="País"
             />
           )}
           size="small"
         />
         <TextField
-          id="outlined-name"
-          label="Documento de identidad"
-          value={props.info.Usuario.numeroDocumento}
-          name="numeroDocumento"
-          onChange={props.handleChange("Usuario")}
           style={{ flexBasis: "40%" }}
-          error={errorMessage.numeroDocumento}
-          helperText={helperText.numeroDocumento}
+          id="outlined-name"
+          label="Sede"
+          value={props.info.Sede}
+          name="Sede"
+          onChange={props.handleChange}
+          error={errorMessage.Sede}
+          helperText={helperText.Sede}
           size="small"
           onBlur={handleBlur}
         />
@@ -70,52 +105,35 @@ export default function NewCompany(props) {
         <TextField
           style={{ flexBasis: "40%" }}
           id="outlined-name"
-          label="Nombre Completo"
-          value={props.info.Usuario.NombreCompleto}
-          name="NombreCompleto"
-          onChange={props.handleChange("Usuario")}
-          error={errorMessage.NombreCompleto}
-          helperText={helperText.NombreCompleto}
+          label="Dirección"
+          value={props.info.direccion}
+          name="direccion"
+          onChange={props.handleChange}
+          error={errorMessage.direccion}
+          helperText={helperText.direccion}
           size="small"
           onBlur={handleBlur}
         />
-        <TextField
+        <Autocomplete
+          id="combo-box-demo"
           style={{ flexBasis: "40%" }}
-          id="outlined-name"
-          label="Cargo"
-          value={props.info.Usuario.Cargo}
-          name="Cargo"
-          onChange={props.handleChange("Usuario")}
-          error={errorMessage.Cargo}
-          helperText={helperText.Cargo}
+          options={props.content.sizeCompany}
+          clearOnEscape
+          value={props.info.IdTamanoCompania}
+          onChange={(e, value) => {
+            props.handleAutocomplete("IdTamanoCompania", value);
+          }}
+          getOptionLabel={(option) => option}
+          noOptionsText={"No se ha encontrado ningún País"}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              error={errorMessage.IdTamanoCompania}
+              helperText={helperText.IdTamanoCompania}
+              label="Tamaño de la empresa"
+            />
+          )}
           size="small"
-          onBlur={handleBlur}
-        />
-      </div>
-      <div className={styles.input}>
-        <TextField
-          style={{ flexBasis: "40%" }}
-          id="outlined-name"
-          label="Correo electrónico"
-          value={props.info.Usuario.correoElectronico}
-          name="correoElectronico"
-          onChange={props.handleChange("Usuario")}
-          error={errorMessage.correoElectronico}
-          helperText={helperText.correoElectronico}
-          size="small"
-          onBlur={handleBlur}
-        />
-        <TextField
-          style={{ flexBasis: "40%" }}
-          id="outlined-name"
-          label="Número de teléfono"
-          value={props.info.Usuario.phoneNumber}
-          name="phoneNumber"
-          onChange={props.handleChange("Usuario")}
-          error={errorMessage.phoneNumber}
-          helperText={helperText.phoneNumber}
-          size="small"
-          onBlur={handleBlur}
         />
       </div>
     </div>

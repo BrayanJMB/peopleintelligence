@@ -47,12 +47,20 @@ const drawerWidth = 240;
 export default function Navbar() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl2, setAnchorEl2] = useState(null);
   const open = Boolean(anchorEl);
+  const open2 = Boolean(anchorEl2);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+  const handleClick2 = (event) => {
+    setAnchorEl2(event.currentTarget);
+  };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+  const handleClose2 = () => {
+    setAnchorEl2(null);
   };
   const handleHome = () => {
     navigate("/dashboard");
@@ -74,7 +82,15 @@ export default function Navbar() {
             <IconButton onClick={handleHome}>
               <HomeOutlinedIcon sx={{ fontSize: "40px" }} />
             </IconButton>
-            <IconButton style={{ marginRight: "1rem" }}>
+            <IconButton
+              aria-label="more"
+              id="long-button"
+              aria-controls={open ? "long-menu" : undefined}
+              aria-expanded={open ? "true" : undefined}
+              aria-haspopup="true"
+              style={{ marginRight: "1rem" }}
+              onClick={handleClick2}
+            >
               <SettingsOutlinedIcon sx={{ fontSize: "30px" }} />
             </IconButton>
 
@@ -110,6 +126,14 @@ export default function Navbar() {
                 </IconButton>
                 Logout
               </MenuItem>
+            </Menu>
+            <Menu
+              id="long-menu"
+              anchorEl={anchorEl2}
+              open={open2}
+              onClose={handleClose2}
+            >
+              <MenuItem onClick={handleClose2}>registar powerBI</MenuItem>
             </Menu>
           </Box>
         </Toolbar>

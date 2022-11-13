@@ -22,12 +22,12 @@ export default function InfoAdmin() {
   const handleOpenModal = () => setOpen(true);
   const handleCloseModal = () => setOpen(false);
   const [compania, setCompania] = useState({
-    nombre: "",
-    pais: "",
-    sede: "",
+    nombreCompania: "",
+    IdPais: "",
+    Sede: "",
     direccion: "",
-    tamano: "",
-    sector: "",
+    IdTamanoCompania: "",
+    SectorId: "",
   });
   const [data, setData] = useState({
     content: { country: [], sizeCompany: [], sector: [] },
@@ -120,7 +120,7 @@ export default function InfoAdmin() {
   );
 
   const handlechange = useCallback(
-    (part) => (event) => {
+    (event) => {
       setCompania({ ...compania, [event.target.name]: event.target.value });
     },
     [compania]
@@ -228,7 +228,7 @@ export default function InfoAdmin() {
                 </Button>
               </div>
             </div>
-            <div className={styles.buttom}>{}</div>
+            <div className={styles.buttom}>test</div>
           </div>
         </div>
       </div>
