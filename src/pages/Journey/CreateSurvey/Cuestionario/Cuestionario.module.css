@@ -76,3 +76,14 @@
   margin-bottom: 10px;
   width: 89%;
 }
+.editdelete {
+  position: absolute;
+  right: 28px;
+  font-size: 20px;
+  cursor: pointer;
+  top: 0;
+  bottom: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  height: 48px;
+}

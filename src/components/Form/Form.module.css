@@ -1,0 +1,24 @@
+.form {
+  margin-top: 1.5rem;
+  display: flex;
+}
+.top {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+.question {
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  margin-bottom: 0.8em;
+}
+.number {
+  font-size: 16px;
+  line-height: 22px;
+  margin-right: 0.8em;
+  letter-spacing: 0.25px;
+}
+.input {
+  width: 100%;
+}
