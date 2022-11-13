@@ -1,6 +1,8 @@
 import styles from "./Cuestionario.module.css";
 import Button from "@mui/material/Button";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import Divider from "@mui/material/Divider";
 
 export default function Cuestionario(props) {
   return (
@@ -49,7 +51,60 @@ export default function Cuestionario(props) {
             ¡Aún no se agregaron preguntas!
           </p>
         ) : (
-          <div className={styles.data}>data</div>
+          <div className={styles.data}>
+            <DragDropContext onDragEnd={props.onEnd}>
+              <Droppable droppableId="droppable">
+                {(provided) => {
+                  return (
+                    <div {...provided.droppableProps} ref={provided.innerRef}>
+                      {props.questions.map((val, index) => {
+                        return (
+                          <Draggable
+                            key={val.id}
+                            draggableId={val.id}
+                            index={index}
+                          >
+                            {(provided) => {
+                              return (
+                                <>
+                                  {" "}
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    className={styles.drag}
+                                  >
+                                    <div className={styles.showedit}>
+                                      <div className={styles.number}>
+                                        <span className={styles.order}>
+                                          Q{index}
+                                        </span>
+                                      </div>
+
+                                      <div className={styles.question_data}>
+                                        <div className={styles.quest}>
+                                          {val.name}
+                                        </div>
+                                        <div className={styles.desc}>
+                                          {val.description}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <Divider variant="middle" />
+                                </>
+                              );
+                            }}
+                          </Draggable>
+                        );
+                      })}
+                      {provided.placeholder}
+                    </div>
+                  );
+                }}
+              </Droppable>
+            </DragDropContext>
+          </div>
         )}
       </div>
     </div>

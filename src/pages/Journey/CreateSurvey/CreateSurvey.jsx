@@ -11,7 +11,7 @@ import Button from "@mui/material/Button";
 import Introduction from "./Introduction/Introduction";
 import Cuestionario from "./Cuestionario/Cuestionario";
 import Intimidad from "./Intimidad/Intimidad.jsx";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -25,11 +25,25 @@ const theme = createTheme({
   },
 });
 const steps = ["Introduccion", "Cuestionario", "Intimidad"];
+const dataapi = [
+  {
+    type: "text",
+    name: "What do you prefer ?",
+    description: "a testing description",
+    id: "1",
+  },
+  {
+    type: "text",
+    name: "What do you prefer to eat ?",
+    description: "a testing description for eating",
+    id: "2",
+  },
+];
 
 export default function CreateSurvey() {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
-  const [questions, setQuestions] = useState([{ type: "text" }]);
+  const [questions, setQuestions] = useState([]);
   const [open, setOpen] = useState(false);
   const [data, setData] = useState({ title: "", description: "" });
   const [helperText, setHelperText] = useState({});
@@ -61,8 +75,8 @@ export default function CreateSurvey() {
     } else {
       setErrorMessage({});
       setHelperText({});
-      setActiveStep(1);
       setOpen(true);
+      setActiveStep(1);
     }
   };
   const handleCerrar = () => {
@@ -87,7 +101,7 @@ export default function CreateSurvey() {
           />
         );
       case 1:
-        return <Cuestionario questions={questions} />;
+        return <Cuestionario questions={questions} onEnd={onEnd} />;
       case 2:
         return <Intimidad data={data} />;
       default:
@@ -95,6 +109,28 @@ export default function CreateSurvey() {
     }
   };
   const handleCloseModal = () => setOpen(false);
+
+  const reorder = (list, start, end) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(start, 1);
+    result.splice(end, 0, removed);
+    return result;
+  };
+  const onEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
+    const reorderedItems = reorder(
+      questions,
+      result.source.index,
+      result.destination.index
+    );
+    setQuestions(reorderedItems);
+  };
+
+  useEffect(() => {
+    setQuestions(dataapi);
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
