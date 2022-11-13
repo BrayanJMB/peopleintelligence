@@ -74,6 +74,23 @@
   top: -1.5rem;
   font-size: 1.1rem;
 }
+@media only screen and (max-width: 1300px) {
+  .cases {
+    width: 90%;
+    justify-content: space-evenly;
+  }
+  .title {
+    margin-top: 0;
+    font-size: 0.9rem;
+  }
+  .image {
+    width: 2.5em;
+    height: 2.5em;
+  }
+  .subtitle {
+    font-size: 0.7rem;
+  }
+}
 
 @media screen and (max-width: 900px) {
   .image {

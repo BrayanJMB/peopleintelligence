@@ -16,11 +16,9 @@ export default function Dashboard() {
   const handleOnas = () => {
     navigate("/onas");
   };
-
   const handlePowerBI = () => {
     navigate("/powerbi");
   };
-
   const handleConversation = () => {
     navigate("/conversation/Build");
   };
