@@ -202,6 +202,7 @@ export default function Onas() {
                           }}
                           color="blue"
                           onClick={handleDownload}
+                          className={styles.buttonresize}
                         >
                           Descargar planilla
                         </Button>
@@ -247,6 +248,7 @@ export default function Onas() {
                           }}
                           component="label"
                           color="blue"
+                          className={styles.buttonresize}
                         >
                           <input
                             type="file"
@@ -285,6 +287,7 @@ export default function Onas() {
                           }}
                           color="blue"
                           onClick={handleLink}
+                          className={styles.buttonresize}
                         >
                           Enviar correo
                         </Button>

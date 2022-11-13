@@ -33,7 +33,7 @@ const list = [Iletter, Aletter, Oletter, Dletter, Jletter, Sletter];
 const drop = [
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
-  ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
+  ["Crear encuesta", "Ver encuestas"],
   ["Build", "Live", "Analysis"],
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
@@ -83,13 +83,17 @@ export default function Sidebar() {
 
   return (
     <Box
-      sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+      sx={{
+        width: { sm: drawerWidth },
+        flexShrink: { sm: 0 },
+        height: "50vh",
+      }}
       aria-label="mailbox folders"
     >
       <Drawer
         variant="permanent"
         sx={{
-          display: { xs: "none", sm: "block" },
+          display: { sm: "block" },
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             overflow: "hidden",
@@ -98,16 +102,23 @@ export default function Sidebar() {
         }}
         open
       >
-        <Toolbar>
+        <Toolbar style={{ marginTop: "1.5em" }}>
           <img
             src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
             alt="profile"
             className={styles.photo}
           />
         </Toolbar>
-        <List style={{ marginTop: "0.5rem" }}>
+        <List
+          style={{
+            marginTop: "0.5rem",
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.5em",
+          }}
+        >
           {names.map((text, index) => (
-            <ListItem key={index} disablePadding style={{ margin: "1rem 0" }}>
+            <ListItem key={index} disablePadding>
               <ListItemButton
                 onClick={handleItemClick(index)}
                 id={"demo-positioned-button" + index}

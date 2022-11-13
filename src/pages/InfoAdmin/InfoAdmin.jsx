@@ -21,41 +21,90 @@ export default function InfoAdmin() {
   const [open, setOpen] = useState(false);
   const handleOpenModal = () => setOpen(true);
   const handleCloseModal = () => setOpen(false);
-  const [info, setInfo] = useState({
-    Usuario: {
-      IdTipoDocumento: "",
-      numeroDocumento: "",
-      NombreCompleto: "",
-      Cargo: "",
-      correoElectronico: "",
-      phoneNumber: "",
-    },
+  const [compania, setCompania] = useState({
+    nombre: "",
+    pais: "",
+    sede: "",
+    direccion: "",
+    tamano: "",
+    sector: "",
   });
   const [data, setData] = useState({
-    content: { documentType: [] },
-    ids: { documentType: [] },
+    content: { country: [], sizeCompany: [], sector: [] },
+    ids: { country: [], sizeCompany: [], sector: [] },
   });
 
-  const documentTypeConsume = async () => {
+  const sectorConsume = async () => {
+    try {
+      await axios
+        .create({
+          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+        })
+        .get("Sector/", config)
+        .then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.Sector)) {
+              fetch.push(val.Sector);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.sector = fetch;
+          holder.ids.sector = id;
+          setData(holder);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const sizeCompanyConsume = async () => {
+    try {
+      await axios
+        .create({
+          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+        })
+        .get("TamanoCompania/", config)
+        .then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.nameSizeOfCompany)) {
+              fetch.push(val.quantityOfEmployees);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.sizeCompany = fetch;
+          holder.ids.sizeCompany = id;
+          setData(holder);
+        });
+    } catch (error) {
+      console.log(error);
+      console.log("eror");
+    }
+  };
+  const countryConsume = async () => {
     try {
       await axios
         .create({
           baseURL:
-            "https://dynamicliveconversationapi.azurewebsites.net/api/tipo-documentos/",
+            "https://dynamicliveconversationapi.azurewebsites.net/api/paises/",
         })
         .get("", config)
         .then((res) => {
           let fetch = [];
           let id = [];
           res.data.forEach((val) => {
-            if (!fetch.includes(val.tipoDocumento)) {
-              fetch.push(val.tipoDocumento);
+            if (!fetch.includes(val.pais)) {
+              fetch.push(val.pais);
               id.push(val);
             }
           });
           let holder = data;
-          holder.content.documentType = fetch;
-          holder.ids.documentType = id;
+          holder.content.country = fetch;
+          holder.ids.country = id;
           setData(holder);
         });
     } catch (error) {
@@ -64,21 +113,17 @@ export default function InfoAdmin() {
   };
 
   const handleautocomplete = useCallback(
-    (part, name, value) => {
-      let holder = info[part];
-      holder[name] = value;
-      setInfo({ ...info, [part]: holder });
+    (name, value) => {
+      setCompania({ ...compania, [name]: value });
     },
-    [info]
+    [compania]
   );
 
   const handlechange = useCallback(
     (part) => (event) => {
-      let holder = info[part];
-      holder[event.target.name] = event.target.value;
-      setInfo({ ...info, [part]: holder });
+      setCompania({ ...compania, [event.target.name]: event.target.value });
     },
-    [info]
+    [compania]
   );
 
   const renderSwitch = () => {
@@ -86,7 +131,23 @@ export default function InfoAdmin() {
       case "Empresas":
         return (
           <NewCompany
-            info={info}
+            info={compania}
+            content={data.content}
+            handleAutocomplete={handleautocomplete}
+            handleChange={handlechange}
+          />
+        );
+
+      default:
+        return null;
+    }
+  };
+  const renderTable = () => {
+    switch (type) {
+      case "Empresas":
+        return (
+          <NewCompany
+            info={compania}
             content={data.content}
             handleAutocomplete={handleautocomplete}
             handleChange={handlechange}
@@ -101,8 +162,14 @@ export default function InfoAdmin() {
   useEffect(() => {
     switch (type) {
       case "Empresas":
-        if (data.content.documentType.length === 0) {
-          documentTypeConsume();
+        if (data.content.country.length === 0) {
+          countryConsume();
+        }
+        if (data.content.sizeCompany.length === 0) {
+          sizeCompanyConsume();
+        }
+        if (data.content.sector.length === 0) {
+          sectorConsume();
         }
         break;
 
@@ -115,6 +182,24 @@ export default function InfoAdmin() {
     <Box sx={{ display: "flex" }}>
       <Navbar />
       <Sidebar />
+      <Modal
+        open={open}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box className={styles.modal}>
+          <div className={styles.modaltop}>
+            <h2>Nueva {type}</h2>
+            <div>
+              <IconButton onClick={handleCloseModal}>
+                <ClearIcon sx={{ fontSize: "40px" }} />
+              </IconButton>
+            </div>
+          </div>
+          <div className={styles.modalbuttom}>{renderSwitch()}</div>
+        </Box>
+      </Modal>
       <div style={{ backgroundColor: "white" }}>
         <div className={styles.content}>
           <div className={styles.crud}>
@@ -141,27 +226,9 @@ export default function InfoAdmin() {
                 >
                   nueva {type}
                 </Button>
-                <Modal
-                  open={open}
-                  onClose={handleCloseModal}
-                  aria-labelledby="modal-modal-title"
-                  aria-describedby="modal-modal-description"
-                >
-                  <Box className={styles.modal}>
-                    <div className={styles.modaltop}>
-                      <h2>Nueva {type}</h2>
-                      <div>
-                        <IconButton onClick={handleCloseModal}>
-                          <ClearIcon sx={{ fontSize: "40px" }} />
-                        </IconButton>
-                      </div>
-                    </div>
-                    <div className={styles.modalbuttom}>{renderSwitch()}</div>
-                  </Box>
-                </Modal>
               </div>
             </div>
-            <div className={styles.buttom}></div>
+            <div className={styles.buttom}>{}</div>
           </div>
         </div>
       </div>
