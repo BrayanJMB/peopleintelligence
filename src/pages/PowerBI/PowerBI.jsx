@@ -27,16 +27,6 @@ export default function PowerBi() {
       console.log(e);
     }
   };
-  /*let powerbiEmbededtoken = async () => {
-    try {
-      const response = await axios
-        .create({
-          baseURL: `https://${powerBI_API_URL}/v1.0/myorg/groups/${groupId}/reports/${reportId}/GenerateToken`,
-        })
-        .post("", data, config);
-      console.log(response.data.token);
-    } catch {}
-  };*/
 
   useEffect(() => {
     if (response) {
@@ -47,8 +37,6 @@ export default function PowerBi() {
     } else {
       accessToken();
     }
-
-    //powerbiEmbededtoken();
   }, [response]);
 
   return (

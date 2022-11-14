@@ -3,6 +3,7 @@ import { DataGrid, gridClasses } from "@mui/x-data-grid";
 import { useMemo, useState, useEffect } from "react";
 
 const search = (id, inputArray, field) => {
+  debugger;
   for (let i = 0; i < inputArray.length; i++) {
     if (inputArray[i].id === id) {
       return inputArray[i][field];
@@ -15,7 +16,7 @@ export default function Table(props) {
     {
       field: "nombreCompania",
       width: 160,
-      headerName: "NOMBRE EMPRESA",
+      headerName: "Nombre Empresa",
       headerAlign: "center",
       align: "center",
     },
@@ -33,21 +34,21 @@ export default function Table(props) {
     {
       field: "Sede",
       width: 110,
-      headerName: "SEDE",
+      headerName: "Sede",
       headerAlign: "center",
       align: "center",
     },
     {
       field: "direccion",
       width: 160,
-      headerName: "DIRECCION",
+      headerName: "direccion",
       headerAlign: "center",
       align: "center",
     },
     {
       field: "IdTamanoCompania",
       width: 160,
-      headerName: "TAMANO DE LA EMPRESA",
+      headerName: "Tamaño Empresa",
       headerAlign: "center",
       align: "center",
       renderCell: (params) =>
@@ -61,8 +62,8 @@ export default function Table(props) {
     },
     {
       field: "SectorId",
-      width: 270,
-      headerName: "SECTOR",
+      width: 160,
+      headerName: "Sector",
       headerAlign: "center",
       align: "center",
       renderCell: (params) =>
@@ -70,7 +71,37 @@ export default function Table(props) {
           ? params.row.SectorId
           : search(params.row.SectorId, props.ids.sector, "Sector"),
     },
+    {
+      field: "Estado",
+      width: 160,
+      headerName: "Estado",
+      headerAlign: "center",
+      align: "center",
+    },
   ];
+  //const employee =[]
+
+  const campus = [
+    {
+      field: "sede",
+      width: 300,
+      headerName: "Sede",
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "IdCompania",
+      width: 300,
+      headerName: "Compania",
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) =>
+        isNaN(params.row.IdCompania)
+          ? params.row.IdCompania
+          : search(params.row.IdCompania, props.ids.company, "compania"),
+    },
+
+  ]
 
   const [pageSize, setpageSize] = useState(5);
   const [rows, setRows] = useState([]);
@@ -78,12 +109,17 @@ export default function Table(props) {
     switch (props.type) {
       case "Empresas":
         return company;
+      //case "Empleados":
+        //return employee;
+      case "Oficinas":
+        return campus;
       default:
         return null;
     }
   };
+  
   const columns = useMemo(() => renderSwitch(), [props.companias]);
-
+  
   useEffect(() => {
     if (
       props.ids.country.length !== 0 &&
