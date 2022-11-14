@@ -119,12 +119,13 @@ export default function Table(props) {
   };
   
   const columns = useMemo(() => renderSwitch(), [props.companias]);
-  
+
   useEffect(() => {
     if (
       props.ids.country.length !== 0 &&
       props.ids.sizeCompany.length !== 0 &&
-      props.ids.sector.length !== 0
+      props.ids.sector.length !== 0 &&
+      props.ids.company.length !== 0
     ) {
       let data = [];
       props.companias.forEach((val) => {

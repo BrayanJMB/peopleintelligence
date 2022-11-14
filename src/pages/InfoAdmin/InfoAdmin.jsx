@@ -33,8 +33,8 @@ export default function InfoAdmin() {
   });
   const [companias, setCompanias] = useState([]);
   const [data, setData] = useState({
-    content: { country: [], sizeCompany: [], sector: [] },
-    ids: { country: [], sizeCompany: [], sector: [] },
+    content: { country: [], sizeCompany: [], sector: [], company: [] },
+    ids: { country: [], sizeCompany: [], sector: [], company: [] },
   });
 
   const companyConsume = async () => {
@@ -174,11 +174,6 @@ export default function InfoAdmin() {
     IdCompania: "",
   });
   const [oficinas, setOficinas] = useState([]);
-  const [dataOficina, setDataOficina] = useState({
-    content: { company: []},
-    ids: { company: []},
-  });
-
   const campusConsume = async () => {
     try {
       await axios
@@ -218,10 +213,10 @@ export default function InfoAdmin() {
               id.push(val);
             }
           });
-          let holder = dataOficina;
+          let holder = data;
           holder.content.company = fetch;
           holder.ids.company = id;
-          setDataOficina(holder);
+          setdata(holder);
         });
     } catch (error) {
       console.log(error);
@@ -273,7 +268,7 @@ export default function InfoAdmin() {
         return (
           <NewCampus
             info={oficina}
-            content={dataOficina.content}
+            content={data.content}
             handleAutocomplete={handleAutoCompleteOficina}
             handleChange={handleChangeOficina}
             handleCloseModal={handleCloseModal}
@@ -292,10 +287,10 @@ export default function InfoAdmin() {
       
       //case "Empleados":
       //case "Oficinas":
-      //  return <Table companias={oficinas} type={type} ids={dataOficina.ids} />;
+      //  return <Table companias={oficinas} type={type} ids={data.ids} />;
 
       case "Oficinas":
-        return <Table companias={oficinas} type={type} ids={dataOficina.ids} />;
+        return <Table companias={oficinas} type={type} ids={data.ids} />;
       default:
         return null;
     }
@@ -316,7 +311,7 @@ export default function InfoAdmin() {
         companyConsume();
         break;
       case "Oficinas":
-        if (dataOficina.content.company.length === 0) {
+        if (data.content.company.length === 0) {
           companyConsumeCampus();
         }
         campusConsume();
