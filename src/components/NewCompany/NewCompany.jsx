@@ -2,6 +2,7 @@ import { useState } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import styles from "./NewCompany.module.css";
+import Button from "@mui/material/Button";
 
 const validphone = new RegExp("^[0-9]{12,15}$");
 
@@ -135,6 +136,14 @@ export default function NewCompany(props) {
           )}
           size="small"
         />
+      </div>
+      <div className={styles.impexp}>
+        <Button variant="text" onClick={props.handleCloseModal}>
+          Cancelar
+        </Button>
+        <Button variant="contained" onClick={props.handleAddCompany}>
+          Aceptar
+        </Button>
       </div>
     </div>
   );

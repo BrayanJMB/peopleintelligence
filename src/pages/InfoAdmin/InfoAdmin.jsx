@@ -10,6 +10,8 @@ import ClearIcon from "@mui/icons-material/Clear";
 import IconButton from "@mui/material/IconButton";
 import NewCompany from "../../components/NewCompany/NewCompany";
 import Sidebar from "../../Layout/Sidebar/Sidebar";
+import Table from "../../components/Table";
+import * as uuid from "uuid";
 import axios from "axios";
 
 const config = {
@@ -19,8 +21,6 @@ const config = {
 export default function InfoAdmin() {
   const { type } = useParams();
   const [open, setOpen] = useState(false);
-  const handleOpenModal = () => setOpen(true);
-  const handleCloseModal = () => setOpen(false);
   const [compania, setCompania] = useState({
     nombreCompania: "",
     IdPais: "",
@@ -29,11 +29,32 @@ export default function InfoAdmin() {
     IdTamanoCompania: "",
     SectorId: "",
   });
+  const [companias, setCompanias] = useState([]);
   const [data, setData] = useState({
     content: { country: [], sizeCompany: [], sector: [] },
     ids: { country: [], sizeCompany: [], sector: [] },
   });
 
+  const companyConsume = async () => {
+    try {
+      await axios
+        .create({
+          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+        })
+        .get("companias/", config)
+        .then((res) => {
+          let data = [];
+          res.data.forEach((val) => {
+            if (!data.includes(val)) {
+              data.push(val);
+            }
+          });
+          setCompanias(data);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const sectorConsume = async () => {
     try {
       await axios
@@ -111,21 +132,36 @@ export default function InfoAdmin() {
       console.log(error);
     }
   };
-
+  const handleOpenModal = () => setOpen(true);
+  const handleCloseModal = () => setOpen(false);
   const handleautocomplete = useCallback(
     (name, value) => {
       setCompania({ ...compania, [name]: value });
     },
     [compania]
   );
-
+  const handleAddCompany = () => {
+    let tmp = [...companias];
+    let holder = compania;
+    holder.id = uuid.v4();
+    tmp.push(holder);
+    setCompanias(tmp);
+    setCompania({
+      nombreCompania: "",
+      IdPais: "",
+      Sede: "",
+      direccion: "",
+      IdTamanoCompania: "",
+      SectorId: "",
+    });
+    handleCloseModal();
+  };
   const handlechange = useCallback(
     (event) => {
       setCompania({ ...compania, [event.target.name]: event.target.value });
     },
     [compania]
   );
-
   const renderSwitch = () => {
     switch (type) {
       case "Empresas":
@@ -135,6 +171,8 @@ export default function InfoAdmin() {
             content={data.content}
             handleAutocomplete={handleautocomplete}
             handleChange={handlechange}
+            handleCloseModal={handleCloseModal}
+            handleAddCompany={handleAddCompany}
           />
         );
 
@@ -145,14 +183,7 @@ export default function InfoAdmin() {
   const renderTable = () => {
     switch (type) {
       case "Empresas":
-        return (
-          <NewCompany
-            info={compania}
-            content={data.content}
-            handleAutocomplete={handleautocomplete}
-            handleChange={handlechange}
-          />
-        );
+        return <Table companias={companias} type={type} ids={data.ids} />;
 
       default:
         return null;
@@ -171,6 +202,7 @@ export default function InfoAdmin() {
         if (data.content.sector.length === 0) {
           sectorConsume();
         }
+        companyConsume();
         break;
 
       default:
@@ -228,7 +260,7 @@ export default function InfoAdmin() {
                 </Button>
               </div>
             </div>
-            <div className={styles.buttom}>test</div>
+            <div className={styles.buttom}>{renderTable()}</div>
           </div>
         </div>
       </div>
