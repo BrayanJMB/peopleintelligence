@@ -9,7 +9,10 @@ import Modal from "@mui/material/Modal";
 import ClearIcon from "@mui/icons-material/Clear";
 import IconButton from "@mui/material/IconButton";
 import NewCompany from "../../components/NewCompany/NewCompany";
+import NewCampus from "../../components/NewCampus/NewCampus";
 import Sidebar from "../../Layout/Sidebar/Sidebar";
+import Table from "../../components/Table";
+import * as uuid from "uuid";
 import axios from "axios";
 
 const config = {
@@ -19,8 +22,6 @@ const config = {
 export default function InfoAdmin() {
   const { type } = useParams();
   const [open, setOpen] = useState(false);
-  const handleOpenModal = () => setOpen(true);
-  const handleCloseModal = () => setOpen(false);
   const [compania, setCompania] = useState({
     nombreCompania: "",
     IdPais: "",
@@ -29,11 +30,58 @@ export default function InfoAdmin() {
     IdTamanoCompania: "",
     SectorId: "",
   });
+  const [oficina, setOficina] = useState({
+    sede: "",
+    IdCompania: "",
+  });
+  const [companias, setCompanias] = useState([]);
+  const [oficinas, setOficinas] = useState([]);
+
   const [data, setData] = useState({
-    content: { country: [], sizeCompany: [], sector: [] },
-    ids: { country: [], sizeCompany: [], sector: [] },
+    content: { country: [], sizeCompany: [], sector: [], company: [] },
+    ids: { country: [], sizeCompany: [], sector: [], company: [] },
   });
 
+  const companyConsume = async () => {
+    try {
+      await axios
+        .create({
+          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+        })
+        .get("companias/", config)
+        .then((res) => {
+          let data = [];
+          res.data.forEach((val) => {
+            if (!data.includes(val)) {
+              data.push(val);
+            }
+          });
+          setCompanias(data);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const campusConsume = async () => {
+    try {
+      await axios
+        .create({
+          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+        })
+        .get("Campus/", config)
+        .then((res) => {
+          let data = [];
+          res.data.forEach((val) => {
+            if (!data.includes(val)) {
+              data.push(val);
+            }
+          });
+          setOficinas(data);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const sectorConsume = async () => {
     try {
       await axios
@@ -111,19 +159,85 @@ export default function InfoAdmin() {
       console.log(error);
     }
   };
-
+  const oficinasConsume = async () => {
+    try {
+      await axios
+        .create({
+          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+        })
+        .get("companias/", config)
+        .then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.nombreCompania)) {
+              fetch.push(val.nombreCompania);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.company = fetch;
+          holder.ids.company = id;
+          setData(holder);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleOpenModal = () => setOpen(true);
+  const handleCloseModal = () => setOpen(false);
   const handleautocomplete = useCallback(
     (name, value) => {
       setCompania({ ...compania, [name]: value });
     },
     [compania]
   );
-
-  const handlechange = useCallback(
+  const handleAddCompany = () => {
+    let tmp = [...companias];
+    let holder = compania;
+    holder.id = uuid.v4();
+    tmp.push(holder);
+    setCompanias(tmp);
+    setCompania({
+      nombreCompania: "",
+      IdPais: "",
+      Sede: "",
+      direccion: "",
+      IdTamanoCompania: "",
+      SectorId: "",
+    });
+    handleCloseModal();
+  };
+  const handleAddOficina = () => {
+    let tmp = [...oficinas];
+    let holder = oficina;
+    holder.id = uuid.v4();
+    tmp.push(holder);
+    setOficinas(tmp);
+    setOficina({
+      sede: "",
+      IdCompania: "",
+    });
+    handleCloseModal();
+  };
+  const handleChangeCompania = useCallback(
     (event) => {
       setCompania({ ...compania, [event.target.name]: event.target.value });
     },
     [compania]
+  );
+  const handleChangeOficina = useCallback(
+    (event) => {
+      setOficina({ ...oficina, [event.target.name]: event.target.value });
+    },
+    [oficina]
+  );
+
+  const handleAutoCompleteOficina = useCallback(
+    (name, value) => {
+      setOficina({ ...oficina, [name]: value });
+    },
+    [oficina]
   );
 
   const renderSwitch = () => {
@@ -134,7 +248,21 @@ export default function InfoAdmin() {
             info={compania}
             content={data.content}
             handleAutocomplete={handleautocomplete}
-            handleChange={handlechange}
+            handleChangeCompania={handleChangeCompania}
+            handleCloseModal={handleCloseModal}
+            handleAddCompany={handleAddCompany}
+          />
+        );
+      //case "Empleados":
+      case "Oficinas":
+        return (
+          <NewCampus
+            info={oficina}
+            content={data.content}
+            handleAutocomplete={handleAutoCompleteOficina}
+            handleChangeOficina={handleChangeOficina}
+            handleCloseModal={handleCloseModal}
+            handleAddCampus={handleAddOficina}
           />
         );
 
@@ -145,15 +273,10 @@ export default function InfoAdmin() {
   const renderTable = () => {
     switch (type) {
       case "Empresas":
-        return (
-          <NewCompany
-            info={compania}
-            content={data.content}
-            handleAutocomplete={handleautocomplete}
-            handleChange={handlechange}
-          />
-        );
+        return <Table companias={companias} type={type} ids={data.ids} />;
 
+      case "Oficinas":
+        return <Table oficinas={oficinas} type={type} ids={data.ids} />;
       default:
         return null;
     }
@@ -171,12 +294,19 @@ export default function InfoAdmin() {
         if (data.content.sector.length === 0) {
           sectorConsume();
         }
+        companyConsume();
+        break;
+      case "Oficinas":
+        if (data.content.sector.length === 0) {
+          oficinasConsume();
+        }
+        campusConsume();
         break;
 
       default:
         break;
     }
-  }, []);
+  }, [type]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -228,7 +358,7 @@ export default function InfoAdmin() {
                 </Button>
               </div>
             </div>
-            <div className={styles.buttom}>test</div>
+            <div className={styles.buttom}>{renderTable()}</div>
           </div>
         </div>
       </div>

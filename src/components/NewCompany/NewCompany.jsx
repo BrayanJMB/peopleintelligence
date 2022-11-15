@@ -2,6 +2,7 @@ import { useState } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import styles from "./NewCompany.module.css";
+import Button from "@mui/material/Button";
 
 const validphone = new RegExp("^[0-9]{12,15}$");
 
@@ -37,7 +38,7 @@ export default function NewCompany(props) {
           label="Nombre de la empresa"
           value={props.info.nombreCompania}
           name="nombreCompania"
-          onChange={props.handleChange}
+          onChange={props.handleChangeCompania}
           style={{ flexBasis: "40%" }}
           error={errorMessage.nombreCompania}
           helperText={helperText.nombreCompania}
@@ -94,7 +95,7 @@ export default function NewCompany(props) {
           label="Sede"
           value={props.info.Sede}
           name="Sede"
-          onChange={props.handleChange}
+          onChange={props.handleChangeCompania}
           error={errorMessage.Sede}
           helperText={helperText.Sede}
           size="small"
@@ -108,7 +109,7 @@ export default function NewCompany(props) {
           label="Dirección"
           value={props.info.direccion}
           name="direccion"
-          onChange={props.handleChange}
+          onChange={props.handleChangeCompania}
           error={errorMessage.direccion}
           helperText={helperText.direccion}
           size="small"
@@ -135,6 +136,14 @@ export default function NewCompany(props) {
           )}
           size="small"
         />
+      </div>
+      <div className={styles.impexp}>
+        <Button variant="text" onClick={props.handleCloseModal}>
+          Cancelar
+        </Button>
+        <Button variant="contained" onClick={props.handleAddCompany}>
+          Aceptar
+        </Button>
       </div>
     </div>
   );

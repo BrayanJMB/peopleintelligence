@@ -1,0 +1,21 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  .input {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-wrap: nowrap;
+    width: 100%;
+    padding: 1rem;
+  }
+  .impexp {
+    margin-top: 3rem;
+    display: flex;
+    gap: 4em;
+  }
+  
