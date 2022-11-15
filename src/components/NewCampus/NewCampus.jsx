@@ -30,7 +30,7 @@ export default function NewCampus(props) {
           label="Sede"
           value={props.info.sede}
           name="sede"
-          onChange={props.handleChange}
+          onChange={props.handleChangeOficina}
           style={{ flexBasis: "40%" }}
           error={errorMessage.sede}
           helperText={helperText.sede}
@@ -59,7 +59,7 @@ export default function NewCampus(props) {
           size="small"
         />
       </div>
-        <div className={styles.impexp}>
+      <div className={styles.impexp}>
         <Button variant="text" onClick={props.handleCloseModal}>
           Cancelar
         </Button>

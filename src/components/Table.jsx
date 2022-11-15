@@ -3,7 +3,6 @@ import { DataGrid, gridClasses } from "@mui/x-data-grid";
 import { useMemo, useState, useEffect } from "react";
 
 const search = (id, inputArray, field) => {
-  debugger;
   for (let i = 0; i < inputArray.length; i++) {
     if (inputArray[i].id === id) {
       return inputArray[i][field];
@@ -15,14 +14,14 @@ export default function Table(props) {
   const company = [
     {
       field: "nombreCompania",
-      width: 160,
+      flex: 1,
       headerName: "Nombre Empresa",
       headerAlign: "center",
       align: "center",
     },
     {
       field: "IdPais",
-      width: 110,
+      flex: 1,
       headerName: "Pais",
       headerAlign: "center",
       align: "center",
@@ -33,21 +32,21 @@ export default function Table(props) {
     },
     {
       field: "Sede",
-      width: 110,
+      flex: 1,
       headerName: "Sede",
       headerAlign: "center",
       align: "center",
     },
     {
       field: "direccion",
-      width: 160,
+      flex: 1,
       headerName: "direccion",
       headerAlign: "center",
       align: "center",
     },
     {
       field: "IdTamanoCompania",
-      width: 160,
+      flex: 2,
       headerName: "Tamaño Empresa",
       headerAlign: "center",
       align: "center",
@@ -62,7 +61,7 @@ export default function Table(props) {
     },
     {
       field: "SectorId",
-      width: 160,
+      flex: 2.5,
       headerName: "Sector",
       headerAlign: "center",
       align: "center",
@@ -71,37 +70,28 @@ export default function Table(props) {
           ? params.row.SectorId
           : search(params.row.SectorId, props.ids.sector, "Sector"),
     },
-    {
-      field: "Estado",
-      width: 160,
-      headerName: "Estado",
-      headerAlign: "center",
-      align: "center",
-    },
   ];
-  //const employee =[]
 
   const campus = [
     {
       field: "sede",
-      width: 300,
+      flex: 1,
       headerName: "Sede",
       headerAlign: "center",
       align: "center",
     },
     {
       field: "IdCompania",
-      width: 300,
+      flex: 1,
       headerName: "Compania",
       headerAlign: "center",
       align: "center",
       renderCell: (params) =>
         isNaN(params.row.IdCompania)
           ? params.row.IdCompania
-          : search(params.row.IdCompania, props.ids.company, "compania"),
+          : search(params.row.IdCompania, props.ids.company, "nombreCompania"),
     },
-
-  ]
+  ];
 
   const [pageSize, setpageSize] = useState(5);
   const [rows, setRows] = useState([]);
@@ -109,33 +99,48 @@ export default function Table(props) {
     switch (props.type) {
       case "Empresas":
         return company;
-      //case "Empleados":
-        //return employee;
       case "Oficinas":
         return campus;
       default:
         return null;
     }
   };
-  
-  const columns = useMemo(() => renderSwitch(), [props.companias]);
+
+  const columns = useMemo(() => renderSwitch(), [props.type]);
 
   useEffect(() => {
-    if (
-      props.ids.country.length !== 0 &&
-      props.ids.sizeCompany.length !== 0 &&
-      props.ids.sector.length !== 0 &&
-      props.ids.company.length !== 0
-    ) {
-      let data = [];
-      props.companias.forEach((val) => {
-        let holder = val;
-        holder._id = val.id;
-        data.push(holder);
-      });
-      setRows(data);
+    switch (props.type) {
+      case "Empresas":
+        if (
+          props.ids.country.length !== 0 &&
+          props.ids.sizeCompany.length !== 0 &&
+          props.ids.sector.length !== 0
+        ) {
+          let data = [];
+          props.companias.forEach((val) => {
+            let holder = val;
+            holder._id = val.id;
+            data.push(holder);
+          });
+          setRows(data);
+        }
+        break;
+      case "Oficinas":
+        if (props.ids.sector.company !== 0) {
+          let data = [];
+          props.oficinas.forEach((val) => {
+            let holder = val;
+            holder._id = val.id;
+            data.push(holder);
+          });
+          console.log(data);
+          setRows(data);
+        }
+        break;
+      default:
+        break;
     }
-  }, [props.companias]);
+  }, [props]);
 
   return (
     <DataGrid

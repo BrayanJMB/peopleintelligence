@@ -22,7 +22,6 @@ const config = {
 export default function InfoAdmin() {
   const { type } = useParams();
   const [open, setOpen] = useState(false);
-  //Company
   const [compania, setCompania] = useState({
     nombreCompania: "",
     IdPais: "",
@@ -31,7 +30,13 @@ export default function InfoAdmin() {
     IdTamanoCompania: "",
     SectorId: "",
   });
+  const [oficina, setOficina] = useState({
+    sede: "",
+    IdCompania: "",
+  });
   const [companias, setCompanias] = useState([]);
+  const [oficinas, setOficinas] = useState([]);
+
   const [data, setData] = useState({
     content: { country: [], sizeCompany: [], sector: [], company: [] },
     ids: { country: [], sizeCompany: [], sector: [], company: [] },
@@ -52,6 +57,26 @@ export default function InfoAdmin() {
             }
           });
           setCompanias(data);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const campusConsume = async () => {
+    try {
+      await axios
+        .create({
+          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+        })
+        .get("Campus/", config)
+        .then((res) => {
+          let data = [];
+          res.data.forEach((val) => {
+            if (!data.includes(val)) {
+              data.push(val);
+            }
+          });
+          setOficinas(data);
         });
     } catch (error) {
       console.log(error);
@@ -134,6 +159,31 @@ export default function InfoAdmin() {
       console.log(error);
     }
   };
+  const oficinasConsume = async () => {
+    try {
+      await axios
+        .create({
+          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+        })
+        .get("companias/", config)
+        .then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.nombreCompania)) {
+              fetch.push(val.nombreCompania);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.company = fetch;
+          holder.ids.company = id;
+          setData(holder);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const handleOpenModal = () => setOpen(true);
   const handleCloseModal = () => setOpen(false);
   const handleautocomplete = useCallback(
@@ -147,7 +197,6 @@ export default function InfoAdmin() {
     let holder = compania;
     holder.id = uuid.v4();
     tmp.push(holder);
-    debugger;
     setCompanias(tmp);
     setCompania({
       nombreCompania: "",
@@ -159,78 +208,7 @@ export default function InfoAdmin() {
     });
     handleCloseModal();
   };
-  const handlechange = useCallback(
-    (event) => {
-      setCompania({ ...compania, [event.target.name]: event.target.value });
-    },
-    [compania]
-  );
-
-  //Empleados it's missing
-
-  //oficina
-  const [oficina, setOficina] = useState({
-    sede: "",
-    IdCompania: "",
-  });
-  const [oficinas, setOficinas] = useState([]);
-  const campusConsume = async () => {
-    try {
-      await axios
-        .create({
-          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
-        })
-        .get("Campus/", config)
-        .then((res) => {
-          let data = [];
-          res.data.forEach((val) => {
-            if (!data.includes(val)) {
-              data.push(val);
-            }
-          });
-          setOficinas(data);
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const companyConsumeCampus = async () => {
-    debugger;
-    try {
-      await axios
-        .create({
-          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
-        })
-        .get("companias/", config)
-        .then((res) => {
-          let fetch = [];
-          let id = [];
-          debugger;
-          res.data.forEach((val) => {
-            if (!fetch.includes(val.nombreCompania)) {
-              fetch.push(val.nombreCompania);
-              id.push(val);
-            }
-          });
-          let holder = data;
-          holder.content.company = fetch;
-          holder.ids.company = id;
-          setdata(holder);
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleAutoCompleteOficina = useCallback(
-    (name, value) => {
-      setOficina({ ...oficina, [name]: value });
-    },
-    [oficina]
-  );
   const handleAddOficina = () => {
-    debugger;
     let tmp = [...oficinas];
     let holder = oficina;
     holder.id = uuid.v4();
@@ -238,10 +216,16 @@ export default function InfoAdmin() {
     setOficinas(tmp);
     setOficina({
       sede: "",
-      IdCompania: ""
+      IdCompania: "",
     });
     handleCloseModal();
   };
+  const handleChangeCompania = useCallback(
+    (event) => {
+      setCompania({ ...compania, [event.target.name]: event.target.value });
+    },
+    [compania]
+  );
   const handleChangeOficina = useCallback(
     (event) => {
       setOficina({ ...oficina, [event.target.name]: event.target.value });
@@ -249,6 +233,12 @@ export default function InfoAdmin() {
     [oficina]
   );
 
+  const handleAutoCompleteOficina = useCallback(
+    (name, value) => {
+      setOficina({ ...oficina, [name]: value });
+    },
+    [oficina]
+  );
 
   const renderSwitch = () => {
     switch (type) {
@@ -258,7 +248,7 @@ export default function InfoAdmin() {
             info={compania}
             content={data.content}
             handleAutocomplete={handleautocomplete}
-            handleChange={handlechange}
+            handleChangeCompania={handleChangeCompania}
             handleCloseModal={handleCloseModal}
             handleAddCompany={handleAddCompany}
           />
@@ -270,7 +260,7 @@ export default function InfoAdmin() {
             info={oficina}
             content={data.content}
             handleAutocomplete={handleAutoCompleteOficina}
-            handleChange={handleChangeOficina}
+            handleChangeOficina={handleChangeOficina}
             handleCloseModal={handleCloseModal}
             handleAddCampus={handleAddOficina}
           />
@@ -284,13 +274,9 @@ export default function InfoAdmin() {
     switch (type) {
       case "Empresas":
         return <Table companias={companias} type={type} ids={data.ids} />;
-      
-      //case "Empleados":
-      //case "Oficinas":
-      //  return <Table companias={oficinas} type={type} ids={data.ids} />;
 
       case "Oficinas":
-        return <Table companias={oficinas} type={type} ids={data.ids} />;
+        return <Table oficinas={oficinas} type={type} ids={data.ids} />;
       default:
         return null;
     }
@@ -311,8 +297,8 @@ export default function InfoAdmin() {
         companyConsume();
         break;
       case "Oficinas":
-        if (data.content.company.length === 0) {
-          companyConsumeCampus();
+        if (data.content.sector.length === 0) {
+          oficinasConsume();
         }
         campusConsume();
         break;
@@ -320,7 +306,7 @@ export default function InfoAdmin() {
       default:
         break;
     }
-  }, []);
+  }, [type]);
 
   return (
     <Box sx={{ display: "flex" }}>
