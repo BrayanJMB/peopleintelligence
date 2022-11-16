@@ -9,7 +9,7 @@ import Modal from "@mui/material/Modal";
 import ClearIcon from "@mui/icons-material/Clear";
 import IconButton from "@mui/material/IconButton";
 import NewCompany from "../../components/NewCompany/NewCompany";
-import NewCampus from "../../components/NewCampus/NewCampus";
+import NewOffice from "../../components/NewOffice/NewOffice";
 import Sidebar from "../../Layout/Sidebar/Sidebar";
 import Table from "../../components/Table";
 import * as uuid from "uuid";
@@ -42,11 +42,13 @@ export default function InfoAdmin() {
     ids: { country: [], sizeCompany: [], sector: [], company: [] },
   });
 
-  const companyConsume = async () => {
+  // get data
+
+  const getCompanies = async () => {
     try {
       await axios
         .create({
-          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
         })
         .get("companias/", config)
         .then((res) => {
@@ -62,11 +64,11 @@ export default function InfoAdmin() {
       console.log(error);
     }
   };
-  const campusConsume = async () => {
+  const getOficinas = async () => {
     try {
       await axios
         .create({
-          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
         })
         .get("Campus/", config)
         .then((res) => {
@@ -82,11 +84,14 @@ export default function InfoAdmin() {
       console.log(error);
     }
   };
+
+  // get ids data
+
   const sectorConsume = async () => {
     try {
       await axios
         .create({
-          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
         })
         .get("Sector/", config)
         .then((res) => {
@@ -111,7 +116,7 @@ export default function InfoAdmin() {
     try {
       await axios
         .create({
-          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
         })
         .get("TamanoCompania/", config)
         .then((res) => {
@@ -138,7 +143,7 @@ export default function InfoAdmin() {
       await axios
         .create({
           baseURL:
-            "https://dynamicliveconversationapi.azurewebsites.net/api/paises/",
+            "https://peopleintelligenceapi.azurewebsites.net/api/paises/",
         })
         .get("", config)
         .then((res) => {
@@ -159,11 +164,11 @@ export default function InfoAdmin() {
       console.log(error);
     }
   };
-  const oficinasConsume = async () => {
+  const companyConsume = async () => {
     try {
       await axios
         .create({
-          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
         })
         .get("companias/", config)
         .then((res) => {
@@ -184,14 +189,28 @@ export default function InfoAdmin() {
       console.log(error);
     }
   };
+
+  // handle modal
   const handleOpenModal = () => setOpen(true);
   const handleCloseModal = () => setOpen(false);
-  const handleautocomplete = useCallback(
+
+  // handle autocomplete change
+
+  const handleAutoCompleteCompany = useCallback(
     (name, value) => {
       setCompania({ ...compania, [name]: value });
     },
     [compania]
   );
+  const handleAutoCompleteOficina = useCallback(
+    (name, value) => {
+      setOficina({ ...oficina, [name]: value });
+    },
+    [oficina]
+  );
+
+  // handle add data
+
   const handleAddCompany = () => {
     let tmp = [...companias];
     let holder = compania;
@@ -220,6 +239,9 @@ export default function InfoAdmin() {
     });
     handleCloseModal();
   };
+
+  // handle change input
+
   const handleChangeCompania = useCallback(
     (event) => {
       setCompania({ ...compania, [event.target.name]: event.target.value });
@@ -233,13 +255,6 @@ export default function InfoAdmin() {
     [oficina]
   );
 
-  const handleAutoCompleteOficina = useCallback(
-    (name, value) => {
-      setOficina({ ...oficina, [name]: value });
-    },
-    [oficina]
-  );
-
   const renderSwitch = () => {
     switch (type) {
       case "Empresas":
@@ -247,16 +262,15 @@ export default function InfoAdmin() {
           <NewCompany
             info={compania}
             content={data.content}
-            handleAutocomplete={handleautocomplete}
+            handleAutocomplete={handleAutoCompleteCompany}
             handleChangeCompania={handleChangeCompania}
             handleCloseModal={handleCloseModal}
             handleAddCompany={handleAddCompany}
           />
         );
-      //case "Empleados":
       case "Oficinas":
         return (
-          <NewCampus
+          <NewOffice
             info={oficina}
             content={data.content}
             handleAutocomplete={handleAutoCompleteOficina}
@@ -273,10 +287,24 @@ export default function InfoAdmin() {
   const renderTable = () => {
     switch (type) {
       case "Empresas":
-        return <Table companias={companias} type={type} ids={data.ids} />;
+        return (
+          <Table
+            companias={companias}
+            type={type}
+            ids={data.ids}
+            content={data.content}
+          />
+        );
 
       case "Oficinas":
-        return <Table oficinas={oficinas} type={type} ids={data.ids} />;
+        return (
+          <Table
+            oficinas={oficinas}
+            type={type}
+            ids={data.ids}
+            content={data.content}
+          />
+        );
       default:
         return null;
     }
@@ -294,13 +322,13 @@ export default function InfoAdmin() {
         if (data.content.sector.length === 0) {
           sectorConsume();
         }
-        companyConsume();
+        getCompanies();
         break;
       case "Oficinas":
-        if (data.content.sector.length === 0) {
-          oficinasConsume();
+        if (data.content.company.length === 0) {
+          companyConsume();
         }
-        campusConsume();
+        getOficinas();
         break;
 
       default:

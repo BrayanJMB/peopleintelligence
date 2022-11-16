@@ -1,6 +1,7 @@
 import { grey } from "@mui/material/colors";
 import { DataGrid, gridClasses } from "@mui/x-data-grid";
 import { useMemo, useState, useEffect } from "react";
+import EditSave from "./EditSave";
 
 const search = (id, inputArray, field) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -25,10 +26,8 @@ export default function Table(props) {
       headerName: "Pais",
       headerAlign: "center",
       align: "center",
-      renderCell: (params) =>
-        isNaN(params.row.IdPais)
-          ? params.row.IdPais
-          : search(params.row.IdPais, props.ids.country, "pais"),
+
+      editable: true,
     },
     {
       field: "Sede",
@@ -70,9 +69,15 @@ export default function Table(props) {
           ? params.row.SectorId
           : search(params.row.SectorId, props.ids.sector, "Sector"),
     },
+    {
+      field: "action",
+      headerName: "Actions",
+      type: "actions",
+      renderCell: (params) => <EditSave {...{ params, rowId, setRowId }} />,
+    },
   ];
 
-  const campus = [
+  const office = [
     {
       field: "sede",
       flex: 1,
@@ -93,22 +98,63 @@ export default function Table(props) {
     },
   ];
 
+  const dashboard = [
+    {
+      field: "dashboard",
+      flex: 1,
+      headerName: "dashboard",
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "name",
+      flex: 1,
+      headerName: "name",
+      headerAlign: "center",
+      align: "center",
+    },
+  ];
+
+  const report = [
+    {
+      field: "name",
+      flex: 1,
+      headerName: "Report Name",
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "description",
+      flex: 1,
+      headerName: "Description",
+      headerAlign: "center",
+      align: "center",
+    },
+  ];
+
   const [pageSize, setpageSize] = useState(5);
   const [rows, setRows] = useState([]);
+  const [rowId, setRowId] = useState(null);
+
   const renderSwitch = () => {
     switch (props.type) {
       case "Empresas":
         return company;
       case "Oficinas":
-        return campus;
+        return office;
+      case "dashboard":
+        return dashboard;
+      case "report":
+        return report;
       default:
         return null;
     }
   };
 
-  const columns = useMemo(() => renderSwitch(), [props.type]);
+  const columns = useMemo(() => renderSwitch(), [props.type, rowId]);
 
   useEffect(() => {
+    let data = [];
     switch (props.type) {
       case "Empresas":
         if (
@@ -116,8 +162,20 @@ export default function Table(props) {
           props.ids.sizeCompany.length !== 0 &&
           props.ids.sector.length !== 0
         ) {
-          let data = [];
           props.companias.forEach((val) => {
+            let holder = val;
+            holder._id = val.id;
+            holder.IdPais = isNaN(val.IdPais)
+              ? val.IdPais
+              : search(val.IdPais, props.ids.country, "pais");
+            data.push(holder);
+          });
+          setRows(data);
+        }
+        break;
+      case "Oficinas":
+        if (props.ids.company.length !== 0) {
+          props.oficinas.forEach((val) => {
             let holder = val;
             holder._id = val.id;
             data.push(holder);
@@ -125,17 +183,21 @@ export default function Table(props) {
           setRows(data);
         }
         break;
-      case "Oficinas":
-        if (props.ids.sector.company !== 0) {
-          let data = [];
-          props.oficinas.forEach((val) => {
-            let holder = val;
-            holder._id = val.id;
-            data.push(holder);
-          });
-          console.log(data);
-          setRows(data);
-        }
+      case "dashboard":
+        props.dashboards.forEach((val) => {
+          let holder = val;
+          holder._id = val.id;
+          data.push(holder);
+        });
+        setRows(data);
+        break;
+      case "report":
+        props.reports.forEach((val) => {
+          let holder = val;
+          holder._id = val.id;
+          data.push(holder);
+        });
+        setRows(data);
         break;
       default:
         break;
@@ -160,6 +222,7 @@ export default function Table(props) {
             theme.palette.mode === "light" ? grey[200] : grey[900],
         },
       }}
+      onCellEditCommit={(params) => setRowId(params.id)}
     />
   );
 }

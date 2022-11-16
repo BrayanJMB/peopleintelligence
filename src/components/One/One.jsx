@@ -217,8 +217,7 @@ export default function One(props) {
         try {
           const response = await axios
             .create({
-              baseURL:
-                "https://dynamicliveconversationapi.azurewebsites.net/api",
+              baseURL: "https://peopleintelligenceapi.azurewebsites.net/api",
             })
             .post(
               "/Autenticacion",
@@ -280,7 +279,7 @@ export default function One(props) {
 
   return (
     <form onSubmit={submitHandler}>
-        <Modal
+      <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={open}
@@ -289,16 +288,17 @@ export default function One(props) {
         BackdropProps={{
           timeout: 500,
         }}
-      ><Fade in={open}>
-      <Box sx={style_modal}>
-        <Typography id="transition-modal-title" variant="h6" component="h2">
-          Text in a modal
-        </Typography>
-        <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-          Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-        </Typography>
-      </Box>
-    </Fade>
+      >
+        <Fade in={open}>
+          <Box sx={style_modal}>
+            <Typography id="transition-modal-title" variant="h6" component="h2">
+              Text in a modal
+            </Typography>
+            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+            </Typography>
+          </Box>
+        </Fade>
       </Modal>
       <div className={styles.content}>
         <div className={styles.image}>

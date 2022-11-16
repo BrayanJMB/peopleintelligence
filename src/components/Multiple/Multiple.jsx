@@ -132,8 +132,7 @@ export default function Multiple(props) {
         try {
           const response = await axios
             .create({
-              baseURL:
-                "https://dynamicliveconversationapi.azurewebsites.net/api",
+              baseURL: "https://peopleintelligenceapi.azurewebsites.net/api",
             })
             .post(
               "/Autenticacion",

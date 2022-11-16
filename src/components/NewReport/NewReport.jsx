@@ -1,10 +1,9 @@
 import { useState } from "react";
-import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import styles from "./NewCampus.module.css";
+import styles from "./NewReport.module.css";
 import Button from "@mui/material/Button";
 
-export default function NewCampus(props) {
+export default function NewReport(props) {
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
 
@@ -27,43 +26,34 @@ export default function NewCampus(props) {
       <div className={styles.input}>
         <TextField
           id="outlined-name"
-          label="Sede"
-          value={props.info.sede}
-          name="sede"
-          onChange={props.handleChangeOficina}
+          label="Name"
+          value={props.info.name}
+          name="name"
+          onChange={props.handleChangeReport}
           style={{ flexBasis: "40%" }}
-          error={errorMessage.sede}
-          helperText={helperText.sede}
+          error={errorMessage.name}
+          helperText={helperText.name}
           size="small"
           onBlur={handleBlur}
         />
-        <Autocomplete
-          id="combo-box-demo"
+        <TextField
+          id="outlined-name"
+          label="Description"
+          value={props.info.description}
+          name="description"
+          onChange={props.handleChangeReport}
           style={{ flexBasis: "40%" }}
-          options={props.content.company}
-          clearOnEscape
-          value={props.info.IdCompania}
-          onChange={(e, value) => {
-            props.handleAutocomplete("IdCompania", value);
-          }}
-          getOptionLabel={(option) => option}
-          noOptionsText={"No se ha encontrado ninguna compañia"}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              error={errorMessage.numeroDocumento}
-              helperText={helperText.numeroDocumento}
-              label="Compañia"
-            />
-          )}
+          error={errorMessage.description}
+          helperText={helperText.description}
           size="small"
+          onBlur={handleBlur}
         />
       </div>
       <div className={styles.impexp}>
         <Button variant="text" onClick={props.handleCloseModal}>
           Cancelar
         </Button>
-        <Button variant="contained" onClick={props.handleAddCampus}>
+        <Button variant="contained" onClick={props.handleAddReport}>
           Aceptar
         </Button>
       </div>

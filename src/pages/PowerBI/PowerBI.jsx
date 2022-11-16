@@ -19,7 +19,7 @@ export default function PowerBi() {
     try {
       const response = await axios
         .create({
-          baseURL: `https://dynamicliveconversationapi.azurewebsites.net/api/PowerBy`,
+          baseURL: `https://peopleintelligenceapi.azurewebsites.net/api/PowerBy`,
         })
         .get("/1");
       setResponse(response.data);
