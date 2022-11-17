@@ -5,6 +5,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import IconButton from "@mui/material/IconButton";
 import { removeItem } from "../features/adminSlice";
+import { removeItemBi } from "../features/powerBiSlice";
 import { useDispatch } from "react-redux";
 
 const search = (id, inputArray, field) => {
@@ -22,6 +23,9 @@ export default function Table(props) {
 
   const handleDeleteItem = (id) => {
     dispatch(removeItem({ id: id, type: props.type }));
+  };
+  const handleDeleteItemBi = (id) => {
+    dispatch(removeItemBi({ id: id, type: props.type }));
   };
 
   const company = [
@@ -172,6 +176,23 @@ export default function Table(props) {
       headerName: "Description",
       headerAlign: "center",
       align: "center",
+    },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 100,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <IconButton onClick={() => props.handleEditItem(params.row)}>
+            <EditIcon />
+          </IconButton>,
+          <IconButton onClick={() => handleDeleteItemBi(params.row._id)}>
+            <DeleteIcon />
+          </IconButton>,
+        ];
+      },
     },
   ];
 

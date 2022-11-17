@@ -11,7 +11,7 @@ const powerBiSlice = createSlice({
       let type = action.payload.type;
       state[type].push(action.payload.data);
     },
-    removeItem: (state, action) => {
+    removeItemBi: (state, action) => {
       let type = action.payload.type;
       let index = state[type].findIndex((p) => p._id === action.payload.id);
       if (index > -1) {
@@ -32,6 +32,6 @@ const powerBiSlice = createSlice({
   },
 });
 
-export const { addItem, removeItem, updateItem, storeItems } =
+export const { addItem, removeItemBi, updateItem, storeItems } =
   powerBiSlice.actions;
 export default powerBiSlice.reducer;

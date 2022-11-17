@@ -14,14 +14,21 @@ import Sidebar from "../../Layout/Sidebar/Sidebar";
 import Table from "../../components/Table";
 import * as uuid from "uuid";
 import axios from "axios";
+import { getReportsAPI } from "../../services/getReports.service";
+import { getDashboardsAPI } from "../../services/getDashboards.service";
+import { useSelector, useDispatch } from "react-redux";
+import { addItem, storeItems, updateItem } from "../../features/powerBiSlice";
 
 const config = {
   headers: { "Content-type": "application/json" },
 };
 
 export default function Register() {
+  const dispatch = useDispatch();
+  const powerBi = useSelector((state) => state.powerBi);
   const { type } = useParams();
   const [open, setOpen] = useState(false);
+  const [edit, setEdit] = useState(false);
 
   // state for input
   const [dashboard, setDashboard] = useState({
@@ -33,19 +40,42 @@ export default function Register() {
     description: "",
   });
 
-  //state for data
-  const [dashboards, setDashboards] = useState([]);
-  const [reports, setReports] = useState([]);
+  const tableData = powerBi[type];
 
   //state for ids
   const [data, setData] = useState({
-    content: { country: [], sizeCompany: [], sector: [], company: [] },
-    ids: { country: [], sizeCompany: [], sector: [], company: [] },
+    content: { company: [], report: [] },
+    ids: { company: [], report: [] },
   });
 
-  // get data
+  // get ids data
 
-  const getDashboards = async () => {
+  const companyConsume = async () => {
+    try {
+      await axios
+        .create({
+          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
+        })
+        .get("companias/", config)
+        .then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.nombreCompania)) {
+              fetch.push(val.nombreCompania);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.company = fetch;
+          holder.ids.company = id;
+          setData(holder);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const reportConsume = async () => {
     try {
       await axios
         .create({
@@ -53,44 +83,30 @@ export default function Register() {
         })
         .get("ListaDashboards/", config)
         .then((res) => {
-          let data = [];
+          let fetch = [];
+          let id = [];
           res.data.forEach((val) => {
-            if (!data.includes(val)) {
-              data.push(val);
+            if (!fetch.includes(val.nombreCompania)) {
+              fetch.push(val.nombreCompania);
+              id.push(val);
             }
           });
-          setDashboards(data);
+          let holder = data;
+          holder.content.report = fetch;
+          holder.ids.report = id;
+          setData(holder);
         });
     } catch (error) {
       console.log(error);
     }
   };
-  const getReports = async () => {
-    try {
-      await axios
-        .create({
-          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
-        })
-        .get("ListaReports/", config)
-        .then((res) => {
-          let data = [];
-          res.data.forEach((val) => {
-            if (!data.includes(val)) {
-              data.push(val);
-            }
-          });
-          setReports(data);
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // get ids data
 
   // handle modal
   const handleOpenModal = () => setOpen(true);
-  const handleCloseModal = () => setOpen(false);
+  const handleCloseModal = () => {
+    setOpen(false);
+    setEdit(false);
+  };
 
   // handle autocomplete change
 
@@ -101,14 +117,17 @@ export default function Register() {
     [dashboard]
   );
 
-  // handle add data
+  // handle data (new or edit)
 
-  const handleAddDashboard = () => {
-    let tmp = [...dashboards];
-    let holder = dashboard;
-    holder.id = uuid.v4();
-    tmp.push(holder);
-    setDashboards(tmp);
+  const handleDashboard = () => {
+    if (edit) {
+      dispatch(updateItem({ data: dashboard, type: type, id: dashboard._id }));
+    } else {
+      const id = uuid.v4();
+      let holder = dashboard;
+      holder._id = id;
+      dispatch(addItem({ data: holder, type: type }));
+    }
     setDashboard({
       nombreCompania: "",
       IdPais: "",
@@ -119,12 +138,15 @@ export default function Register() {
     });
     handleCloseModal();
   };
-  const handleAddReport = () => {
-    let tmp = [...reports];
-    let holder = report;
-    holder.id = uuid.v4();
-    tmp.push(holder);
-    setReports(tmp);
+  const handleReport = () => {
+    if (edit) {
+      dispatch(updateItem({ data: report, type: type, id: report._id }));
+    } else {
+      const id = uuid.v4();
+      let holder = report;
+      holder._id = id;
+      dispatch(addItem({ data: holder, type: type }));
+    }
     setReport({
       name: "",
       description: "",
@@ -147,7 +169,9 @@ export default function Register() {
     [report]
   );
 
-  const renderSwitch = () => {
+  // show modal
+
+  const renderModal = () => {
     switch (type) {
       case "dashboard":
         return (
@@ -157,7 +181,7 @@ export default function Register() {
             handleAutocomplete={handleAutoCompleteDashboard}
             handleChangeDashboard={handleChangeDashboard}
             handleCloseModal={handleCloseModal}
-            handleAddDashboard={handleAddDashboard}
+            handleAddDashboard={handleDashboard}
           />
         );
       case "report":
@@ -167,7 +191,7 @@ export default function Register() {
             content={data.content}
             handleChangeReport={handleChangeReport}
             handleCloseModal={handleCloseModal}
-            handleAddReport={handleAddReport}
+            handleAddReport={handleReport}
           />
         );
 
@@ -175,30 +199,69 @@ export default function Register() {
         return null;
     }
   };
-  const renderTable = () => {
+
+  //edit item
+  const handleEditItem = (row) => {
     switch (type) {
       case "dashboard":
-        return <Table dashboards={dashboards} type={type} ids={data.ids} />;
-
+        setDashboard({
+          ...row,
+        });
+        break;
       case "report":
-        return <Table reports={reports} type={type} ids={data.ids} />;
+        setReport({ ...row });
+        break;
       default:
-        return null;
+        break;
+    }
+    setEdit(true);
+  };
+
+  const getTableData = () => {
+    switch (type) {
+      case "dashboard":
+        reportConsume();
+        companyConsume();
+        getDashboardsAPI()
+          .then((res) => {
+            let data = [];
+            res.data.forEach((val) => {
+              let id = uuid.v4();
+              if (!data.includes(val)) {
+                let holder = val;
+                holder._id = id;
+                data.push(val);
+              }
+            });
+            dispatch(storeItems({ data, type: type }));
+          })
+          .catch((e) => console.log(e));
+        break;
+      case "report":
+        companyConsume();
+        getReportsAPI()
+          .then((res) => {
+            let data = [];
+            res.data.forEach((val) => {
+              let id = uuid.v4();
+              if (!data.includes(val)) {
+                let holder = val;
+                holder._id = id;
+                data.push(val);
+              }
+            });
+            dispatch(storeItems({ data, type: type }));
+          })
+          .catch((e) => console.log(e));
+        break;
+
+      default:
+        break;
     }
   };
 
   useEffect(() => {
-    switch (type) {
-      case "dashboard":
-        getDashboards();
-        break;
-      case "report":
-        getReports();
-        break;
-
-      default:
-        break;
-    }
+    getTableData();
   }, [type]);
 
   return (
@@ -206,21 +269,23 @@ export default function Register() {
       <Navbar />
       <Sidebar />
       <Modal
-        open={open}
+        open={open || edit}
         onClose={handleCloseModal}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         <Box className={styles.modal}>
           <div className={styles.modaltop}>
-            <h2>Nueva {type}</h2>
+            <h2>
+              {open ? "Nueva" : "Editar"} {type}
+            </h2>
             <div>
               <IconButton onClick={handleCloseModal}>
                 <ClearIcon sx={{ fontSize: "40px" }} />
               </IconButton>
             </div>
           </div>
-          <div className={styles.modalbuttom}>{renderSwitch()}</div>
+          <div className={styles.modalbuttom}>{renderModal()}</div>
         </Box>
       </Modal>
       <div style={{ backgroundColor: "white" }}>
@@ -251,7 +316,17 @@ export default function Register() {
                 </Button>
               </div>
             </div>
-            <div className={styles.buttom}>{renderTable()}</div>
+            <div className={styles.buttom}>
+              {
+                <Table
+                  tableData={tableData}
+                  type={type}
+                  ids={data.ids}
+                  content={data.content}
+                  handleEditItem={handleEditItem}
+                />
+              }
+            </div>
           </div>
         </div>
       </div>
