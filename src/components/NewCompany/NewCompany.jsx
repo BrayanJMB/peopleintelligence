@@ -141,7 +141,7 @@ export default function NewCompany(props) {
         <Button variant="text" onClick={props.handleCloseModal}>
           Cancelar
         </Button>
-        <Button variant="contained" onClick={props.handleAddCompany}>
+        <Button variant="contained" onClick={props.handleCompany}>
           Aceptar
         </Button>
       </div>

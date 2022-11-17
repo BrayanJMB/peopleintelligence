@@ -1,7 +1,11 @@
 import { grey } from "@mui/material/colors";
 import { DataGrid, gridClasses } from "@mui/x-data-grid";
 import { useMemo, useState, useEffect } from "react";
-import EditSave from "./EditSave";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/DeleteOutlined";
+import IconButton from "@mui/material/IconButton";
+import { removeItem } from "../features/adminSlice";
+import { useDispatch } from "react-redux";
 
 const search = (id, inputArray, field) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -12,6 +16,14 @@ const search = (id, inputArray, field) => {
 };
 
 export default function Table(props) {
+  const dispatch = useDispatch();
+  const [pageSize, setpageSize] = useState(5);
+  const [rows, setRows] = useState([]);
+
+  const handleDeleteItem = (id) => {
+    dispatch(removeItem({ id: id, type: props.type }));
+  };
+
   const company = [
     {
       field: "nombreCompania",
@@ -19,6 +31,7 @@ export default function Table(props) {
       headerName: "Nombre Empresa",
       headerAlign: "center",
       align: "center",
+      editable: "true",
     },
     {
       field: "IdPais",
@@ -26,8 +39,10 @@ export default function Table(props) {
       headerName: "Pais",
       headerAlign: "center",
       align: "center",
-
-      editable: true,
+      renderCell: (params) =>
+        isNaN(params.row.IdPais)
+          ? params.row.IdPais
+          : search(params.row.IdPais, props.ids.country, "pais"),
     },
     {
       field: "Sede",
@@ -70,10 +85,21 @@ export default function Table(props) {
           : search(params.row.SectorId, props.ids.sector, "Sector"),
     },
     {
-      field: "action",
-      headerName: "Actions",
+      field: "actions",
       type: "actions",
-      renderCell: (params) => <EditSave {...{ params, rowId, setRowId }} />,
+      headerName: "Actions",
+      width: 100,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <IconButton onClick={() => props.handleEditItem(params.row)}>
+            <EditIcon />
+          </IconButton>,
+          <IconButton onClick={() => handleDeleteItem(params.row._id)}>
+            <DeleteIcon />
+          </IconButton>,
+        ];
+      },
     },
   ];
 
@@ -95,6 +121,23 @@ export default function Table(props) {
         isNaN(params.row.IdCompania)
           ? params.row.IdCompania
           : search(params.row.IdCompania, props.ids.company, "nombreCompania"),
+    },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 100,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <IconButton onClick={() => props.handleEditItem(params.row)}>
+            <EditIcon />
+          </IconButton>,
+          <IconButton onClick={() => handleDeleteItem(params.row._id)}>
+            <DeleteIcon />
+          </IconButton>,
+        ];
+      },
     },
   ];
 
@@ -132,11 +175,54 @@ export default function Table(props) {
     },
   ];
 
-  const [pageSize, setpageSize] = useState(5);
-  const [rows, setRows] = useState([]);
-  const [rowId, setRowId] = useState(null);
+  const department = [
+    {
+      field: "codigoDepartamento",
+      flex: 1,
+      headerName: "Department Code",
+      headerAlign: "center",
+      align: "center",
+      editable: "true",
+    },
+    {
+      field: "IdPais",
+      flex: 1,
+      headerName: "Pais",
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) =>
+        isNaN(params.row.IdPais)
+          ? params.row.IdPais
+          : search(params.row.IdPais, props.ids.country, "pais"),
+    },
 
-  const renderSwitch = () => {
+    {
+      field: "departamento",
+      flex: 1,
+      headerName: "departamento",
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 100,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <IconButton onClick={() => props.handleEditItem(params.row)}>
+            <EditIcon />
+          </IconButton>,
+          <IconButton onClick={() => handleDeleteItem(params.row._id)}>
+            <DeleteIcon />
+          </IconButton>,
+        ];
+      },
+    },
+  ];
+
+  const renderColumn = () => {
     switch (props.type) {
       case "Empresas":
         return company;
@@ -146,63 +232,18 @@ export default function Table(props) {
         return dashboard;
       case "report":
         return report;
+      case "Departamentos":
+        return department;
       default:
         return null;
     }
   };
 
-  const columns = useMemo(() => renderSwitch(), [props.type, rowId]);
+  const columns = useMemo(() => renderColumn(), [props.type]);
 
   useEffect(() => {
-    let data = [];
-    switch (props.type) {
-      case "Empresas":
-        if (
-          props.ids.country.length !== 0 &&
-          props.ids.sizeCompany.length !== 0 &&
-          props.ids.sector.length !== 0
-        ) {
-          props.companias.forEach((val) => {
-            let holder = val;
-            holder._id = val.id;
-            holder.IdPais = isNaN(val.IdPais)
-              ? val.IdPais
-              : search(val.IdPais, props.ids.country, "pais");
-            data.push(holder);
-          });
-          setRows(data);
-        }
-        break;
-      case "Oficinas":
-        if (props.ids.company.length !== 0) {
-          props.oficinas.forEach((val) => {
-            let holder = val;
-            holder._id = val.id;
-            data.push(holder);
-          });
-          setRows(data);
-        }
-        break;
-      case "dashboard":
-        props.dashboards.forEach((val) => {
-          let holder = val;
-          holder._id = val.id;
-          data.push(holder);
-        });
-        setRows(data);
-        break;
-      case "report":
-        props.reports.forEach((val) => {
-          let holder = val;
-          holder._id = val.id;
-          data.push(holder);
-        });
-        setRows(data);
-        break;
-      default:
-        break;
-    }
-  }, [props]);
+    setRows(props.tableData);
+  }, [props.tableData]);
 
   return (
     <DataGrid
@@ -222,7 +263,6 @@ export default function Table(props) {
             theme.palette.mode === "light" ? grey[200] : grey[900],
         },
       }}
-      onCellEditCommit={(params) => setRowId(params.id)}
     />
   );
 }
