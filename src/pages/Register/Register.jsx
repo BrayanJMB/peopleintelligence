@@ -32,8 +32,12 @@ export default function Register() {
 
   // state for input
   const [dashboard, setDashboard] = useState({
-    nombreCompania: "",
-    IdPais: "",
+    reportId: "",
+    groupId: "",
+    reportName: "",
+    descriptionReport: "",
+    isActive: "",
+    companyId: "",
   });
   const [report, setReport] = useState({
     name: "",
@@ -42,7 +46,7 @@ export default function Register() {
 
   const tableData = powerBi[type];
 
-  //state for ids
+  // state for ids
   const [data, setData] = useState({
     content: { company: [], report: [] },
     ids: { company: [], report: [] },

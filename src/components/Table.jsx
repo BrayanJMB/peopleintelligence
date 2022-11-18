@@ -147,18 +147,42 @@ export default function Table(props) {
 
   const dashboard = [
     {
-      field: "dashboard",
+      field: "companyId",
       flex: 1,
-      headerName: "dashboard",
+      headerName: "Company Name",
       headerAlign: "center",
       align: "center",
     },
     {
-      field: "name",
+      field: "title dashboard",
       flex: 1,
-      headerName: "name",
+      headerName: "reportId",
       headerAlign: "center",
       align: "center",
+    },
+    {
+      field: "isActive",
+      flex: 1,
+      headerName: "Status",
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 100,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <IconButton onClick={() => props.handleEditItem(params.row)}>
+            <EditIcon />
+          </IconButton>,
+          <IconButton onClick={() => handleDeleteItemBi(params.row._id)}>
+            <DeleteIcon />
+          </IconButton>,
+        ];
+      },
     },
   ];
 

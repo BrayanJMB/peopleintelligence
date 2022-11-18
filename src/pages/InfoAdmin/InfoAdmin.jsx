@@ -50,6 +50,7 @@ export default function InfoAdmin() {
   });
   const tableData = admin[type];
 
+  // state for ids
   const [data, setData] = useState({
     content: { country: [], sizeCompany: [], sector: [], company: [] },
     ids: { country: [], sizeCompany: [], sector: [], company: [] },
