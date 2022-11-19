@@ -1,39 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const authSlice = createSlice({
+export const authSlice = createSlice({
   name: "auth",
   initialState: {
-    Empresas: [],
-    Empleados: [],
-    Departamentos: [],
-    Oficinas: [],
+    user: null,
+    token: null,
+    Company: null,
+    roles: [],
   },
   reducers: {
-    addItem: (state, action) => {
-      let type = action.payload.type;
-      state[type].push(action.payload.data);
+    setCredentials: (state, action) => {
+      const { user, accesToken, Company } = action.payload;
+      state.user = user;
+      state.token = accesToken;
+      state.Company = Company;
     },
-    removeItem: (state, action) => {
-      let type = action.payload.type;
-      let index = state[type].findIndex((p) => p._id === action.payload.id);
-      if (index > -1) {
-        state[type].splice(index, 1);
-      }
-    },
-    updateItem: (state, action) => {
-      let type = action.payload.type;
-      let index = state[type].findIndex((p) => p._id === action.payload.id);
-      let holder = [...state[type]];
-      holder[index] = action.payload.data;
-      state[type] = holder;
-    },
-    storeItems: (state, action) => {
-      let type = action.payload.type;
-      state[type] = action.payload.data;
+    logOut: (state) => {
+      state.user = null;
+      state.token = null;
     },
   },
 });
 
-export const { addItem, removeItem, updateItem, storeItems } =
-  authSlice.actions;
+export const { logOut, setCredentials } = authSlice.actions;
+export const selectCurrentUser = (state) => state.auth.user;
+export const selectCurrentToken = (state) => state.auth.token;
 export default authSlice.reducer;

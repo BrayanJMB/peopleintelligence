@@ -8,12 +8,24 @@ import One from "../../components/One/One";
 import Multiple from "../../components/Multiple/Multiple";
 import axios from "axios";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useSelector, useDispatch } from "react-redux";
+import { setCredentials } from "../../features/authSlice";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const config = {
   headers: { "Content-type": "application/json" },
 };
 
 export default function Home() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const urlParams = new URLSearchParams(location.hash);
+  const result = {};
+  for (const entry of urlParams.entries()) {
+    result[entry[0]] = entry[1];
+  }
+  const access_token = result["#access_token"];
   const [begin, setBegin] = useState(true);
   const [one, setOne] = useState(false);
   const [multiple, setMultiple] = useState(false);
@@ -158,6 +170,42 @@ export default function Home() {
     }
   };
 
+  const decodeToken = (token) => {
+    var base64Url = token.split(".")[1];
+    var base64 = decodeURIComponent(
+      atob(base64Url)
+        .split("")
+        .map((c) => {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join("")
+    );
+    return JSON.parse(base64);
+  };
+
+  const tokenConsume = async () => {
+    try {
+      await axios
+        .create({
+          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
+        })
+        .post("Aut/", { bearer: access_token }, config)
+        .then((res) => {
+          let token = res.data.token;
+          let decodedToken = decodeToken(token);
+          dispatch(
+            setCredentials({
+              user: decodedToken.user,
+              Company: decodedToken.Company,
+              accesToken: token,
+            })
+          );
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleautocomplete = useCallback(
     (part, name, value) => {
       let holder = info[part];
@@ -209,6 +257,13 @@ export default function Home() {
   };
 
   useEffect(() => {
+    if (!access_token) {
+      window.location.replace(
+        "https://pruebaapib2c.b2clogin.com/PruebaAPib2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_SignInSingUp&client_id=08cfdf65-11e3-45b6-a745-3c0bd35777ae&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fhappy-island-0e573c910.2.azurestaticapps.net%2F&scope=https%3A%2F%2FPruebaAPib2c.onmicrosoft.com%2FApidinamic%2FApi.ReadWrite&response_type=token&prompt=login"
+      );
+    } else {
+      tokenConsume();
+    }
     if (data.content.country.length === 0) {
       countryConsume();
     }
