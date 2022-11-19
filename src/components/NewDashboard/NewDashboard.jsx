@@ -1,12 +1,12 @@
 import { useState } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import styles from "./NewCompany.module.css";
+import styles from "./NewDashboard.module.css";
 import Button from "@mui/material/Button";
 
 const validphone = new RegExp("^[0-9]{12,15}$");
 
-export default function NewCompany(props) {
+export default function NewDashboard(props) {
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
 
@@ -35,113 +35,104 @@ export default function NewCompany(props) {
       <div className={styles.input}>
         <TextField
           id="outlined-name"
-          label="Nombre de la empresa"
-          value={props.info.nombreCompania}
-          name="nombreCompania"
-          onChange={props.handleChangeCompania}
+          label="Report Id"
+          value={props.info.reportId}
+          name="reportId"
+          onChange={props.handleChangeDashboard}
           style={{ flexBasis: "40%" }}
-          error={errorMessage.nombreCompania}
-          helperText={helperText.nombreCompania}
+          error={errorMessage.reportId}
+          helperText={helperText.reportId}
           size="small"
           onBlur={handleBlur}
         />
-        <Autocomplete
-          id="combo-box-demo"
+        <TextField
+          id="outlined-name"
+          label="Group Id"
+          value={props.info.groupId}
+          name="groupId"
+          onChange={props.handleChangeDashboard}
           style={{ flexBasis: "40%" }}
-          options={props.content.sector}
-          clearOnEscape
-          value={props.info.SectorId}
-          onChange={(e, value) => {
-            props.handleAutocomplete("SectorId", value);
-          }}
-          getOptionLabel={(option) => option}
-          noOptionsText={"No se ha encontrado ningún Sector"}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              error={errorMessage.numeroDocumento}
-              helperText={helperText.numeroDocumento}
-              label="Sector"
-            />
-          )}
+          error={errorMessage.groupId}
+          helperText={helperText.groupId}
           size="small"
+          onBlur={handleBlur}
         />
       </div>
       <div className={styles.input}>
         <Autocomplete
           id="combo-box-demo"
           style={{ flexBasis: "40%" }}
-          options={props.content.country}
+          options={props.content.company}
           clearOnEscape
-          value={props.info.IdPais}
+          value={props.info.companyId}
           onChange={(e, value) => {
-            props.handleAutocomplete("IdPais", value);
+            props.handleAutocomplete("companyId", value);
           }}
           getOptionLabel={(option) => option}
           noOptionsText={"No se ha encontrado ningún País"}
           renderInput={(params) => (
             <TextField
               {...params}
-              error={errorMessage.IdPais}
-              helperText={helperText.IdPais}
-              label="País"
+              error={errorMessage.companyId}
+              helperText={helperText.companyId}
+              label="company Name"
             />
           )}
           size="small"
         />
-        <TextField
+        <Autocomplete
+          id="combo-box-demo"
           style={{ flexBasis: "40%" }}
-          id="outlined-name"
-          label="Sede"
-          value={props.info.Sede}
-          name="Sede"
-          onChange={props.handleChangeCompania}
-          error={errorMessage.Sede}
-          helperText={helperText.Sede}
+          options={props.content.report}
+          clearOnEscape
+          value={props.info.reportName}
+          onChange={(e, value) => {
+            props.handleAutocomplete("reportName", value);
+          }}
+          getOptionLabel={(option) => option}
+          noOptionsText={"No se ha encontrado ningún País"}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              error={errorMessage.reportName}
+              helperText={helperText.reportName}
+              label="Report Name"
+            />
+          )}
           size="small"
-          onBlur={handleBlur}
         />
       </div>
       <div className={styles.input}>
         <TextField
           style={{ flexBasis: "40%" }}
           id="outlined-name"
-          label="Dirección"
-          value={props.info.direccion}
-          name="direccion"
-          onChange={props.handleChangeCompania}
-          error={errorMessage.direccion}
-          helperText={helperText.direccion}
+          label="descriptionReport"
+          value={props.info.descriptionReport}
+          name="descriptionReport"
+          onChange={props.handleChangeDashboard}
+          error={errorMessage.descriptionReport}
+          helperText={helperText.descriptionReport}
           size="small"
           onBlur={handleBlur}
         />
-        <Autocomplete
-          id="combo-box-demo"
+        <TextField
           style={{ flexBasis: "40%" }}
-          options={props.content.sizeCompany}
-          clearOnEscape
-          value={props.info.IdTamanoCompania}
-          onChange={(e, value) => {
-            props.handleAutocomplete("IdTamanoCompania", value);
-          }}
-          getOptionLabel={(option) => option}
-          noOptionsText={"No se ha encontrado ningún País"}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              error={errorMessage.IdTamanoCompania}
-              helperText={helperText.IdTamanoCompania}
-              label="Tamaño de la empresa"
-            />
-          )}
+          id="outlined-name"
+          label="isActive"
+          value={props.info.isActive}
+          name="isActive"
+          onChange={props.handleChangeDashboard}
+          error={errorMessage.isActive}
+          helperText={helperText.isActive}
           size="small"
+          onBlur={handleBlur}
         />
       </div>
       <div className={styles.impexp}>
         <Button variant="text" onClick={props.handleCloseModal}>
           Cancelar
         </Button>
-        <Button variant="contained" onClick={props.handleCompany}>
+        <Button variant="contained" onClick={props.handleAddDashboard}>
           Aceptar
         </Button>
       </div>

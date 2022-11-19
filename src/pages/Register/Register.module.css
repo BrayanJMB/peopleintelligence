@@ -1,0 +1,52 @@
+.content {
+  width: 83vw;
+  height: 92vh;
+  margin-top: 4rem;
+}
+.crud {
+  display: flex;
+  flex-direction: column;
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  padding: 1em 2em;
+}
+
+.type {
+  display: flex;
+  align-items: center;
+}
+.new {
+  display: flex;
+  align-items: center;
+  margin-right: 2rem;
+}
+.icontype {
+  width: 5rem;
+  height: 5rem;
+  margin-right: 1rem;
+}
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 60vh;
+  transform: translate(-50%, -50%);
+  width: 65vw;
+  background-color: white;
+  box-shadow: 24px;
+  padding: 1rem;
+}
+.modaltop {
+  display: flex;
+  justify-content: space-between;
+}
+.modalbuttom {
+  display: block;
+}
+.buttom {
+  height: 70vh;
+  padding: 0 1em;
+  margin: 0 2em;
+}

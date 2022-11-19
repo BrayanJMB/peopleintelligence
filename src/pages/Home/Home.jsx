@@ -55,7 +55,7 @@ export default function Home() {
     try {
       await axios
         .create({
-          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
         })
         .get("Sector/", config)
         .then((res) => {
@@ -81,7 +81,7 @@ export default function Home() {
     try {
       await axios
         .create({
-          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
         })
         .get("TamanoCompania/", config)
         .then((res) => {
@@ -109,7 +109,7 @@ export default function Home() {
       await axios
         .create({
           baseURL:
-            "https://dynamicliveconversationapi.azurewebsites.net/api/paises/",
+            "https://peopleintelligenceapi.azurewebsites.net/api/paises/",
         })
         .get("", config)
         .then((res) => {
@@ -136,7 +136,7 @@ export default function Home() {
       await axios
         .create({
           baseURL:
-            "https://dynamicliveconversationapi.azurewebsites.net/api/tipo-documentos/",
+            "https://peopleintelligenceapi.azurewebsites.net/api/tipo-documentos/",
         })
         .get("", config)
         .then((res) => {

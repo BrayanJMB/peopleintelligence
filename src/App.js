@@ -4,30 +4,34 @@ import Home from "./pages/Home/Home";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Onas from "./pages/Onas/Onas";
 import PowerBI from "./pages/PowerBI/PowerBI";
-import PowerBIDashboard from "./pages/PowerBI/DashboardPowerBI";
+import Register from "./pages/Register/Register";
 import InfoAdmin from "./pages/InfoAdmin/InfoAdmin";
 import Conversation from "./pages/Conversation/Conversation";
 import Journey from "./pages/Journey/Journey";
 import Template from "./pages/Journey/Template/Template";
 import CreateSurvey from "./pages/Journey/CreateSurvey/CreateSurvey";
 import Error from "./pages/Error/Error";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/onas" element={<Onas />} />
-        <Route path="/powerbi" element={<PowerBI />} />
-        <Route path="/powerbi/dash" element={<PowerBIDashboard />} />
-        <Route path="/infoadmin/:type" element={<InfoAdmin />} />
-        <Route path="/conversation/:type" element={<Conversation />} />
-        <Route path="/journey" element={<Journey />} />
-        <Route path="/journey/survey-template" element={<Template />} />
-        <Route path="/journey/create-survey" element={<CreateSurvey />} />
-        <Route path="*" element={<Error />} />
-      </Routes>
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/onas" element={<Onas />} />
+          <Route path="/powerbi" element={<PowerBI />} />
+          <Route path="/register/:type" element={<Register />} />
+          <Route path="/infoadmin/:type" element={<InfoAdmin />} />
+          <Route path="/conversation/:type" element={<Conversation />} />
+          <Route path="/journey" element={<Journey />} />
+          <Route path="/journey/survey-template" element={<Template />} />
+          <Route path="/journey/create-survey" element={<CreateSurvey />} />
+          <Route path="*" element={<Error />} />
+        </Routes>
+      </Router>
+    </Provider>
   );
 }

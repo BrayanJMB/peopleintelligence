@@ -9,19 +9,28 @@ import Modal from "@mui/material/Modal";
 import ClearIcon from "@mui/icons-material/Clear";
 import IconButton from "@mui/material/IconButton";
 import NewCompany from "../../components/NewCompany/NewCompany";
-import NewCampus from "../../components/NewCampus/NewCampus";
+import NewOffice from "../../components/NewOffice/NewOffice";
+import NewDepartment from "../../components/NewDepartment/NewDepartment";
 import Sidebar from "../../Layout/Sidebar/Sidebar";
 import Table from "../../components/Table";
 import * as uuid from "uuid";
 import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { getCompaniesAPI } from "../../services/getCompanies.service";
+import { getOfficesAPI } from "../../services/getOffices.service";
+import { getDepartmentsAPI } from "../../services/getDepartments.service";
+import { addItem, storeItems, updateItem } from "../../features/adminSlice";
 
 const config = {
   headers: { "Content-type": "application/json" },
 };
 
 export default function InfoAdmin() {
+  const dispatch = useDispatch();
+  const admin = useSelector((state) => state.admin);
   const { type } = useParams();
   const [open, setOpen] = useState(false);
+  const [edit, setEdit] = useState(false);
   const [compania, setCompania] = useState({
     nombreCompania: "",
     IdPais: "",
@@ -34,59 +43,26 @@ export default function InfoAdmin() {
     sede: "",
     IdCompania: "",
   });
-  const [companias, setCompanias] = useState([]);
-  const [oficinas, setOficinas] = useState([]);
+  const [department, setDepartement] = useState({
+    IdPais: "",
+    codigoDepartamento: "",
+    departamento: "",
+  });
+  const tableData = admin[type];
 
+  // state for ids
   const [data, setData] = useState({
     content: { country: [], sizeCompany: [], sector: [], company: [] },
     ids: { country: [], sizeCompany: [], sector: [], company: [] },
   });
 
-  const companyConsume = async () => {
-    try {
-      await axios
-        .create({
-          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
-        })
-        .get("companias/", config)
-        .then((res) => {
-          let data = [];
-          res.data.forEach((val) => {
-            if (!data.includes(val)) {
-              data.push(val);
-            }
-          });
-          setCompanias(data);
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const campusConsume = async () => {
-    try {
-      await axios
-        .create({
-          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
-        })
-        .get("Campus/", config)
-        .then((res) => {
-          let data = [];
-          res.data.forEach((val) => {
-            if (!data.includes(val)) {
-              data.push(val);
-            }
-          });
-          setOficinas(data);
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // get ids data
+
   const sectorConsume = async () => {
     try {
       await axios
         .create({
-          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
         })
         .get("Sector/", config)
         .then((res) => {
@@ -111,7 +87,7 @@ export default function InfoAdmin() {
     try {
       await axios
         .create({
-          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
         })
         .get("TamanoCompania/", config)
         .then((res) => {
@@ -138,7 +114,7 @@ export default function InfoAdmin() {
       await axios
         .create({
           baseURL:
-            "https://dynamicliveconversationapi.azurewebsites.net/api/paises/",
+            "https://peopleintelligenceapi.azurewebsites.net/api/paises/",
         })
         .get("", config)
         .then((res) => {
@@ -159,11 +135,11 @@ export default function InfoAdmin() {
       console.log(error);
     }
   };
-  const oficinasConsume = async () => {
+  const companyConsume = async () => {
     try {
       await axios
         .create({
-          baseURL: "https://dynamicliveconversationapi.azurewebsites.net/api/",
+          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
         })
         .get("companias/", config)
         .then((res) => {
@@ -184,20 +160,47 @@ export default function InfoAdmin() {
       console.log(error);
     }
   };
+
+  // handle modal
   const handleOpenModal = () => setOpen(true);
-  const handleCloseModal = () => setOpen(false);
-  const handleautocomplete = useCallback(
+  const handleCloseModal = () => {
+    setOpen(false);
+    setEdit(false);
+  };
+
+  // handle autocomplete change
+
+  const handleAutoCompleteCompany = useCallback(
     (name, value) => {
       setCompania({ ...compania, [name]: value });
     },
     [compania]
   );
-  const handleAddCompany = () => {
-    let tmp = [...companias];
-    let holder = compania;
-    holder.id = uuid.v4();
-    tmp.push(holder);
-    setCompanias(tmp);
+  const handleAutoCompleteOficina = useCallback(
+    (name, value) => {
+      setOficina({ ...oficina, [name]: value });
+    },
+    [oficina]
+  );
+  const handleAutoCompleteDepartment = useCallback(
+    (name, value) => {
+      setDepartement({ ...department, [name]: value });
+    },
+    [department]
+  );
+
+  // handle data (new or edit)
+
+  const handleCompany = () => {
+    if (edit) {
+      dispatch(updateItem({ data: compania, type: type, id: compania._id }));
+    } else {
+      const id = uuid.v4();
+      let holder = compania;
+      holder._id = id;
+      dispatch(addItem({ data: holder, type: type }));
+    }
+
     setCompania({
       nombreCompania: "",
       IdPais: "",
@@ -208,18 +211,42 @@ export default function InfoAdmin() {
     });
     handleCloseModal();
   };
-  const handleAddOficina = () => {
-    let tmp = [...oficinas];
-    let holder = oficina;
-    holder.id = uuid.v4();
-    tmp.push(holder);
-    setOficinas(tmp);
+  const handleOficina = () => {
+    if (edit) {
+      dispatch(updateItem({ data: oficina, type: type, id: oficina._id }));
+    } else {
+      const id = uuid.v4();
+      let holder = oficina;
+      holder._id = id;
+      dispatch(addItem({ data: holder, type: type }));
+    }
     setOficina({
       sede: "",
       IdCompania: "",
     });
     handleCloseModal();
   };
+  const handleDepartment = () => {
+    if (edit) {
+      dispatch(
+        updateItem({ data: department, type: type, id: department._id })
+      );
+    } else {
+      const id = uuid.v4();
+      let holder = department;
+      holder._id = id;
+      dispatch(addItem({ data: holder, type: type }));
+    }
+    setDepartement({
+      IdPais: "",
+      codigoDepartamento: "",
+      departamento: "",
+    });
+    handleCloseModal();
+  };
+
+  // handle change input
+
   const handleChangeCompania = useCallback(
     (event) => {
       setCompania({ ...compania, [event.target.name]: event.target.value });
@@ -232,80 +259,142 @@ export default function InfoAdmin() {
     },
     [oficina]
   );
-
-  const handleAutoCompleteOficina = useCallback(
-    (name, value) => {
-      setOficina({ ...oficina, [name]: value });
+  const handleChangeDepartment = useCallback(
+    (event) => {
+      setDepartement({
+        ...department,
+        [event.target.name]: event.target.value,
+      });
     },
-    [oficina]
+    [department]
   );
 
-  const renderSwitch = () => {
+  // show modal
+
+  const renderModal = () => {
     switch (type) {
       case "Empresas":
         return (
           <NewCompany
             info={compania}
             content={data.content}
-            handleAutocomplete={handleautocomplete}
+            handleAutocomplete={handleAutoCompleteCompany}
             handleChangeCompania={handleChangeCompania}
             handleCloseModal={handleCloseModal}
-            handleAddCompany={handleAddCompany}
+            handleCompany={handleCompany}
           />
         );
-      //case "Empleados":
       case "Oficinas":
         return (
-          <NewCampus
+          <NewOffice
             info={oficina}
             content={data.content}
             handleAutocomplete={handleAutoCompleteOficina}
             handleChangeOficina={handleChangeOficina}
             handleCloseModal={handleCloseModal}
-            handleAddCampus={handleAddOficina}
+            handleOffice={handleOficina}
           />
         );
-
+      case "Departamentos":
+        return (
+          <NewDepartment
+            info={department}
+            content={data.content}
+            handleAutocomplete={handleAutoCompleteDepartment}
+            handleChangeDepartment={handleChangeDepartment}
+            handleCloseModal={handleCloseModal}
+            handleDepartment={handleDepartment}
+          />
+        );
       default:
         return null;
     }
   };
-  const renderTable = () => {
+
+  //edit item
+  const handleEditItem = (row) => {
     switch (type) {
       case "Empresas":
-        return <Table companias={companias} type={type} ids={data.ids} />;
-
+        setCompania({
+          ...row,
+        });
+        break;
       case "Oficinas":
-        return <Table oficinas={oficinas} type={type} ids={data.ids} />;
+        setOficina({ ...row });
+        break;
+      case "Departamentos":
+        setDepartement({ ...row });
+        break;
       default:
-        return null;
+        break;
+    }
+    setEdit(true);
+  };
+
+  // get data
+
+  const getTableData = () => {
+    switch (type) {
+      case "Empresas":
+        countryConsume();
+        sizeCompanyConsume();
+        sectorConsume();
+        getCompaniesAPI()
+          .then((res) => {
+            let data = [];
+            res.data.forEach((val) => {
+              let id = uuid.v4();
+              if (!data.includes(val)) {
+                let holder = val;
+                holder._id = id;
+                data.push(val);
+              }
+            });
+            dispatch(storeItems({ data, type: type }));
+          })
+          .catch((e) => console.log(e));
+        break;
+      case "Oficinas":
+        companyConsume();
+        getOfficesAPI()
+          .then((res) => {
+            let data = [];
+            res.data.forEach((val) => {
+              let id = uuid.v4();
+              if (!data.includes(val)) {
+                let holder = val;
+                holder._id = id;
+                data.push(val);
+              }
+            });
+            dispatch(storeItems({ data, type: type }));
+          })
+          .catch((e) => console.log(e));
+        break;
+      case "Departamentos":
+        countryConsume();
+        getDepartmentsAPI()
+          .then((res) => {
+            let data = [];
+            res.data.forEach((val) => {
+              let id = uuid.v4();
+              if (!data.includes(val)) {
+                let holder = val;
+                holder._id = id;
+                data.push(val);
+              }
+            });
+            dispatch(storeItems({ data, type: type }));
+          })
+          .catch((e) => console.log(e));
+        break;
+      default:
+        break;
     }
   };
 
   useEffect(() => {
-    switch (type) {
-      case "Empresas":
-        if (data.content.country.length === 0) {
-          countryConsume();
-        }
-        if (data.content.sizeCompany.length === 0) {
-          sizeCompanyConsume();
-        }
-        if (data.content.sector.length === 0) {
-          sectorConsume();
-        }
-        companyConsume();
-        break;
-      case "Oficinas":
-        if (data.content.sector.length === 0) {
-          oficinasConsume();
-        }
-        campusConsume();
-        break;
-
-      default:
-        break;
-    }
+    getTableData();
   }, [type]);
 
   return (
@@ -313,21 +402,23 @@ export default function InfoAdmin() {
       <Navbar />
       <Sidebar />
       <Modal
-        open={open}
+        open={open || edit}
         onClose={handleCloseModal}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         <Box className={styles.modal}>
           <div className={styles.modaltop}>
-            <h2>Nueva {type}</h2>
+            <h2>
+              {open ? "Nueva" : "Editar"} {type}
+            </h2>
             <div>
               <IconButton onClick={handleCloseModal}>
                 <ClearIcon sx={{ fontSize: "40px" }} />
               </IconButton>
             </div>
           </div>
-          <div className={styles.modalbuttom}>{renderSwitch()}</div>
+          <div className={styles.modalbuttom}>{renderModal()}</div>
         </Box>
       </Modal>
       <div style={{ backgroundColor: "white" }}>
@@ -358,7 +449,15 @@ export default function InfoAdmin() {
                 </Button>
               </div>
             </div>
-            <div className={styles.buttom}>{renderTable()}</div>
+            <div className={styles.buttom}>
+              <Table
+                tableData={tableData}
+                type={type}
+                ids={data.ids}
+                content={data.content}
+                handleEditItem={handleEditItem}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -66,7 +66,7 @@ export default function Onas() {
       await axios
         .create({
           baseURL:
-            "https://dynamicliveconversationapi.azurewebsites.net/api/OnasSurvey/OnasDownloadBase",
+            "https://peopleintelligenceapi.azurewebsites.net/api/OnasSurvey/OnasDownloadBase",
         })
         .get("", config)
         .then((res) => {
@@ -82,7 +82,7 @@ export default function Onas() {
       await axios
         .create({
           baseURL:
-            "https://dynamicliveconversationapi.azurewebsites.net/api/OnasSurvey/",
+            "https://peopleintelligenceapi.azurewebsites.net/api/OnasSurvey/",
         })
         .post("" + companyId + "/" + versionId, { data: file }, config2)
         .then((res) => {
@@ -117,7 +117,7 @@ export default function Onas() {
       await axios
         .create({
           baseURL:
-            "https://dynamicliveconversationapi.azurewebsites.net/api/OnasSurvey/EnvioMAilOnas/",
+            "https://peopleintelligenceapi.azurewebsites.net/api/OnasSurvey/EnvioMAilOnas/",
         })
         .get(versionId, config)
         .then((res) => {

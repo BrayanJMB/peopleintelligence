@@ -65,6 +65,9 @@ export default function Navbar() {
   const handleHome = () => {
     navigate("/dashboard");
   };
+  const handleRegister = (text) => {
+    navigate("/register/" + text);
+  };
   return (
     <AppBar
       sx={{
@@ -120,7 +123,7 @@ export default function Navbar() {
               open={open}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>
+              <MenuItem>
                 <IconButton>
                   <Logout />
                 </IconButton>
@@ -133,7 +136,12 @@ export default function Navbar() {
               open={open2}
               onClose={handleClose2}
             >
-              <MenuItem onClick={handleClose2}>registar powerBI</MenuItem>
+              <MenuItem onClick={() => handleRegister("dashboard")}>
+                registar Dashboard
+              </MenuItem>
+              <MenuItem onClick={() => handleRegister("report")}>
+                registar Report
+              </MenuItem>
             </Menu>
           </Box>
         </Toolbar>
