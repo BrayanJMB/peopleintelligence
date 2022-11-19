@@ -6,6 +6,14 @@ import Button from "@mui/material/Button";
 
 const validphone = new RegExp("^[0-9]{12,15}$");
 
+const search = (value, inputArray, field) => {
+  for (let i = 0; i < inputArray.length; i++) {
+    if (inputArray[i].name === value) {
+      return inputArray[i][field];
+    }
+  }
+};
+
 export default function NewDashboard(props) {
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
@@ -110,10 +118,8 @@ export default function NewDashboard(props) {
           value={props.info.descriptionReport}
           name="descriptionReport"
           onChange={props.handleChangeDashboard}
-          error={errorMessage.descriptionReport}
-          helperText={helperText.descriptionReport}
           size="small"
-          onBlur={handleBlur}
+          disabled
         />
         <TextField
           style={{ flexBasis: "40%" }}
