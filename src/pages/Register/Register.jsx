@@ -19,8 +19,22 @@ import { getDashboardsAPI } from "../../services/getDashboards.service";
 import { useSelector, useDispatch } from "react-redux";
 import { addItem, storeItems, updateItem } from "../../features/powerBiSlice";
 
+const token =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNzcxYzAxZWEtZGVjZi00NmYxLWI4ZjQtOTA0OGE4NjUzMmQ5IiwiQ29tcGFueSI6IjAiLCJuYmYiOjE2Njg4Nzk2NTIsImV4cCI6MTY2ODg5MDQ1MiwiaWF0IjoxNjY4ODc5NjUyfQ.RaouR5Rnr2Wveokn9_7XY_Yo2KUT9_4KKHGDUwR7Qw4";
+
 const config = {
-  headers: { "Content-type": "application/json" },
+  headers: {
+    "Content-type": "application/json",
+    Authorization: `Bearer ${token}`,
+  },
+};
+
+const search = (value, inputArray, field) => {
+  for (let i = 0; i < inputArray.length; i++) {
+    if (inputArray[i].name === value) {
+      return inputArray[i][field];
+    }
+  }
 };
 
 export default function Register() {
@@ -90,8 +104,8 @@ export default function Register() {
           let fetch = [];
           let id = [];
           res.data.forEach((val) => {
-            if (!fetch.includes(val.nombreCompania)) {
-              fetch.push(val.nombreCompania);
+            if (!fetch.includes(val.name)) {
+              fetch.push(val.name);
               id.push(val);
             }
           });
@@ -116,7 +130,16 @@ export default function Register() {
 
   const handleAutoCompleteDashboard = useCallback(
     (name, value) => {
-      setDashboard({ ...dashboard, [name]: value });
+      if (name === "reportName") {
+        let holder = search(value, data.ids.report, "descripcion");
+        setDashboard({
+          ...dashboard,
+          [name]: value,
+          descriptionReport: holder,
+        });
+      } else {
+        setDashboard({ ...dashboard, [name]: value });
+      }
     },
     [dashboard]
   );
@@ -182,6 +205,7 @@ export default function Register() {
           <NewDashboard
             info={dashboard}
             content={data.content}
+            ids={data.ids}
             handleAutocomplete={handleAutoCompleteDashboard}
             handleChangeDashboard={handleChangeDashboard}
             handleCloseModal={handleCloseModal}

@@ -154,9 +154,9 @@ export default function Table(props) {
       align: "center",
     },
     {
-      field: "title dashboard",
+      field: "reportName",
       flex: 1,
-      headerName: "reportId",
+      headerName: "title dashboard",
       headerAlign: "center",
       align: "center",
     },
