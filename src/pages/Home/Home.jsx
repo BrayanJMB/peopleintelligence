@@ -6,19 +6,14 @@ import Building from "../../assets/Building.svg";
 import Button from "@mui/material/Button";
 import One from "../../components/One/One";
 import Multiple from "../../components/Multiple/Multiple";
-import axios from "axios";
+import axios from "../../utils/axiosInstance";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setCredentials } from "../../features/authSlice";
-import { useLocation, useNavigate } from "react-router-dom";
-
-const config = {
-  headers: { "Content-type": "application/json" },
-};
+import { useLocation } from "react-router-dom";
 
 export default function Home() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const location = useLocation();
   const urlParams = new URLSearchParams(location.hash);
   const result = {};
@@ -63,108 +58,110 @@ export default function Home() {
     },
   });
 
-  const sectorConsume = async () => {
+  const sectorConsume = async (token) => {
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
     try {
-      await axios
-        .create({
-          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
-        })
-        .get("Sector/", config)
-        .then((res) => {
-          let fetch = [];
-          let id = [];
-          res.data.forEach((val) => {
-            if (!fetch.includes(val.Sector)) {
-              fetch.push(val.Sector);
-              id.push(val);
-            }
-          });
-          let holder = data;
-          holder.content.sector = fetch;
-          holder.ids.sector = id;
-          setData(holder);
+      await axios.get("Sector/", config).then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.Sector)) {
+            fetch.push(val.Sector);
+            id.push(val);
+          }
         });
+        let holder = data;
+        holder.content.sector = fetch;
+        holder.ids.sector = id;
+        setData(holder);
+      });
     } catch (error) {
       console.log(error);
     }
   };
 
-  const sizeCompanyConsume = async () => {
+  const sizeCompanyConsume = async (token) => {
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
     try {
-      await axios
-        .create({
-          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
-        })
-        .get("TamanoCompania/", config)
-        .then((res) => {
-          let fetch = [];
-          let id = [];
-          res.data.forEach((val) => {
-            if (!fetch.includes(val.nameSizeOfCompany)) {
-              fetch.push(val.quantityOfEmployees);
-              id.push(val);
-            }
-          });
-          let holder = data;
-          holder.content.sizeCompany = fetch;
-          holder.ids.sizeCompany = id;
-          setData(holder);
+      await axios.get("TamanoCompania/", config).then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.nameSizeOfCompany)) {
+            fetch.push(val.quantityOfEmployees);
+            id.push(val);
+          }
         });
+        let holder = data;
+        holder.content.sizeCompany = fetch;
+        holder.ids.sizeCompany = id;
+        setData(holder);
+      });
     } catch (error) {
       console.log(error);
       console.log("eror");
     }
   };
 
-  const countryConsume = async () => {
+  const countryConsume = async (token) => {
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
     try {
-      await axios
-        .create({
-          baseURL:
-            "https://peopleintelligenceapi.azurewebsites.net/api/paises/",
-        })
-        .get("", config)
-        .then((res) => {
-          let fetch = [];
-          let id = [];
-          res.data.forEach((val) => {
-            if (!fetch.includes(val.pais)) {
-              fetch.push(val.pais);
-              id.push(val);
-            }
-          });
-          let holder = data;
-          holder.content.country = fetch;
-          holder.ids.country = id;
-          setData(holder);
+      await axios.get("paises/", config).then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.pais)) {
+            fetch.push(val.pais);
+            id.push(val);
+          }
         });
+        let holder = data;
+        holder.content.country = fetch;
+        holder.ids.country = id;
+        setData(holder);
+      });
     } catch (error) {
       console.log(error);
     }
   };
 
-  const documentTypeConsume = async () => {
+  const documentTypeConsume = async (token) => {
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
     try {
-      await axios
-        .create({
-          baseURL:
-            "https://peopleintelligenceapi.azurewebsites.net/api/tipo-documentos/",
-        })
-        .get("", config)
-        .then((res) => {
-          let fetch = [];
-          let id = [];
-          res.data.forEach((val) => {
-            if (!fetch.includes(val.tipoDocumento)) {
-              fetch.push(val.tipoDocumento);
-              id.push(val);
-            }
-          });
-          let holder = data;
-          holder.content.documentType = fetch;
-          holder.ids.documentType = id;
-          setData(holder);
+      await axios.get("tipo-documentos/", config).then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.tipoDocumento)) {
+            fetch.push(val.tipoDocumento);
+            id.push(val);
+          }
         });
+        let holder = data;
+        holder.content.documentType = fetch;
+        holder.ids.documentType = id;
+        setData(holder);
+      });
     } catch (error) {
       console.log(error);
     }
@@ -184,23 +181,33 @@ export default function Home() {
   };
 
   const tokenConsume = async () => {
+    const config = {
+      headers: { "Content-type": "application/json" },
+    };
     try {
-      await axios
-        .create({
-          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
-        })
-        .post("Aut/", { bearer: access_token }, config)
-        .then((res) => {
-          let token = res.data.token;
-          let decodedToken = decodeToken(token);
-          dispatch(
-            setCredentials({
-              user: decodedToken.user,
-              Company: decodedToken.Company,
-              accesToken: token,
-            })
-          );
-        });
+      await axios.post("Aut/", { bearer: access_token }, config).then((res) => {
+        let token = res.data.token;
+        let decodedToken = decodeToken(token);
+        dispatch(
+          setCredentials({
+            user: decodedToken.user,
+            Company: decodedToken.Company,
+            accessToken: token,
+          })
+        );
+        localStorage.setItem(
+          "userInfo",
+          JSON.stringify({
+            user: decodedToken.user,
+            Company: decodedToken.Company,
+            accessToken: token,
+          })
+        );
+        countryConsume(token);
+        sizeCompanyConsume(token);
+        sectorConsume(token);
+        documentTypeConsume(token);
+      });
     } catch (error) {
       console.log(error);
     }
@@ -263,18 +270,6 @@ export default function Home() {
       );
     } else {
       tokenConsume();
-    }
-    if (data.content.country.length === 0) {
-      countryConsume();
-    }
-    if (data.content.sizeCompany.length === 0) {
-      sizeCompanyConsume();
-    }
-    if (data.content.sector.length === 0) {
-      sectorConsume();
-    }
-    if (data.content.documentType.length === 0) {
-      documentTypeConsume();
     }
   }, []);
   return (

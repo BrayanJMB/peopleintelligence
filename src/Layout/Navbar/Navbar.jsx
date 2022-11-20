@@ -68,6 +68,12 @@ export default function Navbar() {
   const handleRegister = (text) => {
     navigate("/register/" + text);
   };
+  const handleLogOut = () => {
+    localStorage.removeItem("userInfo");
+    window.location.replace(
+      "https://pruebaapib2c.b2clogin.com/PruebaAPib2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_SignInSingUp&client_id=08cfdf65-11e3-45b6-a745-3c0bd35777ae&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fhappy-island-0e573c910.2.azurestaticapps.net%2F&scope=https%3A%2F%2FPruebaAPib2c.onmicrosoft.com%2FApidinamic%2FApi.ReadWrite&response_type=token&prompt=login"
+    );
+  };
   return (
     <AppBar
       sx={{
@@ -124,7 +130,7 @@ export default function Navbar() {
               onClose={handleClose}
             >
               <MenuItem>
-                <IconButton>
+                <IconButton onClick={handleLogOut}>
                   <Logout />
                 </IconButton>
                 Logout

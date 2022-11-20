@@ -12,7 +12,6 @@ import Sidebar from "../../Layout/Sidebar/Sidebar";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-
   const handleOnas = () => {
     navigate("/onas");
   };

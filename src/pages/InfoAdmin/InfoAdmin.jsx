@@ -14,16 +14,12 @@ import NewDepartment from "../../components/NewDepartment/NewDepartment";
 import Sidebar from "../../Layout/Sidebar/Sidebar";
 import Table from "../../components/Table";
 import * as uuid from "uuid";
-import axios from "axios";
+import axios from "../../utils/axiosInstance";
 import { useSelector, useDispatch } from "react-redux";
 import { getCompaniesAPI } from "../../services/getCompanies.service";
 import { getOfficesAPI } from "../../services/getOffices.service";
 import { getDepartmentsAPI } from "../../services/getDepartments.service";
 import { addItem, storeItems, updateItem } from "../../features/adminSlice";
-
-const config = {
-  headers: { "Content-type": "application/json" },
-};
 
 export default function InfoAdmin() {
   const dispatch = useDispatch();
@@ -60,50 +56,40 @@ export default function InfoAdmin() {
 
   const sectorConsume = async () => {
     try {
-      await axios
-        .create({
-          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
-        })
-        .get("Sector/", config)
-        .then((res) => {
-          let fetch = [];
-          let id = [];
-          res.data.forEach((val) => {
-            if (!fetch.includes(val.Sector)) {
-              fetch.push(val.Sector);
-              id.push(val);
-            }
-          });
-          let holder = data;
-          holder.content.sector = fetch;
-          holder.ids.sector = id;
-          setData(holder);
+      await axios.get("Sector/").then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.Sector)) {
+            fetch.push(val.Sector);
+            id.push(val);
+          }
         });
+        let holder = data;
+        holder.content.sector = fetch;
+        holder.ids.sector = id;
+        setData(holder);
+      });
     } catch (error) {
       console.log(error);
     }
   };
   const sizeCompanyConsume = async () => {
     try {
-      await axios
-        .create({
-          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
-        })
-        .get("TamanoCompania/", config)
-        .then((res) => {
-          let fetch = [];
-          let id = [];
-          res.data.forEach((val) => {
-            if (!fetch.includes(val.nameSizeOfCompany)) {
-              fetch.push(val.quantityOfEmployees);
-              id.push(val);
-            }
-          });
-          let holder = data;
-          holder.content.sizeCompany = fetch;
-          holder.ids.sizeCompany = id;
-          setData(holder);
+      await axios.get("TamanoCompania/").then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.nameSizeOfCompany)) {
+            fetch.push(val.quantityOfEmployees);
+            id.push(val);
+          }
         });
+        let holder = data;
+        holder.content.sizeCompany = fetch;
+        holder.ids.sizeCompany = id;
+        setData(holder);
+      });
     } catch (error) {
       console.log(error);
       console.log("eror");
@@ -111,51 +97,40 @@ export default function InfoAdmin() {
   };
   const countryConsume = async () => {
     try {
-      await axios
-        .create({
-          baseURL:
-            "https://peopleintelligenceapi.azurewebsites.net/api/paises/",
-        })
-        .get("", config)
-        .then((res) => {
-          let fetch = [];
-          let id = [];
-          res.data.forEach((val) => {
-            if (!fetch.includes(val.pais)) {
-              fetch.push(val.pais);
-              id.push(val);
-            }
-          });
-          let holder = data;
-          holder.content.country = fetch;
-          holder.ids.country = id;
-          setData(holder);
+      await axios.get("paises/").then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.pais)) {
+            fetch.push(val.pais);
+            id.push(val);
+          }
         });
+        let holder = data;
+        holder.content.country = fetch;
+        holder.ids.country = id;
+        setData(holder);
+      });
     } catch (error) {
       console.log(error);
     }
   };
   const companyConsume = async () => {
     try {
-      await axios
-        .create({
-          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
-        })
-        .get("companias/", config)
-        .then((res) => {
-          let fetch = [];
-          let id = [];
-          res.data.forEach((val) => {
-            if (!fetch.includes(val.nombreCompania)) {
-              fetch.push(val.nombreCompania);
-              id.push(val);
-            }
-          });
-          let holder = data;
-          holder.content.company = fetch;
-          holder.ids.company = id;
-          setData(holder);
+      await axios.get("companias/").then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.nombreCompania)) {
+            fetch.push(val.nombreCompania);
+            id.push(val);
+          }
         });
+        let holder = data;
+        holder.content.company = fetch;
+        holder.ids.company = id;
+        setData(holder);
+      });
     } catch (error) {
       console.log(error);
     }

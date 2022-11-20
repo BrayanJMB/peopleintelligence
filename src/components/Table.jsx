@@ -7,10 +7,11 @@ import IconButton from "@mui/material/IconButton";
 import { removeItem } from "../features/adminSlice";
 import { removeItemBi } from "../features/powerBiSlice";
 import { useDispatch } from "react-redux";
+import { deleteReportAPI } from "../services/deleteReport.service";
 
-const search = (id, inputArray, field) => {
+const search = (id, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
-    if (inputArray[i].id === id) {
+    if (inputArray[i][proprety] === id) {
       return inputArray[i][field];
     }
   }
@@ -24,8 +25,18 @@ export default function Table(props) {
   const handleDeleteItem = (id) => {
     dispatch(removeItem({ id: id, type: props.type }));
   };
-  const handleDeleteItemBi = (id) => {
-    dispatch(removeItemBi({ id: id, type: props.type }));
+  const handleDeleteItemBi = (_id, id) => {
+    dispatch(removeItemBi({ id: _id, type: props.type }));
+    switch (props.type) {
+      case "dashboard":
+        break;
+      case "report":
+        deleteReportAPI(id);
+        break;
+
+      default:
+        break;
+    }
   };
 
   const company = [
@@ -152,6 +163,16 @@ export default function Table(props) {
       headerName: "Company Name",
       headerAlign: "center",
       align: "center",
+      renderCell: (params) => {
+        return isNaN(params.row.companyId)
+          ? params.row.companyId
+          : search(
+              params.row.companyId,
+              props.ids.company,
+              "nombreCompania",
+              "id"
+            );
+      },
     },
     {
       field: "reportName",
@@ -178,7 +199,9 @@ export default function Table(props) {
           <IconButton onClick={() => props.handleEditItem(params.row)}>
             <EditIcon />
           </IconButton>,
-          <IconButton onClick={() => handleDeleteItemBi(params.row._id)}>
+          <IconButton
+            onClick={() => handleDeleteItemBi(params.row._id, params.row.id)}
+          >
             <DeleteIcon />
           </IconButton>,
         ];
@@ -195,7 +218,7 @@ export default function Table(props) {
       align: "center",
     },
     {
-      field: "description",
+      field: "descripcion",
       flex: 1,
       headerName: "Description",
       headerAlign: "center",
@@ -212,7 +235,9 @@ export default function Table(props) {
           <IconButton onClick={() => props.handleEditItem(params.row)}>
             <EditIcon />
           </IconButton>,
-          <IconButton onClick={() => handleDeleteItemBi(params.row._id)}>
+          <IconButton
+            onClick={() => handleDeleteItemBi(params.row._id, params.row.id)}
+          >
             <DeleteIcon />
           </IconButton>,
         ];
@@ -238,7 +263,7 @@ export default function Table(props) {
       renderCell: (params) =>
         isNaN(params.row.IdPais)
           ? params.row.IdPais
-          : search(params.row.IdPais, props.ids.country, "pais"),
+          : search(params.row.IdPais, props.ids.country, "pais", "id"),
     },
 
     {
