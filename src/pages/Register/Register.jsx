@@ -13,25 +13,18 @@ import NewReport from "../../components/NewReport/NewReport";
 import Sidebar from "../../Layout/Sidebar/Sidebar";
 import Table from "../../components/Table";
 import * as uuid from "uuid";
-import axios from "axios";
+import axios from "../../utils/axiosInstance";
 import { getReportsAPI } from "../../services/getReports.service";
 import { getDashboardsAPI } from "../../services/getDashboards.service";
 import { useSelector, useDispatch } from "react-redux";
 import { addItem, storeItems, updateItem } from "../../features/powerBiSlice";
+import { postReportAPI } from "../../services/postReport.service";
+import { postDashboardAPI } from "../../services/postDashboard.service";
+import { editReportAPI } from "../../services/editReport.service";
 
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNzcxYzAxZWEtZGVjZi00NmYxLWI4ZjQtOTA0OGE4NjUzMmQ5IiwiQ29tcGFueSI6IjAiLCJuYmYiOjE2Njg4Nzk2NTIsImV4cCI6MTY2ODg5MDQ1MiwiaWF0IjoxNjY4ODc5NjUyfQ.RaouR5Rnr2Wveokn9_7XY_Yo2KUT9_4KKHGDUwR7Qw4";
-
-const config = {
-  headers: {
-    "Content-type": "application/json",
-    Authorization: `Bearer ${token}`,
-  },
-};
-
-const search = (value, inputArray, field) => {
+const search = (value, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
-    if (inputArray[i].name === value) {
+    if (inputArray[i][proprety] === value) {
       return inputArray[i][field];
     }
   }
@@ -55,7 +48,7 @@ export default function Register() {
   });
   const [report, setReport] = useState({
     name: "",
-    description: "",
+    descripcion: "",
   });
 
   const tableData = powerBi[type];
@@ -70,50 +63,40 @@ export default function Register() {
 
   const companyConsume = async () => {
     try {
-      await axios
-        .create({
-          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
-        })
-        .get("companias/", config)
-        .then((res) => {
-          let fetch = [];
-          let id = [];
-          res.data.forEach((val) => {
-            if (!fetch.includes(val.nombreCompania)) {
-              fetch.push(val.nombreCompania);
-              id.push(val);
-            }
-          });
-          let holder = data;
-          holder.content.company = fetch;
-          holder.ids.company = id;
-          setData(holder);
+      await axios.get("companias/").then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.nombreCompania)) {
+            fetch.push(val.nombreCompania);
+            id.push(val);
+          }
         });
+        let holder = data;
+        holder.content.company = fetch;
+        holder.ids.company = id;
+        setData(holder);
+      });
     } catch (error) {
       console.log(error);
     }
   };
   const reportConsume = async () => {
     try {
-      await axios
-        .create({
-          baseURL: "https://peopleintelligenceapi.azurewebsites.net/api/",
-        })
-        .get("ListaDashboards/", config)
-        .then((res) => {
-          let fetch = [];
-          let id = [];
-          res.data.forEach((val) => {
-            if (!fetch.includes(val.name)) {
-              fetch.push(val.name);
-              id.push(val);
-            }
-          });
-          let holder = data;
-          holder.content.report = fetch;
-          holder.ids.report = id;
-          setData(holder);
+      await axios.get("ListaDashboards/").then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.name)) {
+            fetch.push(val.name);
+            id.push(val);
+          }
         });
+        let holder = data;
+        holder.content.report = fetch;
+        holder.ids.report = id;
+        setData(holder);
+      });
     } catch (error) {
       console.log(error);
     }
@@ -131,7 +114,7 @@ export default function Register() {
   const handleAutoCompleteDashboard = useCallback(
     (name, value) => {
       if (name === "reportName") {
-        let holder = search(value, data.ids.report, "descripcion");
+        let holder = search(value, data.ids.report, "descripcion", "name");
         setDashboard({
           ...dashboard,
           [name]: value,
@@ -154,6 +137,14 @@ export default function Register() {
       let holder = dashboard;
       holder._id = id;
       dispatch(addItem({ data: holder, type: type }));
+      let tmp = { ...dashboard };
+      tmp.companyId = search(
+        dashboard.companyId,
+        data.ids.company,
+        "id",
+        "nombreCompania"
+      );
+      postDashboardAPI(tmp);
     }
     setDashboard({
       nombreCompania: "",
@@ -168,11 +159,13 @@ export default function Register() {
   const handleReport = () => {
     if (edit) {
       dispatch(updateItem({ data: report, type: type, id: report._id }));
+      editReportAPI(report.id, report.name, report.descripcion);
     } else {
       const id = uuid.v4();
       let holder = report;
       holder._id = id;
       dispatch(addItem({ data: holder, type: type }));
+      postReportAPI(holder);
     }
     setReport({
       name: "",

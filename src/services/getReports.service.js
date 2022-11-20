@@ -1,16 +1,8 @@
-import axios from "axios";
-
-const API = "https://peopleintelligenceapi.azurewebsites.net/api/";
-const config = {
-  headers: { "Content-type": "application/json" },
-};
+import axios from "../utils/axiosInstance";
 
 export const getReportsAPI = async () => {
   console.log("getReportsAPI");
-  const response = await axios
-    .create({
-      baseURL: API,
-    })
-    .get("ListaDashboards/", config);
+
+  const response = await axios.get("ListaDashboards/");
   return response;
 };

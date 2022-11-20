@@ -5,6 +5,7 @@ const powerBiSlice = createSlice({
   initialState: {
     dashboard: [],
     report: [],
+    companyDashboards: [],
   },
   reducers: {
     addItem: (state, action) => {
@@ -29,9 +30,12 @@ const powerBiSlice = createSlice({
       let type = action.payload.type;
       state[type] = action.payload.data;
     },
+    storeDash: (state, action) => {
+      state.companyDashboards = action.payload;
+    },
   },
 });
 
-export const { addItem, removeItemBi, updateItem, storeItems } =
+export const { addItem, removeItemBi, updateItem, storeItems, storeDash } =
   powerBiSlice.actions;
 export default powerBiSlice.reducer;

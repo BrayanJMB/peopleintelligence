@@ -3,13 +3,18 @@ import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import styles from "./NewDashboard.module.css";
 import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
 
 const validphone = new RegExp("^[0-9]{12,15}$");
 
-const search = (value, inputArray, field) => {
+const search = (value, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
-    if (inputArray[i].name === value) {
-      return inputArray[i][field];
+    if (inputArray[i][proprety] === value) {
+      if (inputArray[i][field]) {
+        return inputArray[i][field];
+      } else {
+        return "";
+      }
     }
   }
 };
@@ -72,7 +77,12 @@ export default function NewDashboard(props) {
           style={{ flexBasis: "40%" }}
           options={props.content.company}
           clearOnEscape
-          value={props.info.companyId}
+          value={search(
+            props.info.companyId,
+            props.ids.company,
+            "nombreCompania",
+            "id"
+          )}
           onChange={(e, value) => {
             props.handleAutocomplete("companyId", value);
           }}
@@ -121,17 +131,13 @@ export default function NewDashboard(props) {
           size="small"
           disabled
         />
-        <TextField
-          style={{ flexBasis: "40%" }}
-          id="outlined-name"
-          label="isActive"
-          value={props.info.isActive}
-          name="isActive"
-          onChange={props.handleChangeDashboard}
-          error={errorMessage.isActive}
-          helperText={helperText.isActive}
-          size="small"
-          onBlur={handleBlur}
+        <span style={{ flexBasis: "28%" }}>isActive</span>
+        <Checkbox
+          checked={props.info.isActive === true ? true : false}
+          onChange={(event) => {
+            props.handleAutocomplete("isActive", event.target.checked);
+          }}
+          inputProps={{ "aria-label": "controlled" }}
         />
       </div>
       <div className={styles.impexp}>

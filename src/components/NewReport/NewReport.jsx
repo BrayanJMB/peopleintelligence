@@ -39,12 +39,12 @@ export default function NewReport(props) {
         <TextField
           id="outlined-name"
           label="Description"
-          value={props.info.description}
-          name="description"
+          value={props.info.descripcion}
+          name="descripcion"
           onChange={props.handleChangeReport}
           style={{ flexBasis: "40%" }}
-          error={errorMessage.description}
-          helperText={helperText.description}
+          error={errorMessage.descripcion}
+          helperText={helperText.descripcion}
           size="small"
           onBlur={handleBlur}
         />
