@@ -198,7 +198,7 @@ export default function Home() {
     } catch (error) {
       if (error.response.status === 401) {
         window.location.replace(
-          "https://pruebaapib2c.b2clogin.com/PruebaAPib2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_SignInSingUp&client_id=eebc60fc-d861-4c0e-ac9f-20ae8577c9f9&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fhappy-island-0e573c910.2.azurestaticapps.net&scope=https%3A%2F%2FPruebaAPib2c.onmicrosoft.com%2Feebc60fc-d861-4c0e-ac9f-20ae8577c9f9%2FFiles.Read&response_type=token&prompt=login"
+          "https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fjwt.ms%2F&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login"
         );
       }
       countryConsume();
@@ -262,7 +262,7 @@ export default function Home() {
   useEffect(() => {
     if (!access_token) {
       window.location.replace(
-        "https://pruebaapib2c.b2clogin.com/PruebaAPib2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_SignInSingUp&client_id=eebc60fc-d861-4c0e-ac9f-20ae8577c9f9&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fhappy-island-0e573c910.2.azurestaticapps.net&scope=https%3A%2F%2FPruebaAPib2c.onmicrosoft.com%2Feebc60fc-d861-4c0e-ac9f-20ae8577c9f9%2FFiles.Read&response_type=token&prompt=login"
+        "https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fjwt.ms%2F&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login"
       );
     } else {
       tokenConsume();
