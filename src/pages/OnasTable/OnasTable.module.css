@@ -1,0 +1,14 @@
+.content {
+  width: 83vw;
+  height: 92vh;
+  margin-top: 4rem;
+}
+.crud {
+  display: flex;
+  flex-direction: column;
+}
+.buttom {
+  height: 70vh;
+  padding: 0 1em;
+  margin: 5em 2em;
+}

@@ -2,6 +2,7 @@ import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import styles from "./NewReport.module.css";
 import Button from "@mui/material/Button";
+import TextareaAutosize from "@mui/material/TextareaAutosize";
 
 export default function NewReport(props) {
   const [helperText, setHelperText] = useState({});
@@ -30,23 +31,25 @@ export default function NewReport(props) {
           value={props.info.name}
           name="name"
           onChange={props.handleChangeReport}
-          style={{ flexBasis: "40%" }}
+          style={{ flexBasis: "85.5%" }}
           error={errorMessage.name}
           helperText={helperText.name}
           size="small"
           onBlur={handleBlur}
         />
-        <TextField
-          id="outlined-name"
-          label="Description"
-          value={props.info.descripcion}
-          name="descripcion"
-          onChange={props.handleChangeReport}
-          style={{ flexBasis: "40%" }}
-          error={errorMessage.descripcion}
-          helperText={helperText.descripcion}
-          size="small"
-          onBlur={handleBlur}
+      </div>
+      <div className={styles.input}>
+        <TextareaAutosize
+          aria-label="empty textarea"
+          placeholder="Type your welcome message..."
+          style={{
+            width: "85.5%",
+            height: "100px",
+            marginTop: "0.5rem",
+          }}
+          name="descriptionReport"
+          value={props.info.descriptionReport}
+          onChange={props.handleChangeDashboard}
         />
       </div>
       <div className={styles.impexp}>

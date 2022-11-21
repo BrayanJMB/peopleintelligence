@@ -76,7 +76,7 @@
 }
 @media only screen and (max-width: 1300px) {
   .cases {
-    width: 90%;
+    width: 95%;
     justify-content: space-evenly;
   }
   .title {
@@ -90,25 +90,75 @@
   .subtitle {
     font-size: 0.7rem;
   }
+  .photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid grey;
+    margin: 1rem auto;
+  }
 }
 
 @media screen and (max-width: 900px) {
-  .image {
-    height: 2rem;
-    width: 2rem;
+  .cases {
+    width: 90%;
+    justify-content: space-evenly;
   }
   .title {
-    font-size: 0.7rem;
-    margin-top: 0.4rem;
+    margin-top: 0;
+    font-size: 0.8rem;
+  }
+  .image {
+    width: 2.5em;
+    height: 2em;
   }
   .subtitle {
-    margin-top: 1rem;
     font-size: 0.6rem;
   }
-  .project {
-    height: 100%;
+  .photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid grey;
+    margin: 1rem auto;
+  }
+  .sticker {
+    position: absolute;
+    background-color: #04b8f4;
+    color: white;
+    font-weight: 400;
+    letter-spacing: 0.2rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    right: -1rem;
+    top: -1.5rem;
+    font-size: 0.8rem;
+  }
+}
+@media screen and (max-width: 800px) {
+  .cases {
+    width: 90%;
+    justify-content: space-evenly;
+  }
+  .title {
+    margin-top: 0;
+    font-size: 0.8rem;
+  }
+  .image {
+    width: 2em;
+    height: 2em;
+  }
+  .subtitle {
+    font-size: 0.5rem;
   }
   .photo {
-    margin-top: 3.5rem;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid grey;
+    margin: 1rem auto;
   }
 }
