@@ -12,6 +12,8 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
 
 function stringToColor(string) {
   let hash = 0;
@@ -43,13 +45,17 @@ function stringAvatar(name) {
 }
 
 const drawerWidth = 240;
+const select = ["one", "two"];
 
 export default function Navbar() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorEl2, setAnchorEl2] = useState(null);
+  const [drop, setDrop] = useState("");
   const open = Boolean(anchorEl);
   const open2 = Boolean(anchorEl2);
+  const userInfo = localStorage.getItem("userInfo");
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -68,12 +74,20 @@ export default function Navbar() {
   const handleRegister = (text) => {
     navigate("/register/" + text);
   };
+  const handleRoles = () => {
+    navigate("/rolescompany");
+  };
   const handleLogOut = () => {
     localStorage.removeItem("userInfo");
     window.location.replace(
       "https://pruebaapib2c.b2clogin.com/PruebaAPib2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_SignInSingUp&client_id=08cfdf65-11e3-45b6-a745-3c0bd35777ae&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fhappy-island-0e573c910.2.azurestaticapps.net%2F&scope=https%3A%2F%2FPruebaAPib2c.onmicrosoft.com%2FApidinamic%2FApi.ReadWrite&response_type=token&prompt=login"
     );
   };
+
+  const handleSelect = (value) => {
+    setDrop(value);
+  };
+
   return (
     <AppBar
       sx={{
@@ -86,8 +100,25 @@ export default function Navbar() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Box
-            sx={{ flexGrow: 1, display: "flex", justifyContent: "flex-end" }}
+            sx={{
+              flexGrow: 1,
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
           >
+            <Autocomplete
+              id="combo-box-demo"
+              style={{ flexBasis: "180px" }}
+              options={select}
+              clearOnEscape
+              onChange={(e, value) => handleSelect(value)}
+              getOptionLabel={(option) => option}
+              noOptionsText={"No Options"}
+              renderInput={(params) => (
+                <TextField {...params} label="company Name" />
+              )}
+            />
             <IconButton onClick={handleHome}>
               <HomeOutlinedIcon sx={{ fontSize: "40px" }} />
             </IconButton>
@@ -142,11 +173,26 @@ export default function Navbar() {
               open={open2}
               onClose={handleClose2}
             >
-              <MenuItem onClick={() => handleRegister("dashboard")}>
+              <MenuItem
+                disabled={userInfo.role !== "powerbi"}
+                onClick={() => handleRegister("dashboard")}
+              >
                 registar Dashboard
               </MenuItem>
-              <MenuItem onClick={() => handleRegister("report")}>
+              <MenuItem
+                disabled={userInfo.role !== "powerbi"}
+                onClick={() => handleRegister("report")}
+              >
                 registar Report
+              </MenuItem>
+              <MenuItem
+                disabled={
+                  JSON.parse(localStorage.getItem("userInfo")).role !==
+                  "Administrador"
+                }
+                onClick={() => handleRoles()}
+              >
+                Administrar compañías
               </MenuItem>
             </Menu>
           </Box>

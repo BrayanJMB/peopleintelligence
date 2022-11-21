@@ -27,6 +27,10 @@ export default function PowerBiDashboard() {
   };
 
   useEffect(() => {
+    if (userParsed.role !== "powerbi") {
+      alert("No tiene permiso para acceder a esta funcionalidad");
+      navigate("/dashboard");
+    }
     getCompanyDashboardsAPI(1).then((res) => {
       let data = [];
       res.data.forEach((val) => {

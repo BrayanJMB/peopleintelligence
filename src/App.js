@@ -12,6 +12,7 @@ import Journey from "./pages/Journey/Journey";
 import Template from "./pages/Journey/Template/Template";
 import CreateSurvey from "./pages/Journey/CreateSurvey/CreateSurvey";
 import OnasTable from "./pages/OnasTable/OnasTable";
+import Roles from "./pages/Roles/Roles";
 import Error from "./pages/Error/Error";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import { Provider } from "react-redux";
@@ -28,6 +29,7 @@ export default function App() {
             <Route path="/onas" element={<Onas />} exact />
             <Route path="/onas/:company/:version" element={<Onas />} exact />
             <Route path="/onas/ver-encuestas" element={<OnasTable />} exact />
+            <Route path="/rolescompany" element={<Roles />} exact />
             <Route path="/powerbi" element={<PowerBiDashboard />} exact />
             <Route path="/powerbi/:idDashboard" element={<PowerBI />} exact />
             <Route path="/register/:type" element={<Register />} exact />

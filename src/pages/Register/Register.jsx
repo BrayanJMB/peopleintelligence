@@ -22,6 +22,7 @@ import { postReportAPI } from "../../services/postReport.service";
 import { postDashboardAPI } from "../../services/postDashboard.service";
 import { editReportAPI } from "../../services/editReport.service";
 import { editDashboardAPI } from "../../services/editDashboard.service";
+import { useNavigate } from "react-router-dom";
 
 const search = (value, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -33,10 +34,12 @@ const search = (value, inputArray, field, proprety) => {
 
 export default function Register() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const powerBi = useSelector((state) => state.powerBi);
   const { type } = useParams();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
+  const userInfo = localStorage.getItem("userInfo");
 
   // state for input
   const [dashboard, setDashboard] = useState({
@@ -303,6 +306,10 @@ export default function Register() {
   };
 
   useEffect(() => {
+    if (userInfo.role !== "powerbi") {
+      alert("No tiene permiso para acceder a esta funcionalidad");
+      navigate("/dashboard");
+    }
     getTableData();
   }, [type]);
 
