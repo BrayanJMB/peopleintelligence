@@ -1,11 +1,9 @@
 .screen {
   width: 100%;
-  height: 100vh;
 }
 .inner_box {
   background-color: white;
-  height: 85vh;
-  margin: 6vh 17vw;
+  margin: 5em 15em;
   padding: 1rem;
   box-shadow: 0px 10px 10px 7px rgba(0, 0, 0, 0.4);
 }
@@ -14,6 +12,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  margin-bottom: 6em;
 }
 .image {
   margin-top: 1.5rem;
