@@ -17,6 +17,7 @@ import SettingsInputCompositeIcon from "@mui/icons-material/SettingsInputComposi
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
 import Card from "../../components/CardSlider/CardSlider";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const theme = createTheme({
   palette: {
@@ -91,10 +92,18 @@ const settings = {
 
 export default function Journey() {
   const navigate = useNavigate();
+  const userInfo = localStorage.getItem("userInfo");
 
   const handleExplorar = () => {
     navigate("/journey/survey-template");
   };
+
+  useEffect(() => {
+    if (userInfo.role !== "Journey") {
+      alert("No tiene permiso para acceder a esta funcionalidad");
+      navigate("/dashboard");
+    }
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>

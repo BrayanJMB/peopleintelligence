@@ -14,6 +14,7 @@ import axios from "../../utils/axiosInstance";
 import Notification from "../../components/Notification";
 import Sidebar from "../../Layout/Sidebar/Sidebar";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const config = {
   headers: { "Content-type": "application/csv" },
@@ -51,6 +52,8 @@ function formatDate(date) {
 
 export default function Onas() {
   const { company, version } = useParams();
+  const navigate = useNavigate();
+  const userInfo = localStorage.getItem("userInfo");
   const companyId = company;
   const versionId = version;
   const [transactionData, setTransactionData] = useState("");
@@ -136,6 +139,10 @@ export default function Onas() {
   };
 
   useEffect(() => {
+    if (userInfo.role !== "Onas") {
+      alert("No tiene permiso para acceder a esta funcionalidad");
+      navigate("/dashboard");
+    }
     if (transactionData) {
       csvLink.current.link.click();
     }

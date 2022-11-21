@@ -9,6 +9,7 @@ import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useNavigate } from "react-router-dom";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { useEffect } from "react";
 
 const theme = createTheme({
   palette: {
@@ -103,6 +104,7 @@ const data = [
 
 export default function Template() {
   const navigate = useNavigate();
+  const userInfo = localStorage.getItem("userInfo");
 
   const handleGoBack = () => {
     navigate("/journey");
@@ -110,6 +112,13 @@ export default function Template() {
   const handleCreateSurvey = () => {
     navigate("/journey/create-survey");
   };
+
+  useEffect(() => {
+    if (userInfo.role !== "Journey") {
+      alert("No tiene permiso para acceder a esta funcionalidad");
+      navigate("/dashboard");
+    }
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>

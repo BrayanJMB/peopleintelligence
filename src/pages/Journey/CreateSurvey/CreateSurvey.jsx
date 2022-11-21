@@ -38,6 +38,7 @@ const types = [
 ];
 
 export default function CreateSurvey() {
+  const userInfo = localStorage.getItem("userInfo");
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const [questions, setQuestions] = useState([]);
@@ -197,6 +198,10 @@ export default function CreateSurvey() {
   };
 
   useEffect(() => {
+    if (userInfo.role !== "Journey") {
+      alert("No tiene permiso para acceder a esta funcionalidad");
+      navigate("/dashboard");
+    }
     setQuestions(questions);
   }, [questions]);
 
