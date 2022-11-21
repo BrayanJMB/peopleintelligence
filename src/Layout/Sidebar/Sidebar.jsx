@@ -17,11 +17,10 @@ import Sletter from "../../assets/icons/Sletter.png";
 import { useNavigate } from "react-router-dom";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
 
 const names = [
   "Information Managment",
-  "Advanced Analytics & Dashboards ",
+  "Advanced Analytics & Dashboards",
   "Organizational Network Analysis",
   "Dynamic Live Conversation",
   "Journey Employee",
@@ -53,6 +52,7 @@ const drawerWidth = 240;
 export default function Sidebar() {
   const [anchorEl, setAnchorEl] = useState(Array(6).fill(null));
   const navigate = useNavigate();
+  const userInfo = localStorage.getItem("userInfo");
 
   const handleRedirect = (index, key) => {
     if (index === 1) {
@@ -71,14 +71,18 @@ export default function Sidebar() {
   };
 
   const handleItemClick = (index) => (event) => {
-    let tmp = anchorEl.map((val, key) => {
-      if (index === key) {
-        return event.currentTarget;
-      } else {
-        return val;
-      }
-    });
-    setAnchorEl(tmp);
+    if (index === 1 && userInfo.role !== "powerbi") {
+      event.preventDefault();
+    } else {
+      let tmp = anchorEl.map((val, key) => {
+        if (index === key) {
+          return event.currentTarget;
+        } else {
+          return val;
+        }
+      });
+      setAnchorEl(tmp);
+    }
   };
 
   const handleClose = (index) => {
@@ -172,11 +176,10 @@ export default function Sidebar() {
               >
                 {drop[index].map((val, key) => {
                   return (
-                    <div onClick={() => handleRedirect(index, key)} key={key}>
-                      <MenuItem>
+                    <div key={key}>
+                      <MenuItem onClick={() => handleRedirect(index, key)}>
                         <div>{val}</div>
                       </MenuItem>
-                      {key < drop[index].length - 1 ? <Divider /> : null}
                     </div>
                   );
                 })}

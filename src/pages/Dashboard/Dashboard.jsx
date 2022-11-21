@@ -12,11 +12,16 @@ import Sidebar from "../../Layout/Sidebar/Sidebar";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const userInfo = localStorage.getItem("userInfo");
   const handleOnas = () => {
     navigate("/onas");
   };
-  const handlePowerBI = () => {
-    navigate("/powerbi");
+  const handlePowerBI = (e) => {
+    if (userInfo.role !== "powerbi") {
+      e.preventDefault();
+    } else {
+      navigate("/powerbi");
+    }
   };
   const handleConversation = () => {
     navigate("/conversation/Build");
@@ -42,7 +47,14 @@ export default function Dashboard() {
                   Módulo de carga y administración de bases de datos
                 </div>
               </div>
-              <div className={styles.project} onClick={handlePowerBI}>
+              <div
+                className={styles.project}
+                onClick={handlePowerBI}
+                style={{
+                  backgroundColor: userInfo.role !== "powerbi" ? "grey" : "",
+                  cursor: userInfo.role !== "powerbi" ? "default" : "",
+                }}
+              >
                 <div>
                   <img src={Aletter} alt="oletter" className={styles.image} />
                 </div>
