@@ -20,10 +20,13 @@ import { getCompaniesAPI } from "../../services/getCompanies.service";
 import { getOfficesAPI } from "../../services/getOffices.service";
 import { getDepartmentsAPI } from "../../services/getDepartments.service";
 import { addItem, storeItems, updateItem } from "../../features/adminSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function InfoAdmin() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const admin = useSelector((state) => state.admin);
+  const userInfo = localStorage.getItem("userInfo");
   const { type } = useParams();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
@@ -369,6 +372,10 @@ export default function InfoAdmin() {
   };
 
   useEffect(() => {
+    if (userInfo.role !== "Management") {
+      alert("No tiene permiso para acceder a esta funcionalidad");
+      navigate("/dashboard");
+    }
     getTableData();
   }, [type]);
 

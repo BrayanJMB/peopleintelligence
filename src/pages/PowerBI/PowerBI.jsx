@@ -41,7 +41,7 @@ export default function PowerBi() {
   };
 
   useEffect(() => {
-    if (userInfo.role !== "powerbi") {
+    if (userInfo.role !== "PowerBi") {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }

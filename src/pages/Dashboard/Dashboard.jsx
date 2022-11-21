@@ -13,21 +13,33 @@ import Sidebar from "../../Layout/Sidebar/Sidebar";
 export default function Dashboard() {
   const navigate = useNavigate();
   const userInfo = localStorage.getItem("userInfo");
-  const handleOnas = () => {
-    navigate("/onas");
+  const handleOnas = (e) => {
+    if (userInfo.role !== "Onas") {
+      e.preventDefault();
+    } else {
+      navigate("/onas");
+    }
   };
   const handlePowerBI = (e) => {
-    if (userInfo.role !== "powerbi") {
+    if (userInfo.role !== "PowerBi") {
       e.preventDefault();
     } else {
       navigate("/powerbi");
     }
   };
-  const handleConversation = () => {
-    navigate("/conversation/Build");
+  const handleConversation = (e) => {
+    if (userInfo.role !== "Dinamyc") {
+      e.preventDefault();
+    } else {
+      navigate("/conversation/Build");
+    }
   };
-  const handleJourney = () => {
-    navigate("/journey");
+  const handleJourney = (e) => {
+    if (userInfo.role !== "Journey") {
+      e.preventDefault();
+    } else {
+      navigate("/journey");
+    }
   };
 
   return (
@@ -38,7 +50,13 @@ export default function Dashboard() {
         <div className={styles.content}>
           <div className={styles.cases}>
             <div className={styles.case}>
-              <div className={styles.project}>
+              <div
+                className={styles.project}
+                style={{
+                  backgroundColor: userInfo.role !== "Management" ? "grey" : "",
+                  cursor: userInfo.role !== "Management" ? "default" : "",
+                }}
+              >
                 <div>
                   <img src={Iletter} alt="oletter" className={styles.image} />
                 </div>
@@ -51,8 +69,8 @@ export default function Dashboard() {
                 className={styles.project}
                 onClick={handlePowerBI}
                 style={{
-                  backgroundColor: userInfo.role !== "powerbi" ? "grey" : "",
-                  cursor: userInfo.role !== "powerbi" ? "default" : "",
+                  backgroundColor: userInfo.role !== "PowerBi" ? "grey" : "",
+                  cursor: userInfo.role !== "PowerBi" ? "default" : "",
                 }}
               >
                 <div>
@@ -65,7 +83,14 @@ export default function Dashboard() {
                   Tableros interactivos de información corporativa
                 </div>
               </div>
-              <div className={styles.project} onClick={handleOnas}>
+              <div
+                className={styles.project}
+                onClick={handleOnas}
+                style={{
+                  backgroundColor: userInfo.role !== "Onas" ? "grey" : "",
+                  cursor: userInfo.role !== "Onas" ? "default" : "",
+                }}
+              >
                 <div>
                   <img src={Oletter} alt="oletter" className={styles.image} />
                 </div>
@@ -78,7 +103,14 @@ export default function Dashboard() {
               </div>
             </div>
             <div className={styles.case}>
-              <div className={styles.project} onClick={handleConversation}>
+              <div
+                className={styles.project}
+                onClick={handleConversation}
+                style={{
+                  backgroundColor: userInfo.role !== "Dinamyc" ? "grey" : "",
+                  cursor: userInfo.role !== "Dinamyc" ? "default" : "",
+                }}
+              >
                 <div>
                   <img src={Dletter} alt="oletter" className={styles.image} />
                 </div>
@@ -88,7 +120,14 @@ export default function Dashboard() {
                   inteligencia artificial
                 </div>
               </div>
-              <div className={styles.project} onClick={handleJourney}>
+              <div
+                className={styles.project}
+                onClick={handleJourney}
+                style={{
+                  backgroundColor: userInfo.role !== "Journey" ? "grey" : "",
+                  cursor: userInfo.role !== "Journey" ? "default" : "",
+                }}
+              >
                 <div>
                   <img src={Jletter} alt="oletter" className={styles.image} />
                 </div>
@@ -98,7 +137,14 @@ export default function Dashboard() {
                 </div>
                 <div className={styles.sticker}>En Diseño</div>
               </div>
-              <div className={styles.project}>
+              <div
+                className={styles.project}
+                style={{
+                  backgroundColor:
+                    userInfo.role !== "Sentimental" ? "grey" : "",
+                  cursor: userInfo.role !== "Sentimental" ? "default" : "",
+                }}
+              >
                 <div>
                   <img src={Sletter} alt="oletter" className={styles.image} />
                 </div>
