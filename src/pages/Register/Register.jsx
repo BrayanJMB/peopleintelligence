@@ -21,6 +21,7 @@ import { addItem, storeItems, updateItem } from "../../features/powerBiSlice";
 import { postReportAPI } from "../../services/postReport.service";
 import { postDashboardAPI } from "../../services/postDashboard.service";
 import { editReportAPI } from "../../services/editReport.service";
+import { editDashboardAPI } from "../../services/editDashboard.service";
 
 const search = (value, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -43,7 +44,6 @@ export default function Register() {
     groupId: "",
     reportName: "",
     descriptionReport: "",
-    isActive: "",
     companyId: "",
   });
   const [report, setReport] = useState({
@@ -221,6 +221,27 @@ export default function Register() {
     }
   };
 
+  const handleSwitch = (event, row) => {
+    editDashboardAPI(
+      row.id,
+      row.reportId,
+      row.groupId,
+      row.reportName,
+      row.descriptionReport,
+      event.target.checked,
+      row.companyId
+    ).then((res) => {
+      let holder = res.data;
+      holder._id = row._id;
+      dispatch(updateItem({ data: holder, type: type, id: holder._id }));
+      if (event.target.checked) {
+        alert("El dashborad esta desactivado");
+      } else {
+        alert("El dashboard esta activo");
+      }
+    });
+  };
+
   //edit item
   const handleEditItem = (row) => {
     switch (type) {
@@ -345,6 +366,7 @@ export default function Register() {
                   ids={data.ids}
                   content={data.content}
                   handleEditItem={handleEditItem}
+                  handleSwitch={handleSwitch}
                 />
               }
             </div>

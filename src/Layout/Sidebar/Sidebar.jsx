@@ -55,7 +55,18 @@ export default function Sidebar() {
   const navigate = useNavigate();
 
   const handleRedirect = (index, key) => {
-    navigate("/" + project[index] + "/" + drop[index][key]);
+    if (index === 1) {
+      navigate("/" + project[index]);
+    } else if (index === 2) {
+      if (key === 1) {
+        navigate("/onas/ver-encuestas");
+      } else {
+        navigate("/onas");
+      }
+    } else {
+      navigate("/" + project[index] + "/" + drop[index][key]);
+    }
+
     handleClose(index);
   };
 
@@ -84,9 +95,8 @@ export default function Sidebar() {
   return (
     <Box
       sx={{
-        width: { sm: drawerWidth },
+        width: { md: 220, lg: drawerWidth, sm: 180 },
         flexShrink: { sm: 0 },
-        height: "50vh",
       }}
       aria-label="mailbox folders"
     >
@@ -95,7 +105,7 @@ export default function Sidebar() {
         sx={{
           display: { sm: "block" },
           "& .MuiDrawer-paper": {
-            width: drawerWidth,
+            width: { md: 220, lg: drawerWidth, sm: 180 },
             overflow: "hidden",
             border: "none",
           },
@@ -135,7 +145,15 @@ export default function Sidebar() {
                     className={styles.icon}
                   />
                 </ListItemIcon>
-                <ListItemText primary={text} style={{ color: "grey" }} />
+                <ListItemText
+                  primary={text}
+                  style={{
+                    color: "grey",
+                  }}
+                  primaryTypographyProps={{
+                    fontSize: { md: "0.7rem", lg: "1rem", sm: "0.5rem" },
+                  }}
+                />
               </ListItemButton>
               <Menu
                 id="demo-positioned-menu"

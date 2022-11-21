@@ -10,9 +10,10 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TipsAndUpdatesOutlinedIcon from "@mui/icons-material/TipsAndUpdatesOutlined";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { CSVLink } from "react-csv";
-import axios from "axios";
+import axios from "../../utils/axiosInstance";
 import Notification from "../../components/Notification";
 import Sidebar from "../../Layout/Sidebar/Sidebar";
+import { useParams } from "react-router-dom";
 
 const config = {
   headers: { "Content-type": "application/csv" },
@@ -48,10 +49,10 @@ function formatDate(date) {
   );
 }
 
-const companyId = "1";
-const versionId = "5f244111-b80a-421a-b11d-ea59e8156fde";
-
 export default function Onas() {
+  const { company, version } = useParams();
+  const companyId = company;
+  const versionId = version;
   const [transactionData, setTransactionData] = useState("");
   const [datetime, setDatetime] = useState(formatDate(new Date()));
   const csvLink = useRef();
@@ -63,16 +64,10 @@ export default function Onas() {
 
   const handleDownload = async () => {
     try {
-      await axios
-        .create({
-          baseURL:
-            "https://peopleintelligenceapi.azurewebsites.net/api/OnasSurvey/OnasDownloadBase",
-        })
-        .get("", config)
-        .then((res) => {
-          setDatetime(formatDate(new Date()));
-          setTransactionData(res.data);
-        });
+      await axios.get("OnasSurvey/OnasDownloadBase", config).then((res) => {
+        setDatetime(formatDate(new Date()));
+        setTransactionData(res.data);
+      });
     } catch (error) {
       console.log(error);
     }

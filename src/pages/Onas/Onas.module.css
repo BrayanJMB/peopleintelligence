@@ -90,9 +90,32 @@
     font-size: 0.7rem;
   }
   .buttonresize {
-    font-size: 0.5rem;
+    font-size: 0.6rem;
   }
   .right {
     font-size: 0.7rem;
+  }
+}
+@media screen and (max-width: 1000px) {
+  .info {
+    font-size: 0.5rem;
+  }
+  .buttonresize {
+    font-size: 0.5rem;
+  }
+  .right {
+    font-size: 0.5rem;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .info {
+    font-size: 0.5rem;
+  }
+  .buttonresize {
+    font-size: 0.35rem;
+  }
+  .right {
+    font-size: 0.5rem;
   }
 }

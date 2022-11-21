@@ -1,30 +1,41 @@
-import axios from "axios";
+import axios from "../../utils/axiosInstance";
 import styles from "./PowerBI.module.css";
-import { PowerBIEmbed, report } from "powerbi-client-react";
+import { PowerBIEmbed } from "powerbi-client-react";
 import { models } from "powerbi-client";
 import { useEffect, useState } from "react";
 import Navbar from "../../Layout/Navbar/Navbar";
 import Box from "@mui/material/Box";
 import Sidebar from "../../Layout/Sidebar/Sidebar";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // Lifetime is 3600 sec/ 1 hour
 
 export default function PowerBi() {
   const [response, setResponse] = useState("");
-  let token = response?.powerBiEmbedToken?.token;
-  let embedUrl = response?.powerBiReport?.embedUrl;
-  let id = response?.powerBiReport?.id;
-  let accessToken = async () => {
-    console.log("run function");
+  const navigate = useNavigate();
+  const { idDashboard } = useParams();
+  const accessToken = async () => {
     try {
-      const response = await axios
-        .create({
-          baseURL: `https://peopleintelligenceapi.azurewebsites.net/api/PowerBy`,
-        })
-        .get("/1");
-      setResponse(response.data);
+      await axios.get("PowerBy/" + idDashboard).then((res) => {
+        if (
+          res.data.powerBiEmbedToken === null ||
+          res.data.powerBiReport === null
+        ) {
+          alert("El reporte no existe o esta desahabilitado");
+          navigate("/powerbi");
+        }
+        setResponse({
+          token: res.data.powerBiEmbedToken?.token,
+          id: res.data.powerBiReport?.id,
+          embedUrl: res.data.powerBiReport?.embedUrl,
+        });
+      });
     } catch (e) {
-      console.log(e);
+      if (e.response.status === 400) {
+        alert("Este dashborad no esta habilitado");
+        navigate("/powerbi");
+      }
     }
   };
 
@@ -48,9 +59,9 @@ export default function PowerBi() {
           <PowerBIEmbed
             embedConfig={{
               type: "report", // Supported types: report, dashboard, tile, visual and qna
-              id: id,
-              embedUrl: embedUrl,
-              accessToken: token,
+              id: response?.id,
+              embedUrl: response?.embedUrl,
+              accessToken: response?.token,
               tokenType: models.TokenType.Embed,
               settings: {
                 panes: {

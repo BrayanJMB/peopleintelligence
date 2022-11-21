@@ -4,10 +4,13 @@ import { useMemo, useState, useEffect } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import IconButton from "@mui/material/IconButton";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { removeItem } from "../features/adminSlice";
 import { removeItemBi } from "../features/powerBiSlice";
 import { useDispatch } from "react-redux";
 import { deleteReportAPI } from "../services/deleteReport.service";
+import { useNavigate } from "react-router-dom";
+import Switch from "@mui/material/Switch";
 
 const search = (id, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -18,12 +21,16 @@ const search = (id, inputArray, field, proprety) => {
 };
 
 export default function Table(props) {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [pageSize, setpageSize] = useState(5);
   const [rows, setRows] = useState([]);
 
   const handleDeleteItem = (id) => {
     dispatch(removeItem({ id: id, type: props.type }));
+  };
+  const handleRedirect = (id) => {
+    navigate("/powerbi/" + id);
   };
   const handleDeleteItemBi = (_id, id) => {
     dispatch(removeItemBi({ id: _id, type: props.type }));
@@ -187,12 +194,21 @@ export default function Table(props) {
       headerName: "Status",
       headerAlign: "center",
       align: "center",
+      renderCell: (params) => {
+        return (
+          <Switch
+            checked={params.row.isActive}
+            onChange={(event) => props.handleSwitch(event, params.row)}
+            inputProps={{ "aria-label": "controlled" }}
+          />
+        );
+      },
     },
     {
       field: "actions",
       type: "actions",
       headerName: "Actions",
-      width: 100,
+      width: 150,
       cellClassName: "actions",
       getActions: (params) => {
         return [
@@ -203,6 +219,9 @@ export default function Table(props) {
             onClick={() => handleDeleteItemBi(params.row._id, params.row.id)}
           >
             <DeleteIcon />
+          </IconButton>,
+          <IconButton onClick={() => handleRedirect(params.row.id)}>
+            <VisibilityIcon />
           </IconButton>,
         ];
       },

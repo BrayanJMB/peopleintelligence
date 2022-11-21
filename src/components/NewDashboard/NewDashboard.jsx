@@ -3,7 +3,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import styles from "./NewDashboard.module.css";
 import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
+import TextareaAutosize from "@mui/material/TextareaAutosize";
 
 const validphone = new RegExp("^[0-9]{12,15}$");
 
@@ -121,23 +121,18 @@ export default function NewDashboard(props) {
         />
       </div>
       <div className={styles.input}>
-        <TextField
-          style={{ flexBasis: "40%" }}
-          id="outlined-name"
-          label="descriptionReport"
-          value={props.info.descriptionReport}
-          name="descriptionReport"
-          onChange={props.handleChangeDashboard}
-          size="small"
-          disabled
-        />
-        <span style={{ flexBasis: "28%" }}>isActive</span>
-        <Checkbox
-          checked={props.info.isActive === true ? true : false}
-          onChange={(event) => {
-            props.handleAutocomplete("isActive", event.target.checked);
+        <TextareaAutosize
+          aria-label="empty textarea"
+          placeholder="Type your welcome message..."
+          style={{
+            width: "85.5%",
+            height: "100px",
+            marginTop: "0.5rem",
           }}
-          inputProps={{ "aria-label": "controlled" }}
+          name="descriptionReport"
+          value={props.info.descriptionReport}
+          onChange={props.handleChangeDashboard}
+          disabled
         />
       </div>
       <div className={styles.impexp}>
