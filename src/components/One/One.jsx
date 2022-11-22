@@ -39,19 +39,10 @@ function TabPanel(props) {
   );
 }
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
 const validEmail = new RegExp(
+  "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
+);
+const validBusinessEmail = new RegExp(
   "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@(?!gmail.com)(?!yahoo.com)(?!hotmail.com)(?!yahoo.co.in)(?!aol.com)(?!live.com)(?!outlook.com)[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
 );
 const validphone = new RegExp(
@@ -158,6 +149,10 @@ export default function One(props) {
 
     if (!validEmail.test(props.info.Usuario.correoElectronico)) {
       helperText.correoElectronico = "El correo ingresado no es válido";
+      error.correoElectronico = true;
+      bad = true;
+    } else if (!validBusinessEmail.test(props.info.Usuario.correoElectronico)) {
+      helperText.correoElectronico = "El correo ingresado debe ser corporativo";
       error.correoElectronico = true;
       bad = true;
     }

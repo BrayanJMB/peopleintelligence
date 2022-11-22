@@ -26,7 +26,7 @@ export default function InfoAdmin() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const admin = useSelector((state) => state.admin);
-  const userInfo = localStorage.getItem("userInfo");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const { type } = useParams();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
@@ -372,7 +372,9 @@ export default function InfoAdmin() {
   };
 
   useEffect(() => {
-    if (userInfo.role !== "Management") {
+    if (
+      !(userInfo.role !== "Management" && userInfo.role === "Administrador")
+    ) {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }

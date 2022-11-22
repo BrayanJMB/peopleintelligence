@@ -52,7 +52,7 @@ const drawerWidth = 240;
 export default function Sidebar() {
   const [anchorEl, setAnchorEl] = useState(Array(6).fill(null));
   const navigate = useNavigate();
-  const userInfo = localStorage.getItem("userInfo");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const handleRedirect = (index, key) => {
     if (index === 1) {

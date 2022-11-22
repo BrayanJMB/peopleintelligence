@@ -11,7 +11,7 @@ import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import { useNavigate } from "react-router-dom";
 
-const userParsed = JSON.parse(localStorage.getItem("userInfo"));
+const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
 export default function PowerBiDashboard() {
   const navigate = useNavigate();
@@ -27,19 +27,20 @@ export default function PowerBiDashboard() {
   };
 
   useEffect(() => {
-    if (userParsed.role !== "powerbi") {
+    if (userInfo.role === "PowerBi") {
+      getCompanyDashboardsAPI(1).then((res) => {
+        let data = [];
+        res.data.forEach((val) => {
+          if (!data.includes(val)) {
+            data.push(val);
+          }
+        });
+        dispatch(storeDash(data));
+      });
+    } else {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }
-    getCompanyDashboardsAPI(1).then((res) => {
-      let data = [];
-      res.data.forEach((val) => {
-        if (!data.includes(val)) {
-          data.push(val);
-        }
-      });
-      dispatch(storeDash(data));
-    });
   }, []);
   return (
     <Box sx={{ display: "flex" }}>

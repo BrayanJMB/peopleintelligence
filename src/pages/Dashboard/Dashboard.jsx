@@ -12,33 +12,33 @@ import Sidebar from "../../Layout/Sidebar/Sidebar";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const userInfo = localStorage.getItem("userInfo");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const handleOnas = (e) => {
-    if (userInfo.role !== "Onas") {
-      e.preventDefault();
-    } else {
+    if (userInfo.role === "Onas" || userInfo.role === "Administrador") {
       navigate("/onas");
+    } else {
+      e.preventDefault();
     }
   };
   const handlePowerBI = (e) => {
-    if (userInfo.role !== "PowerBi") {
-      e.preventDefault();
-    } else {
+    if (userInfo.role === "PowerBi") {
       navigate("/powerbi");
+    } else {
+      e.preventDefault();
     }
   };
   const handleConversation = (e) => {
-    if (userInfo.role !== "Dinamyc") {
-      e.preventDefault();
-    } else {
+    if (userInfo.role === "Dinamyc" || userInfo.role === "Administrador") {
       navigate("/conversation/Build");
+    } else {
+      e.preventDefault();
     }
   };
   const handleJourney = (e) => {
-    if (userInfo.role !== "Journey") {
-      e.preventDefault();
-    } else {
+    if (userInfo.role === "journey" || userInfo.role === "Administrador") {
       navigate("/journey");
+    } else {
+      e.preventDefault();
     }
   };
 
@@ -53,8 +53,16 @@ export default function Dashboard() {
               <div
                 className={styles.project}
                 style={{
-                  backgroundColor: userInfo.role !== "Management" ? "grey" : "",
-                  cursor: userInfo.role !== "Management" ? "default" : "",
+                  backgroundColor:
+                    userInfo.role === "Management" ||
+                    userInfo.role === "Administrador"
+                      ? ""
+                      : "grey",
+                  cursor:
+                    userInfo.role === "Management" ||
+                    userInfo.role === "Administrador"
+                      ? ""
+                      : "default",
                 }}
               >
                 <div>
@@ -69,8 +77,8 @@ export default function Dashboard() {
                 className={styles.project}
                 onClick={handlePowerBI}
                 style={{
-                  backgroundColor: userInfo.role !== "PowerBi" ? "grey" : "",
-                  cursor: userInfo.role !== "PowerBi" ? "default" : "",
+                  backgroundColor: userInfo.role === "PowerBi" ? "" : "grey",
+                  cursor: userInfo.role === "PowerBi" ? "" : "default",
                 }}
               >
                 <div>
@@ -87,8 +95,16 @@ export default function Dashboard() {
                 className={styles.project}
                 onClick={handleOnas}
                 style={{
-                  backgroundColor: userInfo.role !== "Onas" ? "grey" : "",
-                  cursor: userInfo.role !== "Onas" ? "default" : "",
+                  backgroundColor:
+                    userInfo.role === "Onas" ||
+                    userInfo.role === "Administrador"
+                      ? ""
+                      : "grey",
+                  cursor:
+                    userInfo.role === "Onas" ||
+                    userInfo.role === "Administrador"
+                      ? ""
+                      : "default",
                 }}
               >
                 <div>
@@ -107,8 +123,16 @@ export default function Dashboard() {
                 className={styles.project}
                 onClick={handleConversation}
                 style={{
-                  backgroundColor: userInfo.role !== "Dinamyc" ? "grey" : "",
-                  cursor: userInfo.role !== "Dinamyc" ? "default" : "",
+                  backgroundColor:
+                    userInfo.role === "Dinamyc" ||
+                    userInfo.role === "Administrador"
+                      ? ""
+                      : "grey",
+                  cursor:
+                    userInfo.role === "Dinamyc" ||
+                    userInfo.role === "Administrador"
+                      ? ""
+                      : "default",
                 }}
               >
                 <div>
@@ -124,8 +148,16 @@ export default function Dashboard() {
                 className={styles.project}
                 onClick={handleJourney}
                 style={{
-                  backgroundColor: userInfo.role !== "Journey" ? "grey" : "",
-                  cursor: userInfo.role !== "Journey" ? "default" : "",
+                  backgroundColor:
+                    userInfo.role === "Dinamyc" ||
+                    userInfo.role === "Administrador"
+                      ? ""
+                      : "grey",
+                  cursor:
+                    userInfo.role === "Dinamyc" ||
+                    userInfo.role === "Administrador"
+                      ? ""
+                      : "default",
                 }}
               >
                 <div>
@@ -141,8 +173,11 @@ export default function Dashboard() {
                 className={styles.project}
                 style={{
                   backgroundColor:
-                    userInfo.role !== "Sentimental" ? "grey" : "",
-                  cursor: userInfo.role !== "Sentimental" ? "default" : "",
+                    userInfo.role === "Sentimental" ||
+                    userInfo.role === "Administrador"
+                      ? ""
+                      : "grey",
+                  cursor: userInfo.role !== "Sentimental" ? "" : "default",
                 }}
               >
                 <div>

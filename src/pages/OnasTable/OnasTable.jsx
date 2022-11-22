@@ -35,7 +35,7 @@ function formatDate(date) {
 
 export default function OnasTable() {
   const navigate = useNavigate();
-  const userInfo = localStorage.getItem("userInfo");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [rows, setRows] = useState([]);
   const [transactionData, setTransactionData] = useState("");
   const [datetime, setDatetime] = useState(formatDate(new Date()));
@@ -127,7 +127,7 @@ export default function OnasTable() {
   };
 
   useEffect(() => {
-    if (userInfo.role !== "Onas") {
+    if (!(userInfo.role !== "Onas" && userInfo.role === "Administrador")) {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }

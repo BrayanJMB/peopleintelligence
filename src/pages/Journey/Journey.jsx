@@ -92,14 +92,14 @@ const settings = {
 
 export default function Journey() {
   const navigate = useNavigate();
-  const userInfo = localStorage.getItem("userInfo");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const handleExplorar = () => {
     navigate("/journey/survey-template");
   };
 
   useEffect(() => {
-    if (userInfo.role !== "Journey") {
+    if (!(userInfo.role !== "Journey" && userInfo.role === "Administrador")) {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }

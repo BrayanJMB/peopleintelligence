@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 export default function Conversation() {
   const { type } = useParams();
   const navigate = useNavigate();
-  const userInfo = localStorage.getItem("userInfo");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const theme = createTheme({
     palette: {
       blue: {
@@ -34,7 +34,7 @@ export default function Conversation() {
   };
 
   useEffect(() => {
-    if (userInfo.role !== "Dinamyc") {
+    if (!(userInfo.role !== "Dinamyc" && userInfo.role === "Administrador")) {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }

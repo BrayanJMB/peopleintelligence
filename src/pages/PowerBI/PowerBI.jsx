@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 // Lifetime is 3600 sec/ 1 hour
 
 export default function PowerBi() {
-  const userInfo = localStorage.getItem("userInfo");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [response, setResponse] = useState("");
   const navigate = useNavigate();
   const { idDashboard } = useParams();
@@ -41,17 +41,18 @@ export default function PowerBi() {
   };
 
   useEffect(() => {
-    if (userInfo.role !== "PowerBi") {
+    if (userInfo.role === "PowerBi") {
+      if (response) {
+        let timer1 = setInterval(() => accessToken(), 1000 * 60 * 60);
+        return () => {
+          clearInterval(timer1);
+        };
+      } else {
+        accessToken();
+      }
+    } else {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
-    }
-    if (response) {
-      let timer1 = setInterval(() => accessToken(), 1000 * 60 * 60);
-      return () => {
-        clearInterval(timer1);
-      };
-    } else {
-      accessToken();
     }
   }, [response]);
 
