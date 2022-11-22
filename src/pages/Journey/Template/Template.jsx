@@ -104,7 +104,7 @@ const data = [
 
 export default function Template() {
   const navigate = useNavigate();
-  const userInfo = localStorage.getItem("userInfo");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const handleGoBack = () => {
     navigate("/journey");
@@ -114,7 +114,7 @@ export default function Template() {
   };
 
   useEffect(() => {
-    if (userInfo.role !== "Journey") {
+    if (!(userInfo.role !== "Journey" && userInfo.role === "Administrador")) {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }

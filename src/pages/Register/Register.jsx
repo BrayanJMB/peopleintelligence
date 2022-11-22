@@ -39,7 +39,7 @@ export default function Register() {
   const { type } = useParams();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
-  const userInfo = localStorage.getItem("userInfo");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   // state for input
   const [dashboard, setDashboard] = useState({

@@ -53,7 +53,7 @@ function formatDate(date) {
 export default function Onas() {
   const { company, version } = useParams();
   const navigate = useNavigate();
-  const userInfo = localStorage.getItem("userInfo");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const companyId = company;
   const versionId = version;
   const [transactionData, setTransactionData] = useState("");
@@ -139,7 +139,7 @@ export default function Onas() {
   };
 
   useEffect(() => {
-    if (userInfo.role !== "Onas") {
+    if (!(userInfo.role !== "Onas" && userInfo.role === "Administrador")) {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }
