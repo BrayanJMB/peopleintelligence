@@ -373,7 +373,8 @@ export default function InfoAdmin() {
 
   useEffect(() => {
     if (
-      !(userInfo.role !== "Management" && userInfo.role === "Administrador")
+      userInfo?.role.findIndex((p) => p === "Management") < 0 &&
+      userInfo?.role.findIndex((p) => p === "Administrador") < 0
     ) {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");

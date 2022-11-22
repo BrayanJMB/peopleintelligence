@@ -71,7 +71,7 @@ export default function Sidebar() {
   };
 
   const handleItemClick = (index) => (event) => {
-    if (index === 1 && userInfo.role !== "powerbi") {
+    if (index === 1 && userInfo?.role.findIndex((p) => p === "PowerBi") < 0) {
       event.preventDefault();
     } else {
       let tmp = anchorEl.map((val, key) => {

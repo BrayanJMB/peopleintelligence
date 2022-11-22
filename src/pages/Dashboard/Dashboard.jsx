@@ -14,28 +14,37 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const handleOnas = (e) => {
-    if (userInfo.role === "Onas" || userInfo.role === "Administrador") {
+    if (
+      userInfo?.role.findIndex((p) => p === "Onas") > -1 ||
+      userInfo?.role.findIndex((p) => p === "Administrador") > -1
+    ) {
       navigate("/onas");
     } else {
       e.preventDefault();
     }
   };
   const handlePowerBI = (e) => {
-    if (userInfo.role === "PowerBi") {
+    if (userInfo?.role.findIndex((p) => p === "PowerBi") > -1) {
       navigate("/powerbi");
     } else {
       e.preventDefault();
     }
   };
   const handleConversation = (e) => {
-    if (userInfo.role === "Dinamyc" || userInfo.role === "Administrador") {
+    if (
+      userInfo?.role.findIndex((p) => p === "Dinamyc") > -1 ||
+      userInfo?.role.findIndex((p) => p === "Administrador") > -1
+    ) {
       navigate("/conversation/Build");
     } else {
       e.preventDefault();
     }
   };
   const handleJourney = (e) => {
-    if (userInfo.role === "journey" || userInfo.role === "Administrador") {
+    if (
+      userInfo?.role.findIndex((p) => p === "Journey") > -1 ||
+      userInfo?.role.findIndex((p) => p === "Administrador") > -1
+    ) {
       navigate("/journey");
     } else {
       e.preventDefault();
@@ -54,13 +63,13 @@ export default function Dashboard() {
                 className={styles.project}
                 style={{
                   backgroundColor:
-                    userInfo.role === "Management" ||
-                    userInfo.role === "Administrador"
+                    userInfo?.role.findIndex((p) => p === "Management") > -1 ||
+                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
                       ? ""
                       : "grey",
                   cursor:
-                    userInfo.role === "Management" ||
-                    userInfo.role === "Administrador"
+                    userInfo?.role.findIndex((p) => p === "Management") > -1 ||
+                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
                       ? ""
                       : "default",
                 }}
@@ -77,8 +86,14 @@ export default function Dashboard() {
                 className={styles.project}
                 onClick={handlePowerBI}
                 style={{
-                  backgroundColor: userInfo.role === "PowerBi" ? "" : "grey",
-                  cursor: userInfo.role === "PowerBi" ? "" : "default",
+                  backgroundColor:
+                    userInfo?.role.findIndex((p) => p === "PowerBi") > -1
+                      ? ""
+                      : "grey",
+                  cursor:
+                    userInfo?.role.findIndex((p) => p === "PowerBi") > -1
+                      ? ""
+                      : "default",
                 }}
               >
                 <div>
@@ -96,13 +111,13 @@ export default function Dashboard() {
                 onClick={handleOnas}
                 style={{
                   backgroundColor:
-                    userInfo.role === "Onas" ||
-                    userInfo.role === "Administrador"
+                    userInfo?.role.findIndex((p) => p === "Onas") > -1 ||
+                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
                       ? ""
                       : "grey",
                   cursor:
-                    userInfo.role === "Onas" ||
-                    userInfo.role === "Administrador"
+                    userInfo?.role.findIndex((p) => p === "Onas") > -1 ||
+                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
                       ? ""
                       : "default",
                 }}
@@ -124,13 +139,13 @@ export default function Dashboard() {
                 onClick={handleConversation}
                 style={{
                   backgroundColor:
-                    userInfo.role === "Dinamyc" ||
-                    userInfo.role === "Administrador"
+                    userInfo?.role.findIndex((p) => p === "Dinamyc") > -1 ||
+                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
                       ? ""
                       : "grey",
                   cursor:
-                    userInfo.role === "Dinamyc" ||
-                    userInfo.role === "Administrador"
+                    userInfo?.role.findIndex((p) => p === "Dinamyc") > -1 ||
+                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
                       ? ""
                       : "default",
                 }}
@@ -149,13 +164,13 @@ export default function Dashboard() {
                 onClick={handleJourney}
                 style={{
                   backgroundColor:
-                    userInfo.role === "Dinamyc" ||
-                    userInfo.role === "Administrador"
+                    userInfo?.role.findIndex((p) => p === "Journey") > -1 ||
+                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
                       ? ""
                       : "grey",
                   cursor:
-                    userInfo.role === "Dinamyc" ||
-                    userInfo.role === "Administrador"
+                    userInfo?.role.findIndex((p) => p === "Journey") > -1 ||
+                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
                       ? ""
                       : "default",
                 }}
@@ -173,11 +188,15 @@ export default function Dashboard() {
                 className={styles.project}
                 style={{
                   backgroundColor:
-                    userInfo.role === "Sentimental" ||
-                    userInfo.role === "Administrador"
+                    userInfo?.role.findIndex((p) => p === "Sentimental") > -1 ||
+                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
                       ? ""
                       : "grey",
-                  cursor: userInfo.role !== "Sentimental" ? "" : "default",
+                  cursor:
+                    userInfo?.role.findIndex((p) => p === "Sentimental") > -1 ||
+                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
+                      ? ""
+                      : "default",
                 }}
               >
                 <div>

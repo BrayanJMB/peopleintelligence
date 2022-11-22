@@ -127,7 +127,10 @@ export default function OnasTable() {
   };
 
   useEffect(() => {
-    if (!(userInfo.role !== "Onas" && userInfo.role === "Administrador")) {
+    if (
+      userInfo?.role.findIndex((p) => p === "Onas") < 0 &&
+      userInfo?.role.findIndex((p) => p === "Administrador") < 0
+    ) {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }

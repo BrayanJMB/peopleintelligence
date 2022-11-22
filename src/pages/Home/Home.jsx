@@ -172,6 +172,11 @@ export default function Home() {
         .then((res) => {
           let token = res.data.token;
           let decodedToken = decodeToken(token);
+          if (!Array.isArray(decodedToken.role)) {
+            let tmp = [];
+            tmp.push(decodedToken.role);
+            decodedToken.role = [...tmp];
+          }
           dispatch(
             setCredentials({
               user: decodedToken.user,
