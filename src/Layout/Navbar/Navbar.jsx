@@ -54,7 +54,7 @@ export default function Navbar() {
   const [drop, setDrop] = useState("");
   const open = Boolean(anchorEl);
   const open2 = Boolean(anchorEl2);
-  const userInfo = localStorage.getItem("userInfo");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -112,6 +112,7 @@ export default function Navbar() {
               style={{ flexBasis: "180px" }}
               options={select}
               clearOnEscape
+              value={drop}
               onChange={(e, value) => handleSelect(value)}
               getOptionLabel={(option) => option}
               noOptionsText={"No Options"}
@@ -174,21 +175,20 @@ export default function Navbar() {
               onClose={handleClose2}
             >
               <MenuItem
-                disabled={userInfo.role !== "powerbi"}
-                onClick={() => handleRegister("dashboard")}
+                disabled={userInfo?.role.findIndex((p) => p === "PowerBi") < 0}
+                onClick={() => handleRegister("PowerBi")}
               >
                 registar Dashboard
               </MenuItem>
               <MenuItem
-                disabled={userInfo.role !== "powerbi"}
+                disabled={userInfo?.role.findIndex((p) => p === "PowerBi") < 0}
                 onClick={() => handleRegister("report")}
               >
                 registar Report
               </MenuItem>
               <MenuItem
                 disabled={
-                  JSON.parse(localStorage.getItem("userInfo")).role !==
-                  "Administrador"
+                  userInfo?.role.findIndex((p) => p === "Administrador") < 0
                 }
                 onClick={() => handleRoles()}
               >

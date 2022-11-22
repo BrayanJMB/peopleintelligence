@@ -2,7 +2,7 @@ import { Outlet, Navigate } from "react-router-dom";
 
 export default function PrivateRoutes() {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  if (userInfo?.role === "Registrado") {
+  if (userInfo?.role.findIndex((p) => p === "Registrado") > -1) {
     alert(
       "No tiene acceso ningún servicio, por favor comuncarse con el adminitrador"
     );

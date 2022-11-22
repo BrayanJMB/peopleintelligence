@@ -114,7 +114,10 @@ export default function Template() {
   };
 
   useEffect(() => {
-    if (!(userInfo.role !== "Journey" && userInfo.role === "Administrador")) {
+    if (
+      userInfo?.role.findIndex((p) => p === "Journey") < 0 &&
+      userInfo?.role.findIndex((p) => p === "Administrador") < 0
+    ) {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }

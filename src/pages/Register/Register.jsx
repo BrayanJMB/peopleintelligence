@@ -306,7 +306,7 @@ export default function Register() {
   };
 
   useEffect(() => {
-    if (userInfo.role !== "powerbi") {
+    if (userInfo?.role.findIndex((p) => p === "PowerBi") < 0) {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }
