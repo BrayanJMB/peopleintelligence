@@ -115,7 +115,7 @@ export default function Navbar() {
 
   useEffect(() => {
     if (userInfo?.role.findIndex((p) => p === "MultiCompania") > -1) {
-      companyConsume("771c01ea-decf-46f1-b8f4-9048a86532d9");
+      companyConsume(userInfo.user);
     }
   }, []);
 
