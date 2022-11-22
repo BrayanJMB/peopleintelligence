@@ -191,7 +191,7 @@ export default function Home() {
               user: decodedToken.user,
               Company: decodedToken.Company,
               accessToken: token,
-              role: decodedToken.role,
+              role: ["MultiCompania"],
             })
           );
           countryConsume();

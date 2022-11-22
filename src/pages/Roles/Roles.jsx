@@ -9,7 +9,6 @@ import { grey } from "@mui/material/colors";
 import IconButton from "@mui/material/IconButton";
 import { useNavigate } from "react-router-dom";
 import { getOnasAPI } from "../../services/getOnas.service";
-import Button from "@mui/material/Button";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import RemoveCircleOutlinedIcon from "@mui/icons-material/RemoveCircleOutlined";
 
@@ -17,6 +16,7 @@ export default function OnasTable() {
   const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [pageSize, setpageSize] = useState(5);
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const rolesColumn = [
     {
@@ -87,6 +87,10 @@ export default function OnasTable() {
   };
 
   useEffect(() => {
+    if (userInfo?.role.findIndex((p) => p === "MultiCompania") < 0) {
+      alert("No tiene permiso para acceder a esta funcionalidad");
+      navigate("/dashboard");
+    }
     getTableData();
   }, []);
 

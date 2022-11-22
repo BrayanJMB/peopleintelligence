@@ -17,7 +17,7 @@ const validEmail = new RegExp(
   "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
 );
 const validBusinessEmail = new RegExp(
-  "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@(?!gmail.com)(?!yahoo.com)(?!hotmail.com)(?!yahoo.co.in)(?!aol.com)(?!live.com)(?!outlook.com)[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
+  "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@(?!gmail.com)(?!yahoo.com)(?!hotmail.com)(?!yahoo.co.in)(?!aol.com)(?!live.com)(?!outlook.com)+[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
 );
 
 const validphone = new RegExp("^[0-9]{12,15}$");
@@ -112,6 +112,17 @@ export default function Multiple(props) {
       helperText.correoElectronico = "El correo ingresado debe ser corporativo";
       error.correoElectronico = true;
       bad = true;
+    } else {
+      helperText["correoElectronico"] = "";
+      error["correoElectronico"] = false;
+    }
+    if (!validphone.test(props.info.Usuario.phoneNumber)) {
+      helperText["phoneNumber"] = "Escriba un numero telefonico válido";
+      error["phoneNumber"] = true;
+      bad = true;
+    } else {
+      helperText["phoneNumber"] = "";
+      error["phoneNumber"] = false;
     }
     if (props.info.Usuario.numeroDocumento.length < 8) {
       helperText["numeroDocumento"] = "El tamaño minimo del campo es 8 digitos";
