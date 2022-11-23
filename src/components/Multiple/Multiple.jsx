@@ -297,6 +297,7 @@ export default function Multiple(props) {
               error={errorMessage.correoElectronico}
               helperText={helperText.correoElectronico}
               size="small"
+              disabled={props.disable}
             />
             <TextField
               style={{ flexBasis: "40%" }}
