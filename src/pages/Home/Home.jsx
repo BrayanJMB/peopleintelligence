@@ -197,6 +197,7 @@ export default function Home() {
           );
 
           const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+          console.log(userInfo.role.findIndex((p) => p === "Registrado"));
           if (userInfo.role.findIndex((p) => p === "Registrado") > -1) {
             navigate("/noaccess");
           } else if (userInfo.role.length > 0) {
