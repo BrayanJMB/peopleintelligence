@@ -195,8 +195,12 @@ export default function Home() {
               role: decodedToken.role,
             })
           );
-          if (decodedToken.role.findIndex((p) => p === "Registrado") > -1) {
+
+          const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+          if (userInfo.role.findIndex((p) => p === "Registrado") > -1) {
             navigate("/noaccess");
+          } else if (userInfo.role.length > 0) {
+            navigate("/dashboard");
           }
           countryConsume();
           sizeCompanyConsume();
