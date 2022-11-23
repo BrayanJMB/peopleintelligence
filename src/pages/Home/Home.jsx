@@ -10,7 +10,7 @@ import axios from "../../utils/axiosInstance";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../features/authSlice";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const config = {
   headers: {
@@ -20,6 +20,7 @@ const config = {
 
 export default function Home() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
   const urlParams = new URLSearchParams(location.hash);
   const result = {};
@@ -191,9 +192,12 @@ export default function Home() {
               user: decodedToken.user,
               Company: decodedToken.Company,
               accessToken: token,
-              role: decodedToken.role,
+              role: "Registrado",
             })
           );
+          if (decodedToken.role.findIndex((p) => p === "Registrado") > -1) {
+            navigate("/noaccess");
+          }
           countryConsume();
           sizeCompanyConsume();
           sectorConsume();

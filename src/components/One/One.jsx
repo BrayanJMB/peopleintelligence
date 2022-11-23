@@ -45,9 +45,7 @@ const validEmail = new RegExp(
 const validBusinessEmail = new RegExp(
   "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@(?!gmail.com)(?!yahoo.com)(?!hotmail.com)(?!yahoo.co.in)(?!aol.com)(?!live.com)(?!outlook.com)[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
 );
-const validphone = new RegExp(
-  "^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{1}[-s.]?[0-9]{4,6}$"
-);
+const validphone = new RegExp("^[0-9]{12,15}$");
 
 const config = {
   headers: { "Content-type": "application/json" },

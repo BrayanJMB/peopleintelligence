@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
+import axios from "../../utils/axiosInstance";
 
 function stringToColor(string) {
   let hash = 0;
@@ -55,6 +56,10 @@ export default function Navbar() {
   const open = Boolean(anchorEl);
   const open2 = Boolean(anchorEl2);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const [data, setData] = useState({
+    content: { company: [] },
+    ids: { company: [] },
+  });
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -83,10 +88,36 @@ export default function Navbar() {
       "https://pruebaapib2c.b2clogin.com/PruebaAPib2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_SignInSingUp&client_id=08cfdf65-11e3-45b6-a745-3c0bd35777ae&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fhappy-island-0e573c910.2.azurestaticapps.net%2F&scope=https%3A%2F%2FPruebaAPib2c.onmicrosoft.com%2FApidinamic%2FApi.ReadWrite&response_type=token&prompt=login"
     );
   };
+  const companyConsume = async (id) => {
+    try {
+      await axios.get("companias/GetCompanias/" + id).then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.nombreCompania)) {
+            fetch.push(val.nombreCompania);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.company = fetch;
+        holder.ids.company = id;
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleSelect = (value) => {
     setDrop(value);
   };
+
+  useEffect(() => {
+    if (userInfo?.role.findIndex((p) => p === "MultiCompania") > -1) {
+      companyConsume(userInfo.user);
+    }
+  }, []);
 
   return (
     <AppBar
@@ -110,7 +141,7 @@ export default function Navbar() {
             <Autocomplete
               id="combo-box-demo"
               style={{ flexBasis: "180px" }}
-              options={select}
+              options={data.content.company}
               clearOnEscape
               value={drop}
               onChange={(e, value) => handleSelect(value)}
