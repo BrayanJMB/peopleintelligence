@@ -41,7 +41,7 @@ export default function PowerBi() {
   };
 
   useEffect(() => {
-    if (userInfo.role === "PowerBi") {
+    if (userInfo.role.findIndex((p) => p === "PowerBiDashboard") > -1) {
       if (response) {
         let timer1 = setInterval(() => accessToken(), 1000 * 60 * 60);
         return () => {

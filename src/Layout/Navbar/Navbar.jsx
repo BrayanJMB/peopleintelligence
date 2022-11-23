@@ -138,19 +138,22 @@ export default function Navbar() {
               alignItems: "center",
             }}
           >
-            <Autocomplete
-              id="combo-box-demo"
-              style={{ flexBasis: "180px" }}
-              options={data.content.company}
-              clearOnEscape
-              value={drop}
-              onChange={(e, value) => handleSelect(value)}
-              getOptionLabel={(option) => option}
-              noOptionsText={"No Options"}
-              renderInput={(params) => (
-                <TextField {...params} label="company Name" />
-              )}
-            />
+            {userInfo.role.findIndex((p) => p === "MultiCompania") > -1 ? (
+              <Autocomplete
+                id="combo-box-demo"
+                style={{ flexBasis: "180px" }}
+                options={data.content.company}
+                clearOnEscape
+                value={drop}
+                onChange={(e, value) => handleSelect(value)}
+                getOptionLabel={(option) => option}
+                noOptionsText={"No Options"}
+                renderInput={(params) => (
+                  <TextField {...params} label="company Name" />
+                )}
+              />
+            ) : null}
+
             <IconButton onClick={handleHome}>
               <HomeOutlinedIcon sx={{ fontSize: "40px" }} />
             </IconButton>
@@ -206,13 +209,21 @@ export default function Navbar() {
               onClose={handleClose2}
             >
               <MenuItem
-                disabled={userInfo?.role.findIndex((p) => p === "PowerBi") < 0}
+                disabled={
+                  userInfo?.role.findIndex(
+                    (p) => p === "PowerBiAdministrator"
+                  ) < 0
+                }
                 onClick={() => handleRegister("PowerBi")}
               >
                 registar Dashboard
               </MenuItem>
               <MenuItem
-                disabled={userInfo?.role.findIndex((p) => p === "PowerBi") < 0}
+                disabled={
+                  userInfo?.role.findIndex(
+                    (p) => p === "PowerBiAdministrator"
+                  ) < 0
+                }
                 onClick={() => handleRegister("report")}
               >
                 registar Report

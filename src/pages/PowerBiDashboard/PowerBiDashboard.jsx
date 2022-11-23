@@ -27,7 +27,7 @@ export default function PowerBiDashboard() {
   };
 
   useEffect(() => {
-    if (userInfo.role === "PowerBi") {
+    if (userInfo.role.findIndex((p) => p === "PowerBiDashboard") > -1) {
       getCompanyDashboardsAPI(1).then((res) => {
         let data = [];
         res.data.forEach((val) => {
