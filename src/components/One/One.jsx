@@ -559,6 +559,7 @@ export default function One(props) {
                   error={errorMessage.correoElectronico}
                   helperText={helperText.correoElectronico}
                   size="small"
+                  disabled={props.disable}
                 />
                 <TextField
                   style={{ flexBasis: "40%" }}
