@@ -15,6 +15,7 @@ import OnasTable from "./pages/OnasTable/OnasTable";
 import Roles from "./pages/Roles/Roles";
 import Error from "./pages/Error/Error";
 import PrivateRoutes from "./utils/PrivateRoutes";
+import NoAccess from "./pages/NoAccess/NoAccess";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 
@@ -51,6 +52,7 @@ export default function App() {
               exact
             />
           </Route>
+          <Route path="/noaccess" element={<NoAccess />} />
           <Route path="*" element={<Error />} />
         </Routes>
       </Router>
