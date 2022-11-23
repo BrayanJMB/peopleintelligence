@@ -192,7 +192,7 @@ export default function Home() {
               user: decodedToken.user,
               Company: decodedToken.Company,
               accessToken: token,
-              role: "Registrado",
+              role: decodedToken.role,
             })
           );
           if (decodedToken.role.findIndex((p) => p === "Registrado") > -1) {
