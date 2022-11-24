@@ -24,7 +24,7 @@ export default function Dashboard() {
     }
   };
   const handlePowerBI = (e) => {
-    if (userInfo?.role.findIndex((p) => p === "PowerBi") > -1) {
+    if (userInfo?.role.findIndex((p) => p === "PowerBiDashboard") > -1) {
       navigate("/powerbi");
     } else {
       e.preventDefault();
