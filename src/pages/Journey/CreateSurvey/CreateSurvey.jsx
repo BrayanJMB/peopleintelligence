@@ -43,13 +43,20 @@ export default function CreateSurvey() {
   const [activeStep, setActiveStep] = useState(0);
   const [questions, setQuestions] = useState([]);
   const [open, setOpen] = useState(false);
-  const [data, setData] = useState({ title: "", description: "" });
+  const [data, setData] = useState({ title: "", description: "", mapa: "" });
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
+  const [type, setType] = useState();
   const [information, setInformation] = useState({
-    type: "",
     name: "",
     description: "",
+    options: [
+      "Muy en desacuerdo",
+      "Discrepar",
+      "Neutral",
+      "Estar de acuerdo",
+      "Totalmente de acuerdo",
+    ],
   });
   const [anonyme, setAnonyme] = useState(true);
 
@@ -80,7 +87,6 @@ export default function CreateSurvey() {
       } else {
         setErrorMessage({});
         setHelperText({});
-        setOpen(true);
         setActiveStep(1);
       }
     } else if (activeStep === 1) {
@@ -105,6 +111,9 @@ export default function CreateSurvey() {
   const handleAdd = () => {
     setOpen(true);
   };
+  const handleSelect = (value) => {
+    setData({ ...data, mapa: value });
+  };
   const renderSwitch = (activeStep) => {
     switch (activeStep) {
       case 0:
@@ -112,6 +121,7 @@ export default function CreateSurvey() {
           <Introduction
             data={data}
             handleChange={handlechange}
+            handleSelect={handleSelect}
             errorMessage={errorMessage}
             helperText={helperText}
           />
@@ -154,7 +164,7 @@ export default function CreateSurvey() {
     setQuestions(reorderedItems);
   };
   const handleAutocomplete = (val) => {
-    setInformation({ ...information, type: val });
+    setType(val);
   };
   const handleAgregar = () => {
     let helperText = {};
@@ -174,6 +184,18 @@ export default function CreateSurvey() {
     } else {
       setErrorMessage({});
       setHelperText({});
+      if (type === "Texto corto") {
+        handleAddQuestion({
+          name: information.name,
+          description: information.description,
+        });
+      } else if (type === "Escala Likert") {
+        handleAddQuestion({
+          name: information.name,
+          description: information.description,
+          options: information.options,
+        });
+      }
       handleAddQuestion(information);
       setInformation({
         type: "",
@@ -233,8 +255,7 @@ export default function CreateSurvey() {
                     id="combo-box-demo"
                     style={{ flexBasis: "40%" }}
                     options={types}
-                    clearOnEscape
-                    value={information.type}
+                    value={type}
                     onChange={(e, value) => {
                       handleAutocomplete(value);
                     }}
@@ -251,14 +272,13 @@ export default function CreateSurvey() {
                     size="small"
                   />
                 </div>
-                {information.type === "" || information.type === null ? null : (
-                  <Form
-                    information={information}
-                    handleInformation={handleinformation}
-                    errorMessage={errorMessage}
-                    helperText={helperText}
-                  />
-                )}
+                <Form
+                  type={type}
+                  information={information}
+                  handleInformation={handleinformation}
+                  errorMessage={errorMessage}
+                  helperText={helperText}
+                />
               </div>
             </div>
             <div className={styles.bottom}>

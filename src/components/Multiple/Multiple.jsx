@@ -12,6 +12,7 @@ import axios from "axios";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import Typography from "@mui/material/Typography";
+import MuiPhoneNumber from "material-ui-phone-number-2";
 
 const validEmail = new RegExp(
   "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
@@ -299,16 +300,10 @@ export default function Multiple(props) {
               size="small"
               disabled={props.disable}
             />
-            <TextField
+            <MuiPhoneNumber
+              defaultCountry={"us"}
+              onChange={props.handlePhone}
               style={{ flexBasis: "40%" }}
-              id="outlined-name"
-              label="Número de teléfono"
-              value={props.info.Usuario.phoneNumber}
-              name="phoneNumber"
-              onChange={props.handleChange("Usuario")}
-              error={errorMessage.phoneNumber}
-              helperText={helperText.phoneNumber}
-              size="small"
             />
           </div>
         </div>

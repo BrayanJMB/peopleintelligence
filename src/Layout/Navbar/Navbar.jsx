@@ -46,7 +46,6 @@ function stringAvatar(name) {
 }
 
 const drawerWidth = 240;
-const select = ["one", "two"];
 
 export default function Navbar() {
   const navigate = useNavigate();

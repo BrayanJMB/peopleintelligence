@@ -4,7 +4,7 @@
   margin-top: 4rem;
   border-top-left-radius: 50px;
   background-color: rgb(224, 219, 219);
-  overflow-x: scroll;
+  overflow-y: scroll;
 }
 .survey_template {
   display: flex;
@@ -32,7 +32,7 @@
 }
 .templates {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-wrap: wrap;
   background-color: white;
   margin: 0 4em;
@@ -41,17 +41,19 @@
   padding: 1.5em;
   justify-content: center;
   box-shadow: rgb(79 81 110 / 30%) 0px 2px 4px;
-  gap: 2em;
+  gap: 1em;
   margin-bottom: 3em;
   padding-bottom: 2em;
 }
 .template {
-  flex-basis: 30%;
+  width: 270px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   box-shadow: rgb(79 81 110 / 30%) 0px 5px 10px;
   border-radius: 0 0 8px 8px;
+  height: 272px;
+  justify-content: space-between;
 }
 
 .title {

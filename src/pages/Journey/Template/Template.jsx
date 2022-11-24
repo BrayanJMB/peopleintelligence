@@ -9,7 +9,8 @@ import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useNavigate } from "react-router-dom";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getTemplatesAPI } from "../../../services/getTemplates.service";
 
 const theme = createTheme({
   palette: {
@@ -19,7 +20,7 @@ const theme = createTheme({
   },
 });
 
-const data = [
+const datatemplates = [
   {
     title: "Encuesta del dia 30",
     description:
@@ -105,6 +106,7 @@ const data = [
 export default function Template() {
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const [data, setData] = useState([]);
 
   const handleGoBack = () => {
     navigate("/journey");
@@ -121,6 +123,10 @@ export default function Template() {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }
+    getTemplatesAPI().then((res) => {
+      console.log(res.data);
+      setData(res.data);
+    });
   }, []);
 
   return (
@@ -152,35 +158,79 @@ export default function Template() {
                 </div>
               </div>
               <div className={styles.templates}>
-                <div className={styles.template} onClick={handleCreateSurvey}>
-                  <div className={styles.title}>
-                    <AddCircleOutlineIcon /> <p>Crea tu propia encuesta</p>
+                <p
+                  style={{
+                    fontWeight: "500",
+                    fontSize: "18px",
+                    letterSpacing: "0.5px",
+                  }}
+                >
+                  Empezar desde el principio
+                </p>
+                <div
+                  style={{ display: "flex", flexDirection: "row", gap: "6em" }}
+                >
+                  <div className={styles.template} onClick={handleCreateSurvey}>
+                    <div className={styles.title}>
+                      <AddCircleOutlineIcon /> <p>Crea tu plantilla</p>
+                    </div>
+                    <div className={styles.description}>
+                      Cree su propia plantilla personalizada desde cero.
+                    </div>
+                    <div className={styles.create}>
+                      <p>Crea plantilla</p>
+                      <KeyboardArrowRightIcon />
+                    </div>
                   </div>
-                  <div className={styles.description}>
-                    Cree su propia encuesta personalizada desde cero.
-                  </div>
-                  <div className={styles.create}>
-                    <p>Crea ahora</p>
-                    <KeyboardArrowRightIcon />
+                  <div className={styles.template} onClick={handleCreateSurvey}>
+                    <div className={styles.title}>
+                      <AddCircleOutlineIcon /> <p>Crea tu propia encuesta</p>
+                    </div>
+                    <div className={styles.description}>
+                      Cree su propia encuesta personalizada desde cero.
+                    </div>
+                    <div className={styles.create}>
+                      <p>Crea ahora</p>
+                      <KeyboardArrowRightIcon />
+                    </div>
                   </div>
                 </div>
-                {data.map((val) => {
-                  let Icon = val.icon;
-                  return (
-                    <div key={val.id} className={styles.template}>
-                      <div className={styles.title}>
-                        <Icon /> {val.title}
+                <p
+                  style={{
+                    fontWeight: "500",
+                    fontSize: "18px",
+                    letterSpacing: "0.5px",
+                  }}
+                >
+                  O usa una plantilla
+                </p>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    gap: "1em",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  {data.map((val, key) => {
+                    let Icon = datatemplates[key].icon;
+                    return (
+                      <div key={val.id} className={styles.template}>
+                        <div className={styles.title}>
+                          <Icon /> {val.nameSurvey}
+                        </div>
+                        <div className={styles.description}>
+                          {val.descriptionSurvey}
+                        </div>
+                        <div className={styles.bottom}>
+                          <p>Usa esta plantilla</p>
+                          <KeyboardArrowRightIcon />
+                        </div>
                       </div>
-                      <div className={styles.description}>
-                        {val.description}
-                      </div>
-                      <div className={styles.bottom}>
-                        <p>Usa esta plantilla</p>
-                        <KeyboardArrowRightIcon />
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>

@@ -1,11 +1,52 @@
 import TextField from "@mui/material/TextField";
 import TextareaAutosize from "@mui/material/TextareaAutosize";
+import Autocomplete from "@mui/material/Autocomplete";
 import styles from "./Introduction.module.css";
+import { useEffect, useState } from "react";
+import axios from "../../../../utils/axiosInstance";
 
 export default function Introduction(props) {
+  const [data, setData] = useState({
+    content: { maps: [] },
+    ids: { maps: [] },
+  });
+  const mapsConsume = async () => {
+    try {
+      await axios.get("GetJorneyMap/").then((res) => {
+        let fetch = [];
+        let id = [];
+        console.log(res.data);
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.mapJourney)) {
+            fetch.push(val.mapJourney);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.maps = fetch;
+        holder.ids.maps = id;
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    mapsConsume();
+  }, []);
   return (
     <div className={styles.form}>
-      <p>Introduction a la encuesta</p>
+      <Autocomplete
+        id="combo-box-demo"
+        options={data.content.maps}
+        clearOnEscape
+        value={props.data.mapa}
+        onChange={(e, value) => props.handleSelect(value)}
+        getOptionLabel={(option) => option}
+        noOptionsText={"No Options"}
+        renderInput={(params) => <TextField {...params} label="Mapa Name" />}
+      />
+      <p style={{ marginTop: "0.4em" }}>Introduction a la encuesta</p>
       <div className={styles.input}>
         <TextField
           id="outlined-name"
