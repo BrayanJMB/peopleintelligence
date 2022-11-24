@@ -214,12 +214,12 @@ export default function Home() {
           "https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fwww.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login"
         );
       }
-      if (error.response.status === 400) {
+      /*if (error.response.status === 400) {
         alert("El correo ingresado no es un correo corporativo");
         window.location.replace(
           "https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fwww.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login"
         );
-      }
+      }*/
       if (error.response.status === 403) {
         let holder = info.Usuario;
         holder.correoElectronico = error.response.data;
@@ -282,6 +282,12 @@ export default function Home() {
     setRegister(true);
     setOne(false);
     setMultiple(false);
+  };
+
+  const handlePhone = (value) => {
+    let holder = info.Usuario;
+    holder.phoneNumber = value;
+    setInfo({ ...info, Usuario: holder });
   };
 
   useEffect(() => {
@@ -372,6 +378,7 @@ export default function Home() {
                   content={data.content}
                   ids={data.ids}
                   disable={disable}
+                  handlePhone={handlePhone}
                 />
               </div>
             ) : null}
@@ -386,6 +393,7 @@ export default function Home() {
                   content={data.content}
                   ids={data.ids}
                   disable={disable}
+                  handlePhone={handlePhone}
                 />
               </div>
             ) : null}

@@ -4,7 +4,6 @@
   margin-top: 4rem;
   border-top-left-radius: 50px;
   background-color: rgb(224, 219, 219);
-  overflow-x: scroll;
 }
 .survey_template {
   display: flex;

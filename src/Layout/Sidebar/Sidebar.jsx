@@ -34,7 +34,7 @@ const drop = [
   ["powerbi"],
   ["Crear encuesta", "Ver encuestas"],
   ["Build", "Live", "Analysis"],
-  ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
+  ["journey"],
   ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
 ];
 
@@ -63,6 +63,8 @@ export default function Sidebar() {
       } else {
         navigate("/onas");
       }
+    } else if (index === 4) {
+      navigate("/journey");
     } else {
       navigate("/" + project[index] + "/" + drop[index][key]);
     }

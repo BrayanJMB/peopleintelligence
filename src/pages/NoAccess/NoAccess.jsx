@@ -18,7 +18,8 @@ export default function NoAccess() {
     >
       <Typography variant="h1">403</Typography>
       <Typography variant="h6">
-        You Don't Have Access , Please contact support
+        Tu solicitud de acceso esta en revisión, cualquier consulta escribir a
+        consultas@peopleintelligence.app.
       </Typography>
       <Button variant="contained" onClick={handledash}>
         Go To Login

@@ -17,7 +17,12 @@ import SettingsInputCompositeIcon from "@mui/icons-material/SettingsInputComposi
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
 import Card from "../../components/CardSlider/CardSlider";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getJourneyMapAPI } from "../../services/getJourneyMap.service";
+import enps from "../../assets/enps.svg";
+import empleados from "../../assets/empleados.svg";
+import last from "../../assets/last.svg";
+import pulso from "../../assets/pulso.svg";
 
 const theme = createTheme({
   palette: {
@@ -27,41 +32,66 @@ const theme = createTheme({
   },
 });
 
-const data = [
+const dataSlider = [
   {
-    title: "Hire",
-    content: ["Pick stars", "more text"],
     icon: TroubleshootIcon,
   },
   {
-    title: "Onboard",
-    content: ["Affirm the decision", "more text"],
     icon: TipsAndUpdatesIcon,
   },
   {
-    title: "Engage",
-    content: ["Build purpose and strength", "more text"],
     icon: TouchAppIcon,
   },
   {
-    title: "Perform",
-    content: ["Drive expectations", "more text"],
     icon: SettingsInputCompositeIcon,
   },
   {
-    title: "Develop",
-    content: ["Coach career", "more text"],
     icon: PsychologyIcon,
   },
   {
-    title: "Depart",
-    content: ["Positive exit experience", "more text"],
     icon: MeetingRoomIcon,
   },
   {
-    title: "Attract",
-    content: ["Recruit top talent", "more text"],
     icon: RecordVoiceOverIcon,
+  },
+  {
+    icon: RecordVoiceOverIcon,
+  },
+  {
+    icon: MeetingRoomIcon,
+  },
+  {
+    icon: SettingsInputCompositeIcon,
+  },
+  {
+    icon: TipsAndUpdatesIcon,
+  },
+];
+
+const cards = [
+  {
+    image: enps,
+    title: "Encuesta eNPS",
+    description:
+      "Conozca el puntaje neto de promotor de empleados de su organización a través de una encuesta rápida",
+  },
+  {
+    image: pulso,
+    title: "Encuesta de pulso de empleados",
+    description:
+      "Comprenda las palancas de compromiso en detalle e impulse mejoras en toda su organización.",
+  },
+  {
+    image: empleados,
+    title: "Encuesta del Día 7 de Incorporación de Empleados",
+    description:
+      "Obtenga comentarios sobre el proceso de incorporación de nuevos empleados después de que los empleados completen 7 días en la organización.",
+  },
+  {
+    image: last,
+    title: "Encuesta del día 30 de incorporación de empleados",
+    description:
+      "Dar seguimiento a la encuesta del día 7 para conocer la experiencia de los nuevos empleados luego de cumplir 30 días en la organización",
   },
 ];
 
@@ -93,6 +123,7 @@ const settings = {
 export default function Journey() {
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const [data, setData] = useState([]);
 
   const handleExplorar = () => {
     navigate("/journey/survey-template");
@@ -106,6 +137,10 @@ export default function Journey() {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }
+    getJourneyMapAPI().then((res) => {
+      console.log(res.data);
+      setData(res.data);
+    });
   }, []);
 
   return (
@@ -150,13 +185,57 @@ export default function Journey() {
                     return (
                       <Card
                         key={key}
-                        title={val.title}
-                        content={val.content}
-                        icon={val.icon}
+                        title={val.mapJourney}
+                        content={val.description}
+                        icon={dataSlider[key].icon}
                       />
                     );
                   })}
                 </Slider>
+              </div>
+              <div className={styles.templates}>
+                {cards.map((val, key) => {
+                  return (
+                    <div key={key} className={styles.card}>
+                      <img
+                        src={val.image}
+                        alt=""
+                        width="146"
+                        height="81"
+                        style={{ maxWidth: "100%", height: "auto" }}
+                      />
+                      <p
+                        style={{
+                          fontSize: "18px",
+                          letterSpacing: "0.5px",
+                          fontWeight: "500",
+                        }}
+                      >
+                        {val.title}
+                      </p>
+                      <p
+                        style={{
+                          fontSize: "14px",
+                          letterSpacing: "0.25px",
+                          fontWeight: "300",
+                        }}
+                      >
+                        {val.description}
+                      </p>
+                      <Button
+                        variant="outlined"
+                        style={{
+                          color: "#03aae4",
+                          width: "30%",
+                          alignSelf: "flex-end",
+                        }}
+                        color="blue"
+                      >
+                        Empezar
+                      </Button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

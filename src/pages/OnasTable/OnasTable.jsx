@@ -111,7 +111,6 @@ export default function OnasTable() {
   const getTableData = () => {
     getOnasAPI(1)
       .then((res) => {
-        console.log(res.data);
         let data = [];
         res.data.forEach((val) => {
           let id = uuid.v4();
