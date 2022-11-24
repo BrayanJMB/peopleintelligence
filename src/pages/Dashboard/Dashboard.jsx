@@ -87,11 +87,13 @@ export default function Dashboard() {
                 onClick={handlePowerBI}
                 style={{
                   backgroundColor:
-                    userInfo?.role.findIndex((p) => p === "PowerBi") > -1
+                    userInfo?.role.findIndex((p) => p === "PowerBiDashboard") >
+                    -1
                       ? ""
                       : "grey",
                   cursor:
-                    userInfo?.role.findIndex((p) => p === "PowerBi") > -1
+                    userInfo?.role.findIndex((p) => p === "PowerBiDashboard") >
+                    -1
                       ? ""
                       : "default",
                 }}

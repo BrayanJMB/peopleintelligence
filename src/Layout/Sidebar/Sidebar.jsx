@@ -71,7 +71,37 @@ export default function Sidebar() {
   };
 
   const handleItemClick = (index) => (event) => {
-    if (index === 1 && userInfo?.role.findIndex((p) => p === "PowerBi") < 0) {
+    if (
+      index === 0 &&
+      userInfo?.role.findIndex((p) => p === "Administrador") < 0 &&
+      userInfo?.role.findIndex((p) => p === "Management") < 0 &&
+      userInfo?.role.findIndex((p) => p === "MultiCompania")
+    ) {
+      event.preventDefault();
+    } else if (
+      index === 1 &&
+      userInfo?.role.findIndex((p) => p === "PowerBiDashboard") < 0
+    ) {
+      event.preventDefault();
+    } else if (
+      index === 2 &&
+      userInfo?.role.findIndex((p) => p === "Onas") < 0
+    ) {
+      event.preventDefault();
+    } else if (
+      index === 3 &&
+      userInfo?.role.findIndex((p) => p === "Dinamyc") < 0
+    ) {
+      event.preventDefault();
+    } else if (
+      index === 4 &&
+      userInfo?.role.findIndex((p) => p === "Journey") < 0
+    ) {
+      event.preventDefault();
+    } else if (
+      index === 5 &&
+      userInfo?.role.findIndex((p) => p === "Sentimental") < 0
+    ) {
       event.preventDefault();
     } else {
       let tmp = anchorEl.map((val, key) => {
