@@ -19,11 +19,11 @@ import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 
 const names = [
-  "Information Managment",
+  "Information Management",
   "Advanced Analytics & Dashboards",
   "Organizational Network Analysis",
-  "Dynamic Live Conversation",
-  "Journey Employee",
+  "Dynamic Live Conversations",
+  "Employee Journey",
   "Sentimental Analysis",
 ];
 
