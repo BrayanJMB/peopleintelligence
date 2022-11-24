@@ -19,11 +19,11 @@ import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 
 const names = [
-  "Information Management",
+  "Information Managment",
   "Advanced Analytics & Dashboards",
   "Organizational Network Analysis",
-  "Dynamic Live Conversations",
-  "Employee Journey",
+  "Dynamic Live Conversation",
+  "Journey Employee",
   "Sentimental Analysis",
 ];
 
@@ -77,7 +77,7 @@ export default function Sidebar() {
       index === 0 &&
       userInfo?.role.findIndex((p) => p === "Administrador") < 0 &&
       userInfo?.role.findIndex((p) => p === "Management") < 0 &&
-      userInfo?.role.findIndex((p) => p === "MultiCompania")
+      userInfo?.role.findIndex((p) => p === "MultiCompania") < 0
     ) {
       event.preventDefault();
     } else if (
@@ -207,13 +207,20 @@ export default function Sidebar() {
                 onClose={() => handleClose(index)}
               >
                 {drop[index].map((val, key) => {
-                  return (
-                    <div key={key}>
-                      <MenuItem onClick={() => handleRedirect(index, key)}>
-                        <div>{val}</div>
-                      </MenuItem>
-                    </div>
-                  );
+                  if (
+                    val === "Empresas" &&
+                    userInfo?.role.findIndex((p) => p === "MultiCompania") < 0
+                  ) {
+                    return null;
+                  } else {
+                    return (
+                      <div key={key}>
+                        <MenuItem onClick={() => handleRedirect(index, key)}>
+                          <div>{val}</div>
+                        </MenuItem>
+                      </div>
+                    );
+                  }
                 })}
               </Menu>
             </ListItem>

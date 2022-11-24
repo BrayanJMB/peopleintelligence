@@ -12,3 +12,21 @@
   padding: 0 1em;
   margin: 5em 2em;
 }
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 60vh;
+  transform: translate(-50%, -50%);
+  width: 65vw;
+  background-color: white;
+  box-shadow: 24px;
+  padding: 1rem;
+}
+.modaltop {
+  display: flex;
+  justify-content: space-between;
+}
+.modalbuttom {
+  display: block;
+}

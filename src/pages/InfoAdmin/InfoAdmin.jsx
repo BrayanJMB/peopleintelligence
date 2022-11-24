@@ -255,6 +255,7 @@ export default function InfoAdmin() {
         return (
           <NewCompany
             info={compania}
+            ids={data.ids}
             content={data.content}
             handleAutocomplete={handleAutoCompleteCompany}
             handleChangeCompania={handleChangeCompania}
