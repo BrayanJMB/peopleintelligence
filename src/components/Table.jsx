@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { deleteReportAPI } from "../services/deleteReport.service";
 import { useNavigate } from "react-router-dom";
 import Switch from "@mui/material/Switch";
+import axios from "../utils/axiosInstance";
 
 const search = (id, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -26,8 +27,9 @@ export default function Table(props) {
   const [pageSize, setpageSize] = useState(5);
   const [rows, setRows] = useState([]);
 
-  const handleDeleteItem = (id) => {
+  const handleDeleteItem = async (id, trueid) => {
     dispatch(removeItem({ id: id, type: props.type }));
+    await axios.delete("companias/" + trueid);
   };
   const handleRedirect = (id) => {
     navigate("/powerbi/" + id);
@@ -64,7 +66,7 @@ export default function Table(props) {
       renderCell: (params) =>
         isNaN(params.row.IdPais)
           ? params.row.IdPais
-          : search(params.row.IdPais, props.ids.country, "pais"),
+          : search(params.row.IdPais, props.ids.country, "pais", "id"),
     },
     {
       field: "Sede",
@@ -92,7 +94,8 @@ export default function Table(props) {
           : search(
               params.row.IdTamanoCompania,
               props.ids.sizeCompany,
-              "quantityOfEmployees"
+              "quantityOfEmployees",
+              "id"
             ),
     },
     {
@@ -104,7 +107,7 @@ export default function Table(props) {
       renderCell: (params) =>
         isNaN(params.row.SectorId)
           ? params.row.SectorId
-          : search(params.row.SectorId, props.ids.sector, "Sector"),
+          : search(params.row.SectorId, props.ids.sector, "Sector", "id"),
     },
     {
       field: "actions",
@@ -117,7 +120,9 @@ export default function Table(props) {
           <IconButton onClick={() => props.handleEditItem(params.row)}>
             <EditIcon />
           </IconButton>,
-          <IconButton onClick={() => handleDeleteItem(params.row._id)}>
+          <IconButton
+            onClick={() => handleDeleteItem(params.row._id, params.row.id)}
+          >
             <DeleteIcon />
           </IconButton>,
         ];

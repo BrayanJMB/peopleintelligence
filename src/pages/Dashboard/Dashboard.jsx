@@ -9,6 +9,8 @@ import Jletter from "../../assets/icons/Jletter.png";
 import Sletter from "../../assets/icons/Sletter.png";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../Layout/Sidebar/Sidebar";
+import { useEffect } from "react";
+import axios from "../../utils/axiosInstance";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -45,11 +47,27 @@ export default function Dashboard() {
       userInfo?.role.findIndex((p) => p === "Journey") > -1 ||
       userInfo?.role.findIndex((p) => p === "Administrador") > -1
     ) {
-      navigate("/journey");
+      let data = companyConsume(userInfo.user);
+      if (data.length === 0) {
+        navigate("infoadmin/Empresas");
+      } else {
+        navigate("/journey");
+      }
     } else {
       e.preventDefault();
     }
   };
+  const companyConsume = async (id) => {
+    try {
+      await axios.get("companias/GetCompanias/" + id).then((res) => {
+        return res.data;
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {}, []);
 
   return (
     <Box sx={{ display: "flex" }}>

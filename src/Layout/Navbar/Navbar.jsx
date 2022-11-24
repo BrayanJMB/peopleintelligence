@@ -90,12 +90,11 @@ export default function Navbar() {
   const companyConsume = async (id) => {
     try {
       await axios.get("companias/GetCompanias/" + id).then((res) => {
-        console.log(res.data);
         let fetch = [];
         let id = [];
         res.data.forEach((val) => {
-          if (!fetch.includes(val.nombreCompania)) {
-            fetch.push(val.nombreCompania);
+          if (!fetch.includes(val.nombreCompañia)) {
+            fetch.push(val.nombreCompañia);
             id.push(val);
           }
         });
@@ -109,7 +108,27 @@ export default function Navbar() {
     }
   };
 
+  const search = (key, inputArray) => {
+    for (let i = 0; i < inputArray.length; i++) {
+      if (inputArray[i].nombreCompañia === key) {
+        return inputArray[i].id;
+      }
+    }
+  };
+
   const handleSelect = (value) => {
+    let holder = JSON.parse(localStorage.getItem("userInfo"));
+    localStorage.removeItem("userInfo");
+    let company = search(value, data.ids);
+    localStorage.setItem(
+      "userInfo",
+      JSON.stringify({
+        user: holder.user,
+        Company: company,
+        accessToken: holder.accessToken,
+        role: holder.role,
+      })
+    );
     setDrop(value);
   };
 
@@ -216,7 +235,7 @@ export default function Navbar() {
                 }
                 onClick={() => handleRegister("dashboard")}
               >
-                Registrar dashboards
+                registar Dashboard
               </MenuItem>
               <MenuItem
                 disabled={
@@ -226,7 +245,7 @@ export default function Navbar() {
                 }
                 onClick={() => handleRegister("report")}
               >
-                Registrar reportes
+                registar Report
               </MenuItem>
               <MenuItem
                 disabled={
