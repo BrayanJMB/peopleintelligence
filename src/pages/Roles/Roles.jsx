@@ -30,13 +30,14 @@ export default function Roles() {
   const [open, setOpen] = useState(false);
   const [role, setRole] = useState({
     companyId: "",
+    roleId: "",
   });
   const [remove, setRemove] = useState(false);
   const [pageSize, setpageSize] = useState(5);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [data, setData] = useState({
-    content: { company: [] },
-    ids: { company: [] },
+    content: { company: [], roles: [] },
+    ids: { company: [], roles: [] },
   });
 
   const companyConsume = async () => {
@@ -53,6 +54,27 @@ export default function Roles() {
         let holder = data;
         holder.content.company = fetch;
         holder.ids.company = id;
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const rolesConsume = async () => {
+    try {
+      await axios.get(`GetRolesAdd?userId=/`).then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.nombreCompania)) {
+            fetch.push(val.nombreCompania);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.roles = fetch;
+        holder.ids.roles = id;
         setData(holder);
       });
     } catch (error) {
@@ -126,9 +148,7 @@ export default function Roles() {
     setRemove(false);
   };
 
-  const handleChangeCompania = (event) => {
-    setRole({ ...role, [event.target.name]: event.target.value });
-  };
+  const handleAddRole = () => {};
 
   const getTableData = () => {
     getRolesAPI(userInfo.Company)
@@ -158,6 +178,7 @@ export default function Roles() {
       navigate("/dashboard");
     }
     companyConsume();
+    rolesConsume();
     getTableData();
   }, []);
 
@@ -187,8 +208,8 @@ export default function Roles() {
                 ids={data.ids}
                 content={data.content}
                 handleAutocomplete={handleAutoCompleteCompany}
-                handleChangeCompania={handleChangeCompania}
                 handleCloseModal={handleCloseModal}
+                handleAddRole={handleAddRole}
               />
             }
           </div>

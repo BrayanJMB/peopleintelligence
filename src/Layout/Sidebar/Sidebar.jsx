@@ -17,13 +17,14 @@ import Sletter from "../../assets/icons/Sletter.png";
 import { useNavigate } from "react-router-dom";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
+import multicompani from "../../assets/multicompani.jpeg";
 
 const names = [
-  "Information Managment",
+  "Information Management",
   "Advanced Analytics & Dashboards",
   "Organizational Network Analysis",
-  "Dynamic Live Conversation",
-  "Journey Employee",
+  "Dynamic Live Conversations",
+  "Employee Journey",
   "Sentimental Analysis",
 ];
 
@@ -150,7 +151,11 @@ export default function Sidebar() {
       >
         <Toolbar style={{ marginTop: "1.5em" }}>
           <img
-            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+            src={
+              userInfo?.role.findIndex((p) => p === "MultiCompania") < 0
+                ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                : multicompani
+            }
             alt="profile"
             className={styles.photo}
           />

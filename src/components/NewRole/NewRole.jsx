@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import styles from "./NewRole.module.css";
@@ -41,13 +40,32 @@ export default function NewRole(props) {
           )}
           size="small"
         />
+        <Autocomplete
+          id="combo-box-demo"
+          style={{ flexBasis: "40%" }}
+          options={props.content.roles}
+          clearOnEscape
+          value={search(
+            props.info.roleId,
+            props.ids.roles,
+            "nombreCompania",
+            "id"
+          )}
+          onChange={(e, value) => {
+            props.handleAutocomplete("roleId", value);
+          }}
+          getOptionLabel={(option) => option}
+          noOptionsText={"No roles"}
+          renderInput={(params) => <TextField {...params} label="Roles" />}
+          size="small"
+        />
       </div>
 
       <div className={styles.impexp}>
         <Button variant="text" onClick={props.handleCloseModal}>
           Cancelar
         </Button>
-        <Button variant="contained" onClick={props.handleAddDashboard}>
+        <Button variant="contained" onClick={props.handleAddRole}>
           Aceptar
         </Button>
       </div>
