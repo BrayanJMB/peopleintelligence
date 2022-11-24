@@ -23,7 +23,7 @@ const names = [
   "Advanced Analytics & Dashboards",
   "Organizational Network Analysis",
   "Dynamic Live Conversation",
-  "Journey Employee",
+  "Employee Journey",
   "Sentimental Analysis",
 ];
 
