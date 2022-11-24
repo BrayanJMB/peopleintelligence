@@ -172,7 +172,7 @@ export default function Register() {
     }
     setReport({
       name: "",
-      description: "",
+      descripcion: "",
     });
     handleCloseModal();
   };

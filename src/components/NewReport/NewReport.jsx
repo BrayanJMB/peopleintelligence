@@ -47,9 +47,9 @@ export default function NewReport(props) {
             height: "100px",
             marginTop: "0.5rem",
           }}
-          name="descriptionReport"
+          name="descripcion"
           value={props.info.descriptionReport}
-          onChange={props.handleChangeDashboard}
+          onChange={props.handleChangeReport}
         />
       </div>
       <div className={styles.impexp}>
