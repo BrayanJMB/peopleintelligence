@@ -90,6 +90,7 @@ export default function Navbar() {
   const companyConsume = async (id) => {
     try {
       await axios.get("companias/GetCompanias/" + id).then((res) => {
+        console.log(res.data);
         let fetch = [];
         let id = [];
         res.data.forEach((val) => {
@@ -213,7 +214,7 @@ export default function Navbar() {
                     (p) => p === "PowerBiAdministrator"
                   ) < 0
                 }
-                onClick={() => handleRegister("PowerBi")}
+                onClick={() => handleRegister("dashboard")}
               >
                 registar Dashboard
               </MenuItem>
