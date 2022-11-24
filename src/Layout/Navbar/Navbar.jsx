@@ -235,7 +235,7 @@ export default function Navbar() {
                 }
                 onClick={() => handleRegister("dashboard")}
               >
-                registar Dashboard
+                Registrar Dashboards
               </MenuItem>
               <MenuItem
                 disabled={
@@ -245,7 +245,7 @@ export default function Navbar() {
                 }
                 onClick={() => handleRegister("report")}
               >
-                registar Report
+                Registrar Reports
               </MenuItem>
               <MenuItem
                 disabled={
