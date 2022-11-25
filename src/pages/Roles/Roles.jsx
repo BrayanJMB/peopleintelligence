@@ -17,6 +17,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import NewRole from "../../components/NewRole/NewRole";
 import { postRoleAPI } from "../../services/postRole.service";
 import { deleteRolesAPI } from "../../services/deleteRoles.service";
+import Button from "@mui/material/Button";
 
 const search = (id, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -89,7 +90,7 @@ export default function Roles() {
     {
       field: "companyId",
       flex: 1,
-      headerName: "Company Name",
+      headerName: "Nombre compañia",
       headerAlign: "center",
       align: "center",
       renderCell: (params) =>
@@ -105,7 +106,7 @@ export default function Roles() {
     {
       field: "userName",
       flex: 1,
-      headerName: "User Name",
+      headerName: "Usuario",
       headerAlign: "center",
       align: "center",
     },
@@ -122,10 +123,11 @@ export default function Roles() {
     {
       field: "actions",
       type: "actions",
-      headerName: "Add Roles",
+      headerName: "Acciones",
       flex: 1,
       cellClassName: "actions",
       getActions: (params) => {
+        console.log(params.row);
         return [
           <IconButton
             onClick={() =>
@@ -133,9 +135,6 @@ export default function Roles() {
             }
           >
             <RemoveCircleOutlinedIcon />
-          </IconButton>,
-          <IconButton onClick={handleOpenModal}>
-            <AddCircleOutlinedIcon />
           </IconButton>,
         ];
       },
@@ -149,7 +148,7 @@ export default function Roles() {
   };
   const handledelete = (value, userid) => {
     deleteRolesAPI(userid, value).then((res) => {
-      alert("role deleted");
+      alert("Rol eliminado Satisfactoriamente");
       getTableData();
     });
   };
@@ -233,6 +232,25 @@ export default function Roles() {
       <div style={{ backgroundColor: "white" }}>
         <div className={styles.content}>
           <div className={styles.crud}>
+            <div className={styles.top}>
+              <div className={styles.type}>
+                <h1>Roles</h1>
+              </div>
+              <div className={styles.new}>
+                <Button
+                  variant="contained"
+                  style={{
+                    whiteSpace: "nowrap",
+                    padding: "1rem 1rem",
+                    color: "white",
+                  }}
+                  color="primary"
+                  onClick={handleOpenModal}
+                >
+                  Añadir roles
+                </Button>
+              </div>
+            </div>
             <div className={styles.buttom}>
               <DataGrid
                 rows={rows}

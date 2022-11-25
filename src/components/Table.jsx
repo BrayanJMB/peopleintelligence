@@ -78,7 +78,7 @@ export default function Table(props) {
     {
       field: "direccion",
       flex: 1,
-      headerName: "direccion",
+      headerName: "Dirección",
       headerAlign: "center",
       align: "center",
     },
@@ -112,7 +112,7 @@ export default function Table(props) {
     {
       field: "actions",
       type: "actions",
-      headerName: "Actions",
+      headerName: "Acciones",
       width: 100,
       cellClassName: "actions",
       getActions: (params) => {
@@ -172,7 +172,7 @@ export default function Table(props) {
     {
       field: "companyId",
       flex: 1,
-      headerName: "Company Name",
+      headerName: "Nombre compañia",
       headerAlign: "center",
       align: "center",
       renderCell: (params) => {
@@ -189,14 +189,14 @@ export default function Table(props) {
     {
       field: "reportName",
       flex: 1,
-      headerName: "title dashboard",
+      headerName: "Titulo Dashbord",
       headerAlign: "center",
       align: "center",
     },
     {
       field: "isActive",
       flex: 1,
-      headerName: "Status",
+      headerName: "Estado",
       headerAlign: "center",
       align: "center",
       renderCell: (params) => {
@@ -212,7 +212,7 @@ export default function Table(props) {
     {
       field: "actions",
       type: "actions",
-      headerName: "Actions",
+      headerName: "Acciones",
       width: 150,
       cellClassName: "actions",
       getActions: (params) => {
@@ -237,21 +237,21 @@ export default function Table(props) {
     {
       field: "name",
       flex: 1,
-      headerName: "Report Name",
+      headerName: "Nombre Reporte",
       headerAlign: "center",
       align: "center",
     },
     {
       field: "descripcion",
       flex: 1,
-      headerName: "Description",
+      headerName: "Descripción",
       headerAlign: "center",
       align: "center",
     },
     {
       field: "actions",
       type: "actions",
-      headerName: "Actions",
+      headerName: "Acciones",
       width: 100,
       cellClassName: "actions",
       getActions: (params) => {
