@@ -10,7 +10,7 @@
 .buttom {
   height: 70vh;
   padding: 0 1em;
-  margin: 5em 2em;
+  margin: 3em 2em;
 }
 .modal {
   position: absolute;
@@ -29,4 +29,19 @@
 }
 .modalbuttom {
   display: block;
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  padding: 1em 2em;
+}
+
+.type {
+  display: flex;
+  align-items: center;
+}
+.new {
+  display: flex;
+  align-items: center;
+  margin-right: 2rem;
 }

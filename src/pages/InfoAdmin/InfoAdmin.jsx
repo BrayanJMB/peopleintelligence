@@ -21,6 +21,15 @@ import { getOfficesAPI } from "../../services/getOffices.service";
 import { getDepartmentsAPI } from "../../services/getDepartments.service";
 import { addItem, storeItems, updateItem } from "../../features/adminSlice";
 import { useNavigate } from "react-router-dom";
+import { postCompanyAPI } from "../../services/postCompany.service";
+
+const search = (value, inputArray, field, proprety) => {
+  for (let i = 0; i < inputArray.length; i++) {
+    if (inputArray[i][proprety] === value) {
+      return inputArray[i][field];
+    }
+  }
+};
 
 export default function InfoAdmin() {
   const navigate = useNavigate();
@@ -177,6 +186,15 @@ export default function InfoAdmin() {
       let holder = compania;
       holder._id = id;
       dispatch(addItem({ data: holder, type: type }));
+      let idpais = search(compania.IdPais, data.ids.country, "id", "pais");
+      let sectorid = search(compania.SectorId, data.ids.sector, "id", "Sector");
+      let sizeid = search(
+        compania.IdTamanoCompania,
+        data.ids.sizeCompany,
+        "id",
+        "quantityOfEmployees"
+      );
+      postCompanyAPI(compania, idpais, sectorid, sizeid, userInfo.user);
     }
 
     setCompania({
@@ -318,7 +336,7 @@ export default function InfoAdmin() {
         countryConsume();
         sizeCompanyConsume();
         sectorConsume();
-        getCompaniesAPI()
+        getCompaniesAPI(userInfo.user)
           .then((res) => {
             let data = [];
             res.data.forEach((val) => {
