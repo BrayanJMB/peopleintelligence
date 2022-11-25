@@ -22,7 +22,7 @@ export default function NoAccess() {
         consultas@peopleintelligence.app.
       </Typography>
       <Button variant="contained" onClick={handledash}>
-        Go To Login
+        regresar al login
       </Button>
     </Box>
   );

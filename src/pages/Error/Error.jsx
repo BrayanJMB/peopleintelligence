@@ -18,10 +18,10 @@ export default function Error() {
     >
       <Typography variant="h1">404</Typography>
       <Typography variant="h6">
-        The page you're looking for doesn't exist.
+        La página a la que esta intentando ingresar no existe.
       </Typography>
       <Button variant="contained" onClick={handledash}>
-        Back Home
+        Regresar
       </Button>
     </Box>
   );

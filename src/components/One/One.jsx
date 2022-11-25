@@ -73,7 +73,6 @@ export default function One(props) {
   const [scroll, setScroll] = useState("paper");
   const [open, setOpen] = useState(false);
   const handlemodalOpen = () => setOpen(true);
-  const handlemodalClose = () => setOpen(false);
 
   const handlecheck1 = () => {
     setCheck1(!check1);
@@ -83,10 +82,6 @@ export default function One(props) {
   };
   const handleClose = () => {
     setValues({ ...values, isOpen: false });
-  };
-  const handleClickOpen = (scrollType) => () => {
-    setOpen(true);
-    setScroll(scrollType);
   };
 
   const handleCloseDialog = () => {
