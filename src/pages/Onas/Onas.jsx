@@ -51,7 +51,10 @@ function formatDate(date) {
 }
 
 export default function Onas() {
-  const { company, version } = useParams();
+  let { company, version } = useParams();
+  if (version === undefined) {
+    version = "";
+  }
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const companyId = company;
@@ -76,17 +79,20 @@ export default function Onas() {
     }
   };
   const handleImport = async (file) => {
+    let version = versionId === undefined ? "" : versionId;
+    console.log(version);
     try {
       await axios
         .create({
           baseURL:
             "https://peopleintelligenceapi.azurewebsites.net/api/OnasSurvey/",
         })
-        .post("" + companyId + "/" + versionId, { data: file }, config2)
+        .post("" + userInfo.Company + "/" + version, { data: file }, config2)
         .then((res) => {
+          console.log(res.data);
           setValues({
             ...values,
-            message: res.data,
+            message: res.data.message,
             isOpen: true,
             severity: "success",
           });

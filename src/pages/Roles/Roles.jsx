@@ -15,6 +15,8 @@ import axios from "../../utils/axiosInstance";
 import Modal from "@mui/material/Modal";
 import ClearIcon from "@mui/icons-material/Clear";
 import NewRole from "../../components/NewRole/NewRole";
+import { postRoleAPI } from "../../services/postRole.service";
+import { deleteRolesAPI } from "../../services/deleteRoles.service";
 
 const search = (id, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -32,7 +34,6 @@ export default function Roles() {
     companyId: "",
     roleId: "",
   });
-  const [remove, setRemove] = useState(false);
   const [pageSize, setpageSize] = useState(5);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [data, setData] = useState({
@@ -63,20 +64,22 @@ export default function Roles() {
 
   const rolesConsume = async () => {
     try {
-      await axios.get(`GetRolesAdd?userId=/`).then((res) => {
-        let fetch = [];
-        let id = [];
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.nombreCompania)) {
-            fetch.push(val.nombreCompania);
-            id.push(val);
-          }
+      await axios
+        .get(`Roles/GetRolesAdd?userId=${userInfo.user}`)
+        .then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.name)) {
+              fetch.push(val.name);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.roles = fetch;
+          holder.ids.roles = id;
+          setData(holder);
         });
-        let holder = data;
-        holder.content.roles = fetch;
-        holder.ids.roles = id;
-        setData(holder);
-      });
     } catch (error) {
       console.log(error);
     }
@@ -124,10 +127,14 @@ export default function Roles() {
       cellClassName: "actions",
       getActions: (params) => {
         return [
-          <IconButton onClick={() => handleOpenModal("remove")}>
+          <IconButton
+            onClick={() =>
+              handledelete(params.row.roles.rolId, params.row.userId)
+            }
+          >
             <RemoveCircleOutlinedIcon />
           </IconButton>,
-          <IconButton onClick={() => handleOpenModal("add")}>
+          <IconButton onClick={handleOpenModal}>
             <AddCircleOutlinedIcon />
           </IconButton>,
         ];
@@ -137,23 +144,31 @@ export default function Roles() {
 
   const columns = useMemo(() => rolesColumn, []);
 
-  const handleOpenModal = (text) => {
-    if (text === "remove") {
-      setRemove(true);
-    }
+  const handleOpenModal = () => {
     setOpen(true);
+  };
+  const handledelete = (value, userid) => {
+    deleteRolesAPI(userid, value).then((res) => {
+      alert("role deleted");
+      getTableData();
+    });
   };
   const handleCloseModal = () => {
     setOpen(false);
-    setRemove(false);
   };
 
-  const handleAddRole = () => {};
+  const handleAddRole = () => {
+    let roleId = search(role.roleId, data.ids.roles, "id", "name");
+    postRoleAPI({ userId: userInfo.user, roleId: roleId }).then((res) => {
+      getTableData();
+      setOpen(false);
+    });
+    rolesConsume();
+  };
 
   const getTableData = () => {
     getRolesAPI(userInfo.Company)
       .then((res) => {
-        console.log(res.data);
         let data = [];
         res.data.forEach((val) => {
           let id = uuid.v4();
@@ -187,14 +202,14 @@ export default function Roles() {
       <Navbar />
       <Sidebar />
       <Modal
-        open={open || remove}
+        open={open}
         onClose={handleCloseModal}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         <Box className={styles.modal}>
           <div className={styles.modaltop}>
-            <h2>{remove ? "Remove" : "Nueva"} Role</h2>
+            <h2>Nueva Role</h2>
             <div>
               <IconButton onClick={handleCloseModal}>
                 <ClearIcon sx={{ fontSize: "40px" }} />

@@ -16,6 +16,7 @@ const search = (value, inputArray, field, proprety) => {
 };
 
 export default function NewRole(props) {
+  console.log(props.info);
   return (
     <div className={styles.form}>
       <div className={styles.input}>
@@ -45,12 +46,7 @@ export default function NewRole(props) {
           style={{ flexBasis: "40%" }}
           options={props.content.roles}
           clearOnEscape
-          value={search(
-            props.info.roleId,
-            props.ids.roles,
-            "nombreCompania",
-            "id"
-          )}
+          value={search(props.info.roleId, props.ids.roles, "name", "id")}
           onChange={(e, value) => {
             props.handleAutocomplete("roleId", value);
           }}
