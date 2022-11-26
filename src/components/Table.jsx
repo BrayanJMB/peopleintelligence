@@ -12,6 +12,7 @@ import { deleteReportAPI } from "../services/deleteReport.service";
 import { useNavigate } from "react-router-dom";
 import Switch from "@mui/material/Switch";
 import axios from "../utils/axiosInstance";
+import { deleteDashboardAPI } from "../services/deleteDashboard.service";
 
 const search = (id, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -38,6 +39,7 @@ export default function Table(props) {
     dispatch(removeItemBi({ id: _id, type: props.type }));
     switch (props.type) {
       case "dashboard":
+        deleteDashboardAPI(id);
         break;
       case "report":
         deleteReportAPI(id);

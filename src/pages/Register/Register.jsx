@@ -40,6 +40,7 @@ export default function Register() {
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const [roleId, setRoleId] = useState("");
 
   // state for input
   const [dashboard, setDashboard] = useState({
@@ -135,11 +136,19 @@ export default function Register() {
   const handleDashboard = () => {
     if (edit) {
       dispatch(updateItem({ data: dashboard, type: type, id: dashboard._id }));
+      editDashboardAPI(
+        dashboard._id,
+        dashboard.reportId,
+        dashboard.groupId,
+        dashboard.reportName,
+        dashboard.descriptionReport,
+        dashboard.companyId
+      );
     } else {
       const id = uuid.v4();
       let holder = dashboard;
       holder._id = id;
-      dispatch(addItem({ data: holder, type: type }));
+
       let tmp = { ...dashboard };
       tmp.companyId = search(
         dashboard.companyId,
@@ -147,7 +156,13 @@ export default function Register() {
         "id",
         "nombreCompania"
       );
-      postDashboardAPI(tmp);
+      postDashboardAPI(tmp)
+        .then((res) => dispatch(addItem({ data: holder, type: type })))
+        .catch((err) => {
+          if (err.response.status === 500) {
+            alert("no puede haber dashboard Iguales");
+          }
+        });
     }
     setDashboard({
       nombreCompania: "",
