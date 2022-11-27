@@ -9,7 +9,6 @@ import { grey } from "@mui/material/colors";
 import IconButton from "@mui/material/IconButton";
 import { useNavigate } from "react-router-dom";
 import { getRolesAPI } from "../../services/getRoles.service";
-import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import RemoveCircleOutlinedIcon from "@mui/icons-material/RemoveCircleOutlined";
 import axios from "../../utils/axiosInstance";
 import Modal from "@mui/material/Modal";
@@ -41,6 +40,7 @@ export default function Roles() {
     content: { company: [], roles: [] },
     ids: { company: [], roles: [] },
   });
+  const [userId, setuserId] = useState("");
 
   const companyConsume = async () => {
     try {
@@ -63,24 +63,22 @@ export default function Roles() {
     }
   };
 
-  const rolesConsume = async () => {
+  const rolesConsume = async (id) => {
     try {
-      await axios
-        .get(`Roles/GetRolesAdd?userId=${userInfo.user}`)
-        .then((res) => {
-          let fetch = [];
-          let id = [];
-          res.data.forEach((val) => {
-            if (!fetch.includes(val.name)) {
-              fetch.push(val.name);
-              id.push(val);
-            }
-          });
-          let holder = data;
-          holder.content.roles = fetch;
-          holder.ids.roles = id;
-          setData(holder);
+      await axios.get(`Roles/GetRolesAdd?userId=${id}`).then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.name)) {
+            fetch.push(val.name);
+            id.push(val);
+          }
         });
+        let holder = data;
+        holder.content.roles = fetch;
+        holder.ids.roles = id;
+        setData(holder);
+      });
     } catch (error) {
       console.log(error);
     }
@@ -127,7 +125,6 @@ export default function Roles() {
       flex: 1,
       cellClassName: "actions",
       getActions: (params) => {
-        console.log(params.row);
         return [
           <IconButton
             onClick={() =>
@@ -158,11 +155,10 @@ export default function Roles() {
 
   const handleAddRole = () => {
     let roleId = search(role.roleId, data.ids.roles, "id", "name");
-    postRoleAPI({ userId: userInfo.user, roleId: roleId }).then((res) => {
+    postRoleAPI({ userId: userId, roleId: roleId }).then((res) => {
       getTableData();
       setOpen(false);
     });
-    rolesConsume();
   };
 
   const getTableData = () => {
@@ -182,7 +178,22 @@ export default function Roles() {
       .catch((e) => console.log(e));
   };
 
-  const handleAutoCompleteCompany = (name, value) => {
+  const handleAutoCompleteCompany = async (name, value) => {
+    if (name === "companyId" && value !== "") {
+      if (userId !== "") {
+        rolesConsume(userId);
+      }
+      let user = "";
+      await axios.get("companias/CompaniasAdmin/").then((res) => {
+        let index = res.data.findIndex((p) => p.company === value);
+        if (index > -1) {
+          user = res.data[index].user;
+        }
+        console.log(res.data[index]);
+      });
+      rolesConsume(user);
+      setuserId(user);
+    }
     setRole({ ...role, [name]: value });
   };
 
@@ -191,10 +202,12 @@ export default function Roles() {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }
+    if (userId !== "") {
+      rolesConsume(userId);
+    }
     companyConsume();
-    rolesConsume();
     getTableData();
-  }, []);
+  }, [userId]);
 
   return (
     <Box sx={{ display: "flex" }}>

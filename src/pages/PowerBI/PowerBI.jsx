@@ -19,6 +19,7 @@ export default function PowerBi() {
   const accessToken = async () => {
     try {
       await axios.get("PowerBy/" + idDashboard).then((res) => {
+        console.log(res.data);
         if (
           res.data.powerBiEmbedToken === null ||
           res.data.powerBiReport === null

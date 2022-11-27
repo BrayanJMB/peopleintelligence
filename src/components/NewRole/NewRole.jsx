@@ -16,7 +16,6 @@ const search = (value, inputArray, field, proprety) => {
 };
 
 export default function NewRole(props) {
-  console.log(props.info);
   return (
     <div className={styles.form}>
       <div className={styles.input}>
