@@ -9,6 +9,8 @@ import { grey } from "@mui/material/colors";
 import { useNavigate, useLocation } from "react-router-dom";
 import { CSVLink } from "react-csv";
 import { getOnasDetailsAPI } from "../../services/getOnasDetails.service";
+import IconButton from "@mui/material/IconButton";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 function padTo2Digits(num) {
   return num.toString().padStart(2, "0");
@@ -32,7 +34,6 @@ function formatDate(date) {
 export default function OnasDetails() {
   const navigate = useNavigate();
   const { state } = useLocation();
-  console.log(state);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [rows, setRows] = useState([]);
   const [transactionData, setTransactionData] = useState("");
@@ -42,25 +43,41 @@ export default function OnasDetails() {
 
   const onasColumn = [
     {
-      field: "onasName",
+      field: "persona",
       flex: 1,
       headerName: "Nombre Empleado",
       headerAlign: "center",
       align: "center",
     },
     {
-      field: "creatinDate",
+      field: "fechaLimite",
       flex: 1,
       headerName: "Fecha máxima de respuesta",
       headerAlign: "center",
       align: "center",
     },
     {
-      field: "limitDate",
+      field: "respondio",
       flex: 1,
       headerName: "Respondió?",
       headerAlign: "center",
       align: "center",
+    },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Link Encuesta",
+      width: 250,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <IconButton
+            onClick={() => navigator.clipboard.writeText(params.row.linkAnswer)}
+          >
+            <ContentCopyIcon />
+          </IconButton>,
+        ];
+      },
     },
   ];
 
@@ -69,9 +86,9 @@ export default function OnasDetails() {
   const getTableData = () => {
     getOnasDetailsAPI(state)
       .then((res) => {
-        console.log(res.data);
+        console.log(res.data.personResponse);
         let data = [];
-        res.data.forEach((val) => {
+        res.data.personResponse.forEach((val) => {
           let id = uuid.v4();
           if (!data.includes(val)) {
             let holder = val;
@@ -79,7 +96,7 @@ export default function OnasDetails() {
             data.push(val);
           }
         });
-        setRows(data);
+        setRows(res.data.personResponse);
       })
       .catch((e) => console.log(e));
   };
