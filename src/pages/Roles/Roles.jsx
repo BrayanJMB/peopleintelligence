@@ -189,7 +189,6 @@ export default function Roles() {
         if (index > -1) {
           user = res.data[index].user;
         }
-        console.log(index);
         console.log(res.data[index]);
       });
       rolesConsume(user);

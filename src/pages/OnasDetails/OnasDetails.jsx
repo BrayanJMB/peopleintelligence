@@ -1,19 +1,14 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import styles from "./OnasTable.module.css";
+import styles from "./OnasDetails.module.css";
 import { DataGrid, gridClasses } from "@mui/x-data-grid";
 import Navbar from "../../Layout/Navbar/Navbar";
 import Box from "@mui/material/Box";
 import Sidebar from "../../Layout/Sidebar/Sidebar";
 import * as uuid from "uuid";
 import { grey } from "@mui/material/colors";
-import IconButton from "@mui/material/IconButton";
-import { useNavigate } from "react-router-dom";
-import { getOnasAPI } from "../../services/getOnas.service";
-import DownloadIcon from "@mui/icons-material/Download";
-import { downloadOnasAPI } from "../../services/downloadonas.service";
+import { useNavigate, useLocation } from "react-router-dom";
 import { CSVLink } from "react-csv";
-import Button from "@mui/material/Button";
-import AssignmentIcon from "@mui/icons-material/Assignment";
+import { getOnasDetailsAPI } from "../../services/getOnasDetails.service";
 
 function padTo2Digits(num) {
   return num.toString().padStart(2, "0");
@@ -34,8 +29,10 @@ function formatDate(date) {
   );
 }
 
-export default function OnasTable() {
+export default function OnasDetails() {
   const navigate = useNavigate();
+  const { state } = useLocation();
+  console.log(state);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [rows, setRows] = useState([]);
   const [transactionData, setTransactionData] = useState("");
@@ -43,82 +40,36 @@ export default function OnasTable() {
   const [pageSize, setpageSize] = useState(5);
   const csvLink = useRef();
 
-  const handleDownload = (company, id) => {
-    downloadOnasAPI(company, id).then((res) => {
-      setDatetime(formatDate(new Date()));
-      setTransactionData(res.data);
-    });
-  };
-
-  const handleOnasDetails = (id) => {
-    navigate("/onas/details", { state: id });
-  };
-
-  const handleRedirect = (company, id) => {
-    navigate("/onas/" + company + "/" + id);
-  };
-
   const onasColumn = [
     {
       field: "onasName",
       flex: 1,
-      headerName: "Nombre Encuesta",
+      headerName: "Nombre Empleado",
       headerAlign: "center",
       align: "center",
     },
     {
       field: "creatinDate",
       flex: 1,
-      headerName: "Fecha Creacion",
+      headerName: "Fecha máxima de respuesta",
       headerAlign: "center",
       align: "center",
     },
     {
       field: "limitDate",
       flex: 1,
-      headerName: "Fecha limite",
+      headerName: "Respondió?",
       headerAlign: "center",
       align: "center",
-    },
-    {
-      field: "actions",
-      type: "actions",
-      headerName: "Actions",
-      width: 250,
-      cellClassName: "actions",
-      getActions: (params) => {
-        return [
-          <Button
-            variant="contained"
-            style={{
-              whiteSpace: "nowrap",
-              padding: "0.5em 1em",
-              color: "white",
-              textTransform: "none",
-            }}
-            color="primary"
-            onClick={() => handleRedirect(params.row.companyId, params.row.id)}
-          >
-            Cargar Empleados
-          </Button>,
-          <IconButton
-            onClick={() => handleDownload(params.row.companyId, params.row.id)}
-          >
-            <DownloadIcon />
-          </IconButton>,
-          <IconButton onClick={() => handleOnasDetails(params.row.id)}>
-            <AssignmentIcon />
-          </IconButton>,
-        ];
-      },
     },
   ];
 
   const columns = useMemo(() => onasColumn, []);
 
   const getTableData = () => {
-    getOnasAPI(userInfo.Company)
+    getOnasDetailsAPI(state)
       .then((res) => {
+        console.log(res.data);
         let data = [];
         res.data.forEach((val) => {
           let id = uuid.v4();
