@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import styles from "./OnasDetails.module.css";
 import { DataGrid, gridClasses } from "@mui/x-data-grid";
 import Navbar from "../../Layout/Navbar/Navbar";
@@ -7,39 +7,16 @@ import Sidebar from "../../Layout/Sidebar/Sidebar";
 import * as uuid from "uuid";
 import { grey } from "@mui/material/colors";
 import { useNavigate, useLocation } from "react-router-dom";
-import { CSVLink } from "react-csv";
 import { getOnasDetailsAPI } from "../../services/getOnasDetails.service";
 import IconButton from "@mui/material/IconButton";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-
-function padTo2Digits(num) {
-  return num.toString().padStart(2, "0");
-}
-function formatDate(date) {
-  return (
-    [
-      date.getFullYear(),
-      padTo2Digits(date.getMonth() + 1),
-      padTo2Digits(date.getDate()),
-    ].join("_") +
-    "&" +
-    [
-      padTo2Digits(date.getHours()),
-      padTo2Digits(date.getMinutes()),
-      padTo2Digits(date.getSeconds()),
-    ].join("_")
-  );
-}
 
 export default function OnasDetails() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [rows, setRows] = useState([]);
-  const [transactionData, setTransactionData] = useState("");
-  const [datetime, setDatetime] = useState(formatDate(new Date()));
   const [pageSize, setpageSize] = useState(5);
-  const csvLink = useRef();
 
   const onasColumn = [
     {
@@ -70,6 +47,7 @@ export default function OnasDetails() {
       width: 250,
       cellClassName: "actions",
       getActions: (params) => {
+        console.log(params.row);
         return [
           <IconButton
             onClick={() => navigator.clipboard.writeText(params.row.linkAnswer)}
@@ -109,11 +87,9 @@ export default function OnasDetails() {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }
-    if (transactionData) {
-      csvLink.current.link.click();
-    }
+
     getTableData();
-  }, [transactionData]);
+  }, []);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -123,13 +99,6 @@ export default function OnasDetails() {
         <div className={styles.content}>
           <div className={styles.crud}>
             <div className={styles.buttom}>
-              <CSVLink
-                data={transactionData}
-                filename={"ResultadoOnas" + datetime + ".csv"}
-                style={{ display: "none" }}
-                ref={csvLink}
-                target="_blank"
-              />
               <DataGrid
                 rows={rows}
                 columns={columns}
