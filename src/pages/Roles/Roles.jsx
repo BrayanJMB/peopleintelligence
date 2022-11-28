@@ -16,7 +16,10 @@ import ClearIcon from "@mui/icons-material/Clear";
 import NewRole from "../../components/NewRole/NewRole";
 import { postRoleAPI } from "../../services/postRole.service";
 import { deleteRolesAPI } from "../../services/deleteRoles.service";
+import { getCompaniesAPI } from "../../services/getCompanies.service";
 import Button from "@mui/material/Button";
+import NewMulti from "../../components/NewMulti/NewMulti";
+import { postMultiRoleAPI } from "../../services/postMultiRole.service";
 
 const search = (id, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -30,17 +33,42 @@ export default function Roles() {
   const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [open, setOpen] = useState(false);
+  const [multi, setMulti] = useState(false);
+  const [noCompany, setNoCompany] = useState(false);
   const [role, setRole] = useState({
     companyId: "",
     roleId: "",
   });
+  const [multirole, setMultirole] = useState({
+    companyId: "",
+    roleId: "",
+    userId: "",
+  });
   const [pageSize, setpageSize] = useState(5);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [data, setData] = useState({
-    content: { company: [], roles: [] },
-    ids: { company: [], roles: [] },
+    content: {
+      company: [],
+      roles: [],
+      companyroles: [],
+      roleroles: [],
+      usuariorole: [],
+    },
+    ids: {
+      company: [],
+      roles: [],
+      companyroles: [],
+      roleroles: [],
+      usuariorole: [],
+    },
   });
   const [userId, setuserId] = useState("");
+
+  getCompaniesAPI(userInfo?.user).then((res) => {
+    if (res.data.length === 0) {
+      setNoCompany(true);
+    }
+  });
 
   const companyConsume = async () => {
     try {
@@ -56,6 +84,43 @@ export default function Roles() {
         let holder = data;
         holder.content.company = fetch;
         holder.ids.company = id;
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const companyRolesConsume = async () => {
+    try {
+      await axios.get("roles/GetUserMultyCompani/").then((res) => {
+        console.log(res.data);
+        let fetchcompany = [];
+        let fetchrole = [];
+        let fetchusuario = [];
+        res.data.companies.forEach((val) => {
+          if (!fetchcompany.includes(val.businessName)) {
+            fetchcompany.push(val.businessName);
+          }
+        });
+        res.data.roles.forEach((val) => {
+          if (!fetchrole.includes(val.name)) {
+            fetchrole.push(val.name);
+          }
+        });
+        res.data.usuario.forEach((val) => {
+          if (!fetchusuario.includes(val.userName)) {
+            fetchusuario.push(val.userName);
+          }
+        });
+
+        let holder = data;
+
+        holder.content.companyroles = fetchcompany;
+        holder.content.roleroles = fetchrole;
+        holder.content.usuariorole = fetchusuario;
+        holder.ids.companyroles = res.data.companies;
+        holder.ids.roleroles = res.data.roles;
+        holder.ids.usuariorole = res.data.usuario;
         setData(holder);
       });
     } catch (error) {
@@ -86,20 +151,11 @@ export default function Roles() {
 
   const rolesColumn = [
     {
-      field: "companyId",
+      field: "companyName",
       flex: 1,
       headerName: "Nombre compañia",
       headerAlign: "center",
       align: "center",
-      renderCell: (params) =>
-        isNaN(params.row.companyId)
-          ? params.row.companyId
-          : search(
-              params.row.companyId,
-              data.ids.company,
-              "nombreCompania",
-              "id"
-            ),
     },
     {
       field: "userName",
@@ -143,6 +199,9 @@ export default function Roles() {
   const handleOpenModal = () => {
     setOpen(true);
   };
+  const handleOpenMultiModal = () => {
+    setMulti(true);
+  };
   const handledelete = (value, userid) => {
     deleteRolesAPI(userid, value).then((res) => {
       alert("Rol eliminado Satisfactoriamente");
@@ -152,6 +211,9 @@ export default function Roles() {
   const handleCloseModal = () => {
     setOpen(false);
   };
+  const handleCloseMultiModal = () => {
+    setMulti(false);
+  };
 
   const handleAddRole = () => {
     let roleId = search(role.roleId, data.ids.roles, "id", "name");
@@ -159,6 +221,21 @@ export default function Roles() {
       getTableData();
       setOpen(false);
     });
+  };
+  const handleAddMultiRole = () => {
+    let companyId = search(
+      multirole.companyId,
+      data.ids.companyroles,
+      "id",
+      "businessName"
+    );
+    let roleId = search(multirole.roleId, data.ids.roleroles, "id", "userName");
+    let userId = search(multirole.userId, data.ids.usuariorole, "id", "name");
+    postRoleAPI({ idUser: userId, idrol: roleId, idCompany: companyId }).then(
+      (res) => {
+        setOpen(false);
+      }
+    );
   };
 
   const getTableData = () => {
@@ -195,6 +272,9 @@ export default function Roles() {
     }
     setRole({ ...role, [name]: value });
   };
+  const handleAutoCompleteMulti = async (name, value) => {
+    setMulti({ ...role, [name]: value });
+  };
 
   useEffect(() => {
     if (userInfo?.role.findIndex((p) => p === "Administrador") < 0) {
@@ -205,6 +285,7 @@ export default function Roles() {
       rolesConsume(userId);
     }
     companyConsume();
+    companyRolesConsume();
     getTableData();
   }, [userId]);
 
@@ -241,6 +322,35 @@ export default function Roles() {
           </div>
         </Box>
       </Modal>
+      <Modal
+        open={multi}
+        onClose={handleCloseMultiModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box className={styles.modal}>
+          <div className={styles.modaltop}>
+            <h2>Nueva Role Multicompania</h2>
+            <div>
+              <IconButton onClick={handleCloseMultiModal}>
+                <ClearIcon sx={{ fontSize: "40px" }} />
+              </IconButton>
+            </div>
+          </div>
+          <div className={styles.modalbuttom}>
+            {
+              <NewMulti
+                info={multirole}
+                ids={data.ids}
+                content={data.content}
+                handleAutocomplete={handleAutoCompleteMulti}
+                handleCloseModal={handleCloseMultiModal}
+                handleAddRole={handleAddMultiRole}
+              />
+            }
+          </div>
+        </Box>
+      </Modal>
       <div style={{ backgroundColor: "white" }}>
         <div className={styles.content}>
           <div className={styles.crud}>
@@ -249,6 +359,19 @@ export default function Roles() {
                 <h1>Roles</h1>
               </div>
               <div className={styles.new}>
+                <Button
+                  variant="contained"
+                  style={{
+                    whiteSpace: "nowrap",
+                    padding: "1rem 1rem",
+                    color: "white",
+                    marginRight: "2em",
+                  }}
+                  color="primary"
+                  onClick={handleOpenMultiModal}
+                >
+                  Añadir roles multicompañia
+                </Button>
                 <Button
                   variant="contained"
                   style={{

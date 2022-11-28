@@ -22,6 +22,7 @@ import { getDepartmentsAPI } from "../../services/getDepartments.service";
 import { addItem, storeItems, updateItem } from "../../features/adminSlice";
 import { useNavigate } from "react-router-dom";
 import { postCompanyAPI } from "../../services/postCompany.service";
+import { getEmployeesAPI } from "../../services/getEmployees.service";
 
 const search = (value, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -338,6 +339,26 @@ export default function InfoAdmin() {
         sectorConsume();
         getCompaniesAPI(userInfo.user)
           .then((res) => {
+            let data = [];
+            res.data.forEach((val) => {
+              let id = uuid.v4();
+              if (!data.includes(val)) {
+                let holder = val;
+                holder._id = id;
+                data.push(val);
+              }
+            });
+            dispatch(storeItems({ data, type: type }));
+          })
+          .catch((e) => console.log(e));
+        break;
+      case "Empleados":
+        /*countryConsume();
+        sizeCompanyConsume();
+        sectorConsume();*/
+        getEmployeesAPI()
+          .then((res) => {
+            console.log(res.data);
             let data = [];
             res.data.forEach((val) => {
               let id = uuid.v4();
