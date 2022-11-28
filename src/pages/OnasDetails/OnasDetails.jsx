@@ -47,7 +47,6 @@ export default function OnasDetails() {
       width: 250,
       cellClassName: "actions",
       getActions: (params) => {
-        console.log(params.row);
         return [
           <IconButton
             onClick={() => navigator.clipboard.writeText(params.row.linkAnswer)}

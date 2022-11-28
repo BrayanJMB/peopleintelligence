@@ -15,7 +15,6 @@ export default function Introduction(props) {
       await axios.get("GetJorneyMap/").then((res) => {
         let fetch = [];
         let id = [];
-        console.log(res.data);
         res.data.forEach((val) => {
           if (!fetch.includes(val.mapJourney)) {
             fetch.push(val.mapJourney);

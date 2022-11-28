@@ -189,7 +189,6 @@ export default function Roles() {
         if (index > -1) {
           user = res.data[index].user;
         }
-        console.log(res.data[index]);
       });
       rolesConsume(user);
       setuserId(user);

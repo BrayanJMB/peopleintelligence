@@ -124,7 +124,6 @@ export default function Template() {
       navigate("/dashboard");
     }
     getTemplatesAPI().then((res) => {
-      console.log(res.data);
       setData(res.data);
     });
   }, []);
