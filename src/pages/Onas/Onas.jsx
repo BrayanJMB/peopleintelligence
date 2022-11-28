@@ -59,6 +59,7 @@ export default function Onas() {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const companyId = company;
   const versionId = version;
+  const [versionget, setVersionget] = useState("");
   const [transactionData, setTransactionData] = useState("");
   const [datetime, setDatetime] = useState(formatDate(new Date()));
   const csvLink = useRef();
@@ -89,7 +90,7 @@ export default function Onas() {
         })
         .post("" + userInfo.Company + "/" + version, { data: file }, config2)
         .then((res) => {
-          console.log(res.data);
+          setVersionget(res.data.versionId);
           setValues({
             ...values,
             message: res.data.message,
@@ -123,7 +124,7 @@ export default function Onas() {
           baseURL:
             "https://peopleintelligenceapi.azurewebsites.net/api/OnasSurvey/EnvioMAilOnas/",
         })
-        .get(versionId, config)
+        .get(versionget, config)
         .then((res) => {
           console.log(res);
           setValues({
