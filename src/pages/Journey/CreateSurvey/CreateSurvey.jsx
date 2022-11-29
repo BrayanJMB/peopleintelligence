@@ -47,6 +47,7 @@ export default function CreateSurvey() {
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
   const [type, setType] = useState();
+  const [starmsg, setStarmsg] = useState("");
   const [information, setInformation] = useState({
     name: "",
     description: "",
@@ -57,6 +58,8 @@ export default function CreateSurvey() {
       "Estar de acuerdo",
       "Totalmente de acuerdo",
     ],
+    customOptions: Array(2).fill(""),
+    stars: Array(3).fill(""),
   });
   const [anonyme, setAnonyme] = useState(true);
 
@@ -107,6 +110,39 @@ export default function CreateSurvey() {
   };
   const handleinformation = (event) => {
     setInformation({ ...information, [event.target.name]: event.target.value });
+  };
+  const handleinformationoptions = (key) => (event) => {
+    let holder = information.customOptions.map((val, index) => {
+      if (index === key) {
+        return event.target.value;
+      } else return val;
+    });
+    setInformation({ ...information, customOptions: holder });
+  };
+  const handleaddstars = () => {
+    if (information.stars.length === 10) {
+      setStarmsg("Elija un valor entre 3 y 10");
+    } else {
+      setStarmsg("");
+      let holder = [...information.stars];
+      holder.push("");
+      setInformation({ ...information, stars: holder });
+    }
+  };
+  const handledeletestars = () => {
+    if (information.stars.length === 3) {
+      setStarmsg("Elija un valor entre 3 y 10");
+    } else {
+      setStarmsg("");
+      let holder = [...information.stars];
+      holder.splice(1, 1);
+      setInformation({ ...information, stars: holder });
+    }
+  };
+  const handleaddoption = () => {
+    let holder = [...information.customOptions];
+    holder.push("");
+    setInformation({ ...information, customOptions: holder });
   };
   const handleAdd = () => {
     setOpen(true);
@@ -186,21 +222,44 @@ export default function CreateSurvey() {
       setHelperText({});
       if (type === "Texto corto") {
         handleAddQuestion({
+          type: type,
           name: information.name,
           description: information.description,
         });
       } else if (type === "Escala Likert") {
         handleAddQuestion({
+          type: type,
           name: information.name,
           description: information.description,
           options: information.options,
         });
+      } else if (type === "Opcion multipe") {
+        handleAddQuestion({
+          type: type,
+          name: information.name,
+          description: information.description,
+          customOptions: information.customOptions,
+        });
+      } else if (type === "Calificaciones") {
+        handleAddQuestion({
+          type: type,
+          name: information.name,
+          description: information.description,
+          stars: information.stars,
+        });
       }
-      handleAddQuestion(information);
       setInformation({
-        type: "",
         name: "",
         description: "",
+        options: [
+          "Muy en desacuerdo",
+          "Discrepar",
+          "Neutral",
+          "Estar de acuerdo",
+          "Totalmente de acuerdo",
+        ],
+        customOptions: Array(2).fill(""),
+        stars: Array(3).fill(""),
       });
       handleCloseModal();
     }
@@ -278,6 +337,11 @@ export default function CreateSurvey() {
                   handleInformation={handleinformation}
                   errorMessage={errorMessage}
                   helperText={helperText}
+                  handleinformationoptions={handleinformationoptions}
+                  handleaddoption={handleaddoption}
+                  handleaddstars={handleaddstars}
+                  handledeletestars={handledeletestars}
+                  starmsg={starmsg}
                 />
               </div>
             </div>

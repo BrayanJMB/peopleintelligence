@@ -93,7 +93,6 @@ export default function Roles() {
   const companyRolesConsume = async () => {
     try {
       await axios.get("roles/GetUserMultyCompani/").then((res) => {
-        console.log(res.data);
         let fetchcompany = [];
         let fetchrole = [];
         let fetchusuario = [];
@@ -229,13 +228,21 @@ export default function Roles() {
       "id",
       "businessName"
     );
-    let roleId = search(multirole.roleId, data.ids.roleroles, "id", "userName");
-    let userId = search(multirole.userId, data.ids.usuariorole, "id", "name");
-    postRoleAPI({ idUser: userId, idrol: roleId, idCompany: companyId }).then(
-      (res) => {
-        setOpen(false);
-      }
+
+    let roleId = search(multirole.roleId, data.ids.roleroles, "id", "name");
+    let userId = search(
+      multirole.userId,
+      data.ids.usuariorole,
+      "id",
+      "userName"
     );
+    postMultiRoleAPI({
+      idUser: userId,
+      idrol: roleId,
+      idCompany: companyId,
+    }).then((res) => {
+      setMulti(false);
+    });
   };
 
   const getTableData = () => {
@@ -273,7 +280,7 @@ export default function Roles() {
     setRole({ ...role, [name]: value });
   };
   const handleAutoCompleteMulti = async (name, value) => {
-    setMulti({ ...role, [name]: value });
+    setMultirole({ ...multirole, [name]: value });
   };
 
   useEffect(() => {
@@ -325,7 +332,7 @@ export default function Roles() {
       <Modal
         open={multi}
         onClose={handleCloseMultiModal}
-        aria-labelledby="modal-modal-title"
+        aria-labelledby="modal-modal-title2"
         aria-describedby="modal-modal-description"
       >
         <Box className={styles.modal}>
