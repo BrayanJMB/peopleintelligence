@@ -1,0 +1,48 @@
+.form {
+  margin-top: 1.5rem;
+  display: flex;
+}
+.top {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+.question {
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  margin-bottom: 0.8em;
+}
+.number {
+  font-size: 16px;
+  line-height: 22px;
+  margin-right: 0.8em;
+  letter-spacing: 0.25px;
+}
+.input {
+  width: 100%;
+}
+.options {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 1em;
+  margin-top: 1.5em;
+}
+.option {
+  display: flex;
+  flex-direction: row;
+  width: 255px;
+  align-items: center;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid rgb(134, 140, 204);
+}
+.stars {
+  display: flex;
+  margin: 3em 0;
+  margin-bottom: 1em;
+  align-items: center;
+  gap: 2em;
+}
