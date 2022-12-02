@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import Dashboard from "./pages/Dashboard/Dashboard";
@@ -19,8 +19,41 @@ import NoAccess from "./pages/NoAccess/NoAccess";
 import OnasDetails from "./pages/OnasDetails/OnasDetails";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
+import IdleTimer from "./utils/IdleTimer";
 
 export default function App() {
+  useEffect(() => {
+    window.addEventListener(
+      "beforeunload",
+      function (e) {
+        localStorage.removeItem("userInfo");
+      },
+      false
+    );
+    const timer = new IdleTimer({
+      timeout: 1200,
+      onTimeout: () => {
+        alert("Session Expired after 20 minutes on Inactivity");
+        localStorage.removeItem("userInfo");
+        window.location.replace(
+          "https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fwww.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login"
+        );
+      },
+      onExpired: () => {
+        localStorage.removeItem("userInfo");
+        window.removeEventListener(
+          "beforeunload",
+          function (e) {
+            localStorage.removeItem("userInfo");
+          },
+          false
+        );
+      },
+    });
+    return () => {
+      timer.cleanUp();
+    };
+  }, []);
   return (
     <Provider store={store}>
       <Router>

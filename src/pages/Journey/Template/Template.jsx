@@ -112,7 +112,9 @@ export default function Template() {
     navigate("/journey");
   };
   const handleCreateSurvey = () => {
-    navigate("/journey/create-survey");
+    if (userInfo?.role.findIndex((p) => p === "Administrador") > -1) {
+      navigate("/journey/create-survey");
+    }
   };
 
   useEffect(() => {
