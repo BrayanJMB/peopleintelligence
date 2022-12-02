@@ -1,18 +1,10 @@
-import styles from "./Form.module.css";
+import styles from "./EditForm.module.css";
 import TextField from "@mui/material/TextField";
 import TextareaAutosize from "@mui/material/TextareaAutosize";
 import Button from "@mui/material/Button";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
-const options = [
-  "Muy en desacuerdo",
-  "Discrepar",
-  "Neutral",
-  "Estar de acuerdo",
-  "Totalmente de acuerdo",
-];
-
-export default function Form(props) {
+export default function EditForm(props) {
   const renderForm = (type) => {
     switch (type) {
       case "Texto corto":
@@ -26,7 +18,7 @@ export default function Form(props) {
                   variant="standard"
                   label="Anadir prequnta"
                   placeholder="Anadir prequnta aqui..."
-                  value={props.information.name}
+                  value={props.question.name}
                   name="name"
                   onChange={props.handleInformation}
                   error={props.errorMessage.name}
@@ -49,7 +41,7 @@ export default function Form(props) {
                     },
                   },
                 }}
-                value={props.information.description}
+                value={props.question.description}
                 style={{
                   width: "100%",
                   marginTop: "0.5rem",
@@ -71,7 +63,7 @@ export default function Form(props) {
                   variant="standard"
                   label="Anadir prequnta"
                   placeholder="Anadir prequnta aqui..."
-                  value={props.information.name}
+                  value={props.question.name}
                   name="name"
                   onChange={props.handleInformation}
                   error={props.errorMessage.name}
@@ -94,7 +86,7 @@ export default function Form(props) {
                     },
                   },
                 }}
-                value={props.information.description}
+                value={props.question.description}
                 style={{
                   width: "100%",
                   marginTop: "0.5rem",
@@ -104,7 +96,7 @@ export default function Form(props) {
               />
             </div>
             <div className={styles.options}>
-              {options.map((val, key) => {
+              {props.question.options.map((val, key) => {
                 return (
                   <div className={styles.option} key={key}>
                     <div
@@ -138,7 +130,7 @@ export default function Form(props) {
                   variant="standard"
                   label="Anadir prequnta"
                   placeholder="Anadir prequnta aqui..."
-                  value={props.information.name}
+                  value={props.question.name}
                   name="name"
                   onChange={props.handleInformation}
                   error={props.errorMessage.name}
@@ -161,7 +153,7 @@ export default function Form(props) {
                     },
                   },
                 }}
-                value={props.information.description}
+                value={props.question.description}
                 style={{
                   width: "100%",
                   marginTop: "0.5rem",
@@ -171,7 +163,7 @@ export default function Form(props) {
               />
             </div>
             <div className={styles.options}>
-              {props.information.customOptions.map((val, key) => {
+              {props.question.customOptions.map((val, key) => {
                 return (
                   <div className={styles.option} key={key}>
                     <div
@@ -191,7 +183,7 @@ export default function Form(props) {
                       id="outlined-name"
                       variant="standard"
                       placeholder="Añadir opción..."
-                      value={props.information.customOptions[key]}
+                      value={props.question.customOptions[key]}
                       onChange={props.handleinformationoptions(key)}
                       InputProps={{
                         disableUnderline: true,
@@ -202,7 +194,7 @@ export default function Form(props) {
                   </div>
                 );
               })}
-              {props.information.customOptions.length < 10 ? (
+              {props.question.customOptions.length < 10 ? (
                 <Button
                   variant="text"
                   startIcon={<AddCircleOutlineIcon />}
@@ -226,7 +218,7 @@ export default function Form(props) {
                   variant="standard"
                   label="Anadir prequnta"
                   placeholder="Anadir prequnta aqui..."
-                  value={props.information.name}
+                  value={props.question.name}
                   name="name"
                   onChange={props.handleInformation}
                   error={props.errorMessage.name}
@@ -249,7 +241,7 @@ export default function Form(props) {
                     },
                   },
                 }}
-                value={props.information.description}
+                value={props.question.description}
                 style={{
                   width: "100%",
                   marginTop: "0.5rem",
@@ -278,7 +270,7 @@ export default function Form(props) {
                   borderRadius: "4px",
                 }}
               >
-                {props.information.stars.length}
+                {props.question.stars.length}
               </div>
               <Button
                 variant="text"
@@ -299,7 +291,7 @@ export default function Form(props) {
                   marginTop: "0.3em",
                 }}
               >
-                {props.information.stars.map((val, index) => {
+                {props.question.stars.map((val, index) => {
                   return (
                     <svg
                       width="50"
@@ -327,7 +319,9 @@ export default function Form(props) {
   };
   return (
     <div className={styles.form}>
-      {props.type === "" || props.type === null ? null : renderForm(props.type)}
+      {props.question.type === "" || props.question.type === null
+        ? null
+        : renderForm(props.question.type)}
     </div>
   );
 }

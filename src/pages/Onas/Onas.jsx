@@ -81,7 +81,6 @@ export default function Onas() {
   };
   const handleImport = async (file) => {
     let version = versionId === undefined ? "" : versionId;
-    console.log(version);
     try {
       await axios
         .create({
@@ -126,7 +125,6 @@ export default function Onas() {
         })
         .get(versionget, config)
         .then((res) => {
-          console.log(res);
           setValues({
             ...values,
             message: "Los correos se han enviado satisfactoriamente",

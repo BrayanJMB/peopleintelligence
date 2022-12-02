@@ -19,6 +19,7 @@ import IconButton from "@mui/material/IconButton";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import Form from "../../../components/Form/Form";
+import EditForm from "../../../components/EditForm/EditForm";
 import * as uuid from "uuid";
 
 const theme = createTheme({
@@ -42,11 +43,14 @@ export default function CreateSurvey() {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const [questions, setQuestions] = useState([]);
+  const [target, setTarget] = useState("");
   const [open, setOpen] = useState(false);
+  const [edit, setEdit] = useState(false);
   const [data, setData] = useState({ title: "", description: "", mapa: "" });
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
-  const [type, setType] = useState();
+  const [type, setType] = useState("");
+  const [starmsg, setStarmsg] = useState("");
   const [information, setInformation] = useState({
     name: "",
     description: "",
@@ -57,7 +61,10 @@ export default function CreateSurvey() {
       "Estar de acuerdo",
       "Totalmente de acuerdo",
     ],
+    customOptions: Array(2).fill(""),
+    stars: Array(3).fill(""),
   });
+  const [question, setQuestion] = useState();
   const [anonyme, setAnonyme] = useState(true);
 
   const handleContinuar = () => {
@@ -108,8 +115,95 @@ export default function CreateSurvey() {
   const handleinformation = (event) => {
     setInformation({ ...information, [event.target.name]: event.target.value });
   };
+  const handleQuestion = (event) => {
+    setQuestion({ ...question, [event.target.name]: event.target.value });
+  };
+  const handleinformationoptions = (key) => (event) => {
+    let holder = information.customOptions.map((val, index) => {
+      if (index === key) {
+        return event.target.value;
+      } else return val;
+    });
+    setInformation({ ...information, customOptions: holder });
+  };
+  const handleeditoption = (key) => (event) => {
+    let holder;
+    holder = question.customOptions.map((val, i) => {
+      if (i === key) {
+        return event.target.value;
+      } else {
+        return val;
+      }
+    });
+    setQuestion({ ...question, customOptions: holder });
+  };
+  const handleaddstars = () => {
+    if (information.stars.length === 10) {
+      setStarmsg("Elija un valor entre 3 y 10");
+    } else {
+      setStarmsg("");
+      let holder = [...information.stars];
+      holder.push("");
+      setInformation({ ...information, stars: holder });
+    }
+  };
+  const handleeditstars = () => {
+    let holder = [...question.stars];
+    if (holder.length === 10) {
+      setStarmsg("Elija un valor entre 3 y 10");
+    } else {
+      setStarmsg("");
+      holder.push("");
+      setQuestion({ ...question, stars: holder });
+    }
+  };
+  const handledeletestars = () => {
+    if (information.stars.length === 3) {
+      setStarmsg("Elija un valor entre 3 y 10");
+    } else {
+      setStarmsg("");
+      let holder = [...information.stars];
+      holder.splice(1, 1);
+      setInformation({ ...information, stars: holder });
+    }
+  };
+  const handleeditdeletestars = () => {
+    let holder = [...question.stars];
+    if (holder.length === 3) {
+      setStarmsg("Elija un valor entre 3 y 10");
+    } else {
+      setStarmsg("");
+      holder.splice(1, 1);
+      setQuestion({ ...question, stars: holder });
+    }
+  };
+  const handleaddoption = () => {
+    let holder = [...information.customOptions];
+    holder.push("");
+    setInformation({ ...information, customOptions: holder });
+  };
+  const handleeditaddoption = () => {
+    let holder = [...question.customOptions];
+    holder.push("");
+    setQuestion({ ...question, customOptions: holder });
+  };
   const handleAdd = () => {
     setOpen(true);
+  };
+  const handleEdit = (index) => {
+    setTarget(index);
+    setQuestion(questions[index]);
+    setEdit(true);
+  };
+  const handleActualizar = () => {
+    let holder = questions.map((val, index) => {
+      if (index === target) {
+        return question;
+      } else {
+        return val;
+      }
+    });
+    setQuestions(holder);
   };
   const handleSelect = (value) => {
     setData({ ...data, mapa: value });
@@ -133,6 +227,7 @@ export default function CreateSurvey() {
             onEnd={onEnd}
             handleAdd={handleAdd}
             handleDelete={handledelete}
+            handleEdit={handleEdit}
           />
         );
       case 2:
@@ -141,7 +236,11 @@ export default function CreateSurvey() {
         return null;
     }
   };
-  const handleCloseModal = () => setOpen(false);
+  const handleCloseModal = () => {
+    setOpen(false);
+    setEdit(false);
+  };
+  const handleCloseEditModal = () => setEdit(false);
   const handleanonyme = (event) => {
     setAnonyme(event.target.value);
   };
@@ -169,41 +268,70 @@ export default function CreateSurvey() {
   const handleAgregar = () => {
     let helperText = {};
     let error = {};
-    let bad = false;
-    if (information.name.length < 5) {
-      helperText.name = "Se requiere un mínimo de 5 caracteres.";
-      error.name = true;
-      bad = true;
+    if (edit) {
+      handleActualizar();
     } else {
-      helperText.name = "";
-      error.name = false;
-    }
-    if (bad) {
-      setErrorMessage(error);
-      setHelperText(helperText);
-    } else {
-      setErrorMessage({});
-      setHelperText({});
-      if (type === "Texto corto") {
-        handleAddQuestion({
-          name: information.name,
-          description: information.description,
-        });
-      } else if (type === "Escala Likert") {
-        handleAddQuestion({
-          name: information.name,
-          description: information.description,
-          options: information.options,
-        });
+      let bad = false;
+      if (information.name.length < 5) {
+        helperText.name = "Se requiere un mínimo de 5 caracteres.";
+        error.name = true;
+        bad = true;
+      } else {
+        helperText.name = "";
+        error.name = false;
       }
-      handleAddQuestion(information);
-      setInformation({
-        type: "",
-        name: "",
-        description: "",
-      });
-      handleCloseModal();
+      if (bad) {
+        setErrorMessage(error);
+        setHelperText(helperText);
+      } else {
+        setErrorMessage({});
+        setHelperText({});
+        if (type === "Texto corto") {
+          handleAddQuestion({
+            type: "Texto corto",
+            name: information.name,
+            description: information.description,
+          });
+        } else if (type === "Escala Likert") {
+          handleAddQuestion({
+            type: "Escala Likert",
+            name: information.name,
+            description: information.description,
+            options: information.options,
+          });
+        } else if (type === "Opcion multipe") {
+          handleAddQuestion({
+            type: "Opcion multipe",
+            name: information.name,
+            description: information.description,
+            customOptions: information.customOptions,
+          });
+        } else if (type === "Calificaciones") {
+          handleAddQuestion({
+            type: "Calificaciones",
+            name: information.name,
+            description: information.description,
+            stars: information.stars,
+          });
+        }
+      }
     }
+    setInformation({
+      name: "",
+      description: "",
+      options: [
+        "Muy en desacuerdo",
+        "Discrepar",
+        "Neutral",
+        "Estar de acuerdo",
+        "Totalmente de acuerdo",
+      ],
+      customOptions: Array(2).fill(""),
+      stars: Array(3).fill(""),
+    });
+    setQuestion("");
+    setType("");
+    handleCloseModal();
   };
   const handleAddQuestion = (question) => {
     let tmp = [...questions];
@@ -278,6 +406,11 @@ export default function CreateSurvey() {
                   handleInformation={handleinformation}
                   errorMessage={errorMessage}
                   helperText={helperText}
+                  handleinformationoptions={handleinformationoptions}
+                  handleaddoption={handleaddoption}
+                  handleaddstars={handleaddstars}
+                  handledeletestars={handledeletestars}
+                  starmsg={starmsg}
                 />
               </div>
             </div>
@@ -285,14 +418,48 @@ export default function CreateSurvey() {
               <Button variant="text" onClick={handleCloseModal}>
                 CANCELAR
               </Button>
-              <Button
-                variant="contained"
-                onClick={handleAgregar}
-                disabled={information.type === "" || information.type === null}
-              >
-                {information.type === "" || information.type === null
-                  ? "AÑADIR PREGUNTA"
-                  : "Agregar"}
+              <Button variant="contained" onClick={handleAgregar}>
+                Agregar
+              </Button>
+            </div>
+          </Box>
+        </Modal>
+        <Modal
+          open={edit}
+          onClose={handleCloseEditModal}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box className={styles.modal}>
+            <div className={styles.modaltop}>
+              <div>
+                <IconButton onClick={handleCloseEditModal}>
+                  <ClearIcon sx={{ fontSize: "40px" }} />
+                </IconButton>
+              </div>
+            </div>
+            <div className={styles.modalbuttom}>
+              <h3 style={{ fontWeight: "500" }}>Editar pregunta</h3>
+              <div className={styles.form}>
+                <EditForm
+                  question={question}
+                  handleInformation={handleQuestion}
+                  errorMessage={errorMessage}
+                  helperText={helperText}
+                  handleinformationoptions={handleeditoption}
+                  handleaddoption={handleeditaddoption}
+                  handleaddstars={handleeditstars}
+                  handledeletestars={handleeditdeletestars}
+                  starmsg={starmsg}
+                />
+              </div>
+            </div>
+            <div className={styles.bottom}>
+              <Button variant="text" onClick={handleCloseEditModal}>
+                CANCELAR
+              </Button>
+              <Button variant="contained" onClick={handleAgregar}>
+                {edit ? "Actualizar" : "Agregar"}
               </Button>
             </div>
           </Box>

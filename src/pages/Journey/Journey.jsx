@@ -138,7 +138,6 @@ export default function Journey() {
       navigate("/dashboard");
     }
     getJourneyMapAPI().then((res) => {
-      console.log(res.data);
       setData(res.data);
     });
   }, []);

@@ -170,6 +170,44 @@ export default function Table(props) {
     },
   ];
 
+  const employee = [
+    {
+      field: "sede",
+      flex: 1,
+      headerName: "Sede",
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "IdCompania",
+      flex: 1,
+      headerName: "Compania",
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) =>
+        isNaN(params.row.IdCompania)
+          ? params.row.IdCompania
+          : search(params.row.IdCompania, props.ids.company, "nombreCompania"),
+    },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 100,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <IconButton onClick={() => props.handleEditItem(params.row)}>
+            <EditIcon />
+          </IconButton>,
+          <IconButton onClick={() => handleDeleteItem(params.row._id)}>
+            <DeleteIcon />
+          </IconButton>,
+        ];
+      },
+    },
+  ];
+
   const dashboard = [
     {
       field: "companyId",

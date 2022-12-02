@@ -91,7 +91,11 @@ export default function Cuestionario(props) {
                                           {val.description}
                                         </div>
                                         <div className={styles.editdelete}>
-                                          <IconButton>
+                                          <IconButton
+                                            onClick={() => {
+                                              props.handleEdit(index);
+                                            }}
+                                          >
                                             <ModeOutlinedIcon
                                               sx={{ fontSize: "30px" }}
                                             />
