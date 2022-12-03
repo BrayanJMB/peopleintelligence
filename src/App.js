@@ -12,6 +12,7 @@ import Journey from "./pages/Journey/Journey";
 import Template from "./pages/Journey/Template/Template";
 import CreateSurvey from "./pages/Journey/CreateSurvey/CreateSurvey";
 import OnasTable from "./pages/OnasTable/OnasTable";
+import JourneySettings from "./pages/JourneySettings/JourneySettings";
 import Roles from "./pages/Roles/Roles";
 import Error from "./pages/Error/Error";
 import PrivateRoutes from "./utils/PrivateRoutes";
@@ -23,13 +24,6 @@ import IdleTimer from "./utils/IdleTimer";
 
 export default function App() {
   useEffect(() => {
-    window.addEventListener(
-      "beforeunload",
-      function (e) {
-        localStorage.removeItem("userInfo");
-      },
-      false
-    );
     const timer = new IdleTimer({
       timeout: 1200,
       onTimeout: () => {
@@ -37,16 +31,6 @@ export default function App() {
         localStorage.removeItem("userInfo");
         window.location.replace(
           "https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fwww.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login"
-        );
-      },
-      onExpired: () => {
-        localStorage.removeItem("userInfo");
-        window.removeEventListener(
-          "beforeunload",
-          function (e) {
-            localStorage.removeItem("userInfo");
-          },
-          false
         );
       },
     });
@@ -79,6 +63,11 @@ export default function App() {
             <Route
               path="/journey/survey-template"
               element={<Template />}
+              exact
+            />
+            <Route
+              path="/journeysettings"
+              element={<JourneySettings />}
               exact
             />
             <Route

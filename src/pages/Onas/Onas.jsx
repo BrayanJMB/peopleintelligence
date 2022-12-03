@@ -12,7 +12,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { CSVLink } from "react-csv";
 import axios from "../../utils/axiosInstance";
 import Notification from "../../components/Notification";
-import Sidebar from "../../Layout/Sidebar/Sidebar";
+import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
@@ -160,7 +160,7 @@ export default function Onas() {
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <Navbar />
-        <Sidebar />
+        <IconSidebar />
         <div style={{ backgroundColor: "white" }}>
           <div className={styles.content}>
             <div className={styles.onas}>

@@ -1,5 +1,5 @@
 import styles from "./Template.module.css";
-import Sidebar from "../../../Layout/Sidebar/Sidebar";
+import IconSidebar from "../../../Layout/IconSidebar/IconSidebar";
 import Navbar from "../../../Layout/Navbar/Navbar";
 import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -134,7 +134,7 @@ export default function Template() {
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <Navbar />
-        <Sidebar />
+        <IconSidebar />
         <div style={{ backgroundColor: "white" }}>
           <div className={styles.content}>
             <div className={styles.survey_template}>

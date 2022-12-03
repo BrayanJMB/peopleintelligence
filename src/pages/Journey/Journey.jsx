@@ -1,4 +1,4 @@
-import Sidebar from "../../Layout/Sidebar/Sidebar";
+import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
 import Navbar from "../../Layout/Navbar/Navbar";
 import styles from "./Journey.module.css";
 import Box from "@mui/material/Box";
@@ -142,6 +142,10 @@ export default function Journey() {
     navigate("/journey/survey-template");
   };
 
+  const handleSettings = () => {
+    navigate("/journeysettings");
+  };
+
   useEffect(() => {
     if (
       userInfo?.role.findIndex((p) => p === "Journey") < 0 &&
@@ -159,7 +163,7 @@ export default function Journey() {
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <Navbar />
-        <Sidebar />
+        <IconSidebar />
         <div style={{ backgroundColor: "white" }}>
           <div className={styles.content}>
             <div className={styles.journey}>
@@ -179,6 +183,18 @@ export default function Journey() {
                     Encuestas del ciclo de vida de los empleados
                   </h1>
                 </div>
+                <Button
+                  variant="contained"
+                  className={styles.explorar}
+                  style={{
+                    color: "white",
+                    marginRight: "1.5em",
+                  }}
+                  color="blue"
+                  onClick={handleSettings}
+                >
+                  Journey Settings
+                </Button>
                 <Button
                   variant="contained"
                   className={styles.explorar}
