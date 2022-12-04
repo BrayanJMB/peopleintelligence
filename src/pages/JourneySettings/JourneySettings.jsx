@@ -56,17 +56,18 @@ export default function JourneySettings() {
   const [mapa, setMapa] = useState([]);
   const [categories, setCategories] = useState([]);
   const [mapaanchorEl, setMapaanchorEl] = useState(null);
-
-  const handleExplorar = () => {
-    navigate("/journey/survey-template");
-  };
+  const [catanchorEl, setCatanchorEl] = useState(null);
 
   const handlemapas = (event) => {
     setMapaanchorEl(event.currentTarget);
   };
+  const handlecat = (event) => {
+    setCatanchorEl(event.currentTarget);
+  };
 
   const handleClose = () => {
     setMapaanchorEl(null);
+    setCatanchorEl(null);
   };
 
   useEffect(() => {
@@ -81,7 +82,6 @@ export default function JourneySettings() {
       setMapa(res.data);
     });
     getCategoriesAPI().then((res) => {
-      console.log(res.data);
       setCategories(res.data);
     });
   }, []);
@@ -121,7 +121,6 @@ export default function JourneySettings() {
                     horizontal: "left",
                   }}
                   onClose={() => handleClose()}
-                  MenuListProps={{ onMouseLeave: () => handleClose() }}
                 >
                   {mapa.map((val, key) => {
                     return (
@@ -140,10 +139,35 @@ export default function JourneySettings() {
                     color: "white",
                   }}
                   color="blue"
-                  onClick={handleExplorar}
+                  onClick={handlecat}
                 >
                   Categorias
                 </Button>
+                <Menu
+                  id="demo-positioned-menu"
+                  aria-labelledby="demo-positioned-button"
+                  anchorEl={catanchorEl}
+                  open={Boolean(catanchorEl)}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  onClose={() => handleClose()}
+                >
+                  {categories.map((val, key) => {
+                    return (
+                      <div key={key}>
+                        <MenuItem>
+                          <div>{val.nameCatogory}</div>
+                        </MenuItem>
+                      </div>
+                    );
+                  })}
+                </Menu>
               </div>
 
               <div className={styles.templates}>
