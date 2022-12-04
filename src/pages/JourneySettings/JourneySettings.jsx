@@ -4,14 +4,16 @@ import styles from "./JourneySettings.module.css";
 import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
-import starIcon from "../../assets/icons/star_icon.png";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import enps from "../../assets/enps.svg";
 import empleados from "../../assets/empleados.svg";
 import last from "../../assets/last.svg";
 import pulso from "../../assets/pulso.svg";
-import encuesta from "../../assets/icons/encuesta.png";
+import { getJourneyMapAPI } from "../../services/getJourneyMap.service";
+import { getCategoriesAPI } from "../../services/getCategories.service";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 const theme = createTheme({
   palette: {
@@ -20,18 +22,6 @@ const theme = createTheme({
     },
   },
 });
-
-const encuestaCard = [
-  {
-    icon: encuesta,
-    title: "fgfgfggfg",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-  },
-  { icon: encuesta, title: "fgfgfggfg", description: "dfgdfgdfdfg" },
-  { icon: encuesta, title: "fgfgfggfg", description: "dfgdfgdfdfg" },
-  { icon: encuesta, title: "fgfgfggfg", description: "dfgdfgdfdfg" },
-];
 
 const cards = [
   {
@@ -63,13 +53,20 @@ const cards = [
 export default function JourneySettings() {
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const [mapa, setMapa] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [mapaanchorEl, setMapaanchorEl] = useState(null);
 
   const handleExplorar = () => {
     navigate("/journey/survey-template");
   };
 
-  const handleSettings = () => {
-    navigate("/journeysettings");
+  const handlemapas = (event) => {
+    setMapaanchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setMapaanchorEl(null);
   };
 
   useEffect(() => {
@@ -80,6 +77,13 @@ export default function JourneySettings() {
       alert("No tiene permiso para acceder a esta funcionalidad");
       navigate("/dashboard");
     }
+    getJourneyMapAPI().then((res) => {
+      setMapa(res.data);
+    });
+    getCategoriesAPI().then((res) => {
+      console.log(res.data);
+      setCategories(res.data);
+    });
   }, []);
 
   return (
@@ -99,10 +103,36 @@ export default function JourneySettings() {
                     marginRight: "1.5em",
                   }}
                   color="blue"
-                  onClick={handleSettings}
+                  onClick={handlemapas}
                 >
-                  Journey Settings
+                  Mapas de Encuestas
                 </Button>
+                <Menu
+                  id="demo-positioned-menu"
+                  aria-labelledby="demo-positioned-button"
+                  anchorEl={mapaanchorEl}
+                  open={Boolean(mapaanchorEl)}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  onClose={() => handleClose()}
+                  MenuListProps={{ onMouseLeave: () => handleClose() }}
+                >
+                  {mapa.map((val, key) => {
+                    return (
+                      <div key={key}>
+                        <MenuItem>
+                          <div>{val.mapJourney}</div>
+                        </MenuItem>
+                      </div>
+                    );
+                  })}
+                </Menu>
                 <Button
                   variant="contained"
                   className={styles.explorar}
@@ -112,7 +142,7 @@ export default function JourneySettings() {
                   color="blue"
                   onClick={handleExplorar}
                 >
-                  Explorar plantillas
+                  Categorias
                 </Button>
               </div>
 

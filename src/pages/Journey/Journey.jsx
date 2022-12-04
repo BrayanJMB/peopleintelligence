@@ -193,7 +193,7 @@ export default function Journey() {
                   color="blue"
                   onClick={handleSettings}
                 >
-                  Journey Settings
+                  Administra Encuestas
                 </Button>
                 <Button
                   variant="contained"
