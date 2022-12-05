@@ -12,7 +12,6 @@ instance.interceptors.request.use(
     if (userParsed) {
       config.headers.Authorization = `Bearer ${userParsed.accessToken}`;
     }
-    console.log("request config", config);
     return config;
   },
   (error) => {

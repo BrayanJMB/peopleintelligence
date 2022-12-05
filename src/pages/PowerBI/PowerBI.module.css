@@ -2,6 +2,9 @@
   height: 90vh;
   width: 89.5vw;
 }
+body ~ notification-bar {
+  display: none;
+}
 .Embed_container iframe {
   border: none;
 }

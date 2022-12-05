@@ -6,7 +6,6 @@ export const editReportAPI = async (id, name, descripcion) => {
   const response = await axios.put("ListaDashboards?Id=" + id, {
     name: name,
     descripcion: descripcion,
-    id: id,
   });
   return response;
 };

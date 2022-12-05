@@ -28,16 +28,35 @@ const data = [
     description: "description of question",
     answer: "",
   },
+  {
+    type: "stars",
+    title: "Question 1",
+    description: "description of question",
+    answer: "",
+  },
 ];
 
 export default function Questions() {
   return (
     <Box sx={{ display: "flex" }}>
-      <div style={{ backgroundColor: "white", flex: 1 }}>
+      <div style={{ backgroundColor: "white", flex: 1, height: "100vh" }}>
         <header className={styles.header}>
           <h1>la primera encuesta</h1>
           <h4>esta es la primera encuesta</h4>
         </header>
+        <div className={styles.wrapper}>
+          {data.map((val, index) => {
+            return (
+              <div className={styles.question}>
+                <div className={styles.info}>
+                  <p>{val.title}</p>
+                  <p>{val.description}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div className={styles.stepper}></div>
       </div>
     </Box>
   );
