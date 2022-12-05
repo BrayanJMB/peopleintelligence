@@ -21,6 +21,7 @@ import OnasDetails from "./pages/OnasDetails/OnasDetails";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import IdleTimer from "./utils/IdleTimer";
+import Questions from "./pages/Questions/Questions";
 
 export default function App() {
   useEffect(() => {
@@ -54,6 +55,7 @@ export default function App() {
             <Route path="/powerbi/:idDashboard" element={<PowerBI />} exact />
             <Route path="/register/:type" element={<Register />} exact />
             <Route path="/infoadmin/:type" element={<InfoAdmin />} exact />
+
             <Route
               path="/conversation/:type"
               element={<Conversation />}
@@ -76,6 +78,7 @@ export default function App() {
               exact
             />
           </Route>
+          <Route path="/questions" element={<Questions />} exact />
           <Route path="/noaccess" element={<NoAccess />} />
           <Route path="*" element={<Error />} />
         </Routes>
