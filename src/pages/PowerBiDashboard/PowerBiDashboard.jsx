@@ -1,6 +1,6 @@
 import Navbar from "../../Layout/Navbar/Navbar";
 import Box from "@mui/material/Box";
-import Sidebar from "../../Layout/Sidebar/Sidebar";
+import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
 import styles from "./PowerBiDashboard.module.css";
 import { useEffect, useState } from "react";
 import { getCompanyDashboardsAPI } from "../../services/getCompanyDashboard.service";
@@ -45,7 +45,7 @@ export default function PowerBiDashboard() {
   return (
     <Box sx={{ display: "flex" }}>
       <Navbar />
-      <Sidebar />
+      <IconSidebar />
       <div style={{ backgroundColor: "white" }}>
         <Stack spacing={2}>
           <div className={styles.content}>

@@ -3,7 +3,7 @@ import styles from "./OnasTable.module.css";
 import { DataGrid, gridClasses } from "@mui/x-data-grid";
 import Navbar from "../../Layout/Navbar/Navbar";
 import Box from "@mui/material/Box";
-import Sidebar from "../../Layout/Sidebar/Sidebar";
+import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
 import * as uuid from "uuid";
 import { grey } from "@mui/material/colors";
 import IconButton from "@mui/material/IconButton";
@@ -150,7 +150,7 @@ export default function OnasTable() {
   return (
     <Box sx={{ display: "flex" }}>
       <Navbar />
-      <Sidebar />
+      <IconSidebar />
       <div style={{ backgroundColor: "white" }}>
         <div className={styles.content}>
           <div className={styles.crud}>

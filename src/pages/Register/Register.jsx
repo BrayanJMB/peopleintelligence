@@ -10,7 +10,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import IconButton from "@mui/material/IconButton";
 import NewDashboard from "../../components/NewDashboard/NewDashboard";
 import NewReport from "../../components/NewReport/NewReport";
-import Sidebar from "../../Layout/Sidebar/Sidebar";
+import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
 import Table from "../../components/Table";
 import * as uuid from "uuid";
 import axios from "../../utils/axiosInstance";
@@ -40,7 +40,6 @@ export default function Register() {
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const [roleId, setRoleId] = useState("");
 
   // state for input
   const [dashboard, setDashboard] = useState({
@@ -331,7 +330,7 @@ export default function Register() {
   return (
     <Box sx={{ display: "flex" }}>
       <Navbar />
-      <Sidebar />
+      <IconSidebar />
       <Modal
         open={open || edit}
         onClose={handleCloseModal}

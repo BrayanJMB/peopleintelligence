@@ -1,4 +1,4 @@
-import Sidebar from "../../Layout/Sidebar/Sidebar";
+import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
 import Navbar from "../../Layout/Navbar/Navbar";
 import styles from "./Journey.module.css";
 import Box from "@mui/material/Box";
@@ -23,6 +23,7 @@ import enps from "../../assets/enps.svg";
 import empleados from "../../assets/empleados.svg";
 import last from "../../assets/last.svg";
 import pulso from "../../assets/pulso.svg";
+import encuesta from "../../assets/icons/encuesta.png";
 
 const theme = createTheme({
   palette: {
@@ -66,6 +67,18 @@ const dataSlider = [
   {
     icon: TipsAndUpdatesIcon,
   },
+];
+
+const encuestaCard = [
+  {
+    icon: encuesta,
+    title: "fgfgfggfg",
+    description:
+      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
+  },
+  { icon: encuesta, title: "fgfgfggfg", description: "dfgdfgdfdfg" },
+  { icon: encuesta, title: "fgfgfggfg", description: "dfgdfgdfdfg" },
+  { icon: encuesta, title: "fgfgfggfg", description: "dfgdfgdfdfg" },
 ];
 
 const cards = [
@@ -129,6 +142,10 @@ export default function Journey() {
     navigate("/journey/survey-template");
   };
 
+  const handleSettings = () => {
+    navigate("/journeysettings");
+  };
+
   useEffect(() => {
     if (
       userInfo?.role.findIndex((p) => p === "Journey") < 0 &&
@@ -146,7 +163,7 @@ export default function Journey() {
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <Navbar />
-        <Sidebar />
+        <IconSidebar />
         <div style={{ backgroundColor: "white" }}>
           <div className={styles.content}>
             <div className={styles.journey}>
@@ -166,6 +183,18 @@ export default function Journey() {
                     Encuestas del ciclo de vida de los empleados
                   </h1>
                 </div>
+                <Button
+                  variant="contained"
+                  className={styles.explorar}
+                  style={{
+                    color: "white",
+                    marginRight: "1.5em",
+                  }}
+                  color="blue"
+                  onClick={handleSettings}
+                >
+                  Administra Encuestas
+                </Button>
                 <Button
                   variant="contained"
                   className={styles.explorar}
@@ -232,6 +261,80 @@ export default function Journey() {
                       >
                         Empezar
                       </Button>
+                    </div>
+                  );
+                })}
+                {encuestaCard.map((val, key) => {
+                  return (
+                    <div key={key} className={styles.encuestacard}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        <div
+                          style={{
+                            backgroundColor: "#EAF8FF",
+                            width: "35px",
+                            height: "35px",
+                            padding: "12px",
+                            borderRadius: "8px",
+                            margin: "0.5em",
+                          }}
+                        >
+                          <img
+                            src={val.icon}
+                            alt=""
+                            style={{
+                              width: "100%",
+                              height: "auto",
+                              maxWidth: "100%",
+                              verticalAlign: "middle",
+                            }}
+                          />
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "1em",
+                            paddingLeft: "12px",
+                            width: "80%",
+                          }}
+                        >
+                          <p
+                            style={{
+                              fontSize: "18px",
+                              letterSpacing: "0.5px",
+                              fontWeight: "500",
+                            }}
+                          >
+                            {val.title}
+                          </p>
+                          <div
+                            style={{
+                              overflow: "hidden",
+                              wordBreak: "break-word",
+                            }}
+                          >
+                            <p
+                              style={{
+                                fontSize: "14px",
+                                letterSpacing: "0.25px",
+                                fontWeight: "300",
+                                overflow: "hidden",
+                                wordBreak: "break-word",
+                              }}
+                            >
+                              {val.description}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ marginTop: "24px", alignItems: "center" }}>
+                        <div className={styles.red}>Sequia</div>
+                      </div>
                     </div>
                   );
                 })}

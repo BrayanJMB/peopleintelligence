@@ -1,23 +1,22 @@
 import { useState } from "react";
-import styles from "./Sidebar.module.css";
+import styles from "./IconSidebar.module.css";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import Iletter from "../../assets/icons/Iletter.png";
 import Aletter from "../../assets/icons/Aletter.png";
 import Oletter from "../../assets/icons/Oletter.png";
 import Dletter from "../../assets/icons/Dletter.png";
 import Jletter from "../../assets/icons/Jletter.png";
 import Sletter from "../../assets/icons/Sletter.png";
-import { useNavigate } from "react-router-dom";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import multicompani from "../../assets/multicompani.jpeg";
+import { useNavigate } from "react-router-dom";
 
 const names = [
   "Information Management",
@@ -38,7 +37,6 @@ const drop = [
   ["journey"],
   ["Empresas", "Empleados", "Oficinas", "Departamentos"],
 ];
-
 const project = [
   "infoadmin",
   "powerbi",
@@ -48,30 +46,12 @@ const project = [
   "analysis",
 ];
 
-const drawerWidth = 240;
+const drawerWidth = 150;
 
-export default function Sidebar() {
-  const [anchorEl, setAnchorEl] = useState(Array(6).fill(null));
+export default function IconSidebar() {
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(Array(6).fill(null));
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-
-  const handleRedirect = (index, key) => {
-    if (index === 1) {
-      navigate("/" + project[index]);
-    } else if (index === 2) {
-      if (key === 1) {
-        navigate("/onas/ver-encuestas");
-      } else {
-        navigate("/onas");
-      }
-    } else if (index === 4) {
-      navigate("/journey");
-    } else {
-      navigate("/" + project[index] + "/" + drop[index][key]);
-    }
-
-    handleClose(index);
-  };
 
   const handleItemClick = (index) => (event) => {
     if (
@@ -117,7 +97,6 @@ export default function Sidebar() {
       setAnchorEl(tmp);
     }
   };
-
   const handleClose = (index) => {
     let tmp = anchorEl.map((val, key) => {
       if (index === key) {
@@ -127,6 +106,24 @@ export default function Sidebar() {
       }
     });
     setAnchorEl(tmp);
+  };
+
+  const handleRedirect = (index, key) => {
+    if (index === 1) {
+      navigate("/" + project[index]);
+    } else if (index === 2) {
+      if (key === 1) {
+        navigate("/onas/ver-encuestas");
+      } else {
+        navigate("/onas");
+      }
+    } else if (index === 4) {
+      navigate("/journey");
+    } else {
+      navigate("/" + project[index] + "/" + drop[index][key]);
+    }
+
+    handleClose(index);
   };
 
   return (
@@ -165,13 +162,20 @@ export default function Sidebar() {
             marginTop: "0.5rem",
             display: "flex",
             flexDirection: "column",
-            gap: "0.5em",
+            justifyContent: "space-around",
+            gap: "1em",
           }}
         >
           {names.map((text, index) => (
-            <ListItem key={index} disablePadding>
+            <ListItem key={index}>
               <ListItemButton
+                onMouseEnter={handleItemClick(index)}
                 onClick={handleItemClick(index)}
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                }}
                 id={"demo-positioned-button" + index}
                 aria-controls={
                   Boolean(anchorEl[index]) ? "demo-positioned-menu" : undefined
@@ -179,22 +183,13 @@ export default function Sidebar() {
                 aria-haspopup="true"
                 aria-expanded={Boolean(anchorEl[index]) ? "true" : undefined}
               >
-                <ListItemIcon style={{ position: "relative" }}>
+                <ListItemIcon>
                   <img
                     src={list[index]}
                     alt="oletter"
                     className={styles.icon}
                   />
                 </ListItemIcon>
-                <ListItemText
-                  primary={text}
-                  style={{
-                    color: "grey",
-                  }}
-                  primaryTypographyProps={{
-                    fontSize: { md: "0.7rem", lg: "1rem", sm: "0.5rem" },
-                  }}
-                />
               </ListItemButton>
               <Menu
                 id="demo-positioned-menu"
@@ -210,6 +205,7 @@ export default function Sidebar() {
                   horizontal: "left",
                 }}
                 onClose={() => handleClose(index)}
+                MenuListProps={{ onMouseLeave: () => handleClose(index) }}
               >
                 {drop[index].map((val, key) => {
                   if (

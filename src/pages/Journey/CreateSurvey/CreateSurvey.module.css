@@ -1,5 +1,5 @@
 .content {
-  width: 83vw;
+  width: 89.5vw;
   height: 92vh;
   margin-top: 4rem;
   border-top-left-radius: 50px;
@@ -65,11 +65,12 @@
 }
 .modal {
   height: 95vh;
-  width: 98vw;
+  width: 90vw;
   background-color: white;
   box-shadow: 24px;
   padding: 1rem;
   overflow: auto;
+  margin: 0 auto;
 }
 .modaltop {
   display: flex;

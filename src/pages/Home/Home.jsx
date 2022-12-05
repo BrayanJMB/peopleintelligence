@@ -187,6 +187,7 @@ export default function Home() {
               role: decodedToken.role,
             })
           );
+
           localStorage.setItem(
             "userInfo",
             JSON.stringify({
