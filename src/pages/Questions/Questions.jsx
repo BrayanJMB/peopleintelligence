@@ -22,7 +22,13 @@ export default function Questions() {
       type: "escala",
       title: "Question 2",
       description: "description of question",
-      options: ["1", "2", "3", "4", "5"],
+      options: [
+        "Muy en desacuerdo",
+        "Discrepar",
+        "Neutral",
+        "Estar de acuerdo",
+        "Totalmente de acuerdo",
+      ],
       answer: "",
       key: 1,
     },
@@ -139,9 +145,6 @@ export default function Questions() {
               width: "100%",
             }}
           >
-            <div style={{ marginRight: "1em" }}>
-              <p style={{ width: "100%", paddingRight: "1em" }}>Answer :</p>
-            </div>
             <TextField
               id="outlined-name"
               variant="outlined"
@@ -158,14 +161,12 @@ export default function Questions() {
           <div
             style={{
               display: "flex",
+              flexDirection: "column",
               alignItems: "center",
               gap: "1rem",
               width: "100%",
             }}
           >
-            <div style={{ marginRight: "1em" }}>
-              <p style={{ width: "100%", paddingRight: "1em" }}>Answer :</p>
-            </div>
             <FormControl>
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
@@ -193,14 +194,12 @@ export default function Questions() {
           <div
             style={{
               display: "flex",
+              flexDirection: "column",
               alignItems: "center",
               gap: "1rem",
               width: "100%",
             }}
           >
-            <div style={{ marginRight: "1em" }}>
-              <p style={{ width: "100%", paddingRight: "1em" }}>Answer :</p>
-            </div>
             <FormControl>
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
@@ -228,14 +227,12 @@ export default function Questions() {
           <div
             style={{
               display: "flex",
+              justifyContent: "center",
               alignItems: "center",
               gap: "1rem",
               width: "100%",
             }}
           >
-            <div style={{ marginRight: "1em" }}>
-              <p style={{ width: "100%", paddingRight: "1em" }}>Answer :</p>
-            </div>
             {data[key].stars.map((val, index) => {
               return (
                 <svg
@@ -262,8 +259,14 @@ export default function Questions() {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <div style={{ backgroundColor: "white", flex: 1, height: "100vh" }}>
+    <Box sx={{ display: "flex", width: "100vw" }}>
+      <div
+        style={{
+          backgroundColor: "white",
+          flex: 1,
+          height: "100vh",
+        }}
+      >
         <header className={styles.header}>
           <h1>la primera encuesta</h1>
           <h4>esta es la primera encuesta</h4>
@@ -287,11 +290,6 @@ export default function Questions() {
                         width: "100%",
                       }}
                     >
-                      <div style={{ marginRight: "1em" }}>
-                        <p style={{ width: "100%", paddingRight: "1em" }}>
-                          Answer :
-                        </p>
-                      </div>
                       <div>
                         <p>{data[index].answer}</p>
                       </div>
@@ -328,7 +326,11 @@ export default function Questions() {
           >
             atrás
           </Button>
-          <Button variant="contained" onClick={handleContinuar}>
+          <Button
+            variant="contained"
+            onClick={handleContinuar}
+            style={{ marginRight: "1em" }}
+          >
             {lastIndex > data.length ? "Revision" : "Continuar"}
           </Button>
         </div>
