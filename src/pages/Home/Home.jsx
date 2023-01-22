@@ -11,6 +11,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../features/authSlice";
 import { useLocation, useNavigate } from "react-router-dom";
+import Notification from "../../components/Notification";
 
 const config = {
   headers: {
@@ -57,6 +58,11 @@ export default function Home() {
       SectorId: "",
     },
   });
+  const [values, setValues] = useState({
+    isOpen: false,
+    message: "",
+    severity: "",
+  });
 
   const theme = createTheme({
     palette: {
@@ -65,6 +71,10 @@ export default function Home() {
       },
     },
   });
+
+  const handleClose = () => {
+    setValues({ ...values, isOpen: false });
+  };
 
   const sectorConsume = async () => {
     try {
@@ -254,15 +264,19 @@ export default function Home() {
   );
 
   const handlephoto = (event) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (reader.readyState === 2) {
-        let companie = info.Compania;
-        companie.Logotipo = reader.result;
-        setInfo({ ...info, Compania: companie });
-      }
-    };
-    reader.readAsDataURL(event.target.files[0]);
+    if (event.target.files[0].size < 500000) {
+      let companie = info.Compania;
+      companie.Logotipo = event.target.files[0];
+      setInfo({ ...info, Compania: companie });
+    } else {
+      setValues({
+        ...values,
+        message:
+          "El tamaño de la imagen para el logotipo no puede ser mayor a 500kB",
+        isOpen: true,
+        severity: "error",
+      });
+    }
   };
 
   const handleoneCompany = () => {
@@ -299,10 +313,16 @@ export default function Home() {
     } else {
       tokenConsume();
     }
-  }, []);
+  }, [access_token]);
   return (
     <div className={styles.screen}>
       <ThemeProvider theme={theme}>
+        <Notification
+          severity={values.severity}
+          message={values.message}
+          isOpen={values.isOpen}
+          onClose={handleClose}
+        />
         {begin ? (
           <div className={styles.inner_box}>
             <div className={styles.content}>

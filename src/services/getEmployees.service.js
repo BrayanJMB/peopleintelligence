@@ -1,8 +1,8 @@
 import axios from "../utils/axiosInstance";
 
-export const getEmployeesAPI = async () => {
+export const getEmployeesAPI = async (id) => {
   console.log("getEmployeesAPI");
 
-  const response = await axios.get("Employee/");
+  const response = await axios.get("Employee/" + id);
   return response;
 };
