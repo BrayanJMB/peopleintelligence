@@ -14,6 +14,7 @@ import { downloadOnasAPI } from "../../services/downloadonas.service";
 import { CSVLink } from "react-csv";
 import Button from "@mui/material/Button";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import { useSelector } from "react-redux";
 
 function padTo2Digits(num) {
   return num.toString().padStart(2, "0");
@@ -36,6 +37,7 @@ function formatDate(date) {
 
 export default function OnasTable() {
   const navigate = useNavigate();
+  const auth = useSelector((state) => state.auth);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [rows, setRows] = useState([]);
   const [transactionData, setTransactionData] = useState("");
@@ -117,7 +119,7 @@ export default function OnasTable() {
   const columns = useMemo(() => onasColumn, []);
 
   const getTableData = () => {
-    getOnasAPI(userInfo.Company)
+    getOnasAPI(auth.Company)
       .then((res) => {
         let data = [];
         res.data.forEach((val) => {
@@ -145,7 +147,7 @@ export default function OnasTable() {
       csvLink.current.link.click();
     }
     getTableData();
-  }, [transactionData]);
+  }, [transactionData, auth]);
 
   return (
     <Box sx={{ display: "flex" }}>

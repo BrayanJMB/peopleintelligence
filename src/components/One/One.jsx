@@ -18,6 +18,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useState, useRef, useEffect } from "react";
 import MuiPhoneNumber from "material-ui-phone-number-2";
+import defaultImage from "../../assets/default.png";
 
 function a11yProps(index) {
   return {
@@ -133,6 +134,26 @@ export default function One(props) {
     let error = {};
     let bad = false;
 
+    let logoTipo = null;
+
+    if (props.info.Compania.Logotipo !== null) {
+      let bodyFormData = new FormData();
+      bodyFormData.append("logoTipo", props.info.Compania.Logotipo);
+
+      await fetch(
+        `https://peopleintelligenceapi.azurewebsites.net/api/Autenticacion/LogoCompany?BussinesName=${props.info.Compania.nombreCompania}`,
+        {
+          method: "POST",
+          body: bodyFormData,
+        }
+      )
+        .then((response) => response.json())
+        .then((res) => {
+          logoTipo = res.urlLogo;
+        })
+        .catch((err) => console.log(err));
+    }
+
     for (const [key, value] of Object.entries({
       IdTipoDocumento: props.info.Usuario.IdTipoDocumento,
       numeroDocumento: props.info.Usuario.numeroDocumento,
@@ -223,7 +244,7 @@ export default function One(props) {
               {
                 Compania: {
                   nombreCompania: props.info.Compania.nombreCompania,
-                  Logotipo: props.info.Compania.Logotipo,
+                  Logotipo: logoTipo,
                   IdPais: countryid,
                   Sede: props.info.Compania.Sede,
                   direccion: props.info.Compania.direccion,
@@ -601,7 +622,11 @@ export default function One(props) {
           <TabPanel value={value} index={0}>
             <div className={styles.profile}>
               <img
-                src={props.info.Compania.Logotipo}
+                src={
+                  props.info.Compania.Logotipo !== null
+                    ? URL.createObjectURL(props.info.Compania.Logotipo)
+                    : defaultImage
+                }
                 alt="profile"
                 className={styles.photo}
               />

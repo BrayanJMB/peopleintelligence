@@ -63,6 +63,7 @@ export default function Onas() {
   const [transactionData, setTransactionData] = useState("");
   const [datetime, setDatetime] = useState(formatDate(new Date()));
   const csvLink = useRef();
+
   const [values, setValues] = useState({
     isOpen: false,
     message: "",
@@ -306,9 +307,8 @@ export default function Onas() {
                   </div>
                   <div className={styles.right}>
                     <div>
-                      Tienes dudas?{" "}
+                      Tienes dudas?
                       <strong style={{ color: "#03aae4" }}>
-                        {" "}
                         Mira este vídeo tutorial
                       </strong>
                     </div>

@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import styles from "./NewCompany.module.css";
 import Button from "@mui/material/Button";
+import axios from "../../utils/axiosInstance";
+import image from "../../assets/default.png";
 
 const validphone = new RegExp("^[0-9]{12,15}$");
 
 export default function NewCompany(props) {
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
+  const [image, setImage] = useState("");
 
   const handleBlur = (event) => {
     let helperText = {};
@@ -30,8 +33,35 @@ export default function NewCompany(props) {
     setHelperText(helperText);
   };
 
+  const getImage = async () => {
+    await axios.get(`companias/GetLogo/2?Id=1`);
+  };
+
+  useEffect(() => {
+    if (props.info.Logotipi !== null) {
+      getImage();
+    }
+  }, [props.info]);
+
   return (
     <div className={styles.form}>
+      <img
+        src={
+          props.info.Logotipo !== null
+            ? URL.createObjectURL(props.info.Logotipo)
+            : image
+        }
+        alt="profile"
+        className={styles.photo}
+      />
+
+      <input
+        type="file"
+        onChange={props.handlePhoto}
+        accept="image/*"
+        name="profile_image"
+      />
+
       <div className={styles.input}>
         <TextField
           id="outlined-name"

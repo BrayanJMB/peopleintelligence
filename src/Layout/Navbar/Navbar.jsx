@@ -15,6 +15,8 @@ import AppBar from "@mui/material/AppBar";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import axios from "../../utils/axiosInstance";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../../features/authSlice";
 
 function stringToColor(string) {
   let hash = 0;
@@ -49,6 +51,7 @@ const drawerWidth = 240;
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorEl2, setAnchorEl2] = useState(null);
   const [drop, setDrop] = useState("");
@@ -89,12 +92,12 @@ export default function Navbar() {
   };
   const companyConsume = async (id) => {
     try {
-      await axios.get("companias/GetCompanias/" + id).then((res) => {
+      await axios.get("companias/MultiCompani/" + id).then((res) => {
         let fetch = [];
         let id = [];
         res.data.forEach((val) => {
-          if (!fetch.includes(val.nombreCompañia)) {
-            fetch.push(val.nombreCompañia);
+          if (!fetch.includes(val.nombreCompania)) {
+            fetch.push(val.nombreCompania);
             id.push(val);
           }
         });
@@ -110,7 +113,7 @@ export default function Navbar() {
 
   const search = (key, inputArray) => {
     for (let i = 0; i < inputArray.length; i++) {
-      if (inputArray[i].nombreCompañia === key) {
+      if (inputArray[i].nombreCompania === key) {
         return inputArray[i].id;
       }
     }
@@ -119,7 +122,15 @@ export default function Navbar() {
   const handleSelect = (value) => {
     let holder = JSON.parse(localStorage.getItem("userInfo"));
     localStorage.removeItem("userInfo");
-    let company = search(value, data.ids);
+    let company = search(value, data.ids.company);
+    dispatch(
+      setCredentials({
+        user: holder.user,
+        Company: company,
+        accessToken: holder.token,
+        role: holder.role,
+      })
+    );
     localStorage.setItem(
       "userInfo",
       JSON.stringify({
@@ -136,7 +147,7 @@ export default function Navbar() {
     if (userInfo?.role.findIndex((p) => p === "MultiCompania") > -1) {
       companyConsume(userInfo.user);
     }
-  }, []);
+  }, [userInfo]);
 
   return (
     <AppBar

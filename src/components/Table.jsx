@@ -174,21 +174,39 @@ export default function Table(props) {
     {
       field: "sede",
       flex: 1,
-      headerName: "Sede",
+      headerName: "Nombre",
       headerAlign: "center",
       align: "center",
     },
     {
-      field: "IdCompania",
+      field: "corroe",
       flex: 1,
-      headerName: "Compania",
+      headerName: "Correo electrónico",
       headerAlign: "center",
       align: "center",
-      renderCell: (params) =>
-        isNaN(params.row.IdCompania)
-          ? params.row.IdCompania
-          : search(params.row.IdCompania, props.ids.company, "nombreCompania"),
     },
+    {
+      field: "fecha",
+      flex: 1,
+      headerName: "Fecha de admisión",
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "cargo",
+      flex: 1,
+      headerName: "Cargo",
+      headerAlign: "center",
+      align: "center",
+    },
+    {
+      field: "area",
+      flex: 1,
+      headerName: "Área",
+      headerAlign: "center",
+      align: "center",
+    },
+
     {
       field: "actions",
       type: "actions",
@@ -362,6 +380,8 @@ export default function Table(props) {
         return company;
       case "Oficinas":
         return office;
+      case "Empleados":
+        return employee;
       case "dashboard":
         return dashboard;
       case "report":

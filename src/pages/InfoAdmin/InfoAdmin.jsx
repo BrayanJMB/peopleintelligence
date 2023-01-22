@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import styles from "./InfoAdmin.module.css";
 import { useParams } from "react-router-dom";
 import Navbar from "../../Layout/Navbar/Navbar";
@@ -23,6 +23,8 @@ import { addItem, storeItems, updateItem } from "../../features/adminSlice";
 import { useNavigate } from "react-router-dom";
 import { postCompanyAPI } from "../../services/postCompany.service";
 import { getEmployeesAPI } from "../../services/getEmployees.service";
+import { CSVLink } from "react-csv";
+import Notification from "../../components/Notification";
 
 const search = (value, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -47,6 +49,7 @@ export default function InfoAdmin() {
     direccion: "",
     IdTamanoCompania: "",
     SectorId: "",
+    Logotipo: null,
   });
   const [oficina, setOficina] = useState({
     sede: "",
@@ -64,6 +67,16 @@ export default function InfoAdmin() {
     content: { country: [], sizeCompany: [], sector: [], company: [] },
     ids: { country: [], sizeCompany: [], sector: [], company: [] },
   });
+  const csvLink = useRef();
+  const importcsv = useRef();
+
+  const [values, setValues] = useState({
+    isOpen: false,
+    message: "",
+    severity: "",
+  });
+
+  const [employecsv, setEmployecsv] = useState("");
 
   // get ids data
 
@@ -177,9 +190,23 @@ export default function InfoAdmin() {
     [department]
   );
 
+  const handlephoto = (event) => {
+    if (event.target.files[0].size < 500000) {
+      setCompania({ ...compania, Logotipo: event.target.files[0] });
+    } else {
+      setValues({
+        ...values,
+        message:
+          "El tamaño de la imagen para el logotipo no puede ser mayor a 500kB",
+        isOpen: true,
+        severity: "error",
+      });
+    }
+  };
+
   // handle data (new or edit)
 
-  const handleCompany = () => {
+  const handleCompany = async () => {
     if (edit) {
       dispatch(updateItem({ data: compania, type: type, id: compania._id }));
     } else {
@@ -195,7 +222,33 @@ export default function InfoAdmin() {
         "id",
         "quantityOfEmployees"
       );
-      postCompanyAPI(compania, idpais, sectorid, sizeid, userInfo.user);
+      let logoTipo = null;
+
+      if (compania.Logotipo !== null) {
+        let bodyFormData = new FormData();
+        bodyFormData.append("logoTipo", compania.Logotipo);
+
+        await fetch(
+          `https://peopleintelligenceapi.azurewebsites.net/api/Autenticacion/LogoCompany?BussinesName=${compania.nombreCompania}`,
+          {
+            method: "POST",
+            body: bodyFormData,
+          }
+        )
+          .then((response) => response.json())
+          .then((res) => {
+            logoTipo = res.urlLogo;
+          })
+          .catch((err) => console.log(err));
+      }
+      postCompanyAPI(
+        compania,
+        idpais,
+        sectorid,
+        sizeid,
+        userInfo.user,
+        logoTipo
+      );
     }
 
     setCompania({
@@ -205,6 +258,7 @@ export default function InfoAdmin() {
       direccion: "",
       IdTamanoCompania: "",
       SectorId: "",
+      Logotipo: null,
     });
     handleCloseModal();
   };
@@ -266,6 +320,12 @@ export default function InfoAdmin() {
     [department]
   );
 
+  const handleDownload = () => {
+    axios
+      .get("Employee/DownloadCsvEmployee")
+      .then((res) => setEmployecsv(res.data));
+  };
+
   // show modal
 
   const renderModal = () => {
@@ -280,6 +340,7 @@ export default function InfoAdmin() {
             handleChangeCompania={handleChangeCompania}
             handleCloseModal={handleCloseModal}
             handleCompany={handleCompany}
+            handlePhoto={handlephoto}
           />
         );
       case "Oficinas":
@@ -311,6 +372,7 @@ export default function InfoAdmin() {
 
   //edit item
   const handleEditItem = (row) => {
+    console.log(row);
     switch (type) {
       case "Empresas":
         setCompania({
@@ -353,10 +415,10 @@ export default function InfoAdmin() {
           .catch((e) => console.log(e));
         break;
       case "Empleados":
-        /*countryConsume();
+        countryConsume();
         sizeCompanyConsume();
-        sectorConsume();*/
-        getEmployeesAPI()
+        sectorConsume();
+        getEmployeesAPI(userInfo.Company)
           .then((res) => {
             console.log(res.data);
             let data = [];
@@ -411,6 +473,39 @@ export default function InfoAdmin() {
     }
   };
 
+  const handleClose = () => {
+    setValues({ ...values, isOpen: false });
+  };
+
+  const handleFile = async (event) => {
+    let bodyFormData = new FormData();
+    bodyFormData.append("data", event.target.files[0]);
+
+    await fetch(
+      `https://peopleintelligenceapi.azurewebsites.net/api/Employee/EmployeesCsv/${userInfo.Company}`,
+      {
+        method: "POST",
+        body: bodyFormData,
+      }
+    )
+      .then((response) => response.json())
+      .then((res) => {
+        setValues({
+          ...values,
+          message: res.message,
+          isOpen: true,
+          severity: "success",
+        });
+      })
+      .catch((err) => console.log(err));
+  };
+
+  useEffect(() => {
+    if (employecsv) {
+      csvLink.current.link.click();
+    }
+  }, [employecsv]);
+
   useEffect(() => {
     if (
       userInfo?.role.findIndex((p) => p === "Management") < 0 &&
@@ -447,6 +542,19 @@ export default function InfoAdmin() {
         </Box>
       </Modal>
       <div style={{ backgroundColor: "white" }}>
+        <CSVLink
+          data={employecsv}
+          filename={"Employees.csv"}
+          style={{ display: "none" }}
+          ref={csvLink}
+          target="_blank"
+        />
+        <Notification
+          severity={values.severity}
+          message={values.message}
+          isOpen={values.isOpen}
+          onClose={handleClose}
+        />
         <div className={styles.content}>
           <div className={styles.crud}>
             <div className={styles.top}>
@@ -460,18 +568,59 @@ export default function InfoAdmin() {
                 <h1>{type}</h1>
               </div>
               <div className={styles.new}>
+                {type === "Empleados" ? (
+                  <div>
+                    <Button
+                      variant="contained"
+                      style={{
+                        whiteSpace: "nowrap",
+                        padding: "1rem 1rem",
+                        color: "white",
+                      }}
+                      color="primary"
+                      onClick={handleDownload}
+                    >
+                      Descargar csv empleados
+                    </Button>
+                    <Button
+                      variant="contained"
+                      style={{
+                        whiteSpace: "nowrap",
+                        padding: "1rem 1rem",
+                        color: "white",
+                        marginLeft: "1rem",
+                      }}
+                      color="primary"
+                      onClick={() => {
+                        importcsv.current.click();
+                      }}
+                    >
+                      Subir empleados
+                    </Button>
+                  </div>
+                ) : null}
                 <Button
                   variant="contained"
                   style={{
                     whiteSpace: "nowrap",
                     padding: "1rem 1rem",
                     color: "white",
+                    marginLeft: "1rem",
                   }}
                   color="primary"
                   onClick={handleOpenModal}
                 >
-                  nueva {type}
+                  {type === "Empleados" ? "nuevo " : "nueva "}
+                  {type}
                 </Button>
+                <input
+                  type="file"
+                  onChange={handleFile}
+                  accept=".csv"
+                  name="file"
+                  ref={importcsv}
+                  hidden
+                />
               </div>
             </div>
             <div className={styles.buttom}>

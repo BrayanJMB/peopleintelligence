@@ -48,7 +48,7 @@ export default function NewReport(props) {
             marginTop: "0.5rem",
           }}
           name="descripcion"
-          value={props.info.descriptionReport}
+          value={props.info.descripcion}
           onChange={props.handleChangeReport}
         />
       </div>
