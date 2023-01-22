@@ -49,6 +49,7 @@ export default function InfoAdmin() {
     direccion: "",
     IdTamanoCompania: "",
     SectorId: "",
+    Logotipo: null,
   });
   const [oficina, setOficina] = useState({
     sede: "",
@@ -189,9 +190,23 @@ export default function InfoAdmin() {
     [department]
   );
 
+  const handlephoto = (event) => {
+    if (event.target.files[0].size < 500000) {
+      setCompania({ ...compania, Logotipo: event.target.files[0] });
+    } else {
+      setValues({
+        ...values,
+        message:
+          "El tamaño de la imagen para el logotipo no puede ser mayor a 500kB",
+        isOpen: true,
+        severity: "error",
+      });
+    }
+  };
+
   // handle data (new or edit)
 
-  const handleCompany = () => {
+  const handleCompany = async () => {
     if (edit) {
       dispatch(updateItem({ data: compania, type: type, id: compania._id }));
     } else {
@@ -207,7 +222,33 @@ export default function InfoAdmin() {
         "id",
         "quantityOfEmployees"
       );
-      postCompanyAPI(compania, idpais, sectorid, sizeid, userInfo.user);
+      let logoTipo = null;
+
+      if (compania.Logotipo !== null) {
+        let bodyFormData = new FormData();
+        bodyFormData.append("logoTipo", compania.Logotipo);
+
+        await fetch(
+          `https://peopleintelligenceapi.azurewebsites.net/api/Autenticacion/LogoCompany?BussinesName=${compania.nombreCompania}`,
+          {
+            method: "POST",
+            body: bodyFormData,
+          }
+        )
+          .then((response) => response.json())
+          .then((res) => {
+            logoTipo = res.urlLogo;
+          })
+          .catch((err) => console.log(err));
+      }
+      postCompanyAPI(
+        compania,
+        idpais,
+        sectorid,
+        sizeid,
+        userInfo.user,
+        logoTipo
+      );
     }
 
     setCompania({
@@ -217,6 +258,7 @@ export default function InfoAdmin() {
       direccion: "",
       IdTamanoCompania: "",
       SectorId: "",
+      Logotipo: null,
     });
     handleCloseModal();
   };
@@ -298,6 +340,7 @@ export default function InfoAdmin() {
             handleChangeCompania={handleChangeCompania}
             handleCloseModal={handleCloseModal}
             handleCompany={handleCompany}
+            handlePhoto={handlephoto}
           />
         );
       case "Oficinas":
@@ -329,6 +372,7 @@ export default function InfoAdmin() {
 
   //edit item
   const handleEditItem = (row) => {
+    console.log(row);
     switch (type) {
       case "Empresas":
         setCompania({
