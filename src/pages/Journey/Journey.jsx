@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import starIcon from "../../assets/icons/star_icon.png";
-import Slider from "react-slick";
+import MyCarousel from '../../components/MyCarousel/MyCarousel';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
@@ -18,7 +18,7 @@ import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
 import Card from "../../components/CardSlider/CardSlider";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getJourneyMapAPI } from "../../services/getJourneyMap.service";
+import { getJourneyMapAPI, getJourneysCompanyAPI } from "../../services/getJourneyMap.service";
 import enps from "../../assets/enps.svg";
 import empleados from "../../assets/empleados.svg";
 import last from "../../assets/last.svg";
@@ -98,9 +98,11 @@ const settings = {
 };
 
 export default function Journey() {
+  const DEFAULT_ICON= 'https://peopleintelligenceapi.azurewebsites.net/StaticFiles/Images/JourneyImages/onboarding.svg';
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const [slides, setSlides] = useState([])
+  const [slides, setSlides] = useState([]);
+  const [journeys, setJourneys] = useState([]);
 
   const handleExplorar = () => {
     navigate("/journey/survey-template");
@@ -116,7 +118,7 @@ export default function Journey() {
      *
      * @returns {Promise<void>}
      */
-    const fetchJourneyMap = async () => {
+    const fetchJourneyMaps = async () => {
       const MESSAGE = 'No tiene permiso para acceder a esta funcionalidad.';
 
       if (!userInfo) {
@@ -136,10 +138,27 @@ export default function Journey() {
       // fetch slider data
       const { data } = await getJourneyMapAPI();
 
-      setSlides(data);
+      // the first item is current active slide
+      setSlides(data.map((slide, index) => ({
+        ...slide,
+        isCurrent: index === 0,
+      })));
+
+      // if there are no maps then cant fetch journeys
+      if (!data.length) {
+        return;
+      }
+
+      const companyId = userInfo.Company;
+      const mapId = data[0].id;
+
+      // fetch journeys by map and company
+      const { data: journeysData } = await getJourneysCompanyAPI(companyId, mapId);
+
+      setJourneys(journeysData);
     };
 
-    fetchJourneyMap();
+    fetchJourneyMaps();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
@@ -176,6 +195,18 @@ export default function Journey() {
         <div style={{ backgroundColor: "white" }}>
           <div className={styles.content}>
             <div className={styles.journey}>
+
+              <MyCarousel
+                slides={slides.map((slide) => ({
+                  id: slide.id,
+                  title: slide.mapJourney,
+                  icon: slide.iconUrl ?? DEFAULT_ICON,
+                  isCurrent: slide.isCurrent,
+                  number: Number(slide.numberMap),
+                }))}
+                onSelected={(slide) => console.log(slide)}
+              />
+
               <div className={styles.heading}>
                 <div style={{ paddingRight: "16px" }}>
                   <img src={starIcon} alt="" className={styles.icon} />
@@ -216,19 +247,7 @@ export default function Journey() {
                   Explorar plantillas
                 </Button>
               </div>
-              <div className={styles.slider}>
-                <Slider {...settings}>
-                  {slides.map((sliderItem) => (
-                      <Card
-                        key={sliderItem.id}
-                        title={sliderItem.mapJourney}
-                        content={sliderItem.description}
-                        icon={importIcon(sliderItem.icon)}
-                      />
-                    )
-                  )}
-                </Slider>
-              </div>
+
               <div className={styles.templates}>
                 {cards.map((val, key) => {
                   return (

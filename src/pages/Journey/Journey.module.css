@@ -3,12 +3,13 @@
   height: 92vh;
   margin-top: 4rem;
   border-top-left-radius: 50px;
-  background-color: rgb(224, 219, 219);
+  background-color: rgb(231, 231, 231);
   overflow-y: scroll;
 }
 .journey {
   display: flex;
   flex-direction: column;
+  padding-top: 30px;
 }
 .heading {
   display: flex;
