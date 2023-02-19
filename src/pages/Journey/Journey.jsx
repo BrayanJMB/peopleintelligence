@@ -33,42 +33,6 @@ const theme = createTheme({
   },
 });
 
-const dataSlider = [
-  {
-    icon: TroubleshootIcon,
-  },
-  {
-    icon: TipsAndUpdatesIcon,
-  },
-  {
-    icon: TouchAppIcon,
-  },
-  {
-    icon: SettingsInputCompositeIcon,
-  },
-  {
-    icon: PsychologyIcon,
-  },
-  {
-    icon: MeetingRoomIcon,
-  },
-  {
-    icon: RecordVoiceOverIcon,
-  },
-  {
-    icon: RecordVoiceOverIcon,
-  },
-  {
-    icon: MeetingRoomIcon,
-  },
-  {
-    icon: SettingsInputCompositeIcon,
-  },
-  {
-    icon: TipsAndUpdatesIcon,
-  },
-];
-
 const encuestaCard = [
   {
     icon: encuesta,
@@ -136,7 +100,7 @@ const settings = {
 export default function Journey() {
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const [data, setData] = useState([]);
+  const [slides, setSlides] = useState([])
 
   const handleExplorar = () => {
     navigate("/journey/survey-template");
@@ -147,17 +111,62 @@ export default function Journey() {
   };
 
   useEffect(() => {
-    if (
-      userInfo?.role.findIndex((p) => p === "Journey") < 0 &&
-      userInfo?.role.findIndex((p) => p === "Administrador") < 0
-    ) {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+    /**
+     * Fetch journey map data and validate user role.
+     *
+     * @returns {Promise<void>}
+     */
+    const fetchJourneyMap = async () => {
+      const MESSAGE = 'No tiene permiso para acceder a esta funcionalidad.';
+
+      if (!userInfo) {
+        return navigate('/dashboard', {state: {message: MESSAGE}});
+      }
+
+      const { role } = userInfo;
+      const validRoles = ['Journey', 'Administrador'];
+
+      if (!role.some((roleItem => validRoles.includes(roleItem)))) {
+        alert('No tiene permiso para acceder a esta funcionalidad.');
+        navigate('/dashboard');
+
+        return;
+      }
+
+      // fetch slider data
+      const { data } = await getJourneyMapAPI();
+
+      setSlides(data);
+    };
+
+    fetchJourneyMap();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /**
+   * Import icon dynamically.
+   *
+   * @param {string} iconName
+   */
+  const importIcon = (iconName) => {
+    switch (iconName) {
+      case 'TroubleshootIcon':
+        return TroubleshootIcon;
+      case 'TipsAndUpdatesIcon':
+        return TipsAndUpdatesIcon;
+      case 'TouchAppIcon':
+        return TouchAppIcon;
+      case 'SettingsInputCompositeIcon':
+        return SettingsInputCompositeIcon;
+      case 'PsychologyIcon':
+        return PsychologyIcon;
+      case 'MeetingRoomIcon':
+        return MeetingRoomIcon;
+      case 'RecordVoiceOverIcon':
+        return RecordVoiceOverIcon;
+      default:
+        return MeetingRoomIcon;
     }
-    getJourneyMapAPI().then((res) => {
-      setData(res.data);
-    });
-  }, []);
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -209,16 +218,15 @@ export default function Journey() {
               </div>
               <div className={styles.slider}>
                 <Slider {...settings}>
-                  {data.map((val, key) => {
-                    return (
+                  {slides.map((sliderItem) => (
                       <Card
-                        key={key}
-                        title={val.mapJourney}
-                        content={val.description}
-                        icon={dataSlider[key].icon}
+                        key={sliderItem.id}
+                        title={sliderItem.mapJourney}
+                        content={sliderItem.description}
+                        icon={importIcon(sliderItem.icon)}
                       />
-                    );
-                  })}
+                    )
+                  )}
                 </Slider>
               </div>
               <div className={styles.templates}>
