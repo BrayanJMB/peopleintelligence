@@ -8,14 +8,6 @@ import starIcon from "../../assets/icons/star_icon.png";
 import MyCarousel from '../../components/MyCarousel/MyCarousel';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
-import PsychologyIcon from "@mui/icons-material/Psychology";
-import TouchAppIcon from "@mui/icons-material/TouchApp";
-import TroubleshootIcon from "@mui/icons-material/Troubleshoot";
-import TipsAndUpdatesIcon from "@mui/icons-material/TipsAndUpdates";
-import SettingsInputCompositeIcon from "@mui/icons-material/SettingsInputComposite";
-import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
-import Card from "../../components/CardSlider/CardSlider";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getJourneyMapAPI, getJourneysCompanyAPI } from "../../services/getJourneyMap.service";
@@ -24,6 +16,7 @@ import empleados from "../../assets/empleados.svg";
 import last from "../../assets/last.svg";
 import pulso from "../../assets/pulso.svg";
 import encuesta from "../../assets/icons/encuesta.png";
+import {isAdmin} from "../../utils/helpers";
 
 const theme = createTheme({
   palette: {
@@ -33,69 +26,12 @@ const theme = createTheme({
   },
 });
 
-const encuestaCard = [
-  {
-    icon: encuesta,
-    title: "fgfgfggfg",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-  },
-  { icon: encuesta, title: "fgfgfggfg", description: "dfgdfgdfdfg" },
-  { icon: encuesta, title: "fgfgfggfg", description: "dfgdfgdfdfg" },
-  { icon: encuesta, title: "fgfgfggfg", description: "dfgdfgdfdfg" },
+const DEFAULT_SURVEY_IMAGES = [
+  enps,
+  pulso,
+  empleados,
+  last,
 ];
-
-const cards = [
-  {
-    image: enps,
-    title: "Encuesta eNPS",
-    description:
-      "Conozca el puntaje neto de promotor de empleados de su organización a través de una encuesta rápida",
-  },
-  {
-    image: pulso,
-    title: "Encuesta de pulso de empleados",
-    description:
-      "Comprenda las palancas de compromiso en detalle e impulse mejoras en toda su organización.",
-  },
-  {
-    image: empleados,
-    title: "Encuesta del Día 7 de Incorporación de Empleados",
-    description:
-      "Obtenga comentarios sobre el proceso de incorporación de nuevos empleados después de que los empleados completen 7 días en la organización.",
-  },
-  {
-    image: last,
-    title: "Encuesta del día 30 de incorporación de empleados",
-    description:
-      "Dar seguimiento a la encuesta del día 7 para conocer la experiencia de los nuevos empleados luego de cumplir 30 días en la organización",
-  },
-];
-
-const settings = {
-  className: "center",
-  adaptiveHeight: true,
-  centerMode: true,
-  speed: 500,
-  slidesToShow: 2,
-  slidesToScroll: 1,
-  dots: true,
-  infinity: true,
-  responsive: [
-    {
-      breakpoint: 1100,
-      settings: {
-        className: "center",
-        adaptiveHeight: true,
-        centerMode: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        dots: true,
-      },
-    },
-  ],
-};
 
 export default function Journey() {
   const DEFAULT_ICON= 'https://peopleintelligenceapi.azurewebsites.net/StaticFiles/Images/JourneyImages/onboarding.svg';
@@ -112,6 +48,25 @@ export default function Journey() {
     navigate("/journeysettings");
   };
 
+  /**
+   * Get survey image or pick a random one from default images.
+   *
+   * @param image
+   * @returns {*}
+   */
+  const getSurveyImage = (image) => {
+    if (image) {
+      return image;
+    }
+
+    const randomIndex = Math.floor(Math.random() * DEFAULT_SURVEY_IMAGES.length);
+
+    return DEFAULT_SURVEY_IMAGES[randomIndex];
+  }
+
+  /**
+   * Component did mount.
+   */
   useEffect(() => {
     /**
      * Fetch journey map data and validate user role.
@@ -161,32 +116,6 @@ export default function Journey() {
     fetchJourneyMaps();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /**
-   * Import icon dynamically.
-   *
-   * @param {string} iconName
-   */
-  const importIcon = (iconName) => {
-    switch (iconName) {
-      case 'TroubleshootIcon':
-        return TroubleshootIcon;
-      case 'TipsAndUpdatesIcon':
-        return TipsAndUpdatesIcon;
-      case 'TouchAppIcon':
-        return TouchAppIcon;
-      case 'SettingsInputCompositeIcon':
-        return SettingsInputCompositeIcon;
-      case 'PsychologyIcon':
-        return PsychologyIcon;
-      case 'MeetingRoomIcon':
-        return MeetingRoomIcon;
-      case 'RecordVoiceOverIcon':
-        return RecordVoiceOverIcon;
-      default:
-        return MeetingRoomIcon;
-    }
-  }
-
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
@@ -220,21 +149,25 @@ export default function Journey() {
                       margin: 0,
                     }}
                   >
-                    Encuestas del ciclo de vida de los empleados
+                    Experiencia del empleado.
                   </h1>
                 </div>
-                <Button
-                  variant="contained"
-                  className={styles.explorar}
-                  style={{
-                    color: "white",
-                    marginRight: "1.5em",
-                  }}
-                  color="blue"
-                  onClick={handleSettings}
-                >
-                  Administra Encuestas
-                </Button>
+
+                {isAdmin(userInfo) && (
+                  <Button
+                    variant="contained"
+                    className={styles.explorar}
+                    style={{
+                      color: "white",
+                      marginRight: "1.5em",
+                    }}
+                    color="blue"
+                    onClick={handleSettings}
+                  >
+                    Administra Encuestas
+                  </Button>
+                )}
+
                 <Button
                   variant="contained"
                   className={styles.explorar}
@@ -249,11 +182,11 @@ export default function Journey() {
               </div>
 
               <div className={styles.templates}>
-                {cards.map((val, key) => {
+                {journeys.filter((journey) => !journey.ispersonal).map((journey) => {
                   return (
-                    <div key={key} className={styles.card}>
+                    <div key={journey.id} className={styles.card}>
                       <img
-                        src={val.image}
+                        src={getSurveyImage(journey.imageSurvey)}
                         alt=""
                         width="146"
                         height="81"
@@ -266,7 +199,7 @@ export default function Journey() {
                           fontWeight: "500",
                         }}
                       >
-                        {val.title}
+                        {journey.nameSurvey}
                       </p>
                       <p
                         style={{
@@ -275,7 +208,7 @@ export default function Journey() {
                           fontWeight: "300",
                         }}
                       >
-                        {val.description}
+                        {journey.descriptionSurvey}
                       </p>
                       <Button
                         variant="outlined"
@@ -285,15 +218,16 @@ export default function Journey() {
                           alignSelf: "flex-end",
                         }}
                         color="blue"
+                        onClick={() => navigate(`/journey/survey/${journey.id}`)}
                       >
                         Empezar
                       </Button>
                     </div>
                   );
                 })}
-                {encuestaCard.map((val, key) => {
+                {journeys.filter((journey) => journey.ispersonal).map((journey) => {
                   return (
-                    <div key={key} className={styles.encuestacard}>
+                    <div key={journey.id} className={styles.encuestacard} onClick={() => navigate(`/journey/survey/${journey.id}`)}>
                       <div
                         style={{
                           display: "flex",
@@ -311,7 +245,7 @@ export default function Journey() {
                           }}
                         >
                           <img
-                            src={val.icon}
+                            src={encuesta}
                             alt=""
                             style={{
                               width: "100%",
@@ -337,7 +271,7 @@ export default function Journey() {
                               fontWeight: "500",
                             }}
                           >
-                            {val.title}
+                            {journey.nameSurvey}
                           </p>
                           <div
                             style={{
@@ -354,13 +288,10 @@ export default function Journey() {
                                 wordBreak: "break-word",
                               }}
                             >
-                              {val.description}
+                              {journey.descriptionSurvey}
                             </p>
                           </div>
                         </div>
-                      </div>
-                      <div style={{ marginTop: "24px", alignItems: "center" }}>
-                        <div className={styles.red}>Sequia</div>
                       </div>
                     </div>
                   );
