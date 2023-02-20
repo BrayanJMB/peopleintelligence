@@ -49,7 +49,6 @@ const MyCarousel = ({ slides, onSelected }) => {
             </div>
             <span className={styles.MyCarousel__title}>
             {slide.title}
-              {slide.isCurrent ? 'selected' : ''}
           </span>
           </figure>
         ))}

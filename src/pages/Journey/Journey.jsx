@@ -1,3 +1,4 @@
+import Alert from '@mui/material/Alert';
 import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
 import Navbar from "../../Layout/Navbar/Navbar";
 import styles from "./Journey.module.css";
@@ -17,6 +18,8 @@ import last from "../../assets/last.svg";
 import pulso from "../../assets/pulso.svg";
 import encuesta from "../../assets/icons/encuesta.png";
 import {isAdmin} from "../../utils/helpers";
+import {useSelector} from "react-redux";
+import {selectCompanyById} from "../../features/companies/companiesSlice";
 
 const theme = createTheme({
   palette: {
@@ -37,6 +40,7 @@ export default function Journey() {
   const DEFAULT_ICON= 'https://peopleintelligenceapi.azurewebsites.net/StaticFiles/Images/JourneyImages/onboarding.svg';
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const currentCompany = useSelector((state) => selectCompanyById(state, userInfo.Company));
   const [slides, setSlides] = useState([]);
   const [journeys, setJourneys] = useState([]);
 
@@ -116,6 +120,10 @@ export default function Journey() {
     fetchJourneyMaps();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    // console.log('currentCompany', currentCompany)
+  }, [currentCompany]);
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
@@ -138,7 +146,7 @@ export default function Journey() {
 
               <div className={styles.heading}>
                 <div style={{ paddingRight: "16px" }}>
-                  <img src={starIcon} alt="" className={styles.icon} />
+                  <img src={currentCompany?.Logotipo ?? starIcon} alt="" className={styles.icon} />
                 </div>
                 <div style={{ paddingRight: "1em" }} className={styles.text}>
                   <h1
@@ -296,6 +304,9 @@ export default function Journey() {
                     </div>
                   );
                 })}
+                {journeys.length === 0 && (
+                  <Alert severity="info">No se encontraron encuestas.</Alert>
+                )}
               </div>
             </div>
           </div>

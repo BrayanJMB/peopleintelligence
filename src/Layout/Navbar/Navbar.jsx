@@ -17,6 +17,7 @@ import TextField from "@mui/material/TextField";
 import axios from "../../utils/axiosInstance";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../features/authSlice";
+import {companiesAdded} from "../../features/companies/companiesSlice";
 
 function stringToColor(string) {
   let hash = 0;
@@ -54,7 +55,7 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorEl2, setAnchorEl2] = useState(null);
-  const [drop, setDrop] = useState("");
+  const [drop, setDrop] = useState(null);
   const open = Boolean(anchorEl);
   const open2 = Boolean(anchorEl2);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -92,10 +93,13 @@ export default function Navbar() {
   };
   const companyConsume = async (id) => {
     try {
-      await axios.get("companias/MultiCompani/" + id).then((res) => {
+      await axios.get("companias/MultiCompani/" + id).then((response) => {
         let fetch = [];
         let id = [];
-        res.data.forEach((val) => {
+
+        dispatch(companiesAdded(response.data));
+
+        response.data.forEach((val) => {
           if (!fetch.includes(val.nombreCompania)) {
             fetch.push(val.nombreCompania);
             id.push(val);
@@ -176,11 +180,18 @@ export default function Navbar() {
                 clearOnEscape
                 value={drop}
                 onChange={(e, value) => handleSelect(value)}
-                getOptionLabel={(option) => option}
+                getOptionLabel={(option) => {
+                  //console.log(option, 'option')
+                  return option;
+                }}
                 noOptionsText={"No Options"}
                 renderInput={(params) => (
                   <TextField {...params} label="Compañias" />
                 )}
+                isOptionEqualToValue={(option, value) => {
+                  //console.log(option, value)
+                  return option === value;
+                }}
               />
             ) : null}
 
