@@ -1,8 +1,8 @@
 .MyCarousel {
     width: 400px;
-    height: 200px;
+    height: 250px;
     position: relative;
-    margin: 0 auto;
+    margin: 0 auto 30px;
     perspective: 1100px;
 }
 .MyCarousel__container {
@@ -11,12 +11,12 @@
     position: absolute;
     transform-style: preserve-3d;
     transition: transform 1s;
-    transform: translateZ(-380px);
+    transform: translateZ(-500px);
 }
 .MyCarousel__slide {
     display: block;
     position: absolute;
-    width: 140px;
+    width: 160px;
     height: 80%;
     left: 100px;
     top: 10px;
@@ -38,62 +38,62 @@
     background-color: #f5f5f5;
 }
 .MyCarousel__slide:nth-child(1) {
-    transform: rotateY(0deg) translateZ(380px);
+    transform: rotateY(0deg) translateZ(500px);
 }
 .MyCarousel__slide:nth-child(2) {
-    transform: rotateY(24deg) translateZ(380px);
+    transform: rotateY(24deg) translateZ(500px);
 }
 .MyCarousel__slide:nth-child(3) {
-    transform: rotateY(48deg) translateZ(380px);
+    transform: rotateY(48deg) translateZ(500px);
 }
 .MyCarousel__slide:nth-child(4) {
-    transform: rotateY(72deg) translateZ(380px);
+    transform: rotateY(72deg) translateZ(500px);
 }
 .MyCarousel__slide:nth-child(5) {
-    transform: rotateY(96deg) translateZ(380px);
+    transform: rotateY(96deg) translateZ(500px);
 }
 .MyCarousel__slide:nth-child(6) {
-    transform: rotateY(120deg) translateZ(380px);
+    transform: rotateY(120deg) translateZ(500px);
 }
 .MyCarousel__slide:nth-child(7) {
-    transform: rotateY(144deg) translateZ(380px);
+    transform: rotateY(144deg) translateZ(500px);
 }
 .MyCarousel__slide:nth-child(8) {
-    transform: rotateY(168deg) translateZ(380px);
+    transform: rotateY(168deg) translateZ(500px);
 }
 .MyCarousel__slide:nth-child(9) {
-    transform: rotateY(192deg) translateZ(380px);
+    transform: rotateY(192deg) translateZ(500px);
 }
 .MyCarousel__slide:nth-child(10) {
-    transform: rotateY(216deg) translateZ(380px);
+    transform: rotateY(216deg) translateZ(500px);
 }
 .MyCarousel__slide:nth-child(11) {
-    transform: rotateY(240deg) translateZ(380px);
+    transform: rotateY(240deg) translateZ(500px);
 }
 .MyCarousel__slide:nth-child(12) {
-    transform: rotateY(264deg) translateZ(380px);
+    transform: rotateY(264deg) translateZ(500px);
 }
 .MyCarousel__slide:nth-child(13) {
-    transform: rotateY(288deg) translateZ(380px);
+    transform: rotateY(288deg) translateZ(500px);
 }
 .MyCarousel__slide:nth-child(14) {
-    transform: rotateY(312deg) translateZ(380px);
+    transform: rotateY(312deg) translateZ(500px);
 }
 .MyCarousel__slide:nth-child(15) {
-    transform: rotateY(336deg) translateZ(380px);
+    transform: rotateY(336deg) translateZ(500px);
 }
 @keyframes rotateInY {
     0% {
-        transform: translateZ(-380px) rotateY(0deg);
+        transform: translateZ(-500px) rotateY(0deg);
     }
     100% {
-        transform: translateZ(-380px) rotateY(360deg);
+        transform: translateZ(-500px) rotateY(360deg);
     }
 }
 .MyCarousel__icon {
     width: 80px;
     height: 80px;
-    margin: 0 auto;
+    margin: 9px auto 0;
     border-radius: 50%;
     position: relative;
     background: rgb(186,186,186);
@@ -139,13 +139,13 @@
     font-size: 0.9rem;
     color: #2a2a2a;
     font-weight: 500;
-    margin-top: 9px;
+    margin-top: 15px;
     display: block;
 }
 .MyCarousel__prev {
     position: absolute !important;
-    top: 50%;
-    left: -180px;
+    bottom: -50px;
+    right: 50%;
     transform: translateY(-50%);
     width: 40px;
     height: 40px;
@@ -159,8 +159,8 @@
 }
 .MyCarousel__next {
     position: absolute !important;
-    top: 50%;
-    right: -180px;
+    bottom: -50px;
+    left: 50%;
     transform: translateY(-50%);
     width: 40px;
     height: 40px;

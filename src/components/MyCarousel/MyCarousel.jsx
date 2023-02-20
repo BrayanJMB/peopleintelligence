@@ -27,7 +27,7 @@ const MyCarousel = ({ slides, onSelected }) => {
   const handleClick = (event, direction) => {
     event.preventDefault();
 
-    const increment = direction === 'next' ? 1 : -1;
+    const increment = direction === 'next' ? -1 : 1;
     setTheta(theta + (360 / 15) * increment);
     setSlideInlineStyle({
       transform: `translateZ( -380px ) rotateY(${theta}deg)`,
