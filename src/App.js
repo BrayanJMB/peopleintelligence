@@ -22,6 +22,7 @@ import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import IdleTimer from "./utils/IdleTimer";
 import Questions from "./pages/Questions/Questions";
+import SurveyDetailPage from "./pages/SurveyDetailPage/SurveyDetailPage";
 
 export default function App() {
   useEffect(() => {
@@ -62,6 +63,7 @@ export default function App() {
               exact
             />
             <Route path="/journey" element={<Journey />} exact />
+            <Route path="/journey/survey/:id/detail" element={<SurveyDetailPage />} />
             <Route
               path="/journey/survey-template"
               element={<Template />}

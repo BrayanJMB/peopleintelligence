@@ -226,7 +226,7 @@ export default function Journey() {
                           alignSelf: "flex-end",
                         }}
                         color="blue"
-                        onClick={() => navigate(`/journey/survey/${journey.id}`)}
+                        onClick={() => navigate(`/journey/survey/${journey.id}/detail`)}
                       >
                         Empezar
                       </Button>
@@ -235,7 +235,7 @@ export default function Journey() {
                 })}
                 {journeys.filter((journey) => !journey.ispersonal).map((journey) => {
                   return (
-                    <div key={journey.id} className={styles.encuestacard} onClick={() => navigate(`/journey/survey/${journey.id}`)}>
+                    <div key={journey.id} className={styles.encuestacard} onClick={() => navigate(`/journey/survey/${journey.id}/detail`)}>
                       <div
                         style={{
                           display: "flex",
