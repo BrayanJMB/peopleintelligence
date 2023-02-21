@@ -17,7 +17,7 @@ import TextField from "@mui/material/TextField";
 import axios from "../../utils/axiosInstance";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../features/authSlice";
-import {companiesAdded} from "../../features/companies/companiesSlice";
+import { companiesAdded, currentCompanySelected } from '../../features/companies/companiesSlice';
 
 function stringToColor(string) {
   let hash = 0;
@@ -127,6 +127,7 @@ export default function Navbar() {
     let holder = JSON.parse(localStorage.getItem("userInfo"));
     localStorage.removeItem("userInfo");
     let company = search(value, data.ids.company);
+
     dispatch(
       setCredentials({
         user: holder.user,
@@ -135,6 +136,9 @@ export default function Navbar() {
         role: holder.role,
       })
     );
+    dispatch(currentCompanySelected(company));
+
+
     localStorage.setItem(
       "userInfo",
       JSON.stringify({
