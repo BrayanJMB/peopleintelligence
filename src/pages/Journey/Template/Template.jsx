@@ -215,11 +215,10 @@ export default function Template() {
                   }}
                 >
                   {data.map((val, key) => {
-                    let Icon = datatemplates[key].icon;
                     return (
-                      <div key={val.id} className={styles.template}>
+                      <div key={key} className={styles.template}>
                         <div className={styles.title}>
-                          <Icon /> {val.nameSurvey}
+                           {val.nameSurvey}
                         </div>
                         <div className={styles.description}>
                           {val.descriptionSurvey}

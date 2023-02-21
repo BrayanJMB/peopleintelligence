@@ -75,6 +75,10 @@ export default function Journey() {
    * @returns {Promise<void>}
    */
   const fetchJourneys = async () => {
+    if (!currentCompany || !currentMapId) {
+      return;
+    }
+
     // fetch journeys by map and company
     const { data } = await getJourneysCompanyAPI(currentCompany.id, currentMapId);
 
