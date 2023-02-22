@@ -1,0 +1,7 @@
+.MyCard {
+    background-color: white;
+    box-shadow: rgb(79 81 110 / 30%) 0 2px 4px;
+    border-radius: 8px;
+    padding: 0.9em;
+    margin-bottom: 1.5em;
+}

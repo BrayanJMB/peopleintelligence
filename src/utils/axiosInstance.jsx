@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "https://peopleintelligenceapi.azurewebsites.net/api/";
+export const API = "https://peopleintelligenceapi.azurewebsites.net/api/";
 
 const instance = axios.create({
   baseURL: API,

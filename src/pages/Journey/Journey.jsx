@@ -40,7 +40,8 @@ export default function Journey() {
   const DEFAULT_ICON= 'https://peopleintelligenceapi.azurewebsites.net/StaticFiles/Images/JourneyImages/onboarding.svg';
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const currentCompany = useSelector((state) => selectCompanyById(state, userInfo.Company));
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
+  const [currentMapId, setCurrentMapId] = useState(null);
   const [slides, setSlides] = useState([]);
   const [journeys, setJourneys] = useState([]);
 
@@ -66,6 +67,36 @@ export default function Journey() {
     const randomIndex = Math.floor(Math.random() * DEFAULT_SURVEY_IMAGES.length);
 
     return DEFAULT_SURVEY_IMAGES[randomIndex];
+  }
+
+  /**
+   * Fetch journeys by map and company.
+   *
+   * @returns {Promise<void>}
+   */
+  const fetchJourneys = async () => {
+    if (!currentCompany || !currentMapId) {
+      return;
+    }
+
+    // fetch journeys by map and company
+    const { data } = await getJourneysCompanyAPI(currentCompany.id, currentMapId);
+
+    // update current slide
+    setSlides((slides) => slides.map((slide) => ({
+      ...slide,
+      isCurrent: slide.id === currentMapId,
+    })));
+    setJourneys(data);
+  }
+
+  /**
+   * Handle click select map id.
+   *
+   * @param map
+   */
+  const handleSelectedMapId = ({ id }) => {
+    setCurrentMapId(id);
   }
 
   /**
@@ -112,17 +143,18 @@ export default function Journey() {
       const mapId = data[0].id;
 
       // fetch journeys by map and company
-      const { data: journeysData } = await getJourneysCompanyAPI(companyId, mapId);
 
-      setJourneys(journeysData);
+      setCurrentMapId(mapId);
+
+      await fetchJourneys();
     };
 
     fetchJourneyMaps();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    // console.log('currentCompany', currentCompany)
-  }, [currentCompany]);
+    fetchJourneys();
+  }, [currentCompany, currentMapId]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -141,7 +173,7 @@ export default function Journey() {
                   isCurrent: slide.isCurrent,
                   number: Number(slide.numberMap),
                 }))}
-                onSelected={(slide) => console.log(slide)}
+                onSelected={(slide) => handleSelectedMapId(slide)}
               />
 
               <div className={styles.heading}>
@@ -226,7 +258,7 @@ export default function Journey() {
                           alignSelf: "flex-end",
                         }}
                         color="blue"
-                        onClick={() => navigate(`/journey/survey/${journey.id}`)}
+                        onClick={() => navigate(`/journey/survey/${journey.id}/detail`)}
                       >
                         Empezar
                       </Button>
@@ -235,7 +267,7 @@ export default function Journey() {
                 })}
                 {journeys.filter((journey) => !journey.ispersonal).map((journey) => {
                   return (
-                    <div key={journey.id} className={styles.encuestacard} onClick={() => navigate(`/journey/survey/${journey.id}`)}>
+                    <div key={journey.id} className={styles.encuestacard} onClick={() => navigate(`/journey/survey/${journey.id}/detail`)}>
                       <div
                         style={{
                           display: "flex",
