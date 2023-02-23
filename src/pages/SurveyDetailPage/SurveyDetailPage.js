@@ -380,9 +380,6 @@ const SurveyDetailPage = () => {
                             >
                               {questionName}
                             </Typography>
-                            <Typography variant="body2" gutterBottom>
-                              subtitle1. Lorem ipsum dolor sit amet.
-                            </Typography>
                             {/* answers */}
                             <div className={styles.SurveyDetailPage__answers}>
                               <Grid container spacing={2}>

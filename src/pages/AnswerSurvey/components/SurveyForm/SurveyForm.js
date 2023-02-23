@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -16,11 +16,15 @@ import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import Deacuerdo from '../../../../assets/icons/deacuerdo.svg';
 import EnDesacuerdo from '../../../../assets/icons/en desacuerdo.svg';
 import NiDeacuerdoNiEnDesacuerdo from '../../../../assets/icons/ni deacuerdo ni en desacuerdo.svg';
 import TotalmenteDeAcuerdo from '../../../../assets/icons/totalmente de acuerdo.svg';
 import TotalmenteEnDesacuerdo from '../../../../assets/icons/totalmente en desacuerdo.svg';
+import axios from 'axios';
 
 const SurveyForm = ({ questions }) => {
   const [formValues, setFormValues] = useState(questions.map((question) => ({
@@ -28,6 +32,7 @@ const SurveyForm = ({ questions }) => {
     value: '',
     values: {},
   })));
+  const [apiOptions, setApiOptions] = useState({});
 
   /**
    * Returns true if the type of question is radio.
@@ -85,6 +90,21 @@ const SurveyForm = ({ questions }) => {
   const isText = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
       case 'texto':
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  /**
+   * Returns true if the type of question is select .
+   *
+   * @param typeQuestion
+   * @returns {boolean}
+   */
+  const isSelect = (typeQuestion) => {
+    switch (typeQuestion.toLowerCase()) {
+      case 'select':
         return true;
       default:
         return false;
@@ -161,6 +181,42 @@ const SurveyForm = ({ questions }) => {
         return '';
     }
   }
+
+  /**
+   * Get normal options or options from api.
+   *
+   * @param options
+   * @param questionId
+   * @returns {*}
+   */
+  const getOptions = (options, questionId) => {
+    if (apiOptions[questionId]) {
+      return apiOptions[questionId];
+    }
+
+    return options;
+  };
+
+  // component did mount
+  useEffect(() => {
+    const fetchApiOptions = async () => {
+      for (const question of questions) {
+        if (question.api && !question.api.match(/[{ }]/g)) {
+          const {data} = await axios.get(question.api);
+
+          setApiOptions((prevState) => ({
+            ...prevState,
+            [question.questionId]: data.map(({id, value}) => ({
+              numberOption: id,
+              optionName: value,
+            })),
+          }));
+        }
+      }
+    };
+
+    fetchApiOptions();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={styles.SurveyForm}>
@@ -323,6 +379,31 @@ const SurveyForm = ({ questions }) => {
               <Divider variant="middle" />
             </Fragment>
           )}
+          {isSelect(typeQuestion) && (
+            <FormControl fullWidth>
+              <InputLabel
+                id={`${questionId}-${typeQuestion}`}
+              >
+                {questionName}
+              </InputLabel>
+              <Select
+                labelId={`${questionId}-${typeQuestion}`}
+                id={`${questionId}-${typeQuestion}`}
+                value={formValues[index].value}
+                label={questionName}
+                onChange={(event) => handleRadioChange(event, index)}
+              >
+                {getOptions(options, questionId).map(({ numberOption, optionName }) => (
+                  <MenuItem
+                    key={numberOption}
+                    value={numberOption}
+                  >
+                    {optionName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
         </FormControl>)
       )}
     </div>
@@ -339,6 +420,7 @@ SurveyForm.propTypes = {
     questionName: PropTypes.string.isRequired,
     questionNumber: PropTypes.number.isRequired,
     typeQuestion: PropTypes.string.isRequired,
+    api: PropTypes.string,
   })),
 };
 
