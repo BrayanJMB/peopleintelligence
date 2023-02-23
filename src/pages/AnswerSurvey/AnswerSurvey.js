@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import styles from './AnswerSurvey.module.css';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchSurveyForAnswer,
   selectCurrentSurveyForAnswer,
-  selectSurveysStatus
+  selectSurveysStatus, storeSurvey
 } from '../../features/surveys/surveysSlice';
 import MyLoader from '../../components/MyLoader/MyLoader';
 import SurveyForm from './components/SurveyForm/SurveyForm';
@@ -29,13 +29,15 @@ import SuccessMessage from './components/SuccessMessage/SuccessMessage';
  */
 const AnswerSurvey = () => {
   const { surveyId, companyId } = useParams();
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [skipped, setSkipped] = React.useState(new Set());
-  const [steps, setSteps] = React.useState([
+  const [activeStep, setActiveStep] = useState(0);
+  const [skipped, setSkipped] = useState(new Set());
+  const [steps, setSteps] = useState([
     'Datos demográficos',
     'Encuesta',
     'Finalizar',
   ]);
+  const [stepsCompleted, setStepsCompleted] = useState([false, false, true]);
+  const [answers, setAnswers] = useState([{}, {}]);
   const surveyStatus = useSelector((state) => selectSurveysStatus(state));
   const currentSurvey = useSelector((state) => selectCurrentSurveyForAnswer(state));
   const dispatch = useDispatch();
@@ -100,6 +102,18 @@ const AnswerSurvey = () => {
       newSkipped.delete(activeStep);
     }
 
+    // store answers
+    if (steps.length - activeStep === 2) {
+      // demographic step
+      const payload = {
+        surveyId: Number.parseInt(surveyId),
+        demographics: answers.length > 1 ? answers[0] : [],
+        answers: answers.length > 1 ? answers[1] : answers[0],
+      };
+
+      dispatch(storeSurvey(payload));
+    }
+
     if ((activeStep + 1) === steps.length) {
       // redirect to home
       window.location.href = '/';
@@ -137,10 +151,39 @@ const AnswerSurvey = () => {
   };
 
   /**
-   * Handle reset.
+   * Handle change on answers.
+   *
+   * @param answers
+   * @param step
    */
-  const handleReset = () => {
-    setActiveStep(0);
+  const handleAnswered = (answers, step) => {
+    // store answers
+    setAnswers((prevAnswers) => {
+      const newAnswers = [...prevAnswers];
+
+      newAnswers[step] = answers;
+
+      return newAnswers;
+    });
+
+    setStepsCompleted((prevStepsCompleted) => {
+      const newStepsCompleted = [...prevStepsCompleted];
+
+      newStepsCompleted[step] = true;
+
+
+      // find empty answers and set them to false
+      answers.forEach(({ value }) => {
+        if (!value ) {
+          newStepsCompleted[step] = false;
+
+          // stop loop
+          return false;
+        }
+      });
+
+      return newStepsCompleted;
+    });
   };
 
   // watch surveyId and companyId changes
@@ -157,6 +200,8 @@ const AnswerSurvey = () => {
     // if demographic data is not required, remove the first step
     if (currentSurvey.demograficos.length === 0) {
       setSteps(steps.slice(1));
+      setStepsCompleted(stepsCompleted.slice(1));
+      setAnswers(answers.slice(1));
     }
   }, [currentSurvey]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -261,6 +306,7 @@ const AnswerSurvey = () => {
                               optionName: value,
                             }))
                           }))}
+                          onAnswered={(answers) => handleAnswered(answers, activeStep)}
                         />
                       </Fragment>
                     )}
@@ -269,6 +315,7 @@ const AnswerSurvey = () => {
                     {isSurveyStep() && (
                       <SurveyForm
                         questions={currentSurvey.response.preguntas}
+                        onAnswered={(answers) => handleAnswered(answers, activeStep)}
                       />
                     )}
                     {/* success message */}
@@ -280,7 +327,7 @@ const AnswerSurvey = () => {
                   <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                     <Button
                       color="inherit"
-                      disabled={activeStep === 0}
+                      disabled={activeStep === 0 || activeStep + 1 === steps.length}
                       onClick={handleBack}
                       sx={{ mr: 1 }}
                     >
@@ -293,7 +340,10 @@ const AnswerSurvey = () => {
                       </Button>
                     )}
 
-                    <Button onClick={handleNext}>
+                    <Button
+                      onClick={handleNext}
+                      disabled={!stepsCompleted[activeStep] || surveyStatus === 'loading'}
+                    >
                       {activeStep === steps.length - 1 ? 'Finalizar' : 'Siguiente'}
                     </Button>
                   </Box>
