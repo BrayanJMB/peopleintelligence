@@ -19,20 +19,33 @@ import Tooltip from '@mui/material/Tooltip';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import MobileStepper from '@mui/material/MobileStepper';
+import Button from '@mui/material/Button';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import axios from 'axios';
 import Deacuerdo from '../../../../assets/icons/deacuerdo.svg';
 import EnDesacuerdo from '../../../../assets/icons/en desacuerdo.svg';
 import NiDeacuerdoNiEnDesacuerdo from '../../../../assets/icons/ni deacuerdo ni en desacuerdo.svg';
 import TotalmenteDeAcuerdo from '../../../../assets/icons/totalmente de acuerdo.svg';
 import TotalmenteEnDesacuerdo from '../../../../assets/icons/totalmente en desacuerdo.svg';
-import axios from 'axios';
 
-const SurveyForm = ({ questions }) => {
+const SurveyForm = ({ questions, onAnswered }) => {
   const [formValues, setFormValues] = useState(questions.map((question) => ({
     id: question.questionId,
     value: '',
     values: {},
   })));
   const [apiOptions, setApiOptions] = useState({});
+  const [activeStep, setActiveStep] = React.useState(0);
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
 
   /**
    * Returns true if the type of question is radio.
@@ -167,11 +180,11 @@ const SurveyForm = ({ questions }) => {
    */
   const getLikertIcon = (value) => {
     switch (value.toLowerCase().replace(/\s\s+/g, ' ')) {
-      case 'deacuerdo':
+      case 'de acuerdo':
         return Deacuerdo;
       case 'en desacuerdo':
         return EnDesacuerdo;
-      case 'ni deacuerdo ni en desacuerdo':
+      case 'ni de acuerdo ni en desacuerdo':
         return NiDeacuerdoNiEnDesacuerdo;
       case 'totalmente de acuerdo':
         return TotalmenteDeAcuerdo;
@@ -223,6 +236,18 @@ const SurveyForm = ({ questions }) => {
     }
   };
 
+  /**
+   * Total of steps.
+   *
+   * @returns {number}
+   */
+  const totalOfSteps = () => {
+    // each step can have 5 questions
+    const totalOfQuestions = questions.length;
+
+    return Math.ceil(totalOfQuestions / 5);
+  }
+
   // component did mount
   useEffect(() => {
     const fetchApiOptions = async () => {
@@ -244,14 +269,44 @@ const SurveyForm = ({ questions }) => {
     fetchApiOptions();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+
+  // watch changes in form values
+  useEffect(() => {
+    onAnswered(formValues);
+  }, [formValues]);
+
   return (
     <div className={styles.SurveyForm}>
+      <MobileStepper
+        variant="text"
+        steps={totalOfSteps()}
+        position="static"
+        activeStep={activeStep}
+        sx={{
+          maxWidth : 400,
+          flexGrow: 1,
+          margin: '0 auto',
+        }}
+        nextButton={
+          <Button size="small" onClick={handleNext} disabled={(activeStep + 1) >= totalOfSteps()}>
+            Siguiente
+            {<KeyboardArrowRight />}
+          </Button>
+        }
+        backButton={
+          <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+            {<KeyboardArrowLeft />}
+            Atrás
+          </Button>
+        }
+      />
       {questions.map(({ questionId, typeQuestion, questionName, options, score, urlParam }, index) => (
         <FormControl
           key={questionId}
           style={{
             marginBottom: '1.1em',
             width: '100%',
+            display: (index + 1) >= ((activeStep + 1) * 5 - 5) && (index + 1) <= ((activeStep + 1) * 5) ? 'inherit' : 'none',
           }}
         >
           {isRadio(typeQuestion) && (
@@ -436,6 +491,29 @@ const SurveyForm = ({ questions }) => {
           )}
         </FormControl>)
       )}
+      <MobileStepper
+        variant="text"
+        steps={totalOfSteps()}
+        position="static"
+        activeStep={activeStep}
+        sx={{
+          maxWidth : 400,
+          flexGrow: 1,
+          margin: '0 auto',
+        }}
+        nextButton={
+          <Button size="small" onClick={handleNext} disabled={(activeStep + 1) >= totalOfSteps()}>
+            Siguiente
+            {<KeyboardArrowRight />}
+          </Button>
+        }
+        backButton={
+          <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+            {<KeyboardArrowLeft />}
+            Atrás
+          </Button>
+        }
+      />
     </div>
   );
 };
@@ -453,6 +531,7 @@ SurveyForm.propTypes = {
     api: PropTypes.string,
     urlParam: PropTypes.string,
   })),
+  onAnswered: PropTypes.func.isRequired,
 };
 
 SurveyForm.defaultProps = {

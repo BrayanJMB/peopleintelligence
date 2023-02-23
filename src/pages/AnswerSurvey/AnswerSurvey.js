@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import styles from './AnswerSurvey.module.css';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -29,13 +29,14 @@ import SuccessMessage from './components/SuccessMessage/SuccessMessage';
  */
 const AnswerSurvey = () => {
   const { surveyId, companyId } = useParams();
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [skipped, setSkipped] = React.useState(new Set());
-  const [steps, setSteps] = React.useState([
+  const [activeStep, setActiveStep] = useState(0);
+  const [skipped, setSkipped] = useState(new Set());
+  const [steps, setSteps] = useState([
     'Datos demográficos',
     'Encuesta',
     'Finalizar',
   ]);
+  const [stepsCompleted, setStepsCompleted] = useState([false, false, false]);
   const surveyStatus = useSelector((state) => selectSurveysStatus(state));
   const currentSurvey = useSelector((state) => selectCurrentSurveyForAnswer(state));
   const dispatch = useDispatch();
@@ -137,10 +138,30 @@ const AnswerSurvey = () => {
   };
 
   /**
-   * Handle reset.
+   * Handle change on answers.
+   *
+   * @param answers
+   * @param step
    */
-  const handleReset = () => {
-    setActiveStep(0);
+  const handleAnswered = (answers, step) => {
+    setStepsCompleted((prevStepsCompleted) => {
+      const newStepsCompleted = [...prevStepsCompleted];
+
+      newStepsCompleted[step] = true;
+
+
+      // find empty answers and set them to false
+      answers.forEach(({ value }) => {
+        if (!value ) {
+          newStepsCompleted[step] = false;
+
+          // stop loop
+          return false;
+        }
+      });
+
+      return newStepsCompleted;
+    });
   };
 
   // watch surveyId and companyId changes
@@ -157,6 +178,7 @@ const AnswerSurvey = () => {
     // if demographic data is not required, remove the first step
     if (currentSurvey.demograficos.length === 0) {
       setSteps(steps.slice(1));
+      setStepsCompleted(stepsCompleted.slice(1));
     }
   }, [currentSurvey]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -261,6 +283,7 @@ const AnswerSurvey = () => {
                               optionName: value,
                             }))
                           }))}
+                          onAnswered={(answers) => handleAnswered(answers, activeStep)}
                         />
                       </Fragment>
                     )}
@@ -269,6 +292,7 @@ const AnswerSurvey = () => {
                     {isSurveyStep() && (
                       <SurveyForm
                         questions={currentSurvey.response.preguntas}
+                        onAnswered={(answers) => handleAnswered(answers, activeStep)}
                       />
                     )}
                     {/* success message */}
@@ -293,7 +317,10 @@ const AnswerSurvey = () => {
                       </Button>
                     )}
 
-                    <Button onClick={handleNext}>
+                    <Button
+                      onClick={handleNext}
+                      disabled={!stepsCompleted[activeStep]}
+                    >
                       {activeStep === steps.length - 1 ? 'Finalizar' : 'Siguiente'}
                     </Button>
                   </Box>
