@@ -202,7 +202,6 @@ export default function Dashboard() {
                 <div className={styles.subtitle}>
                   Medición del ciclo de experiencia del colaborador
                 </div>
-                <div className={styles.sticker}>En Diseño</div>
               </div>
               <div
                 className={styles.project}
