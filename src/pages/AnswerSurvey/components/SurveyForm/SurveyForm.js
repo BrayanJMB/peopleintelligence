@@ -14,6 +14,13 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import Deacuerdo from '../../../../assets/icons/deacuerdo.svg';
+import EnDesacuerdo from '../../../../assets/icons/en desacuerdo.svg';
+import NiDeacuerdoNiEnDesacuerdo from '../../../../assets/icons/ni deacuerdo ni en desacuerdo.svg';
+import TotalmenteDeAcuerdo from '../../../../assets/icons/totalmente de acuerdo.svg';
+import TotalmenteEnDesacuerdo from '../../../../assets/icons/totalmente en desacuerdo.svg';
 
 const SurveyForm = ({ questions }) => {
   const [formValues, setFormValues] = useState(questions.map((question) => ({
@@ -25,12 +32,12 @@ const SurveyForm = ({ questions }) => {
   /**
    * Returns true if the type of question is radio.
    *
-   * @param typeQuestion
+   * @param {string} typeQuestion
    * @returns {boolean}
    */
   const isRadio = (typeQuestion) => {
-    switch (typeQuestion) {
-      case 'Escala Likkert':
+    switch (typeQuestion.toLowerCase()) {
+      case 'escala likkert':
         return true;
       default:
         return false;
@@ -40,14 +47,14 @@ const SurveyForm = ({ questions }) => {
   /**
    * Returns true if the type of question is checkbox.
    *
-   * @param typeQuestion
+   * @param {string} typeQuestion
    * @returns {boolean}
    */
   const isCheckbox = (typeQuestion) => {
-    switch (typeQuestion) {
-      case 'Opcion Multiple':
+    switch (typeQuestion.toLowerCase()) {
+      case 'opcion multiple':
         return true;
-      case 'Opcion Multiple con Imagenes':
+      case 'opcion multiple con imagenes':
         return true;
       default:
         return false;
@@ -57,17 +64,32 @@ const SurveyForm = ({ questions }) => {
   /**
    * Returns true if the type of question is range.
    *
-   * @param typeQuestion
+   * @param {string} typeQuestion
    * @returns {boolean}
    */
   const isRange = (typeQuestion) => {
-    switch (typeQuestion) {
-      case 'Calificaciones':
+    switch (typeQuestion.toLowerCase()) {
+      case 'calificaciones':
         return true;
       default:
         return false;
     }
   };
+
+  /**
+   * Returns true if the type of question is text.
+   *
+   * @param typeQuestion
+   * @returns {boolean}
+   */
+  const isText = (typeQuestion) => {
+    switch (typeQuestion.toLowerCase()) {
+      case 'texto':
+        return true;
+      default:
+        return false;
+    }
+  }
 
   /**
    * Handles the change of the radio button.
@@ -117,13 +139,36 @@ const SurveyForm = ({ questions }) => {
     });
   };
 
+  /**
+   * Get likert icon.
+   *
+   * @param value
+   * @returns {*|string}
+   */
+  const getLikertIcon = (value) => {
+    switch (value.toLowerCase().replace(/\s\s+/g, ' ')) {
+      case 'deacuerdo':
+        return Deacuerdo;
+      case 'en desacuerdo':
+        return EnDesacuerdo;
+      case 'ni deacuerdo ni en desacuerdo':
+        return NiDeacuerdoNiEnDesacuerdo;
+      case 'totalmente de acuerdo':
+        return TotalmenteDeAcuerdo;
+      case 'totalmente en desacuerdo':
+        return TotalmenteEnDesacuerdo;
+      default:
+        return '';
+    }
+  }
+
   return (
     <div className={styles.SurveyForm}>
       {questions.map(({ questionId, typeQuestion, questionName, options, score }, index) => (
         <FormControl
           key={questionId}
           style={{
-            marginBottom: '1em',
+            marginBottom: '1.1em',
             width: '100%',
           }}
         >
@@ -142,15 +187,36 @@ const SurveyForm = ({ questions }) => {
               <RadioGroup
                 name={`${questionId}-${typeQuestion}`}
                 onChange={(event) => handleRadioChange(event, index)}
+                row
+                style={{
+                  justifyContent: 'center',
+                  margin: '1.2em 0',
+                }}
               >
                 {options.map(({ numberOption, optionName }) => (
                   <FormControlLabel
                     key={numberOption}
                     value={optionName}
                     control={<Radio />}
-                    label={<Typography variant="body2" color="textSecondary">
-                      {optionName}
-                    </Typography>}
+                    labelPlacement="bottom"
+                    label={<Box
+                      sx={{
+                        textAlign: 'center',
+                      }}
+                    >
+                      {getLikertIcon(optionName) &&
+                        <Tooltip title={optionName}>
+                          <img
+                            src={getLikertIcon(optionName)}
+                            alt={optionName}
+                            style={{
+                              width: '3em',
+                              verticalAlign: 'middle',
+                            }}
+                          />
+                        </Tooltip>
+                      }
+                    </Box>}
                     style={{
                       fontSize: '0.5em !important',
                     }}
@@ -166,7 +232,7 @@ const SurveyForm = ({ questions }) => {
                 style={{
                   fontSize: '1.1',
                   fontWeight: 'bold',
-                  marginBottom: '0.8m',
+                  marginBottom: '1.1em',
                 }}
               >
                 {questionName}
@@ -206,13 +272,14 @@ const SurveyForm = ({ questions }) => {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0.5em 0',
+                margin: '1.1em 0',
                 overflow: 'auto',
               }}>
                 {[...Array(score).keys()].map((value) => (
-                  <Box>
+                  <Box
+                    key={value}
+                  >
                     <IconButton
-                      key={value}
                       color="primary"
                       component="label"
                       onClick={() => handleRangeChange(value + 1, index)}
@@ -228,8 +295,32 @@ const SurveyForm = ({ questions }) => {
                 gutterBottom
                 style={{ textAlign: 'center' }}
               >
-                {formValues[index].value} / {score}
+                {Number(formValues[index].value)} / {score}
               </Typography>
+              <Divider variant="middle" />
+            </Fragment>
+          )}
+          {isText(typeQuestion) && (
+            <Fragment>
+              <FormLabel
+                style={{
+                  fontSize: '1.1',
+                  fontWeight: 'bold',
+                  marginBottom: '1.1em',
+                }}
+              >
+                {questionName}
+              </FormLabel>
+              <TextField
+                id={`${questionId}-${typeQuestion}`}
+                name={`${questionId}-${typeQuestion}`}
+                multiline
+                rows={4}
+                variant="outlined"
+                fullWidth
+                onChange={(event) => handleRadioChange(event, index)}
+              />
+              <Divider variant="middle" />
             </Fragment>
           )}
         </FormControl>)
