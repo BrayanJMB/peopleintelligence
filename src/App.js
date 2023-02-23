@@ -23,12 +23,19 @@ import { store } from "./redux/store";
 import IdleTimer from "./utils/IdleTimer";
 import Questions from "./pages/Questions/Questions";
 import SurveyDetailPage from "./pages/SurveyDetailPage/SurveyDetailPage";
+import AnswerSurvey from './pages/AnswerSurvey/AnswerSurvey';
 
 export default function App() {
+
   useEffect(() => {
     const timer = new IdleTimer({
       timeout: 1200,
       onTimeout: () => {
+        // if current path has answer-survey then don't redirect
+        if (window.location.pathname.includes('answer-survey')) {
+          return;
+        }
+
         alert("Session Expired after 20 minutes on Inactivity");
         localStorage.removeItem("userInfo");
         window.location.replace(
@@ -45,6 +52,10 @@ export default function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route
+            path="/answer-survey/:surveyId/:companyId"
+            element={<AnswerSurvey />}
+          />
           <Route element={<PrivateRoutes />}>
             <Route path="/dashboard" element={<Dashboard />} exact />
             <Route path="/onas" element={<Onas />} exact />
