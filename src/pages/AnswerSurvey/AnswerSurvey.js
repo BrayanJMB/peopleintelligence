@@ -249,12 +249,13 @@ const AnswerSurvey = () => {
                     {isDemographicStep() && (
                       <Fragment>
                         <SurveyForm
-                          questions={currentSurvey.demograficos.map(({ id, name, type, urlApi, options }, index) => ({
+                          questions={currentSurvey.demograficos.map(({ id, name, type, urlApi, options, urlParam }, index) => ({
                             questionId: id,
                             questionName: name,
                             questionNumber: index + 1,
                             typeQuestion: type,
                             api: urlApi,
+                            urlParam,
                             options: options.map(({ id, value }) => ({
                               numberOption: id,
                               optionName: value,

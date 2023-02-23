@@ -197,12 +197,38 @@ const SurveyForm = ({ questions }) => {
     return options;
   };
 
+  /**
+   * Fetch api options by param id.
+   *
+   * @param paramName
+   * @param paramId
+   * @returns {Promise<void>}
+   */
+  const fetchApiOptionsByParamId = async (paramName, paramId) => {
+    for (const question of questions) {
+      const regex = new RegExp(`{${paramName}}`, 'g');
+
+      if (question.api && question.api.match(regex)) {
+        const url = question.api.replace(regex, paramId);
+        const { data } = await axios.get(url);
+
+        setApiOptions((prevState) => ({
+          ...prevState,
+          [question.questionId]: data.map(({id, value}) => ({
+            numberOption: id,
+            optionName: value,
+          })),
+        }));
+      }
+    }
+  };
+
   // component did mount
   useEffect(() => {
     const fetchApiOptions = async () => {
       for (const question of questions) {
         if (question.api && !question.api.match(/[{ }]/g)) {
-          const {data} = await axios.get(question.api);
+          const { data } = await axios.get(question.api);
 
           setApiOptions((prevState) => ({
             ...prevState,
@@ -220,7 +246,7 @@ const SurveyForm = ({ questions }) => {
 
   return (
     <div className={styles.SurveyForm}>
-      {questions.map(({ questionId, typeQuestion, questionName, options, score }, index) => (
+      {questions.map(({ questionId, typeQuestion, questionName, options, score, urlParam }, index) => (
         <FormControl
           key={questionId}
           style={{
@@ -391,7 +417,11 @@ const SurveyForm = ({ questions }) => {
                 id={`${questionId}-${typeQuestion}`}
                 value={formValues[index].value}
                 label={questionName}
-                onChange={(event) => handleRadioChange(event, index)}
+                onChange={(event) => {
+                  handleRadioChange(event, index, urlParam);
+                  fetchApiOptionsByParamId(urlParam, event.target.value);
+                }}
+                disabled={getOptions(options, questionId).length === 0}
               >
                 {getOptions(options, questionId).map(({ numberOption, optionName }) => (
                   <MenuItem
@@ -421,6 +451,7 @@ SurveyForm.propTypes = {
     questionNumber: PropTypes.number.isRequired,
     typeQuestion: PropTypes.string.isRequired,
     api: PropTypes.string,
+    urlParam: PropTypes.string,
   })),
 };
 
