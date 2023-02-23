@@ -13,3 +13,23 @@ export const isAdmin = (user) => {
 
   return user.role.some((role) => role === ADMIN_ROLE);
 };
+
+/**
+ * Chunk an array.
+ *
+ * @param arr
+ * @param chunkSize
+ * @returns {*}
+ */
+export const  chunkArray = (arr, chunkSize) => {
+  return arr.reduce((result, item, index) => {
+    const chunkIndex = Math.floor(index / chunkSize);
+
+    if (!result[chunkIndex]) {
+      result[chunkIndex] = [];
+    }
+    result[chunkIndex].push(item);
+
+    return result;
+  }, []);
+}

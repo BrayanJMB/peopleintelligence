@@ -192,7 +192,7 @@ const SurveyDetailPage = () => {
      * @returns {Promise<void>}
      */
     const fetchCurrentSurvey = async () => {
-      if (surveysStatus !== 'idle') {
+      if (surveysStatus === 'loading') {
         return;
       }
 
@@ -202,7 +202,7 @@ const SurveyDetailPage = () => {
     };
 
     fetchCurrentSurvey();
-  }, [surveysStatus, dispatch, surveyId]);
+  }, [dispatch, surveyId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // watch currentSurvey state
   useEffect(() => {
