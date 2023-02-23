@@ -26,6 +26,15 @@ export const fetchSurveyForAnswer = createAsyncThunk(
   }
 );
 
+export const storeSurvey = createAsyncThunk(
+  'surveys/storeSurvey',
+  async (survey) => {
+    const { data } = await client.post('answerSurvey', survey);
+
+    return data;
+  }
+);
+
 const surveysSlice = createSlice({
   name: 'surveys',
   initialState,
@@ -54,6 +63,19 @@ const surveysSlice = createSlice({
         state.currentSurveyForAnswer = action.payload;
       })
       .addCase(fetchSurveyForAnswer.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      });
+
+    builder
+      .addCase(storeSurvey.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(storeSurvey.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.currentSurvey = action.payload;
+      })
+      .addCase(storeSurvey.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
       });
