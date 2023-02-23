@@ -222,7 +222,7 @@ export default function Journey() {
               </div>
 
               <div className={styles.templates}>
-                {journeys.filter((journey) => journey.ispersonal).map((journey) => {
+                {journeys.filter((journey) => !journey.ispersonal).map((journey) => {
                   return (
                     <div key={journey.id} className={styles.card}>
                       <img
@@ -265,7 +265,7 @@ export default function Journey() {
                     </div>
                   );
                 })}
-                {journeys.filter((journey) => !journey.ispersonal).map((journey) => {
+                {journeys.filter((journey) => journey.ispersonal).map((journey) => {
                   return (
                     <div key={journey.id} className={styles.encuestacard} onClick={() => navigate(`/journey/survey/${journey.id}/detail`)}>
                       <div
