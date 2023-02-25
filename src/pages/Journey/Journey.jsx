@@ -154,7 +154,7 @@ export default function Journey() {
 
   useEffect(() => {
     fetchJourneys();
-  }, [currentCompany, currentMapId]);
+  }, [currentCompany, currentMapId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <ThemeProvider theme={theme}>
