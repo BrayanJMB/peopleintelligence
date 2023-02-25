@@ -23,6 +23,9 @@ import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import LinkIcon from '@mui/icons-material/Link';
 import DownloadIcon from '@mui/icons-material/Download';
 import Snackbar from '@mui/material/Snackbar';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import Navbar from '../../Layout/Navbar/Navbar';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import styles from './SurveyDetailPage.module.css';
@@ -35,14 +38,7 @@ import {
 } from '../../features/surveys/surveysSlice';
 import { useNavigate, useParams } from 'react-router-dom';
 import client, { API } from '../../utils/axiosInstance';
-
-const theme = createTheme({
-  palette: {
-    blue: {
-      main: "#03aae4",
-    },
-  },
-});
+import DemographicDataForm from './components/DemographicDataForm/DemographicDataForm';
 
 // survey options
 const options = [
@@ -103,6 +99,7 @@ const SurveyDetailPage = () => {
   const currentSurvey = useSelector((state) => selectCurrentSurvey(state));
   const [linkCopied, setLinkCopied] = useState(false);
   const [reminderSent, setReminderSent] = useState(false);
+  const [showDemographicData, setShowDemographicData] = useState(false);
 
   /**
    * Handle click menu for open survey options.
@@ -155,25 +152,6 @@ const SurveyDetailPage = () => {
   }
 
   /**
-   * Send reminder to users.
-   *
-   * @param event
-   */
-  const handleClickSendReminder = async (event) => {
-      event.preventDefault();
-
-      const companyId = userInfo.Company;
-      const url = `${API}rememberMail/${surveyId}/${companyId}`;
-
-      try {
-        await client.get(url);
-        setReminderSent(true);
-      } catch (error) {
-          alert('Error al enviar recordatorio. Intente nuevamente.');
-      }
-  };
-
-  /**
    * Handle click back page.
    *
    * @param event
@@ -182,6 +160,30 @@ const SurveyDetailPage = () => {
     event.preventDefault();
 
     navigate(-1);
+  };
+
+  /**
+   * Send reminder to users.
+   * 
+   * @param event 
+   */
+  const sendReminder = async (event) => {
+    event.preventDefault();
+    
+    const companyId = userInfo.Company;
+    const url = `${API}SendReminder/${surveyId}/${companyId}`;
+
+    await client.get(url);
+    await setReminderSent(true);
+  };
+
+  /**
+   * Handle change show demographic data.
+   *
+   * @param event
+   */
+  const handleChangeShowDemographicData = (event) => {
+    setShowDemographicData(event.target.checked);
   };
 
   // component did mount
@@ -214,203 +216,219 @@ const SurveyDetailPage = () => {
   }, [currentSurvey]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex" }}>
-        <Navbar />
-        <IconSidebar />
+    <Box sx={{ display: "flex" }}>
+      <Navbar />
+      <IconSidebar />
 
-        <div style={{ backgroundColor: "white" }}>
-          <div className={styles.SurveyDetailPage}>
-            <div className={styles.SurveyDetailPage__content}>
-              {currentSurvey !== null && surveysStatus === 'succeeded' && (
-                <Box sx={{ flexGrow: 1 }}>
-                  {/* header */}
-                  <Grid item xs={12}>
-                    <MyCard>
-                      <div className={styles.SurveyDetailPage__header}>
-                        <div className={styles.SurveyDetailPage__header__icon}>
-                          <IconButton
-                            onClick={handleClickBackPage}
-                            aria-label="Atrás"
-                          >
-                            <ArrowBackIcon />
-                          </IconButton>
-                        </div>
-                        <div className={styles.SurveyDetailPage__header__title}>
-                          <Typography variant="h4">
-                            {currentSurvey.response.surveyName}
-                          </Typography>
-                        </div>
+      <div style={{ backgroundColor: "white" }}>
+        <div className={styles.SurveyDetailPage}>
+          <div className={styles.SurveyDetailPage__content}>
+            {currentSurvey !== null && surveysStatus === 'succeeded' && (
+              <Box sx={{ flexGrow: 1 }}>
+                {/* header */}
+                <Grid item xs={12}>
+                  <MyCard>
+                    <div className={styles.SurveyDetailPage__header}>
+                      <div className={styles.SurveyDetailPage__header__icon}>
+                        <IconButton
+                          onClick={handleClickBackPage}
+                          aria-label="Atrás"
+                        >
+                          <ArrowBackIcon />
+                        </IconButton>
                       </div>
-                    </MyCard>
-                  </Grid>
-                  {/* survey options */}
-                  <Grid item xs={12}>
-                    <MyCard>
-                      {/* options */}
-                      <div className={styles.SurveyDetailPage__options}>
-                        <Typography variant="body1" gutterBottom>
+                      <div className={styles.SurveyDetailPage__header__title}>
+                        <Typography variant="h4">
                           {currentSurvey.response.surveyName}
                         </Typography>
-                        <div className={styles.SurveyDetailPage__options__button}>
-                          <IconButton
-                            aria-label="more"
-                            id="long-button"
-                            aria-controls={open ? 'long-menu' : undefined}
-                            aria-expanded={open ? 'true' : undefined}
-                            aria-haspopup="true"
-                            onClick={handleClickMenu}
-                          >
-                            <MoreVertIcon />
-                          </IconButton>
-                          <Menu
-                            id="long-menu"
-                            MenuListProps={{
-                              'aria-labelledby': 'long-button',
-                            }}
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={handleCloseMenu}
-                            PaperProps={{
-                              style: {
-                                maxHeight: 48 * 4.5,
-                                width: '20ch',
-                              },
-                            }}
-                          >
-                            {options.map(({ option, icon }) => (
-                              <MenuItem key={option} onClick={handleCloseMenu}>
-                                {icon}
-                                {option}
-                              </MenuItem>
-                            ))}
-                          </Menu>
-                        </div>
                       </div>
-                      {/* tags and/or counters */}
-                      <Stack spacing={1} alignItems="left">
-                        <Stack direction="row" spacing={1}>
-                          {chips.map(({ id, text, backgroundColor, color, icon, counter }) => (
-                            <Chip
-                              key={id}
-                              style={{
-                                backgroundColor: backgroundColor,
-                                color: color,
-                              }}
-                              icon={icon}
-                              label={`${typeof counter !== 'undefined' ? counter : ''} ${text}`}
-                            />
-                          ))}
-                        </Stack>
-                      </Stack>
-                      {/* change status and send invitations */}
-                      <div className={styles.SurveyDetailPage__sendInvitation}>
-                        <div className={styles.SurveyDetailPage__sendInvitation__buttons}>
-                          <Stack spacing={2} direction="row">
-                            <Button
-                              onClick={handleClickSendReminder}
-                              startIcon={<ScheduleSendIcon />}
-                              variant="text"
-                            >
-                              Enviar recordatorio
-                            </Button>
-                            <Snackbar
-                              open={reminderSent}
-                              autoHideDuration={3000}
-                              onClose={handleCloseSnackbar}
-                              message="Recordatorio enviado"
-                            />
-                            <Snackbar
-                              open={linkCopied}
-                              autoHideDuration={3000}
-                              onClose={handleCloseSnackbar}
-                              message="Enlace copiado"
-                            />
-                            <Button
-                              startIcon={<SendIcon />}
-                              variant="outlined"
-                            >
-                              Enviar invitación
-                            </Button>
-                          </Stack>
-                        </div>
-                      </div>
-                    </MyCard>
-                  </Grid>
-                  {/* resume */}
-                  <Grid item xs={12}>
-                    <MyCard>
-                      <div className={styles.SurveyDetailPage__resume}>
-                        <Typography variant="body1" gutterBottom>
-                          Resumen de respuesta
-                        </Typography>
-                        <div className={styles.SurveyDetailPage__resume__share}>
-                          <IconButton onClick={handleClickCopyUrl}>
-                            <LinkIcon />
-                          </IconButton>
-                          <IconButton onClick={handleClickDownload}>
-                            <DownloadIcon />
-                          </IconButton>
-                        </div>
-                      </div>
-                    </MyCard>
-                  </Grid>
-
-                  {/* questions */}
-                  <Grid item xs={12}>
-                    <MyCard>
-                      {currentSurvey.response.preguntas.map(({ questionId, questionNumber, questionName, options }) => (
-                        <div
-                          key={questionId}
-                          className={styles.SurveyDetailPage__question}
+                    </div>
+                  </MyCard>
+                </Grid>
+                {/* survey options */}
+                <Grid item xs={12}>
+                  <MyCard>
+                    {/* options */}
+                    <div className={styles.SurveyDetailPage__options}>
+                      <Typography variant="body1" gutterBottom>
+                        {currentSurvey.response.surveyName}
+                      </Typography>
+                      <div className={styles.SurveyDetailPage__options__button}>
+                        <IconButton
+                          aria-label="more"
+                          id="long-button"
+                          aria-controls={open ? 'long-menu' : undefined}
+                          aria-expanded={open ? 'true' : undefined}
+                          aria-haspopup="true"
+                          onClick={handleClickMenu}
                         >
+                          <MoreVertIcon />
+                        </IconButton>
+                        <Menu
+                          id="long-menu"
+                          MenuListProps={{
+                            'aria-labelledby': 'long-button',
+                          }}
+                          anchorEl={anchorEl}
+                          open={open}
+                          onClose={handleCloseMenu}
+                          PaperProps={{
+                            style: {
+                              maxHeight: 48 * 4.5,
+                              width: '20ch',
+                            },
+                          }}
+                        >
+                          {options.map(({ option, icon }) => (
+                            <MenuItem key={option} onClick={handleCloseMenu}>
+                              {icon}
+                              {option}
+                            </MenuItem>
+                          ))}
+                        </Menu>
+                      </div>
+                    </div>
+                    {/* tags and/or counters */}
+                    <Stack spacing={1} alignItems="left">
+                      <Stack direction="row" spacing={1}>
+                        {chips.map(({ id, text, backgroundColor, color, icon, counter }) => (
+                          <Chip
+                            key={id}
+                            style={{
+                              backgroundColor: backgroundColor,
+                              color: color,
+                            }}
+                            icon={icon}
+                            label={`${typeof counter !== 'undefined' ? counter : ''} ${text}`}
+                          />
+                        ))}
+                      </Stack>
+                    </Stack>
+                    {/* change status and send invitations */}
+                    <div className={styles.SurveyDetailPage__sendInvitation}>
+                      <div>
+                        <FormGroup>
+                          <FormControlLabel
+                            control={<Switch
+                              checked={showDemographicData}
+                              onChange={handleChangeShowDemographicData}
+                            />}
+                            label="Mostrar datos demográficos"
+                          />
+                        </FormGroup>
+                      </div>
+                      <div className={styles.SurveyDetailPage__sendInvitation__buttons}>
+                        <Stack spacing={2} direction="row">
+                          <Button
+                            onClick={sendReminder}
+                            startIcon={<ScheduleSendIcon />}
+                            variant="text"
+                          >
+                            Enviar recordatorio
+                          </Button>
+                          <Snackbar
+                            open={reminderSent}
+                            autoHideDuration={3000}
+                            onClose={handleCloseSnackbar}
+                            message="Recordatorio enviado"
+                          />
+                          <Snackbar
+                            open={linkCopied}
+                            autoHideDuration={3000}
+                            onClose={handleCloseSnackbar}
+                            message="Enlace copiado"
+                          />
+                          <Button
+                            startIcon={<SendIcon />}
+                            variant="outlined"
+                          >
+                            Enviar invitación
+                          </Button>
+                        </Stack>
+                      </div>
+                    </div>
+
+                    {/* demographic data form */}
+                    {showDemographicData === true && (
+                      <DemographicDataForm
+                        surveyId={Number(surveyId)}
+                      />
+                    )}
+                  </MyCard>
+                </Grid>
+                {/* resume */}
+                <Grid item xs={12}>
+                  <MyCard>
+                    <div className={styles.SurveyDetailPage__resume}>
+                      <Typography variant="body1" gutterBottom>
+                        Resumen de respuesta
+                      </Typography>
+                      <div className={styles.SurveyDetailPage__resume__share}>
+                        <IconButton onClick={handleClickCopyUrl}>
+                          <LinkIcon />
+                        </IconButton>
+                        <IconButton onClick={handleClickDownload}>
+                          <DownloadIcon />
+                        </IconButton>
+                      </div>
+                    </div>
+                  </MyCard>
+                </Grid>
+
+                {/* questions */}
+                <Grid item xs={12}>
+                  <MyCard>
+                    {currentSurvey.response.preguntas.map(({ questionId, questionNumber, questionName, options }) => (
+                      <div
+                        key={questionId}
+                        className={styles.SurveyDetailPage__question}
+                      >
+                        <Typography
+                          className={styles.SurveyDetailPage__question__number}
+                          variant="body1"
+                          style={{ fontWeight: 'bold' }}
+                          gutterBottom
+                        >
+                          R{questionNumber}.
+                        </Typography>
+                        <Box sx={{ width: 1 }}>
                           <Typography
-                            className={styles.SurveyDetailPage__question__number}
                             variant="body1"
                             style={{ fontWeight: 'bold' }}
                             gutterBottom
                           >
-                            R{questionNumber}.
+                            {questionName}
                           </Typography>
-                          <Box sx={{ width: 1 }}>
-                            <Typography
-                              variant="body1"
-                              style={{ fontWeight: 'bold' }}
-                              gutterBottom
-                            >
-                              {questionName}
-                            </Typography>
-                            {/* answers */}
-                            <div className={styles.SurveyDetailPage__answers}>
-                              <Grid container spacing={2}>
-                                {options.map(({ numberOption, optionName }) => (
-                                  <Grid
-                                    key={numberOption}
-                                    sm={6}
-                                    item
-                                  >
-                                    <Typography variant="body2" gutterBottom>
+                          {/* answers */}
+                          <div className={styles.SurveyDetailPage__answers}>
+                            <Grid container spacing={2}>
+                              {options.map(({ numberOption, optionName }) => (
+                                <Grid
+                                  key={numberOption}
+                                  sm={6}
+                                  item
+                                >
+                                  <Typography variant="body2" gutterBottom>
                                       <span className={styles.SurveyDetailPage__answers__answer}>
                                         {numberOption}
                                       </span>
-                                      {optionName}
-                                    </Typography>
-                                  </Grid>
-                                ))}
-                              </Grid>
-                            </div>
-                          </Box>
-                        </div>
-                      ))}
-                    </MyCard>
-                  </Grid>
-                </Box>
-              )}
-            </div>
+                                    {optionName}
+                                  </Typography>
+                                </Grid>
+                              ))}
+                            </Grid>
+                          </div>
+                        </Box>
+                      </div>
+                    ))}
+                  </MyCard>
+                </Grid>
+              </Box>
+            )}
           </div>
         </div>
-      </Box>
-    </ThemeProvider>
+      </div>
+    </Box>
   );
 };
 
