@@ -39,6 +39,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import client, { API } from '../../utils/axiosInstance';
 import DemographicDataForm from './components/DemographicDataForm/DemographicDataForm';
+import SendInvitationDialog from './components/SendInvitationDialog/SendInvitationDialog';
 
 // survey options
 const options = [
@@ -100,6 +101,21 @@ const SurveyDetailPage = () => {
   const [linkCopied, setLinkCopied] = useState(false);
   const [reminderSent, setReminderSent] = useState(false);
   const [showDemographicData, setShowDemographicData] = useState(false);
+  const [isSendInvitationDialogOpen, setIsSendInvitationDialogOpen] = useState(false);
+
+  /**
+   * Handle close send invitation dialog.
+   */
+  const handleCloseSendInvitationDialog = () => {
+    setIsSendInvitationDialogOpen(false);
+  };
+
+  /**
+   * Handle open send invitation dialog.
+   */
+  const handleOpenSendInvitationDialog = () => {
+    setIsSendInvitationDialogOpen(true);
+  };
 
   /**
    * Handle click menu for open survey options.
@@ -341,6 +357,7 @@ const SurveyDetailPage = () => {
                           <Button
                             startIcon={<SendIcon />}
                             variant="outlined"
+                            onClick={handleOpenSendInvitationDialog}
                           >
                             Enviar invitación
                           </Button>

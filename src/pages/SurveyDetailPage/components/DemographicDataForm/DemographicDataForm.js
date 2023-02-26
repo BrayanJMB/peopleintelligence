@@ -201,7 +201,7 @@ const DemographicDataForm = ({ surveyId }) => {
         flexGrow: 1,
         marginTop: 2,
       }}>
-        {isLoading === true && <MyLoader />}
+        {isLoading === true && demographicData === null && <MyLoader />}
 
         {demographicData !== null && (
           <Grid
