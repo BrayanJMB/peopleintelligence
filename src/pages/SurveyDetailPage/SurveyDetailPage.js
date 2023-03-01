@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Box from "@mui/material/Box";
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
@@ -18,7 +17,6 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import EmailIcon from '@mui/icons-material/Email';
 import ReplyIcon from '@mui/icons-material/Reply';
 import Button from '@mui/material/Button';
-import SendIcon from '@mui/icons-material/Send';
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import LinkIcon from '@mui/icons-material/Link';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -354,13 +352,9 @@ const SurveyDetailPage = () => {
                             onClose={handleCloseSnackbar}
                             message="Enlace copiado"
                           />
-                          <Button
-                            startIcon={<SendIcon />}
-                            variant="outlined"
-                            onClick={handleOpenSendInvitationDialog}
-                          >
-                            Enviar invitación
-                          </Button>
+
+                          {/* send invitation */}
+                          <SendInvitationDialog />
                         </Stack>
                       </div>
                     </div>

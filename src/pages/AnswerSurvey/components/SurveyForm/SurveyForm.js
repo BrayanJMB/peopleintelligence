@@ -288,7 +288,7 @@ const SurveyForm = ({ questions, onAnswered }) => {
   // watch changes in form values
   useEffect(() => {
     onAnswered(formValues);
-  }, [formValues]);
+  }, [formValues]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={styles.SurveyForm}>
