@@ -212,7 +212,9 @@ const SendInvitationDialog = () => {
       return;
     }
 
-    const groupsCopy = [...groups];
+    const groupsCopy = groups.map((item) => ({
+      ...item,
+    }));
 
     // remove options
     for (let i = 0; i < groupsCopy.length; i++) {
