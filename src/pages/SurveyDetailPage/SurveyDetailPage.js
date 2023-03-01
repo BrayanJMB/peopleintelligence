@@ -354,7 +354,10 @@ const SurveyDetailPage = () => {
                           />
 
                           {/* send invitation */}
-                          <SendInvitationDialog />
+                          <SendInvitationDialog
+                            isPersonal={currentSurvey.ispersonal}
+                            copyUrl={handleClickCopyUrl}
+                          />
                         </Stack>
                       </div>
                     </div>
@@ -375,9 +378,12 @@ const SurveyDetailPage = () => {
                         Resumen de respuesta
                       </Typography>
                       <div className={styles.SurveyDetailPage__resume__share}>
-                        <IconButton onClick={handleClickCopyUrl}>
-                          <LinkIcon />
-                        </IconButton>
+                        {currentSurvey.ispersonal === false && (
+                          <IconButton onClick={handleClickCopyUrl}>
+                            <LinkIcon />
+                          </IconButton>
+                        )}
+
                         <IconButton onClick={handleClickDownload}>
                           <DownloadIcon />
                         </IconButton>

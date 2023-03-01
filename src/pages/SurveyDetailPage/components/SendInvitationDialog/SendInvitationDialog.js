@@ -18,6 +18,8 @@ import client from '../../../../utils/axiosInstance';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { useSnackbar } from 'notistack';
+import LinkIcon from '@mui/icons-material/Link';
+import IconButton from '@mui/material/IconButton';
 
 const defaultMessage = `Hola @usuario, te invito a participar en la encuesta: @enlace`;
 
@@ -27,7 +29,7 @@ const defaultMessage = `Hola @usuario, te invito a participar en la encuesta: @e
  * @returns {JSX.Element}
  * @constructor
  */
-const SendInvitationDialog = () => {
+const SendInvitationDialog = ({ isPersonal, copyUrl }) => {
   const [open, setOpen] = useState(false);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const { id: surveyId } = useParams();
@@ -338,6 +340,18 @@ const SendInvitationDialog = () => {
             error={isValidMessage !== ''}
             onChange={handleMessageChange}
           />
+
+          {isPersonal === false && (
+            <Button
+              onClick={copyUrl}
+              startIcon={<LinkIcon />}
+              style={{
+                marginTop: '1.3em',
+              }}
+            >
+              Copiar enlace
+            </Button>
+          )}
         </DialogContent>
         <DialogActions>
           <Button
@@ -361,7 +375,10 @@ const SendInvitationDialog = () => {
   );
 };
 
-SendInvitationDialog.propTypes = {};
+SendInvitationDialog.propTypes = {
+  isPersonal: PropTypes.bool.isRequired,
+  copyUrl: PropTypes.func.isRequired,
+};
 
 SendInvitationDialog.defaultProps = {};
 
