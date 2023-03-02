@@ -46,7 +46,7 @@ export default function CreateSurvey() {
   const [target, setTarget] = useState("");
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
-  const [data, setData] = useState({ title: "", description: "", mapa: "" });
+  const [data, setData] = useState(null);
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
   const [type, setType] = useState("");
@@ -66,35 +66,23 @@ export default function CreateSurvey() {
   });
   const [question, setQuestion] = useState();
   const [anonyme, setAnonyme] = useState(true);
+  const [checkForm, setCheckForm] = useState(false);
+
+  /**
+   * Handle introduction change.
+   *
+   * @param updatedData
+   */
+  const handleIntroductionChange = (updatedData) => {
+    setData(updatedData);
+  }
 
   const handleContinuar = () => {
     if (activeStep === 0) {
-      let helperText = {};
-      let error = {};
-      let bad = false;
-      if (data.title.length < 5) {
-        helperText.title = "Se requiere un mínimo de 5 caracteres.";
-        error.title = true;
-        bad = true;
-      } else {
-        helperText.title = "";
-        error.title = false;
-      }
-      if (data.description.length < 5) {
-        helperText.description = "Se requiere un mínimo de 5 caracteres.";
-        error.description = true;
-        bad = true;
-      } else {
-        helperText.description = "";
-        error.description = false;
-      }
-      if (bad) {
-        setErrorMessage(error);
-        setHelperText(helperText);
-      } else {
-        setErrorMessage({});
-        setHelperText({});
-        setActiveStep(1);
+      setCheckForm(true);
+
+      if (data.isValid) {
+        setActiveStep((val) => val + 1);
       }
     } else if (activeStep === 1) {
       setActiveStep((val) => val + 1);
@@ -213,11 +201,9 @@ export default function CreateSurvey() {
       case 0:
         return (
           <Introduction
-            data={data}
-            handleChange={handlechange}
-            handleSelect={handleSelect}
-            errorMessage={errorMessage}
-            helperText={helperText}
+            onUpdated={handleIntroductionChange}
+            checkForm={checkForm}
+            previousData={data}
           />
         );
       case 1:

@@ -173,11 +173,11 @@ const AnswerSurvey = () => {
 
 
       // find empty answers and set them to false
-      answers.forEach(({ value }) => {
-        if (!value ) {
+      answers.forEach(({ value, values }) => {
+        // if values is an empty object and value is empty then return false
+        if (Object.keys(values).length === 0 && !value) {
           newStepsCompleted[step] = false;
 
-          // stop loop
           return false;
         }
       });

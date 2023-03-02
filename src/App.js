@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { SnackbarProvider } from 'notistack';
 import Home from "./pages/Home/Home";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Onas from "./pages/Onas/Onas";
@@ -25,8 +27,16 @@ import Questions from "./pages/Questions/Questions";
 import SurveyDetailPage from "./pages/SurveyDetailPage/SurveyDetailPage";
 import AnswerSurvey from './pages/AnswerSurvey/AnswerSurvey';
 
-export default function App() {
+// custom theme
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#03aae4',
+    },
+  },
+});
 
+export default function App() {
   useEffect(() => {
     const timer = new IdleTimer({
       timeout: 1200,
@@ -49,53 +59,57 @@ export default function App() {
   }, []);
   return (
     <Provider store={store}>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route
-            path="/answer-survey/:surveyId/:companyId"
-            element={<AnswerSurvey />}
-          />
-          <Route element={<PrivateRoutes />}>
-            <Route path="/dashboard" element={<Dashboard />} exact />
-            <Route path="/onas" element={<Onas />} exact />
-            <Route path="/onas/:company/:version" element={<Onas />} exact />
-            <Route path="/onas/ver-encuestas" element={<OnasTable />} exact />
-            <Route path="/onas/details" element={<OnasDetails />} exact />
-            <Route path="/rolescompany" element={<Roles />} exact />
-            <Route path="/powerbi" element={<PowerBiDashboard />} exact />
-            <Route path="/powerbi/:idDashboard" element={<PowerBI />} exact />
-            <Route path="/register/:type" element={<Register />} exact />
-            <Route path="/infoadmin/:type" element={<InfoAdmin />} exact />
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider maxSnack={3}>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route
+                path="/answer-survey/:surveyId/:companyId"
+                element={<AnswerSurvey />}
+              />
+              <Route element={<PrivateRoutes />}>
+                <Route path="/dashboard" element={<Dashboard />} exact />
+                <Route path="/onas" element={<Onas />} exact />
+                <Route path="/onas/:company/:version" element={<Onas />} exact />
+                <Route path="/onas/ver-encuestas" element={<OnasTable />} exact />
+                <Route path="/onas/details" element={<OnasDetails />} exact />
+                <Route path="/rolescompany" element={<Roles />} exact />
+                <Route path="/powerbi" element={<PowerBiDashboard />} exact />
+                <Route path="/powerbi/:idDashboard" element={<PowerBI />} exact />
+                <Route path="/register/:type" element={<Register />} exact />
+                <Route path="/infoadmin/:type" element={<InfoAdmin />} exact />
 
-            <Route
-              path="/conversation/:type"
-              element={<Conversation />}
-              exact
-            />
-            <Route path="/journey" element={<Journey />} exact />
-            <Route path="/journey/survey/:id/detail" element={<SurveyDetailPage />} />
-            <Route
-              path="/journey/survey-template"
-              element={<Template />}
-              exact
-            />
-            <Route
-              path="/journeysettings"
-              element={<JourneySettings />}
-              exact
-            />
-            <Route
-              path="/journey/create-survey"
-              element={<CreateSurvey />}
-              exact
-            />
-          </Route>
-          <Route path="/questions" element={<Questions />} exact />
-          <Route path="/noaccess" element={<NoAccess />} />
-          <Route path="*" element={<Error />} />
-        </Routes>
-      </Router>
+                <Route
+                  path="/conversation/:type"
+                  element={<Conversation />}
+                  exact
+                />
+                <Route path="/journey" element={<Journey />} exact />
+                <Route path="/journey/survey/:id/detail" element={<SurveyDetailPage />} />
+                <Route
+                  path="/journey/survey-template"
+                  element={<Template />}
+                  exact
+                />
+                <Route
+                  path="/journeysettings"
+                  element={<JourneySettings />}
+                  exact
+                />
+                <Route
+                  path="/journey/create-survey"
+                  element={<CreateSurvey />}
+                  exact
+                />
+              </Route>
+              <Route path="/questions" element={<Questions />} exact />
+              <Route path="/noaccess" element={<NoAccess />} />
+              <Route path="*" element={<Error />} />
+            </Routes>
+          </Router>
+        </SnackbarProvider>
+      </ThemeProvider>
     </Provider>
   );
 }

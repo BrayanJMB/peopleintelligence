@@ -37,7 +37,7 @@ const SurveyForm = ({ questions, onAnswered }) => {
     values: {},
   })));
   const [apiOptions, setApiOptions] = useState({});
-  const [activeStep, setActiveStep] = React.useState(0);
+  const [activeStep, setActiveStep] = useState(0);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -53,7 +53,7 @@ const SurveyForm = ({ questions, onAnswered }) => {
    * @param {string} typeQuestion
    * @returns {boolean}
    */
-  const isRadio = (typeQuestion) => {
+  const isRadioFace = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
       case 'escala likkert':
         return true;
@@ -61,6 +61,21 @@ const SurveyForm = ({ questions, onAnswered }) => {
         return false;
     }
   };
+
+  /**
+   * Returns true if the type of question is radio.
+   *
+   * @param typeQuestion
+   * @returns {boolean}
+   */
+  const isRadio = (typeQuestion) => {
+    switch (typeQuestion.toLowerCase()) {
+      case 'seleccion':
+        return true;
+      default:
+        return false;
+    }
+  }
 
   /**
    * Returns true if the type of question is checkbox.
@@ -273,7 +288,7 @@ const SurveyForm = ({ questions, onAnswered }) => {
   // watch changes in form values
   useEffect(() => {
     onAnswered(formValues);
-  }, [formValues]);
+  }, [formValues]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={styles.SurveyForm}>
@@ -310,6 +325,45 @@ const SurveyForm = ({ questions, onAnswered }) => {
           }}
         >
           {isRadio(typeQuestion) && (
+            <Fragment>
+              <FormLabel
+                id={`${questionId}-${typeQuestion}`}
+                style={{
+                  fontSize: '1.1',
+                  fontWeight: 'bold',
+                  marginBottom: '0.8m',
+                }}
+              >
+                {questionName}
+              </FormLabel>
+              <RadioGroup
+                name={`${questionId}-${typeQuestion}`}
+                onChange={(event) => handleRadioChange(event, index)}
+                row
+                style={{
+                  margin: '1.2em 0',
+                }}
+              >
+                {options.map(({ numberOption, optionName }) => (
+                  <FormControlLabel
+                    key={numberOption}
+                    value={optionName}
+                    control={<Radio/>}
+                    label={<Box
+                    >
+                      {optionName}
+                    </Box>}
+                    style={{
+                      fontSize: '0.5em !important',
+                      width: '100%',
+                    }}
+                  />
+                ))}
+              </RadioGroup>
+              <Divider variant="middle" />
+            </Fragment>
+          )}
+          {isRadioFace(typeQuestion) && (
             <Fragment>
               <FormLabel
                 id={`${questionId}-${typeQuestion}`}
