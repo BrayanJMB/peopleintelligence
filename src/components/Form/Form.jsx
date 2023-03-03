@@ -4,12 +4,13 @@ import TextareaAutosize from "@mui/material/TextareaAutosize";
 import Button from "@mui/material/Button";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
+// likert options
 const options = [
-  "Muy en desacuerdo",
-  "Discrepar",
-  "Neutral",
-  "Estar de acuerdo",
-  "Totalmente de acuerdo",
+  'Discrepar',
+  'Estar de acuerdo',
+  'Muy en desacuerdo',
+  'Neutral',
+  'Totalmente de acuerdo',
 ];
 
 export default function Form(props) {
@@ -24,8 +25,8 @@ export default function Form(props) {
                 <TextField
                   id="outlined-name"
                   variant="standard"
-                  label="Anadir prequnta"
-                  placeholder="Anadir prequnta aqui..."
+                  label="Añadir prequnta"
+                  placeholder="Añadir prequnta aquí..."
                   value={props.information.name}
                   name="name"
                   onChange={props.handleInformation}
@@ -39,8 +40,8 @@ export default function Form(props) {
             <div className={styles.input}>
               <TextField
                 id="outlined-name"
-                label="Anadir description"
-                placeholder="Anadir description aqui (opcional)..."
+                label="Añadir descripción"
+                placeholder="Añadir descripción aquí (opcional)..."
                 InputProps={{
                   inputComponent: TextareaAutosize,
                   inputProps: {
@@ -69,8 +70,8 @@ export default function Form(props) {
                 <TextField
                   id="outlined-name"
                   variant="standard"
-                  label="Anadir prequnta"
-                  placeholder="Anadir prequnta aqui..."
+                  label="Añadir prequnta"
+                  placeholder="Añadir prequnta aquí..."
                   value={props.information.name}
                   name="name"
                   onChange={props.handleInformation}
@@ -84,8 +85,8 @@ export default function Form(props) {
             <div className={styles.input}>
               <TextField
                 id="outlined-name"
-                label="Anadir description"
-                placeholder="Anadir description aqui (opcional)..."
+                label="Añadir descripción"
+                placeholder="Añadir descripción aquí (opcional)..."
                 InputProps={{
                   inputComponent: TextareaAutosize,
                   inputProps: {
@@ -127,7 +128,7 @@ export default function Form(props) {
             </div>
           </div>
         );
-      case "Opcion multipe":
+      case 'Opción múltiple':
         return (
           <div className={styles.top}>
             <div className={styles.question}>
@@ -136,8 +137,8 @@ export default function Form(props) {
                 <TextField
                   id="outlined-name"
                   variant="standard"
-                  label="Anadir prequnta"
-                  placeholder="Anadir prequnta aqui..."
+                  label="Añadir prequnta"
+                  placeholder="Añadir prequnta aquí..."
                   value={props.information.name}
                   name="name"
                   onChange={props.handleInformation}
@@ -151,8 +152,8 @@ export default function Form(props) {
             <div className={styles.input}>
               <TextField
                 id="outlined-name"
-                label="Anadir description"
-                placeholder="Anadir description aqui (opcional)..."
+                label="Añadir descripción"
+                placeholder="Añadir descripción aquí (opcional)..."
                 InputProps={{
                   inputComponent: TextareaAutosize,
                   inputProps: {
@@ -215,6 +216,100 @@ export default function Form(props) {
             </div>
           </div>
         );
+        case 'Opción única':
+          return (
+            <div className={styles.top}>
+              <div className={styles.question}>
+                <div className={styles.number}>Q1.</div>
+                <div className={styles.input}>
+                  <TextField
+                    id="unique-option"
+                    variant="standard"
+                    label="Añadir prequnta"
+                    placeholder="Añadir prequnta aquí..."
+                    value={props.information.name}
+                    name="name"
+                    onChange={props.handleInformation}
+                    error={props.errorMessage.name}
+                    helperText={props.helperText.name}
+                    fullWidth
+                    size="small"
+                  />
+                </div>
+              </div>
+              <div className={styles.input}>
+                <TextField
+                  id="unique-option=description"
+                  label="Añadir descripción"
+                  placeholder="Añadir descripción aquí (opcional)..."
+                  InputProps={{
+                    inputComponent: TextareaAutosize,
+                    inputProps: {
+                      style: {
+                        height: "80px",
+                      },
+                    },
+                  }}
+                  value={props.information.description}
+                  style={{
+                    width: "100%",
+                    marginTop: "0.5rem",
+                  }}
+                  name="description"
+                  onChange={props.handleInformation}
+                />
+              </div>
+              <div className={styles.options}>
+                {props.information.customOptions.map((val, key) => {
+                  return (
+                    <div
+                      className={styles.option}
+                      key={key}
+                    >
+                      <div
+                        style={{
+                          padding: "3px 9px",
+                          backgroundColor: "#F0F2F5",
+                          borderRadius: "4px",
+                          textAlign: "center",
+                          marginRight: "15px",
+                          fontSize: "14px",
+                          color: "rgb(134, 140, 204)",
+                        }}
+                      >
+                        {key + 1}
+                      </div>
+                      <TextField
+                        id={`unique-option-${key}`}
+                        variant="standard"
+                        placeholder="Añadir opción..."
+                        value={props.information.customOptions[key]}
+                        onChange={props.handleinformationoptions(key)}
+                        InputProps={{
+                          disableUnderline: true,
+                        }}
+                        fullWidth
+                        size="small"
+                      />
+                    </div>
+                  );
+                })}
+                {props.information.customOptions.length < 10 ? (
+                  <Button
+                    variant="text"
+                    startIcon={<AddCircleOutlineIcon />}
+                    onClick={props.handleaddoption}
+                    style={{
+                      backgroundColor: '#F7F7F7',
+                      width: '255px',
+                  }}
+                  >
+                    Añadir opción
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+          );
       case "Calificaciones":
         return (
           <div className={styles.top}>
@@ -224,8 +319,8 @@ export default function Form(props) {
                 <TextField
                   id="outlined-name"
                   variant="standard"
-                  label="Anadir prequnta"
-                  placeholder="Anadir prequnta aqui..."
+                  label="Añadir prequnta"
+                  placeholder="Añadir prequnta aquí..."
                   value={props.information.name}
                   name="name"
                   onChange={props.handleInformation}
@@ -239,8 +334,8 @@ export default function Form(props) {
             <div className={styles.input}>
               <TextField
                 id="outlined-name"
-                label="Anadir description"
-                placeholder="Anadir description aqui (opcional)..."
+                label="Añadir descripción"
+                placeholder="Añadir descripción aquí (opcional)..."
                 InputProps={{
                   inputComponent: TextareaAutosize,
                   inputProps: {
