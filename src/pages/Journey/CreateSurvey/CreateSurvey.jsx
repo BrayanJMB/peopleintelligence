@@ -29,13 +29,17 @@ const theme = createTheme({
     },
   },
 });
-const steps = ["Introduccion", "Cuestionario", "Intimidad"];
-const types = [
-  "Texto corto",
-  "Escala Likert",
-  "Opcion multipe",
-  "Opcion multipe con imagenes",
-  "Calificaciones",
+const steps = [
+  'Introducción',
+  'Cuestionario',
+  'Privacidad',
+];
+const questionTypes = [
+  'Texto corto',
+  'Escala Likert',
+  'Opción múltiple',
+  'Opción única',
+  'Calificaciones',
 ];
 
 export default function CreateSurvey() {
@@ -83,6 +87,7 @@ export default function CreateSurvey() {
 
       if (data.isValid) {
         setActiveStep((val) => val + 1);
+        setCheckForm(false);
       }
     } else if (activeStep === 1) {
       setActiveStep((val) => val + 1);
@@ -178,11 +183,18 @@ export default function CreateSurvey() {
   const handleAdd = () => {
     setOpen(true);
   };
+
+  /**
+   * Handle edit question.
+   * 
+   * @param index
+   */
   const handleEdit = (index) => {
     setTarget(index);
     setQuestion(questions[index]);
     setEdit(true);
   };
+
   const handleActualizar = () => {
     let holder = questions.map((val, index) => {
       if (index === target) {
@@ -285,9 +297,16 @@ export default function CreateSurvey() {
             description: information.description,
             options: information.options,
           });
-        } else if (type === "Opcion multipe") {
+        } else if (type === 'Opción múltiple') {
           handleAddQuestion({
-            type: "Opcion multipe",
+            type: 'Opción múltiple',
+            name: information.name,
+            description: information.description,
+            customOptions: information.customOptions,
+          });
+        } else if (type === 'Opción única') {
+          handleAddQuestion({
+            type: 'Opción única',
             name: information.name,
             description: information.description,
             customOptions: information.customOptions,
@@ -368,7 +387,7 @@ export default function CreateSurvey() {
                   <Autocomplete
                     id="combo-box-demo"
                     style={{ flexBasis: "40%" }}
-                    options={types}
+                    options={questionTypes}
                     value={type}
                     onChange={(e, value) => {
                       handleAutocomplete(value);
@@ -432,11 +451,12 @@ export default function CreateSurvey() {
                   handleInformation={handleQuestion}
                   errorMessage={errorMessage}
                   helperText={helperText}
-                  handleinformationoptions={handleeditoption}
-                  handleaddoption={handleeditaddoption}
-                  handleaddstars={handleeditstars}
-                  handledeletestars={handleeditdeletestars}
-                  starmsg={starmsg}
+                  handleInformationOptions={handleeditoption}
+                  handleAddOption={handleeditaddoption}
+                  handleAddStars={handleeditstars}
+                  handleDeleteStars={handleeditdeletestars}
+                  starMessage={starmsg}
+                  questionNumber={Number(target + 1)}
                 />
               </div>
             </div>
