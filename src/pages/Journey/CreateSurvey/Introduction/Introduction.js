@@ -77,10 +77,11 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
    * @returns {boolean}
    */
   const validate = () => {
-    setIsValidMap('')
-    setIsValidTitle('')
-    setIsValidDescription('')
-    setIsValidMailingMessage('')
+    setIsValidMap('');
+    setIsValidTitle('');
+    setIsValidDescription('');
+    setIsValidMailingMessage('');
+    setIsValid(true);
 
     // check null for map
     if (map === null) {
@@ -120,8 +121,6 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
       setIsValidMailingMessage('Este campo debe tener al menos 5 caracteres');
       setIsValid(false);
     }
-
-    setIsValid(true);
   }
 
   // component did mount
