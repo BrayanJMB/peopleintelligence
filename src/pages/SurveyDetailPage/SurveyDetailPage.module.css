@@ -9,21 +9,6 @@
 .SurveyDetailPage__content {
     margin: 2em 4em;
 }
-.SurveyDetailPage__header {
-    display: flex;
-    align-items: center;
-}
-.SurveyDetailPage__header__icon {
-    width: 48px;
-    height: 48px;
-    object-fit: cover;
-}
-.SurveyDetailPage__header__title {
-    flex: 1 1 0;
-    font-size: 1.5em;
-    font-weight: 600;
-    margin-left: 1em;
-}
 .SurveyDetailPage__options {
     display: flex;
     align-items: center;

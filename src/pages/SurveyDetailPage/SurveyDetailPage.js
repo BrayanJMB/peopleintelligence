@@ -5,7 +5,6 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Typography from '@mui/material/Typography';
 import EditIcon from '@mui/icons-material/Edit';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -34,10 +33,11 @@ import {
   selectCurrentSurvey,
   fetchSurveyByIdAndCompanyId
 } from '../../features/surveys/surveysSlice';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import client, { API } from '../../utils/axiosInstance';
 import DemographicDataForm from './components/DemographicDataForm/DemographicDataForm';
 import SendInvitationDialog from './components/SendInvitationDialog/SendInvitationDialog';
+import PageHeader from '../../components/PageHeader/PageHeader';
 
 // survey options
 const options = [
@@ -92,28 +92,12 @@ const SurveyDetailPage = () => {
   const open = Boolean(anchorEl);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const { id: surveyId } = useParams();
-  const navigate = useNavigate()
   const dispatch = useDispatch();
   const surveysStatus = useSelector((state) => selectSurveysStatus(state));
   const currentSurvey = useSelector((state) => selectCurrentSurvey(state));
   const [linkCopied, setLinkCopied] = useState(false);
   const [reminderSent, setReminderSent] = useState(false);
   const [showDemographicData, setShowDemographicData] = useState(false);
-  const [isSendInvitationDialogOpen, setIsSendInvitationDialogOpen] = useState(false);
-
-  /**
-   * Handle close send invitation dialog.
-   */
-  const handleCloseSendInvitationDialog = () => {
-    setIsSendInvitationDialogOpen(false);
-  };
-
-  /**
-   * Handle open send invitation dialog.
-   */
-  const handleOpenSendInvitationDialog = () => {
-    setIsSendInvitationDialogOpen(true);
-  };
 
   /**
    * Handle click menu for open survey options.
@@ -164,17 +148,6 @@ const SurveyDetailPage = () => {
     setLinkCopied(false);
     setReminderSent(false);
   }
-
-  /**
-   * Handle click back page.
-   *
-   * @param event
-   */
-  const handleClickBackPage = (event) => {
-    event.preventDefault();
-
-    navigate(-1);
-  };
 
   /**
    * Send reminder to users.
@@ -241,23 +214,9 @@ const SurveyDetailPage = () => {
               <Box sx={{ flexGrow: 1 }}>
                 {/* header */}
                 <Grid item xs={12}>
-                  <MyCard>
-                    <div className={styles.SurveyDetailPage__header}>
-                      <div className={styles.SurveyDetailPage__header__icon}>
-                        <IconButton
-                          onClick={handleClickBackPage}
-                          aria-label="Atrás"
-                        >
-                          <ArrowBackIcon />
-                        </IconButton>
-                      </div>
-                      <div className={styles.SurveyDetailPage__header__title}>
-                        <Typography variant="h4">
-                          {currentSurvey.response.surveyName}
-                        </Typography>
-                      </div>
-                    </div>
-                  </MyCard>
+                  <PageHeader
+                    title={currentSurvey.response.surveyName}
+                  />
                 </Grid>
                 {/* survey options */}
                 <Grid item xs={12}>
