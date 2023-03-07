@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import styles from './MyCarousel.module.css';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -16,7 +16,7 @@ import classNames from 'classnames';
  */
 const MyCarousel = ({ slides, onSelected }) => {
   const [slideInlineStyle, setSlideInlineStyle] = useState({});
-  const [theta, setTheta] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   /**
    * Handle slide control click.
@@ -27,18 +27,54 @@ const MyCarousel = ({ slides, onSelected }) => {
   const handleClick = (event, direction) => {
     event.preventDefault();
 
-    const increment = direction === 'next' ? -1 : 1;
-    setTheta(theta + (360 / 15) * increment);
+    if (direction === 'next') {
+      setCurrentSlide(currentSlide - 1);
+
+      return;
+    }
+
+    setCurrentSlide(currentSlide + 1);
+  };
+
+  /**
+   * Handle slide selection.
+   *
+   * @param index
+   * @param slide
+   */
+  const handleSelect = (index, slide) => {
+    setCurrentSlide(index * -1);
+    onSelected(slide);
+  }
+
+  /**
+   * Update slide position.
+   */
+  const updateSlidePosition = () => {
+    const theta = (360 / 15) * currentSlide;
+
     setSlideInlineStyle({
       transform: `translateZ( -380px ) rotateY(${theta}deg)`,
     })
   };
 
+  // listen for changes in the current slide
+  useEffect(() => {
+    updateSlidePosition();
+  }, [currentSlide]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div className={styles.MyCarousel}>
-      <div className={styles.MyCarousel__container} style={slideInlineStyle}>
-        {slides.map((slide) => (
-          <figure key={slide.id} className={classNames(styles.MyCarousel__slide, slide.isCurrent ? styles.MyCarousel__slideActive : '')} onClick={() => onSelected(slide)} >
+      <div
+        className={styles.MyCarousel__container}
+        style={slideInlineStyle}
+      >
+        {slides.map((slide, index) => (
+          <figure
+            key={slide.id}
+            className={classNames(styles.MyCarousel__slide, slide.isCurrent ? styles.MyCarousel__slideActive : '')}
+            onClick={() => handleSelect(index, slide)}
+          >
             <div className={styles.MyCarousel__icon}>
               {typeof slide.number === 'number' && (
                 <span className={styles.MyCarousel__badge}>
@@ -53,10 +89,18 @@ const MyCarousel = ({ slides, onSelected }) => {
           </figure>
         ))}
       </div>
-      <IconButton color="primary" onClick={(event) => handleClick(event, 'prev')} className={styles.MyCarousel__prev}>
+      <IconButton
+        color="primary"
+        onClick={(event) => handleClick(event, 'prev')}
+        className={styles.MyCarousel__prev}
+      >
         <ArrowBackIosNewIcon />
       </IconButton >
-      <IconButton color="primary" onClick={(event) => handleClick(event, 'next')} className={styles.MyCarousel__next}>
+      <IconButton
+        color="primary"
+        onClick={(event) => handleClick(event, 'next')}
+        className={styles.MyCarousel__next}
+      >
         <ArrowForwardIosIcon />
       </IconButton >
     </div>
