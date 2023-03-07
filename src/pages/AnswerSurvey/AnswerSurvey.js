@@ -20,6 +20,9 @@ import {
 import MyLoader from '../../components/MyLoader/MyLoader';
 import SurveyForm from './components/SurveyForm/SurveyForm';
 import SuccessMessage from './components/SuccessMessage/SuccessMessage';
+import { FormControl } from '@mui/material';
+import FormLabel from '@mui/material/FormLabel';
+import TextField from '@mui/material/TextField';
 
 /**
  * Answer survey page.
@@ -36,12 +39,35 @@ const AnswerSurvey = () => {
     'Encuesta',
     'Finalizar',
   ]);
+  const [email, setEmail] = useState('');
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [stepsCompleted, setStepsCompleted] = useState([false, false, true]);
   const [answers, setAnswers] = useState([{}, {}]);
   const surveyStatus = useSelector((state) => selectSurveysStatus(state));
   const currentSurvey = useSelector((state) => selectCurrentSurveyForAnswer(state));
   const dispatch = useDispatch();
 
+  /**
+   * Handle email change.
+   *
+   * @param event
+   */
+  const handleEmailChange = (event) => {
+    event.preventDefault();
+
+    setEmail(event.target.value);
+  };
+
+  /**
+   * Handle email submit.
+   *
+   * @param event
+   */
+  const handleEmailSubmit = (event) => {
+    event.preventDefault();
+
+    setEmailSubmitted(true);
+  }
 
   /**
    * Returns true if the step is optional.
@@ -265,89 +291,143 @@ const AnswerSurvey = () => {
                   {currentSurvey.response.surveyName}
                 </Typography>
 
-                {/* stepper */}
-                <Stepper
-                  style={{ marginTop: '2em' }}
-                  activeStep={activeStep}
-                >
-                  {steps.map((label, index) => {
-                    const stepProps = {};
-                    const labelProps = {};
-                    if (isStepOptional(index)) {
-                      labelProps.optional = (
-                        <Typography variant="caption">Optional</Typography>
-                      );
-                    }
-                    if (isStepSkipped(index)) {
-                      stepProps.completed = false;
-                    }
-                    return (
-                      <Step key={label} {...stepProps}>
-                        <StepLabel {...labelProps}>{label}</StepLabel>
-                      </Step>
-                    );
-                  })}
-                </Stepper>
-                <React.Fragment>
-                  <div style={{ padding: '1em' }}>
-                    {/* first step */}
-                    {isDemographicStep() && (
-                      <Fragment>
-                        <SurveyForm
-                          questions={currentSurvey.demograficos.map(({ id, name, type, urlApi, options, urlParam }, index) => ({
-                            questionId: id,
-                            questionName: name,
-                            questionNumber: index + 1,
-                            typeQuestion: type,
-                            api: urlApi,
-                            urlParam,
-                            options: options.map(({ id, value }) => ({
-                              numberOption: id,
-                              optionName: value,
-                            }))
-                          }))}
-                          onAnswered={(answers) => handleAnswered(answers, activeStep)}
-                        />
-                      </Fragment>
-                    )}
-
-                    {/* survey form */}
-                    {isSurveyStep() && (
-                      <SurveyForm
-                        questions={currentSurvey.response.preguntas}
-                        onAnswered={(answers) => handleAnswered(answers, activeStep)}
+                {/* email */}
+                {emailSubmitted === false && (
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '3em 0',
+                      flexDirection: 'column',
+                    }}
+                  >
+                    <FormControl
+                      style={{
+                        width: '300px',
+                      }}
+                    >
+                      <FormLabel
+                        id="email"
+                        sx={{
+                          textAlign: 'center',
+                          marginBottom: '1.3em',
+                          fontSize: '1.4em',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        Ingrese su correo electrónico para continuar
+                      </FormLabel>
+                      <TextField
+                        id="email"
+                        label="Correo electrónico"
+                        variant="outlined"
+                        type="email"
+                        onChange={handleEmailChange}
                       />
-                    )}
-                    {/* success message */}
-                    {isFinalStep() && (
-                      <SuccessMessage />
-                    )}
-                  </div>
-
-                  <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                    <Button
-                      color="inherit"
-                      disabled={activeStep === 0 || activeStep + 1 === steps.length}
-                      onClick={handleBack}
-                      sx={{ mr: 1 }}
-                    >
-                      Atrás
-                    </Button>
-                    <Box sx={{ flex: '1 1 auto' }} />
-                    {isStepOptional(activeStep) && (
-                      <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-                        Saltar
+                    </FormControl>
+                    <FormControl>
+                      <Button
+                        variant="contained"
+                        onClick={handleEmailSubmit}
+                        style={{
+                          marginTop: '1em',
+                          width: '300px',
+                        }}
+                      >
+                        Enviar
                       </Button>
-                    )}
-
-                    <Button
-                      onClick={handleNext}
-                      disabled={!stepsCompleted[activeStep] || surveyStatus === 'loading'}
-                    >
-                      {activeStep === steps.length - 1 ? 'Finalizar' : 'Siguiente'}
-                    </Button>
+                    </FormControl>
                   </Box>
-                </React.Fragment>
+                )}
+
+                {/* stepper */}
+                {emailSubmitted === true && (
+                  <Fragment>
+                    <Stepper
+                      style={{ marginTop: '2em' }}
+                      activeStep={activeStep}
+                    >
+                      {steps.map((label, index) => {
+                        const stepProps = {};
+                        const labelProps = {};
+                        if (isStepOptional(index)) {
+                          labelProps.optional = (
+                            <Typography variant="caption">Optional</Typography>
+                          );
+                        }
+                        if (isStepSkipped(index)) {
+                          stepProps.completed = false;
+                        }
+                        return (
+                          <Step key={label} {...stepProps}>
+                            <StepLabel {...labelProps}>{label}</StepLabel>
+                          </Step>
+                        );
+                      })}
+                    </Stepper>
+                    <React.Fragment>
+                      <div style={{ padding: '1em' }}>
+                        {/* first step */}
+                        {isDemographicStep() && (
+                          <Fragment>
+                            <SurveyForm
+                              questions={currentSurvey.demograficos.map(({ id, name, type, urlApi, options, urlParam }, index) => ({
+                                questionId: id,
+                                questionName: name,
+                                questionNumber: index + 1,
+                                typeQuestion: type,
+                                api: urlApi,
+                                urlParam,
+                                options: options.map(({ id, value }) => ({
+                                  numberOption: id,
+                                  optionName: value,
+                                }))
+                              }))}
+                              onAnswered={(answers) => handleAnswered(answers, activeStep)}
+                            />
+                          </Fragment>
+                        )}
+
+                        {/* survey form */}
+                        {isSurveyStep() && (
+                          <SurveyForm
+                            questions={currentSurvey.response.preguntas}
+                            onAnswered={(answers) => handleAnswered(answers, activeStep)}
+                          />
+                        )}
+                        {/* success message */}
+                        {isFinalStep() && (
+                          <SuccessMessage />
+                        )}
+                      </div>
+
+                      <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                        <Button
+                          color="inherit"
+                          disabled={activeStep === 0 || activeStep + 1 === steps.length}
+                          onClick={handleBack}
+                          sx={{ mr: 1 }}
+                        >
+                          Atrás
+                        </Button>
+                        <Box sx={{ flex: '1 1 auto' }} />
+                        {isStepOptional(activeStep) && (
+                          <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
+                            Saltar
+                          </Button>
+                        )}
+
+                        <Button
+                          onClick={handleNext}
+                          disabled={!stepsCompleted[activeStep] || surveyStatus === 'loading'}
+                        >
+                          {activeStep === steps.length - 1 ? 'Finalizar' : 'Siguiente'}
+                        </Button>
+                      </Box>
+                    </React.Fragment>
+                  </Fragment>
+                )}
               </Fragment>
             )}
           </CardContent>
