@@ -25,7 +25,6 @@ const names = [
   "Organizational Network Analysis",
   "Dynamic Live Conversations",
   "Employee Journey",
-  "Sentiment Analysis",
 ];
 
 const list = [Iletter, Aletter, Oletter, Dletter, Jletter, Sletter];
@@ -99,11 +98,6 @@ export default function Sidebar() {
     } else if (
       index === 4 &&
       userInfo?.role.findIndex((p) => p === "Journey") < 0
-    ) {
-      event.preventDefault();
-    } else if (
-      index === 5 &&
-      userInfo?.role.findIndex((p) => p === "Sentimental") < 0
     ) {
       event.preventDefault();
     } else {

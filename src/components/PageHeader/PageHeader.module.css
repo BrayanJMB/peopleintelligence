@@ -1,0 +1,16 @@
+.PageHeader {
+    display: flex;
+    align-items: center;
+}
+.PageHeader__icon {
+    width: 48px;
+    height: 48px;
+    align-items: center;
+    display: flex;
+}
+.PageHeader__title {
+    flex: 1 1 0;
+    font-size: 1.5em !important;
+    font-weight: 600 !important;
+    margin-left: 1em;
+}
