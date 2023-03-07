@@ -6,7 +6,6 @@ import Aletter from "../../assets/icons/Aletter.png";
 import Oletter from "../../assets/icons/Oletter.png";
 import Dletter from "../../assets/icons/Dletter.png";
 import Jletter from "../../assets/icons/Jletter.png";
-import Sletter from "../../assets/icons/Sletter.png";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../Layout/Sidebar/Sidebar";
 import { useEffect } from "react";
@@ -202,30 +201,6 @@ export default function Dashboard() {
                 <div className={styles.subtitle}>
                   Medición del ciclo de experiencia del colaborador
                 </div>
-              </div>
-              <div
-                className={styles.project}
-                style={{
-                  backgroundColor:
-                    userInfo?.role.findIndex((p) => p === "Sentimental") > -1 ||
-                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
-                      ? ""
-                      : "grey",
-                  cursor:
-                    userInfo?.role.findIndex((p) => p === "Sentimental") > -1 ||
-                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
-                      ? ""
-                      : "default",
-                }}
-              >
-                <div>
-                  <img src={Sletter} alt="oletter" className={styles.image} />
-                </div>
-                <div className={styles.title}>Sentiment Analysis</div>
-                <div className={styles.subtitle}>
-                  Medición y análisis de sentimientos de los colaboradores
-                </div>
-                <div className={styles.sticker}>En Diseño</div>
               </div>
             </div>
           </div>
