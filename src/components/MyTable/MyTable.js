@@ -19,6 +19,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { visuallyHidden } from '@mui/utils';
+import MyConfirmation from '../MyConfirmation/MyConfirmation';
 
 
 /**
@@ -83,7 +84,10 @@ function EnhancedTableHead(props) {
             >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
+                <Box
+                  component="span"
+                  sx={visuallyHidden}
+                >
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </Box>
               ) : null}
@@ -182,22 +186,25 @@ const MyTable = ({ title, rows, columns }) => {
 
   /**
    * Handle click delete.
+   */
+  const handleClickDelete = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  /**
+   * Handle on close delete dialog.
    *
+   * @param shouldDelete
    * @param id
    * @param handleDelete
    */
-  const handleClickDelete = ({ id, handleDelete }) => {
-    // if dialog is not open, open it
-    if (!openDeleteDialog) {
-      setOpenDeleteDialog(true);
-
-      return;
-    }
-
-    // if dialog is open, close it and delete
+  const handleOnCloseDeleteDialog = (shouldDelete, { id, handleDelete }) => {
     setOpenDeleteDialog(false);
-    handleDelete(id);
-  }
+
+    if (shouldDelete) {
+      handleDelete(id);
+    }
+  };
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -275,12 +282,20 @@ const MyTable = ({ title, rows, columns }) => {
                                 alignItems="center"
                               >
                                 {item.payload.delete === true && (
-                                  <IconButton
-                                    onClick={() => handleClickDelete(item.payload)}
-                                    size="small"
-                                  >
-                                    <DeleteIcon fontSize="inherit" />
-                                  </IconButton>
+                                  <Fragment>
+                                    <IconButton
+                                      onClick={() => handleClickDelete()}
+                                      size="small"
+                                    >
+                                      <DeleteIcon fontSize="inherit" />
+                                    </IconButton>
+                                    <MyConfirmation
+                                      onClose={(shouldDelete) => handleOnCloseDeleteDialog(shouldDelete, item.payload)}
+                                      title="Eliminar registro"
+                                      message="¿Está seguro que desea eliminar este registro?"
+                                      open={openDeleteDialog}
+                                    />
+                                  </Fragment>
                                 )}
                                 {item.payload.edit === true && (
                                   <IconButton
