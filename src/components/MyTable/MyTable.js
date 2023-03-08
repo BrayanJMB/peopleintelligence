@@ -159,6 +159,7 @@ const MyTable = ({ title, rows, columns }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [currentDialog, setCurrentDialog] = useState({});
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -187,8 +188,9 @@ const MyTable = ({ title, rows, columns }) => {
   /**
    * Handle click delete.
    */
-  const handleClickDelete = () => {
+  const handleClickDelete = ({ id }) => {
     setOpenDeleteDialog(true);
+    setCurrentDialog(id);
   };
 
   /**
@@ -281,23 +283,25 @@ const MyTable = ({ title, rows, columns }) => {
                                 direction="row"
                                 alignItems="center"
                               >
-                                {item.payload.delete === true && (
+                                {item.payload.handleDelete !== undefined && (
                                   <Fragment>
                                     <IconButton
-                                      onClick={() => handleClickDelete()}
+                                      onClick={() => handleClickDelete(item.payload)}
                                       size="small"
                                     >
                                       <DeleteIcon fontSize="inherit" />
                                     </IconButton>
-                                    <MyConfirmation
-                                      onClose={(shouldDelete) => handleOnCloseDeleteDialog(shouldDelete, item.payload)}
-                                      title="Eliminar registro"
-                                      message="¿Está seguro que desea eliminar este registro?"
-                                      open={openDeleteDialog}
-                                    />
+                                    {currentDialog === item.payload.id && (
+                                      <MyConfirmation
+                                        onClose={(shouldDelete) => handleOnCloseDeleteDialog(shouldDelete, item.payload)}
+                                        title="Eliminar registro"
+                                        message="¿Está seguro que desea eliminar este registro?"
+                                        open={openDeleteDialog}
+                                      />
+                                    )}
                                   </Fragment>
                                 )}
-                                {item.payload.edit === true && (
+                                {item.payload.handleEdit !== undefined && (
                                   <IconButton
                                     size="small"
                                     onClick={() => item.payload.handleEdit(item.payload.id)}
@@ -305,7 +309,7 @@ const MyTable = ({ title, rows, columns }) => {
                                     <EditIcon fontSize="inherit" />
                                   </IconButton>
                                 )}
-                                {item.payload.view === true && (
+                                {item.payload.handleView !== undefined && (
                                   <IconButton
                                     size="small"
                                     onClick={() => item.payload.handleView(item.payload.id)}
