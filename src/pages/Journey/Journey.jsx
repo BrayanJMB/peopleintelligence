@@ -11,7 +11,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getJourneyMapAPI, getJourneysCompanyAPI } from "../../services/getJourneyMap.service";
+import { fetchJourneyMapAPI, getJourneysCompanyAPI } from "../../services/getJourneyMap.service";
 import enps from "../../assets/enps.svg";
 import empleados from "../../assets/empleados.svg";
 import last from "../../assets/last.svg";
@@ -19,7 +19,6 @@ import pulso from "../../assets/pulso.svg";
 import encuesta from "../../assets/icons/encuesta.png";
 import {isAdmin} from "../../utils/helpers";
 import {useSelector} from "react-redux";
-import {selectCompanyById} from "../../features/companies/companiesSlice";
 
 const theme = createTheme({
   palette: {
@@ -126,7 +125,7 @@ export default function Journey() {
       }
 
       // fetch slider data
-      const { data } = await getJourneyMapAPI();
+      const { data } = await fetchJourneyMapAPI();
 
       // the first item is current active slide
       setSlides(data.map((slide, index) => ({
