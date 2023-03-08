@@ -1,0 +1,11 @@
+.JourneySettingsPage {
+    width: 89.5vw;
+    height: 92vh;
+    margin-top: 4rem;
+    border-top-left-radius: 50px;
+    background-color: rgb(231, 231, 231);
+    overflow-y: scroll;
+}
+.JourneySettingsPage__content {
+    margin: 2em 4em;
+}
