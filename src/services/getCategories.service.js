@@ -1,8 +1,3 @@
-import axios from "../utils/axiosInstance";
+import client from "../utils/axiosInstance";
 
-export const getCategoriesAPI = async () => {
-  console.log("getCategoriesAPI");
-
-  const response = await axios.get("Categories/");
-  return response;
-};
+export const fetchCategoriesAPI = async () => client.get('Categories/');

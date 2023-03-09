@@ -1,4 +1,5 @@
 const ADMIN_ROLE = 'Administrador';
+const JOURNEY_ROLE = 'Journey';
 
 /**
  * Returns true if the user is an admin.
@@ -7,12 +8,26 @@ const ADMIN_ROLE = 'Administrador';
  * @returns {*|boolean}
  */
 export const isAdmin = (user) => {
-  if (!user || user.role.index === 0) {
+  if (!user || !user.role) {
     return false;
   }
 
   return user.role.some((role) => role === ADMIN_ROLE);
 };
+
+/**
+ * Returns true if the user is a journey.
+ *
+ * @param user
+ * @returns {*|boolean}
+ */
+export const isJourney = (user) => {
+  if (!user || !user.role) {
+    return false;
+  }
+
+  return user.role.some((role) => role === JOURNEY_ROLE);
+}
 
 /**
  * Chunk an array.

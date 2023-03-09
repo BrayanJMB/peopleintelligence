@@ -14,7 +14,7 @@ import Journey from "./pages/Journey/Journey";
 import Template from "./pages/Journey/Template/Template";
 import CreateSurvey from "./pages/Journey/CreateSurvey/CreateSurvey";
 import OnasTable from "./pages/OnasTable/OnasTable";
-import JourneySettings from "./pages/JourneySettings/JourneySettings";
+import JourneySettingsPage from "./pages/JourneySettingsPage/JourneySettingsPage";
 import Roles from "./pages/Roles/Roles";
 import Error from "./pages/Error/Error";
 import PrivateRoutes from "./utils/PrivateRoutes";
@@ -94,7 +94,7 @@ export default function App() {
                 />
                 <Route
                   path="/journeysettings"
-                  element={<JourneySettings />}
+                  element={<JourneySettingsPage />}
                   exact
                 />
                 <Route

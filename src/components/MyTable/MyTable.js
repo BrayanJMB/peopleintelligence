@@ -19,6 +19,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { visuallyHidden } from '@mui/utils';
+import MyConfirmation from '../MyConfirmation/MyConfirmation';
 
 
 /**
@@ -83,7 +84,10 @@ function EnhancedTableHead(props) {
             >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
+                <Box
+                  component="span"
+                  sx={visuallyHidden}
+                >
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </Box>
               ) : null}
@@ -155,6 +159,7 @@ const MyTable = ({ title, rows, columns }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [currentDialog, setCurrentDialog] = useState({});
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -182,22 +187,26 @@ const MyTable = ({ title, rows, columns }) => {
 
   /**
    * Handle click delete.
+   */
+  const handleClickDelete = ({ id }) => {
+    setOpenDeleteDialog(true);
+    setCurrentDialog(id);
+  };
+
+  /**
+   * Handle on close delete dialog.
    *
+   * @param shouldDelete
    * @param id
    * @param handleDelete
    */
-  const handleClickDelete = ({ id, handleDelete }) => {
-    // if dialog is not open, open it
-    if (!openDeleteDialog) {
-      setOpenDeleteDialog(true);
-
-      return;
-    }
-
-    // if dialog is open, close it and delete
+  const handleOnCloseDeleteDialog = (shouldDelete, { id, handleDelete }) => {
     setOpenDeleteDialog(false);
-    handleDelete(id);
-  }
+
+    if (shouldDelete) {
+      handleDelete(id);
+    }
+  };
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -274,15 +283,25 @@ const MyTable = ({ title, rows, columns }) => {
                                 direction="row"
                                 alignItems="center"
                               >
-                                {item.payload.delete === true && (
-                                  <IconButton
-                                    onClick={() => handleClickDelete(item.payload)}
-                                    size="small"
-                                  >
-                                    <DeleteIcon fontSize="inherit" />
-                                  </IconButton>
+                                {item.payload.handleDelete !== undefined && (
+                                  <Fragment>
+                                    <IconButton
+                                      onClick={() => handleClickDelete(item.payload)}
+                                      size="small"
+                                    >
+                                      <DeleteIcon fontSize="inherit" />
+                                    </IconButton>
+                                    {currentDialog === item.payload.id && (
+                                      <MyConfirmation
+                                        onClose={(shouldDelete) => handleOnCloseDeleteDialog(shouldDelete, item.payload)}
+                                        title="Eliminar registro"
+                                        message="¿Está seguro que desea eliminar este registro?"
+                                        open={openDeleteDialog}
+                                      />
+                                    )}
+                                  </Fragment>
                                 )}
-                                {item.payload.edit === true && (
+                                {item.payload.handleEdit !== undefined && (
                                   <IconButton
                                     size="small"
                                     onClick={() => item.payload.handleEdit(item.payload.id)}
@@ -290,7 +309,7 @@ const MyTable = ({ title, rows, columns }) => {
                                     <EditIcon fontSize="inherit" />
                                   </IconButton>
                                 )}
-                                {item.payload.view === true && (
+                                {item.payload.handleView !== undefined && (
                                   <IconButton
                                     size="small"
                                     onClick={() => item.payload.handleView(item.payload.id)}

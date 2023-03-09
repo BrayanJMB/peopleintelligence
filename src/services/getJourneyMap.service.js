@@ -1,6 +1,11 @@
 import axios from "../utils/axiosInstance";
 
-export const getJourneyMapAPI = async () => axios.get("GetJorneyMap/");
+/**
+ * Fetch Journey Map.
+ *
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export const fetchJourneyMapAPI = async () => axios.get('GetJorneyMap/');
 
 /**
  * Get Journeys by company and map.
