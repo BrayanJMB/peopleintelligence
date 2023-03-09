@@ -31,10 +31,16 @@ import MyConfirmation from '../MyConfirmation/MyConfirmation';
  * @returns {number}
  */
 function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
+  const index = a.findIndex((item) => item.column === orderBy);
+
+  if (index === -1) {
+    return 0;
+  }
+
+  if (b[index].value < a[index].value) {
     return -1;
   }
-  if (b[orderBy] > a[orderBy]) {
+  if (b[index].value > a[index].value) {
     return 1;
   }
   return 0;
@@ -154,10 +160,10 @@ EnhancedTableToolbar.propTypes = {
  */
 const MyTable = ({ title, rows, columns }) => {
   const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('calories');
+  const [orderBy, setOrderBy] = useState('');
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [currentDialog, setCurrentDialog] = useState({});
 
