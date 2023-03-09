@@ -62,7 +62,7 @@ const mapCategories = (categories) => categories.map((category) => [
     column: 'options',
     value: '',
     payload: {
-      handleDelete: (id) => console.log(id),
+      handleView: (id) => console.log(id),
       handleEdit: (id) => console.log(id),
       id: category.id,
     },
