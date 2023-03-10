@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
-import Navbar from '../../Layout/Navbar/Navbar';
-import styles from "./JourneySettingsPage.module.css";
 import Box from "@mui/material/Box";
 import { useNavigate } from "react-router-dom";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { fetchJourneyMapAPI, deleteJourneyMapAPI } from "../../services/getJourneyMap.service";
-import { deleteCategoryAPI, fetchCategoriesAPI } from "../../services/getCategories.service";
+import { useSnackbar } from 'notistack';
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../Layout/Navbar/Navbar';
+import styles from "./JourneySettingsPage.module.css";
+import { fetchJourneyMapAPI, deleteJourneyMapAPI, updateJourneyMapAPI } from "../../services/getJourneyMap.service";
+import { deleteCategoryAPI, fetchCategoriesAPI, updateCategoryAPI } from "../../services/getCategories.service";
 import MyLoader from '../../components/MyLoader/MyLoader';
 import PageHeader from '../../components/PageHeader/PageHeader';
 import MyCard from '../../components/MyCard/MyCard';
 import MyTable from '../../components/MyTable/MyTable';
 import { isAdmin, isJourney } from '../../utils/helpers';
-import { useSnackbar } from 'notistack';
+import MyEditDialog from '../../components/MyEditDialog/MyEditDialog';
 
 // category columns
 const categoryColumns = [
@@ -133,7 +134,21 @@ const JourneySettingsPage = () => {
 
     setCurrentEdit({
       type: 'category',
-      fields: category,
+      id: category.id,
+      fields: [
+        {
+          label: 'Nombre',
+          name: 'name',
+          type: 'text',
+          value: category.nameCatogory,
+        },
+        {
+          label: 'Descripción',
+          name: 'description',
+          type: 'text',
+          value: category.descriptionCategory,
+        },
+      ],
     });
     setOpenEditDialog(true);
   };
@@ -151,6 +166,12 @@ const JourneySettingsPage = () => {
     }
 
     await deleteCategoryAPI(id);
+    enqueueSnackbar(
+      'Categoría eliminada con éxito',
+      {
+        variant: 'success',
+      },
+    );
   }
 
   /**
@@ -168,7 +189,27 @@ const JourneySettingsPage = () => {
 
     setCurrentEdit({
       type: 'journeyMap',
-      fields: map,
+      id: id,
+      fields: [
+        {
+          label: 'Nombre',
+          name: 'name',
+          type: 'text',
+          value: map.mapJourney,
+        },
+        {
+          label: 'Descripción',
+          name: 'description',
+          type: 'text',
+          value: map.description,
+        },
+        {
+          label: 'URL de icono',
+          name: 'icon',
+          type: 'text',
+          value: map.iconUrl,
+        }
+      ],
     });
     setOpenEditDialog(true);
   }
@@ -187,6 +228,74 @@ const JourneySettingsPage = () => {
     }
 
     await deleteJourneyMapAPI(id);
+    enqueueSnackbar(
+      'Mapa de viaje eliminado con éxito',
+      {
+        variant: 'success',
+      },
+    );
+  }
+
+  /**
+   * Handle close edit dialog.
+   */
+  const handleCloseEditDialog = () => {
+    setOpenEditDialog(false);
+  };
+
+  /**
+   * Handle submitted edit dialog.
+   *
+   * @param formValues
+   * @returns {Promise<void>}
+   */
+  const handleSubmittedEditDialog = async (formValues) => {
+    if (currentEdit.type === 'category') {
+      // find category
+      const category = categories.find((category) => category.id === currentEdit.id);
+
+      if (category === undefined) {
+        return;
+      }
+
+      category.nameCatogory = formValues.name || category.nameCatogory;
+      category.descriptionCategory = formValues.description || category.descriptionCategory;
+
+      try {
+        await updateCategoryAPI(category);
+      } catch (e) {}
+      enqueueSnackbar(
+        'Categoría actualizada con éxito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+    if (currentEdit.type === 'journeyMap') {
+      // find category
+      const map = journeyMap.find((map) => map.id === currentEdit.id);
+
+      if (map === undefined) {
+        return;
+      }
+
+      map.mapJourney = formValues.name || map.mapJourney;
+      map.description = formValues.description || map.description;
+      map.iconUrl = formValues.iconUrl || map.iconUrl;
+
+      try {
+        await updateJourneyMapAPI(map);
+      } catch (e) {}
+      enqueueSnackbar(
+        'Mapa de viaje actualizado con éxito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+
+    setCurrentEdit(null);
+    setOpenEditDialog(false);
   }
 
   /**
@@ -248,6 +357,20 @@ const JourneySettingsPage = () => {
       },
     },
   ]);
+
+  /**
+   * Get edit title.
+   *
+   * @returns {string}
+   */
+  const getEditTitle = () => {
+    if (currentEdit.type === 'category') {
+      return 'Editar categoría';
+    }
+    if (currentEdit.type === 'journeyMap') {
+      return 'Editar mapa de viaje';
+    }
+  };
 
   // component did mount
   useEffect(() => {
@@ -345,6 +468,17 @@ const JourneySettingsPage = () => {
           </div>
         </div>
       </div>
+
+      {/* edit form */}
+      {currentEdit !== null && (
+        <MyEditDialog
+          onClose={handleCloseEditDialog}
+          onSubmit={handleSubmittedEditDialog}
+          title={getEditTitle()}
+          open={openEditDialog}
+          fields={currentEdit.fields}
+        />
+      )}
     </Box>
   );
 }
