@@ -6,8 +6,8 @@ import Box from "@mui/material/Box";
 import { useNavigate } from "react-router-dom";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { fetchJourneyMapAPI } from "../../services/getJourneyMap.service";
-import { fetchCategoriesAPI } from "../../services/getCategories.service";
+import { fetchJourneyMapAPI, deleteJourneyMapAPI } from "../../services/getJourneyMap.service";
+import { deleteCategoryAPI, fetchCategoriesAPI } from "../../services/getCategories.service";
 import MyLoader from '../../components/MyLoader/MyLoader';
 import PageHeader from '../../components/PageHeader/PageHeader';
 import MyCard from '../../components/MyCard/MyCard';
@@ -39,36 +39,6 @@ const categoryColumns = [
   },
 ];
 
-/**
- * Map categories response to use in table.
- *
- * @param categories
- * @returns {*}
- */
-const mapCategories = (categories) => categories.map((category) => [
-  {
-    column: 'id',
-    value: category.id.toString(),
-  },
-  {
-    column: 'name',
-    value: category.nameCatogory,
-  },
-  {
-    column: 'description',
-    value: category.descriptionCategory,
-  },
-  {
-    column: 'options',
-    value: '',
-    payload: {
-      handleView: (id) => console.log(id),
-      handleEdit: (id) => console.log(id),
-      id: category.id,
-    },
-  },
-]);
-
 // journey map columns
 const journeyMapColumns = [
   {
@@ -94,36 +64,6 @@ const journeyMapColumns = [
 ];
 
 /**
- * Map journey map response to use in table.
- *
- * @param journeyMap
- * @returns {*}
- */
-const mapJourneyMap = (journeyMap) => journeyMap.map((map) => [
-  {
-    column: 'id',
-    value: map.id.toString(),
-  },
-  {
-    column: 'name',
-    value: map.mapJourney,
-  },
-  {
-    column: 'description',
-    value: map.description,
-  },
-  {
-    column: 'options',
-    value: '',
-    payload: {
-      handleDelete: (id) => console.log(id),
-      handleEdit: (id) => console.log(id),
-      id: map.id,
-    },
-  },
-]);
-
-/**
  * Journey settings page component.
  *
  * @returns {JSX.Element}
@@ -136,6 +76,8 @@ const JourneySettingsPage = () => {
   const [loading, setLoading] = useState(false);
   const [journeyMap, setJourneyMap] = useState([]);
   const [currentTab, setCurrentTab] = useState(0);
+  const [currentEdit, setCurrentEdit] = useState(null);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   /**
@@ -175,6 +117,137 @@ const JourneySettingsPage = () => {
     setJourneyMap(data);
     setLoading(false);
   };
+
+  /**
+   * Handle edit category.
+   *
+   * @param id
+   */
+  const handleEditCategory = (id) => {
+    // find category
+    const category = categories.find((category) => category.id === id);
+
+    if (category === undefined) {
+      return;
+    }
+
+    setCurrentEdit({
+      type: 'category',
+      fields: category,
+    });
+    setOpenEditDialog(true);
+  };
+
+  /**
+   * Handle delete category.
+   *
+   * @param id
+   */
+  const handleDeleteCategory = async (id) => {
+    const category = categories.find((category) => category.id === id);
+
+    if (category === undefined) {
+      return;
+    }
+
+    await deleteCategoryAPI(id);
+  }
+
+  /**
+   * Handle delete journey map.
+   *
+   * @param id
+   */
+  const handleEditJourneyMap = (id) => {
+    // find category
+    const map = journeyMap.find((map) => map.id === id);
+
+    if (map === undefined) {
+      return;
+    }
+
+    setCurrentEdit({
+      type: 'journeyMap',
+      fields: map,
+    });
+    setOpenEditDialog(true);
+  }
+
+  /**
+   * Handle delete journey map.
+   *
+   * @param id
+   */
+  const handleDeleteJourneyMap = async (id) => {
+    // find category
+    const map = journeyMap.find((map) => map.id === id);
+
+    if (map === undefined) {
+      return;
+    }
+
+    await deleteJourneyMapAPI(id);
+  }
+
+  /**
+   * Map categories response to use in table.
+   *
+   * @param categories
+   * @returns {*}
+   */
+  const mapCategories = (categories) => categories.map((category) => [
+    {
+      column: 'id',
+      value: category.id.toString(),
+    },
+    {
+      column: 'name',
+      value: category.nameCatogory,
+    },
+    {
+      column: 'description',
+      value: category.descriptionCategory,
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteCategory,
+        handleEdit: handleEditCategory,
+        id: category.id,
+      },
+    },
+  ]);
+
+  /**
+   * Map journey map response to use in table.
+   *
+   * @param journeyMap
+   * @returns {*}
+   */
+  const mapJourneyMap = (journeyMap) => journeyMap.map((map) => [
+    {
+      column: 'id',
+      value: map.id.toString(),
+    },
+    {
+      column: 'name',
+      value: map.mapJourney,
+    },
+    {
+      column: 'description',
+      value: map.description,
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteJourneyMap,
+        handleEdit: handleEditJourneyMap,
+        id: map.id,
+      },
+    },
+  ]);
 
   // component did mount
   useEffect(() => {
