@@ -106,7 +106,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit }) => {
               variant="contained"
               type="submit"
             >
-              Actualizar
+              Guardar
             </Button>
           </DialogActions>
         </form>

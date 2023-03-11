@@ -3,18 +3,32 @@ import Box from "@mui/material/Box";
 import { useNavigate } from "react-router-dom";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
 import { useSnackbar } from 'notistack';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import styles from "./JourneySettingsPage.module.css";
-import { fetchJourneyMapAPI, deleteJourneyMapAPI, updateJourneyMapAPI } from "../../services/getJourneyMap.service";
-import { deleteCategoryAPI, fetchCategoriesAPI, updateCategoryAPI } from "../../services/getCategories.service";
+import {
+  fetchJourneyMapAPI,
+  deleteJourneyMapAPI,
+  updateJourneyMapAPI,
+  storeJourneyMapAPI
+} from "../../services/getJourneyMap.service";
+import {
+  deleteCategoryAPI,
+  fetchCategoriesAPI,
+  storeCategoryAPI,
+  updateCategoryAPI
+} from "../../services/getCategories.service";
 import MyLoader from '../../components/MyLoader/MyLoader';
 import PageHeader from '../../components/PageHeader/PageHeader';
 import MyCard from '../../components/MyCard/MyCard';
 import MyTable from '../../components/MyTable/MyTable';
 import { isAdmin, isJourney } from '../../utils/helpers';
 import MyEditDialog from '../../components/MyEditDialog/MyEditDialog';
+import MyCreateDialog from '../../components/MyCreateDialog/MyCreateDialog';
 
 // category columns
 const categoryColumns = [
@@ -78,7 +92,9 @@ const JourneySettingsPage = () => {
   const [journeyMap, setJourneyMap] = useState([]);
   const [currentTab, setCurrentTab] = useState(0);
   const [currentEdit, setCurrentEdit] = useState(null);
+  const [currentCreate, setCurrentCreate] = useState(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   /**
@@ -135,6 +151,7 @@ const JourneySettingsPage = () => {
     setCurrentEdit({
       type: 'category',
       id: category.id,
+      title: 'Editar categoría',
       fields: [
         {
           label: 'Nombre',
@@ -151,6 +168,31 @@ const JourneySettingsPage = () => {
       ],
     });
     setOpenEditDialog(true);
+  };
+
+  /**
+   * Handle create category.
+   */
+  const handleCreateCategory = () => {
+    setCurrentCreate({
+      type: 'category',
+      title: 'Crear categoría',
+      fields: [
+        {
+          label: 'Nombre',
+          name: 'name',
+          type: 'text',
+          isRequired: true,
+        },
+        {
+          label: 'Descripción',
+          name: 'description',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
   };
 
   /**
@@ -190,6 +232,7 @@ const JourneySettingsPage = () => {
     setCurrentEdit({
       type: 'journeyMap',
       id: id,
+      title: 'Editar mapa de viaje',
       fields: [
         {
           label: 'Nombre',
@@ -213,6 +256,37 @@ const JourneySettingsPage = () => {
     });
     setOpenEditDialog(true);
   }
+
+  /**
+   * Handle create journey map.
+   */
+  const handleCreateJourneyMap = () => {
+    setCurrentCreate({
+      type: 'journeyMap',
+      title: 'Crear mapa de viaje',
+      fields: [
+        {
+          label: 'Nombre',
+          name: 'name',
+          type: 'text',
+          isRequired: true,
+        },
+        {
+          label: 'Descripción',
+          name: 'description',
+          type: 'text',
+          isRequired: true,
+        },
+        {
+          label: 'URL de icono',
+          name: 'icon',
+          type: 'text',
+          isRequired: false,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
 
   /**
    * Handle delete journey map.
@@ -241,6 +315,13 @@ const JourneySettingsPage = () => {
    */
   const handleCloseEditDialog = () => {
     setOpenEditDialog(false);
+  };
+
+  /**
+   * Handle close create dialog.
+   */
+  const handleCloseCreateDialog = () => {
+    setOpenCreateDialog(false);
   };
 
   /**
@@ -297,6 +378,47 @@ const JourneySettingsPage = () => {
     setCurrentEdit(null);
     setOpenEditDialog(false);
   }
+
+  /**
+   * Handle submitted create dialog.
+   *
+   * @param formValues
+   * @returns {Promise<void>}
+   */
+  const handleSubmittedCreateDialog = async (formValues) => {
+    if (currentCreate.type === 'category') {
+      currentCreate.nameCatogory = formValues.name;
+      currentCreate.descriptionCategory = formValues.description;
+
+      try {
+        await storeCategoryAPI(currentCreate);
+      } catch (e) {}
+      enqueueSnackbar(
+        'Categoría creada con éxito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+    if (currentCreate.type === 'journeyMap') {
+      currentCreate.mapJourney = formValues.name;
+      currentCreate.description = formValues.description;
+      currentCreate.iconUrl = formValues.icon;
+
+      try {
+        await storeJourneyMapAPI(currentCreate);
+      } catch (e) {}
+      enqueueSnackbar(
+        'Mapa de viaje creado con éxito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+
+    setCurrentCreate(null);
+    setOpenCreateDialog(false);
+  };
 
   /**
    * Map categories response to use in table.
@@ -357,20 +479,6 @@ const JourneySettingsPage = () => {
       },
     },
   ]);
-
-  /**
-   * Get edit title.
-   *
-   * @returns {string}
-   */
-  const getEditTitle = () => {
-    if (currentEdit.type === 'category') {
-      return 'Editar categoría';
-    }
-    if (currentEdit.type === 'journeyMap') {
-      return 'Editar mapa de viaje';
-    }
-  };
 
   // component did mount
   useEffect(() => {
@@ -434,8 +542,25 @@ const JourneySettingsPage = () => {
                     >
                       {currentTab === 0 && (
                         <Box
-                          sx={{ p: 3 }}
+                          sx={{
+                            p: 3,
+                        }}
                         >
+                          <Stack
+                            spacing={2}
+                            direction="row-reverse"
+                            sx={{
+                              mb: 2,
+                            }}
+                          >
+                            <Button
+                              variant="outlined"
+                              startIcon={<AddIcon />}
+                              onClick={handleCreateCategory}
+                            >
+                              Crear categoría
+                            </Button>
+                          </Stack>
                           <MyTable
                             title={'Listado de categorías'}
                             columns={categoryColumns}
@@ -453,6 +578,21 @@ const JourneySettingsPage = () => {
                         <Box
                           sx={{ p: 3 }}
                         >
+                          <Stack
+                            spacing={2}
+                            direction="row-reverse"
+                            sx={{
+                              mb: 2,
+                            }}
+                          >
+                            <Button
+                              variant="outlined"
+                              startIcon={<AddIcon />}
+                              onClick={handleCreateJourneyMap}
+                            >
+                              Crear mapa
+                            </Button>
+                          </Stack>
                           <MyTable
                             title={'Listado de mapas'}
                             columns={journeyMapColumns}
@@ -474,9 +614,20 @@ const JourneySettingsPage = () => {
         <MyEditDialog
           onClose={handleCloseEditDialog}
           onSubmit={handleSubmittedEditDialog}
-          title={getEditTitle()}
+          title={currentEdit.title}
           open={openEditDialog}
           fields={currentEdit.fields}
+        />
+      )}
+
+      {/* create form */}
+      {currentCreate !== null && (
+        <MyCreateDialog
+          onClose={handleCloseCreateDialog}
+          onSubmit={handleSubmittedCreateDialog}
+          title={currentCreate.title}
+          open={openCreateDialog}
+          fields={currentCreate.fields}
         />
       )}
     </Box>
