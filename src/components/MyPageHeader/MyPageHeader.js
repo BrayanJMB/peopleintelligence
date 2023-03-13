@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styles from './PageHeader.module.css';
+import styles from './MyPageHeader.module.css';
 import IconButton from '@mui/material/IconButton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Typography from '@mui/material/Typography';
@@ -13,7 +13,7 @@ import MyCard from '../MyCard/MyCard';
  * @returns {JSX.Element}
  * @constructor
  */
-const PageHeader = ({ title }) => {
+const MyPageHeader = ({ title, Icon }) => {
   const navigate = useNavigate()
 
   /**
@@ -29,9 +29,9 @@ const PageHeader = ({ title }) => {
 
   return (
     <MyCard>
-      <div className={styles.PageHeader}>
+      <div className={styles.MyPageHeader}>
         {/* back button */}
-        <div className={styles.PageHeader__icon}>
+        <div className={styles.MyPageHeader__backIcon}>
           <IconButton
             onClick={handleClickBackPage}
             aria-label="Atrás"
@@ -43,8 +43,14 @@ const PageHeader = ({ title }) => {
         {/* title */}
         <Typography
           variant="h4"
-          className={styles.PageHeader__title}
+          className={styles.MyPageHeader__title}
         >
+          <span
+            className={styles.MyPageHeader__icon}
+          >
+            {Icon}
+          </span>
+
           {title}
         </Typography>
       </div>
@@ -52,10 +58,11 @@ const PageHeader = ({ title }) => {
   );
 };
 
-PageHeader.propTypes = {
+MyPageHeader.propTypes = {
   title: PropTypes.string.isRequired,
+  Icon: PropTypes.element,
 };
 
-PageHeader.defaultProps = {};
+MyPageHeader.defaultProps = {};
 
-export default PageHeader;
+export default MyPageHeader;
