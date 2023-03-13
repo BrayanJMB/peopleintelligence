@@ -387,11 +387,11 @@ const JourneySettingsPage = () => {
    */
   const handleSubmittedCreateDialog = async (formValues) => {
     if (currentCreate.type === 'category') {
-      currentCreate.nameCatogory = formValues.name;
-      currentCreate.descriptionCategory = formValues.description;
-
       try {
-        await storeCategoryAPI(currentCreate);
+        await storeCategoryAPI({
+          nameCatogory: formValues.name,
+          descriptionCategory: formValues.description,
+        });
       } catch (e) {}
       enqueueSnackbar(
         'Categoría creada con éxito',
@@ -401,12 +401,12 @@ const JourneySettingsPage = () => {
       );
     }
     if (currentCreate.type === 'journeyMap') {
-      currentCreate.mapJourney = formValues.name;
-      currentCreate.description = formValues.description;
-      currentCreate.iconUrl = formValues.icon;
-
       try {
-        await storeJourneyMapAPI(currentCreate);
+        await storeJourneyMapAPI({
+          mapJourney: formValues.name,
+          description: formValues.description,
+          iconUrl: formValues.icon,
+        });
       } catch (e) {}
       enqueueSnackbar(
         'Mapa de viaje creado con éxito',
