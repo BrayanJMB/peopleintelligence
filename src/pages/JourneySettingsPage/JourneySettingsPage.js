@@ -23,7 +23,7 @@ import {
   updateCategoryAPI
 } from "../../services/getCategories.service";
 import MyLoader from '../../components/MyLoader/MyLoader';
-import PageHeader from '../../components/PageHeader/PageHeader';
+import MyPageHeader from '../../components/MyPageHeader/MyPageHeader';
 import MyCard from '../../components/MyCard/MyCard';
 import MyTable from '../../components/MyTable/MyTable';
 import { isAdmin, isJourney } from '../../utils/helpers';
@@ -506,7 +506,7 @@ const JourneySettingsPage = () => {
       <div style={{ backgroundColor: "white" }}>
         <div className={styles.JourneySettingsPage}>
           <div className={styles.JourneySettingsPage__content}>
-            <PageHeader
+            <MyPageHeader
               title="Administrar encuestas"
             />
 

@@ -37,7 +37,7 @@ import { useParams } from 'react-router-dom';
 import client, { API } from '../../utils/axiosInstance';
 import DemographicDataForm from './components/DemographicDataForm/DemographicDataForm';
 import SendInvitationDialog from './components/SendInvitationDialog/SendInvitationDialog';
-import PageHeader from '../../components/PageHeader/PageHeader';
+import MyPageHeader from '../../components/MyPageHeader/MyPageHeader';
 
 // survey options
 const options = [
@@ -214,7 +214,7 @@ const SurveyDetailPage = () => {
               <Box sx={{ flexGrow: 1 }}>
                 {/* header */}
                 <Grid item xs={12}>
-                  <PageHeader
+                  <MyPageHeader
                     title={currentSurvey.response.surveyName}
                   />
                 </Grid>
