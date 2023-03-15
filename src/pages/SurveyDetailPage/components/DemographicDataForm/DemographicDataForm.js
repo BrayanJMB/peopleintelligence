@@ -20,6 +20,7 @@ import { useSnackbar } from 'notistack';
 import styles from './DemographicDataForm.module.css';
 import client from '../../../../utils/axiosInstance';
 import MyLoader from '../../../../components/MyLoader/MyLoader';
+import Typography from '@mui/material/Typography';
 
 
 /**
@@ -195,11 +196,14 @@ const DemographicDataForm = ({ surveyId }) => {
 
     fetchDemographicData();
   }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <div className={styles.DemographicDataForm}>
+    <div
+      className={styles.DemographicDataForm}
+    >
       <Box sx={{
         flexGrow: 1,
-        marginTop: 2,
+        marginTop: 4,
       }}>
         {isLoading === true && demographicData === null && <MyLoader />}
 
@@ -208,13 +212,25 @@ const DemographicDataForm = ({ surveyId }) => {
             container
             spacing={2}
           >
+            <Grid
+              item
+              xs={12}
+            >
+              <Typography
+                variant="subtitle1"
+                gutterBottom
+              >
+                Datos demográficos
+              </Typography>
+            </Grid>
+
             {demographicData.map(({ value }) => (
               <Grid
                 key={value}
                 item
-                xs={12}
-                sm={6}
-                md={4}
+                xs={6}
+                sm={4}
+                md={3}
               >
                 <FormGroup>
                   <FormControlLabel
@@ -363,9 +379,11 @@ const DemographicDataForm = ({ surveyId }) => {
 };
 
 DemographicDataForm.propTypes = {
-  surveyId: PropTypes.number.isRequired,
+  surveyId: PropTypes.number,
 };
 
-DemographicDataForm.defaultProps = {};
+DemographicDataForm.defaultProps = {
+  surveyId: null,
+};
 
 export default DemographicDataForm;
