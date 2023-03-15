@@ -3,9 +3,6 @@ import IconSidebar from "../../../Layout/IconSidebar/IconSidebar";
 import Navbar from "../../../Layout/Navbar/Navbar";
 import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import IconButton from "@mui/material/IconButton";
-import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useNavigate } from "react-router-dom";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -23,89 +20,6 @@ const theme = createTheme({
   },
 });
 
-const datatemplates = [
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 1,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 2,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 3,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 4,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 5,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 6,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 7,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 8,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 9,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 10,
-  },
-];
-
 /**
  * Survey index page.
  *
@@ -117,10 +31,6 @@ const Template = () => {
   const navigateSearch = useNavigateSearch();
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [data, setData] = useState([]);
-
-  const handleGoBack = () => {
-    navigate("/journey");
-  };
 
   /**
    * Handle create survey.
@@ -139,6 +49,7 @@ const Template = () => {
     navigateSearch('/journey/create-survey', querySearch);
   };
 
+  // component did mount
   useEffect(() => {
     if (
       userInfo?.role.findIndex((p) => p === "Journey") < 0 &&
@@ -150,7 +61,7 @@ const Template = () => {
     getTemplatesAPI().then((res) => {
       setData(res.data);
     });
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <ThemeProvider theme={theme}>
