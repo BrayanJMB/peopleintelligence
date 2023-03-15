@@ -1,11 +1,15 @@
 import TextField from '@mui/material/TextField';
-import TextareaAutosize from '@mui/material/TextareaAutosize';
 import Autocomplete from '@mui/material/Autocomplete';
 import styles from './Introduction.module.css';
 import { useEffect, useState } from 'react';
 import FormControl from '@mui/material/FormControl';
 import PropTypes from 'prop-types';
 import client from '../../../../utils/axiosInstance';
+import { useSearchParams } from 'react-router-dom';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormLabel from '@mui/material/FormLabel';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
 
 /**
  * Introduction component for the create survey page. Step 1.
@@ -18,6 +22,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
   const [maps, setMaps] = useState([]);
   const [map, setMap] = useState(null);
   const [isValidMap, setIsValidMap] = useState('');
+  const [surveyOrMap, setSurveyOrMap] = useState('survey');
   const [title, setTitle] = useState('');
   const [isValidTitle, setIsValidTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -25,6 +30,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
   const [mailingMessage, setMailingMessage] = useState('');
   const [isValidMailingMessage, setIsValidMailingMessage] = useState('');
   const [isValid, setIsValid] = useState(false);
+  const [searchParams] = useSearchParams();
 
   /**
    * Handel change.
@@ -41,6 +47,9 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
         break;
       case 'mailingMessage':
         setMailingMessage(event.target.value);
+        break;
+      case 'surveyOrMap':
+        setSurveyOrMap(event.target.value);
         break;
       default:
         break;
@@ -123,6 +132,13 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
     }
   }
 
+  /**
+   * Returns true if the survey is a template.
+   *
+   * @returns {boolean}
+   */
+  const isTemplate = () => searchParams.get('isTemplate') === 'true';
+
   // component did mount
   useEffect(() => {
     fetchMaps();
@@ -133,7 +149,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
       setDescription(previousData.description);
       setMailingMessage(previousData.mailingMessage);
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // listen changes in touched form
   useEffect(() => {
@@ -146,6 +162,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
   useEffect(() => {
     onUpdated({
       map,
+      surveyOrMap,
       title,
       description,
       mailingMessage,
@@ -155,10 +172,43 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
     if (checkForm || (map && title && description && mailingMessage)) {
       validate();
     }
-  }, [map, title, description, mailingMessage, isValid]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [map, title, description, mailingMessage, isValid, surveyOrMap]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={styles.form}>
+      {isTemplate() === true && (
+        <FormControl
+          className={styles.Introduction__formControl}
+        >
+          <FormLabel
+            id="survey-or-map"
+          >
+            Encuesta o ruta de mapa
+          </FormLabel>
+          <RadioGroup
+            row
+            name="surveyOrMap"
+            value={surveyOrMap}
+            onChange={handleChange}
+          >
+            <FormControlLabel
+              value="survey"
+              control={
+                <Radio />
+              }
+              label="Encuesta"
+            />
+            <FormControlLabel
+              value="map"
+              control={
+                <Radio />
+              }
+              label="Ruta de mapa"
+            />
+          </RadioGroup>
+        </FormControl>
+      )}
+      {/* survey/template title */}
       <FormControl
         style={{
           marginBottom: '1.5em',
