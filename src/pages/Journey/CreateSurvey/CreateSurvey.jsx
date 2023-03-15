@@ -13,15 +13,16 @@ import Cuestionario from "./Cuestionario/Cuestionario";
 import Intimidad from "./Intimidad/Intimidad.jsx";
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import Modal from "@mui/material/Modal";
-import ClearIcon from "@mui/icons-material/Clear";
-import IconButton from "@mui/material/IconButton";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import Form from "../../../components/Form/Form";
 import EditForm from "../../../components/EditForm/EditForm";
 import * as uuid from "uuid";
 import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 
 const theme = createTheme({
   palette: {
@@ -383,110 +384,114 @@ export default function CreateSurvey() {
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
-        <Modal
+        <Dialog
+          maxWidth="md"
           open={open}
           onClose={handleCloseModal}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
         >
-          <Box className={styles.modal}>
-            <div className={styles.modaltop}>
-              <div>
-                <IconButton onClick={handleCloseModal}>
-                  <ClearIcon sx={{ fontSize: "40px" }} />
-                </IconButton>
-              </div>
-            </div>
-            <div className={styles.modalbuttom}>
-              <h3 style={{ fontWeight: "500" }}>Agregar pregunta</h3>
-              <div className={styles.form}>
-                <div className={styles.input}>
-                  <Autocomplete
-                    id="combo-box-demo"
-                    style={{ flexBasis: "40%" }}
-                    options={questionTypes}
-                    value={type}
-                    onChange={(e, value) => {
-                      handleAutocomplete(value);
-                    }}
-                    getOptionLabel={(option) => option}
-                    noOptionsText={"No se ha encontrado ningún IdTipoDocumento"}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        error={errorMessage.IdTipoDocumento}
-                        helperText={helperText.IdTipoDocumento}
-                        label="Seleccionar tipo de pregunta"
-                      />
-                    )}
-                    size="small"
+          <DialogTitle>
+            Agregar pregunta
+          </DialogTitle>
+          <DialogContent>
+            <Box className={styles.modal}>
+              <div className={styles.modalbuttom}>
+                <div className={styles.form}>
+                  <div className={styles.input}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      style={{ flexBasis: "40%" }}
+                      options={questionTypes}
+                      value={type}
+                      onChange={(e, value) => {
+                        handleAutocomplete(value);
+                      }}
+                      getOptionLabel={(option) => option}
+                      noOptionsText={"No se ha encontrado ningún IdTipoDocumento"}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          error={errorMessage.IdTipoDocumento}
+                          helperText={helperText.IdTipoDocumento}
+                          label="Seleccionar tipo de pregunta"
+                        />
+                      )}
+                      size="small"
+                    />
+                  </div>
+                  <Form
+                    type={type}
+                    information={information}
+                    handleInformation={handleinformation}
+                    errorMessage={errorMessage}
+                    helperText={helperText}
+                    handleinformationoptions={handleinformationoptions}
+                    handleaddoption={handleaddoption}
+                    handleaddstars={handleaddstars}
+                    handledeletestars={handledeletestars}
+                    starmsg={starmsg}
                   />
                 </div>
-                <Form
-                  type={type}
-                  information={information}
-                  handleInformation={handleinformation}
-                  errorMessage={errorMessage}
-                  helperText={helperText}
-                  handleinformationoptions={handleinformationoptions}
-                  handleaddoption={handleaddoption}
-                  handleaddstars={handleaddstars}
-                  handledeletestars={handledeletestars}
-                  starmsg={starmsg}
-                />
               </div>
-            </div>
-            <div className={styles.bottom}>
-              <Button variant="text" onClick={handleCloseModal}>
-                CANCELAR
-              </Button>
-              <Button variant="contained" onClick={handleAgregar}>
-                Agregar
-              </Button>
-            </div>
-          </Box>
-        </Modal>
-        <Modal
-          open={edit}
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleCloseModal}
+              variant="outlined"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleAgregar}
+              variant="contained"
+            >
+              Agregar
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          maxWidth="md"
           onClose={handleCloseEditModal}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
+          open={edit}
         >
-          <Box className={styles.modal}>
-            <div className={styles.modaltop}>
-              <div>
-                <IconButton onClick={handleCloseEditModal}>
-                  <ClearIcon sx={{ fontSize: "40px" }} />
-                </IconButton>
+          <DialogTitle>
+            Editar pregunta
+          </DialogTitle>
+          <DialogContent>
+            <Box className={styles.modal}>
+              <div className={styles.modalbuttom}>
+                <div className={styles.form}>
+                  <EditForm
+                    question={question}
+                    handleInformation={handleQuestion}
+                    errorMessage={errorMessage}
+                    helperText={helperText}
+                    handleInformationOptions={handleeditoption}
+                    handleAddOption={handleeditaddoption}
+                    handleAddStars={handleeditstars}
+                    handleDeleteStars={handleeditdeletestars}
+                    starMessage={starmsg}
+                    questionNumber={Number(target + 1)}
+                  />
+                </div>
               </div>
-            </div>
-            <div className={styles.modalbuttom}>
-              <h3 style={{ fontWeight: "500" }}>Editar pregunta</h3>
-              <div className={styles.form}>
-                <EditForm
-                  question={question}
-                  handleInformation={handleQuestion}
-                  errorMessage={errorMessage}
-                  helperText={helperText}
-                  handleInformationOptions={handleeditoption}
-                  handleAddOption={handleeditaddoption}
-                  handleAddStars={handleeditstars}
-                  handleDeleteStars={handleeditdeletestars}
-                  starMessage={starmsg}
-                  questionNumber={Number(target + 1)}
-                />
-              </div>
-            </div>
-            <div className={styles.bottom}>
-              <Button variant="text" onClick={handleCloseEditModal}>
-                CANCELAR
-              </Button>
-              <Button variant="contained" onClick={handleAgregar}>
-                {edit ? "Actualizar" : "Agregar"}
-              </Button>
-            </div>
-          </Box>
-        </Modal>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleCloseEditModal}
+              variant="outlined"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleAgregar}
+              variant="contained"
+            >
+              Actualizar
+            </Button>
+          </DialogActions>
+        </Dialog>
         <Navbar />
         <IconSidebar />
         <div style={{ backgroundColor: "white" }}>
