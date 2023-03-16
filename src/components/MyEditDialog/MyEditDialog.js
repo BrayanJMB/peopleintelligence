@@ -8,8 +8,9 @@ import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 
-// field types
+// form field types
 const FIELD_TYPES = {
   TEXT: 'text',
 };
@@ -35,6 +36,16 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit }) => {
     }));
   };
 
+  /**
+   * Handle form submit.
+   *
+   * @param event
+   */
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    onSubmit(values);
+  };
+
   return (
     <div className={styles.MyEditDialog}>
       <Dialog
@@ -45,29 +56,35 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit }) => {
           {title}
         </DialogTitle>
         <DialogContent>
-          {/* form fields */}
-          {fields.map((field) => (
-            <FormControl
-              key={field.name}
-              sx={{
-                marginBottom: 2,
-                width: '100%',
-              }}
-            >
-              {field.type === FIELD_TYPES.TEXT && (
-                <TextField
-                  fullWidth
-                  id={field.name}
-                  label={field.label}
-                  name={field.name}
-                  onChange={handleInputChange}
-                  type="text"
-                  value={values[field.name] || field.value}
-                  variant="outlined"
-                />
-              )}
-            </FormControl>
-          ))}
+          <Box
+            sx={{
+              marginTop: 1,
+            }}
+          >
+            {/* form fields */}
+            {fields.map((field) => (
+              <FormControl
+                key={field.name}
+                sx={{
+                  marginBottom: 2,
+                  width: '100%',
+                }}
+              >
+                {field.type === FIELD_TYPES.TEXT && (
+                  <TextField
+                    fullWidth
+                    id={field.name}
+                    label={field.label}
+                    name={field.name}
+                    onChange={handleInputChange}
+                    type="text"
+                    value={values[field.name] || field.value}
+                    variant="outlined"
+                  />
+                )}
+              </FormControl>
+            ))}
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button
@@ -77,7 +94,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit }) => {
           </Button>
           <Button
             variant="contained"
-            onClick={() => onSubmit(values)}
+            onClick={handleFormSubmit}
           >
             Actualizar
           </Button>

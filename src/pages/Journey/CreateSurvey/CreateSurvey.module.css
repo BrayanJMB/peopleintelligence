@@ -9,6 +9,7 @@
 .survey_template {
   display: flex;
   flex-direction: column;
+  margin-top: 2em;
   margin-bottom: 3em;
 }
 .heading {

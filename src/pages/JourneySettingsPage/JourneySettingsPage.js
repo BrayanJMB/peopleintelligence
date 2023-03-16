@@ -1,19 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
-import Navbar from '../../Layout/Navbar/Navbar';
-import styles from "./JourneySettingsPage.module.css";
 import Box from "@mui/material/Box";
 import { useNavigate } from "react-router-dom";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { fetchJourneyMapAPI, deleteJourneyMapAPI } from "../../services/getJourneyMap.service";
-import { deleteCategoryAPI, fetchCategoriesAPI } from "../../services/getCategories.service";
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
+import { useSnackbar } from 'notistack';
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../Layout/Navbar/Navbar';
+import styles from "./JourneySettingsPage.module.css";
+import {
+  fetchJourneyMapAPI,
+  deleteJourneyMapAPI,
+  updateJourneyMapAPI,
+  storeJourneyMapAPI
+} from "../../services/getJourneyMap.service";
+import {
+  deleteCategoryAPI,
+  fetchCategoriesAPI,
+  storeCategoryAPI,
+  updateCategoryAPI
+} from "../../services/getCategories.service";
 import MyLoader from '../../components/MyLoader/MyLoader';
-import PageHeader from '../../components/PageHeader/PageHeader';
+import MyPageHeader from '../../components/MyPageHeader/MyPageHeader';
 import MyCard from '../../components/MyCard/MyCard';
 import MyTable from '../../components/MyTable/MyTable';
 import { isAdmin, isJourney } from '../../utils/helpers';
-import { useSnackbar } from 'notistack';
+import MyEditDialog from '../../components/MyEditDialog/MyEditDialog';
+import MyCreateDialog from '../../components/MyCreateDialog/MyCreateDialog';
 
 // category columns
 const categoryColumns = [
@@ -77,7 +92,9 @@ const JourneySettingsPage = () => {
   const [journeyMap, setJourneyMap] = useState([]);
   const [currentTab, setCurrentTab] = useState(0);
   const [currentEdit, setCurrentEdit] = useState(null);
+  const [currentCreate, setCurrentCreate] = useState(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   /**
@@ -133,9 +150,49 @@ const JourneySettingsPage = () => {
 
     setCurrentEdit({
       type: 'category',
-      fields: category,
+      id: category.id,
+      title: 'Editar categoría',
+      fields: [
+        {
+          label: 'Nombre',
+          name: 'name',
+          type: 'text',
+          value: category.nameCatogory,
+        },
+        {
+          label: 'Descripción',
+          name: 'description',
+          type: 'text',
+          value: category.descriptionCategory,
+        },
+      ],
     });
     setOpenEditDialog(true);
+  };
+
+  /**
+   * Handle create category.
+   */
+  const handleCreateCategory = () => {
+    setCurrentCreate({
+      type: 'category',
+      title: 'Crear categoría',
+      fields: [
+        {
+          label: 'Nombre',
+          name: 'name',
+          type: 'text',
+          isRequired: true,
+        },
+        {
+          label: 'Descripción',
+          name: 'description',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
   };
 
   /**
@@ -151,6 +208,12 @@ const JourneySettingsPage = () => {
     }
 
     await deleteCategoryAPI(id);
+    enqueueSnackbar(
+      'Categoría eliminada con éxito',
+      {
+        variant: 'success',
+      },
+    );
   }
 
   /**
@@ -168,10 +231,62 @@ const JourneySettingsPage = () => {
 
     setCurrentEdit({
       type: 'journeyMap',
-      fields: map,
+      id: id,
+      title: 'Editar mapa de viaje',
+      fields: [
+        {
+          label: 'Nombre',
+          name: 'name',
+          type: 'text',
+          value: map.mapJourney,
+        },
+        {
+          label: 'Descripción',
+          name: 'description',
+          type: 'text',
+          value: map.description,
+        },
+        {
+          label: 'URL de icono',
+          name: 'icon',
+          type: 'text',
+          value: map.iconUrl,
+        }
+      ],
     });
     setOpenEditDialog(true);
   }
+
+  /**
+   * Handle create journey map.
+   */
+  const handleCreateJourneyMap = () => {
+    setCurrentCreate({
+      type: 'journeyMap',
+      title: 'Crear mapa de viaje',
+      fields: [
+        {
+          label: 'Nombre',
+          name: 'name',
+          type: 'text',
+          isRequired: true,
+        },
+        {
+          label: 'Descripción',
+          name: 'description',
+          type: 'text',
+          isRequired: true,
+        },
+        {
+          label: 'URL de icono',
+          name: 'icon',
+          type: 'text',
+          isRequired: false,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
 
   /**
    * Handle delete journey map.
@@ -187,7 +302,123 @@ const JourneySettingsPage = () => {
     }
 
     await deleteJourneyMapAPI(id);
+    enqueueSnackbar(
+      'Mapa de viaje eliminado con éxito',
+      {
+        variant: 'success',
+      },
+    );
   }
+
+  /**
+   * Handle close edit dialog.
+   */
+  const handleCloseEditDialog = () => {
+    setOpenEditDialog(false);
+  };
+
+  /**
+   * Handle close create dialog.
+   */
+  const handleCloseCreateDialog = () => {
+    setOpenCreateDialog(false);
+  };
+
+  /**
+   * Handle submitted edit dialog.
+   *
+   * @param formValues
+   * @returns {Promise<void>}
+   */
+  const handleSubmittedEditDialog = async (formValues) => {
+    if (currentEdit.type === 'category') {
+      // find category
+      const category = categories.find((category) => category.id === currentEdit.id);
+
+      if (category === undefined) {
+        return;
+      }
+
+      category.nameCatogory = formValues.name || category.nameCatogory;
+      category.descriptionCategory = formValues.description || category.descriptionCategory;
+
+      try {
+        await updateCategoryAPI(category);
+      } catch (e) {}
+      enqueueSnackbar(
+        'Categoría actualizada con éxito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+    if (currentEdit.type === 'journeyMap') {
+      // find category
+      const map = journeyMap.find((map) => map.id === currentEdit.id);
+
+      if (map === undefined) {
+        return;
+      }
+
+      map.mapJourney = formValues.name || map.mapJourney;
+      map.description = formValues.description || map.description;
+      map.iconUrl = formValues.iconUrl || map.iconUrl;
+
+      try {
+        await updateJourneyMapAPI(map);
+      } catch (e) {}
+      enqueueSnackbar(
+        'Mapa de viaje actualizado con éxito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+
+    setCurrentEdit(null);
+    setOpenEditDialog(false);
+  }
+
+  /**
+   * Handle submitted create dialog.
+   *
+   * @param formValues
+   * @returns {Promise<void>}
+   */
+  const handleSubmittedCreateDialog = async (formValues) => {
+    if (currentCreate.type === 'category') {
+      try {
+        await storeCategoryAPI({
+          nameCatogory: formValues.name,
+          descriptionCategory: formValues.description,
+        });
+      } catch (e) {}
+      enqueueSnackbar(
+        'Categoría creada con éxito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+    if (currentCreate.type === 'journeyMap') {
+      try {
+        await storeJourneyMapAPI({
+          mapJourney: formValues.name,
+          description: formValues.description,
+          iconUrl: formValues.icon,
+        });
+      } catch (e) {}
+      enqueueSnackbar(
+        'Mapa de viaje creado con éxito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+
+    setCurrentCreate(null);
+    setOpenCreateDialog(false);
+  };
 
   /**
    * Map categories response to use in table.
@@ -275,7 +506,7 @@ const JourneySettingsPage = () => {
       <div style={{ backgroundColor: "white" }}>
         <div className={styles.JourneySettingsPage}>
           <div className={styles.JourneySettingsPage__content}>
-            <PageHeader
+            <MyPageHeader
               title="Administrar encuestas"
             />
 
@@ -311,8 +542,25 @@ const JourneySettingsPage = () => {
                     >
                       {currentTab === 0 && (
                         <Box
-                          sx={{ p: 3 }}
+                          sx={{
+                            p: 3,
+                        }}
                         >
+                          <Stack
+                            spacing={2}
+                            direction="row-reverse"
+                            sx={{
+                              mb: 2,
+                            }}
+                          >
+                            <Button
+                              variant="outlined"
+                              startIcon={<AddIcon />}
+                              onClick={handleCreateCategory}
+                            >
+                              Crear categoría
+                            </Button>
+                          </Stack>
                           <MyTable
                             title={'Listado de categorías'}
                             columns={categoryColumns}
@@ -330,6 +578,21 @@ const JourneySettingsPage = () => {
                         <Box
                           sx={{ p: 3 }}
                         >
+                          <Stack
+                            spacing={2}
+                            direction="row-reverse"
+                            sx={{
+                              mb: 2,
+                            }}
+                          >
+                            <Button
+                              variant="outlined"
+                              startIcon={<AddIcon />}
+                              onClick={handleCreateJourneyMap}
+                            >
+                              Crear mapa
+                            </Button>
+                          </Stack>
                           <MyTable
                             title={'Listado de mapas'}
                             columns={journeyMapColumns}
@@ -345,6 +608,28 @@ const JourneySettingsPage = () => {
           </div>
         </div>
       </div>
+
+      {/* edit form */}
+      {currentEdit !== null && (
+        <MyEditDialog
+          onClose={handleCloseEditDialog}
+          onSubmit={handleSubmittedEditDialog}
+          title={currentEdit.title}
+          open={openEditDialog}
+          fields={currentEdit.fields}
+        />
+      )}
+
+      {/* create form */}
+      {currentCreate !== null && (
+        <MyCreateDialog
+          onClose={handleCloseCreateDialog}
+          onSubmit={handleSubmittedCreateDialog}
+          title={currentCreate.title}
+          open={openCreateDialog}
+          fields={currentCreate.fields}
+        />
+      )}
     </Box>
   );
 }

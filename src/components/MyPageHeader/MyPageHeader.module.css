@@ -1,0 +1,27 @@
+.MyPageHeader {
+    display: flex;
+    align-items: center;
+}
+.MyPageHeader__backIcon {
+    width: 48px;
+    height: 48px;
+    align-items: center;
+    display: flex;
+    margin-right: 1.1em;
+}
+.MyPageHeader__icon {
+    vertical-align: middle;
+    margin-right: 0.4em;
+    display: inline-block;
+    color: #03aae4;
+}
+.MyPageHeader__icon svg {
+    width: 1.5em;
+    height: 1.5em;
+}
+.MyPageHeader__title {
+    flex: 1 1 0;
+    font-size: 1.5em !important;
+    font-weight: 600 !important;
+    margin-left: 1em;
+}

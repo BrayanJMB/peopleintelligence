@@ -12,7 +12,7 @@ import Introduction from "./Introduction/Introduction";
 import Cuestionario from "./Cuestionario/Cuestionario";
 import Intimidad from "./Intimidad/Intimidad.jsx";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import ClearIcon from "@mui/icons-material/Clear";
 import IconButton from "@mui/material/IconButton";
@@ -21,6 +21,7 @@ import TextField from "@mui/material/TextField";
 import Form from "../../../components/Form/Form";
 import EditForm from "../../../components/EditForm/EditForm";
 import * as uuid from "uuid";
+import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
 
 const theme = createTheme({
   palette: {
@@ -45,6 +46,7 @@ const questionTypes = [
 export default function CreateSurvey() {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [activeStep, setActiveStep] = useState(0);
   const [questions, setQuestions] = useState([]);
   const [target, setTarget] = useState("");
@@ -352,6 +354,21 @@ export default function CreateSurvey() {
     setQuestions(tmp);
   };
 
+  /**
+   * Return header title.
+   *
+   * @returns {string}
+   */
+  const getHeaderTitle = () => {
+    const isTemplate = searchParams.get('isTemplate');
+
+    if (isTemplate === 'true') {
+      return 'Crear plantilla';
+    }
+
+    return 'Crear encuesta';
+  }
+
   useEffect(() => {
     if (
       userInfo?.role.findIndex((p) => p === "Journey") < 0 &&
@@ -475,29 +492,12 @@ export default function CreateSurvey() {
         <div style={{ backgroundColor: "white" }}>
           <div className={styles.content}>
             <div className={styles.survey_template}>
-              <div className={styles.heading}>
-                <DesignServicesIcon
-                  sx={{
-                    fontSize: "40px",
-                    marginLeft: "0.5em",
-                    color: "#03aae4",
-                  }}
+              <div className={styles.data}>
+                <MyPageHeader
+                  title={getHeaderTitle()}
+                  Icon={<DesignServicesIcon />}
                 />
 
-                <div style={{ paddingRight: "1em" }} className={styles.text}>
-                  <h1
-                    style={{
-                      fontSize: "24px",
-                      letterSpacing: 0,
-                      fontWeight: "500",
-                      margin: 0,
-                    }}
-                  >
-                    Crear una encuesta
-                  </h1>
-                </div>
-              </div>
-              <div className={styles.data}>
                 <div className={styles.display}>
                   <Stepper activeStep={activeStep} className={styles.stepper}>
                     {steps.map((label, index) => {

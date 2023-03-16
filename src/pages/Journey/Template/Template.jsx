@@ -11,6 +11,9 @@ import { useNavigate } from "react-router-dom";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useEffect, useState } from "react";
 import { getTemplatesAPI } from "../../../services/getTemplates.service";
+import { isAdmin } from '../../../utils/helpers';
+import useNavigateSearch from '../../../hooks/useNavigateSearch';
+import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
 
 const theme = createTheme({
   palette: {
@@ -103,18 +106,37 @@ const datatemplates = [
   },
 ];
 
-export default function Template() {
+/**
+ * Survey index page.
+ *
+ * @returns {JSX.Element}
+ * @constructor
+ */
+const Template = () => {
   const navigate = useNavigate();
+  const navigateSearch = useNavigateSearch();
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [data, setData] = useState([]);
 
   const handleGoBack = () => {
     navigate("/journey");
   };
-  const handleCreateSurvey = () => {
-    if (userInfo?.role.findIndex((p) => p === "Administrador") > -1) {
-      navigate("/journey/create-survey");
+
+  /**
+   * Handle create survey.
+   *
+   * @param isTemplate
+   */
+  const handleCreateSurvey = (isTemplate = false) => {
+    if (!isAdmin(userInfo)) {
+      return;
     }
+
+    const querySearch = {
+      isTemplate,
+    };
+
+    navigateSearch('/journey/create-survey', querySearch);
   };
 
   useEffect(() => {
@@ -138,26 +160,15 @@ export default function Template() {
         <div style={{ backgroundColor: "white" }}>
           <div className={styles.content}>
             <div className={styles.survey_template}>
-              <div className={styles.heading}>
-                <IconButton
-                  style={{ marginRight: "1rem" }}
-                  onClick={handleGoBack}
-                >
-                  <KeyboardBackspaceIcon sx={{ fontSize: "30px" }} />
-                </IconButton>
-                <div style={{ paddingRight: "1em" }} className={styles.text}>
-                  <h1
-                    style={{
-                      fontSize: "24px",
-                      letterSpacing: 0,
-                      fontWeight: "500",
-                      margin: 0,
-                    }}
-                  >
-                    Plantilla de encuesta
-                  </h1>
-                </div>
+
+              <div
+                className={styles.heading}
+              >
+                <MyPageHeader
+                  title="Plantilla de encuesta"
+                />
               </div>
+
               <div className={styles.templates}>
                 <p
                   style={{
@@ -171,7 +182,10 @@ export default function Template() {
                 <div
                   style={{ display: "flex", flexDirection: "row", gap: "6em" }}
                 >
-                  <div className={styles.template} onClick={handleCreateSurvey}>
+                  {/* create template */}
+                  <div
+                    className={styles.template}
+                    onClick={() => handleCreateSurvey(true)}>
                     <div className={styles.title}>
                       <AddCircleOutlineIcon /> <p>Crea tu plantilla</p>
                     </div>
@@ -183,7 +197,12 @@ export default function Template() {
                       <KeyboardArrowRightIcon />
                     </div>
                   </div>
-                  <div className={styles.template} onClick={handleCreateSurvey}>
+
+                  {/* create survey */}
+                  <div
+                    className={styles.template}
+                    onClick={() => handleCreateSurvey()}
+                  >
                     <div className={styles.title}>
                       <AddCircleOutlineIcon /> <p>Crea tu propia encuesta</p>
                     </div>
@@ -239,3 +258,5 @@ export default function Template() {
     </ThemeProvider>
   );
 }
+
+export default Template;

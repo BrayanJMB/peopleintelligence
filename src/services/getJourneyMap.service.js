@@ -3,7 +3,7 @@ import axios from "../utils/axiosInstance";
 /**
  * Fetch Journey Map.
  *
- * @returns {Promise<AxiosResponse<any>>}
+ * @returns {Promise<any>}
  */
 export const fetchJourneyMapAPI = async () => axios.get('GetJorneyMap/');
 
@@ -12,15 +12,15 @@ export const fetchJourneyMapAPI = async () => axios.get('GetJorneyMap/');
  *
  * @param id
  * @param data
- * @returns {Promise<AxiosResponse<any>>}
+ * @returns {Promise<any>}
  */
-export const updateJourneyMapAPI = async (id, data) => axios.put(`GetJorneyMap/${id}`, data);
+export const updateJourneyMapAPI = async ({id, ...data}) => axios.put(`GetJorneyMap/${id}`, data);
 
 /**
  * Delete Journey Map.
  *
  * @param id
- * @returns {Promise<AxiosResponse<any>>}
+ * @returns {Promise<any>}
  */
 export const deleteJourneyMapAPI = async (id) => axios.delete(`GetJorneyMap/${id}`);
 
@@ -28,7 +28,7 @@ export const deleteJourneyMapAPI = async (id) => axios.delete(`GetJorneyMap/${id
  * Store Journey Map.
  *
  * @param data
- * @returns {Promise<AxiosResponse<any>>}
+ * @returns {Promise<any>}
  */
 export const storeJourneyMapAPI = async (data) => axios.post('GetJorneyMap/', data);
 
@@ -37,6 +37,6 @@ export const storeJourneyMapAPI = async (data) => axios.post('GetJorneyMap/', da
  *
  * @param companyId
  * @param mapId
- * @returns {Promise<AxiosResponse<any>>}
+ * @returns {Promise<any>}
  */
 export const getJourneysCompanyAPI = async (companyId, mapId) => axios.get(`GetJorneysCompany/${companyId}/${mapId}`);
