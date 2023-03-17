@@ -35,7 +35,7 @@ import {
 } from '../../features/surveys/surveysSlice';
 import { useParams } from 'react-router-dom';
 import client, { API } from '../../utils/axiosInstance';
-import DemographicDataForm from './components/DemographicDataForm/DemographicDataForm';
+import DemographicDataForm from '../../components/DemographicDataForm/DemographicDataForm';
 import SendInvitationDialog from './components/SendInvitationDialog/SendInvitationDialog';
 import MyPageHeader from '../../components/MyPageHeader/MyPageHeader';
 
