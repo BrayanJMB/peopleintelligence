@@ -1,33 +1,38 @@
-import styles from "./CreateSurvey.module.css";
-import IconSidebar from "../../../Layout/IconSidebar/IconSidebar";
-import Navbar from "../../../Layout/Navbar/Navbar";
-import Box from "@mui/material/Box";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import DesignServicesIcon from "@mui/icons-material/DesignServices";
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
-import Button from "@mui/material/Button";
-import Introduction from "./Introduction/Introduction";
-import Cuestionario from "./Cuestionario/Cuestionario";
-import Intimidad from "./Intimidad/Intimidad.jsx";
-import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import Form from "../../../components/Form/Form";
-import EditForm from "../../../components/EditForm/EditForm";
-import * as uuid from "uuid";
-import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
+import { Fragment, useEffect,useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import DesignServicesIcon from '@mui/icons-material/DesignServices';
+import Autocomplete from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog'; 
 import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Stepper from '@mui/material/Stepper';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
+import * as uuid from 'uuid';
+
+import DemographicDataForm from '../../../components/DemographicDataForm/DemographicDataForm';
+import EditForm from '../../../components/EditForm/EditForm';
+import Form from '../../../components/Form/Form';
+import MyCard from '../../../components/MyCard/MyCard';
+import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
+import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../../Layout/Navbar/Navbar';
+
+import Cuestionario from './Cuestionario/Cuestionario';
+import Intimidad from './Intimidad/Intimidad.jsx';
+import Introduction from './Introduction/Introduction';
+
+import styles from './CreateSurvey.module.css';
 
 const theme = createTheme({
   palette: {
     blue: {
-      main: "#03aae4",
+      main: '#03aae4',
     },
   },
 });
@@ -45,35 +50,36 @@ const questionTypes = [
 ];
 
 export default function CreateSurvey() {
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [activeStep, setActiveStep] = useState(0);
   const [questions, setQuestions] = useState([]);
-  const [target, setTarget] = useState("");
+  const [target, setTarget] = useState('');
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
   const [data, setData] = useState(null);
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
-  const [type, setType] = useState("");
-  const [starmsg, setStarmsg] = useState("");
+  const [type, setType] = useState('');
+  const [starmsg, setStarmsg] = useState('');
   const [information, setInformation] = useState({
-    name: "",
-    description: "",
+    name: '',
+    description: '',
     options: [
-      "Muy en desacuerdo",
-      "Discrepar",
-      "Neutral",
-      "Estar de acuerdo",
-      "Totalmente de acuerdo",
+      'Muy en desacuerdo',
+      'Discrepar',
+      'Neutral',
+      'Estar de acuerdo',
+      'Totalmente de acuerdo',
     ],
-    customOptions: Array(2).fill(""),
-    stars: Array(3).fill(""),
+    customOptions: Array(2).fill(''),
+    stars: Array(3).fill(''),
   });
   const [question, setQuestion] = useState();
   const [anonyme, setAnonyme] = useState(true);
   const [checkForm, setCheckForm] = useState(false);
+  const [newDemographics, setNewDemographics] = useState([]);
 
   /**
    * Handle introduction change.
@@ -82,7 +88,7 @@ export default function CreateSurvey() {
    */
   const handleIntroductionChange = (updatedData) => {
     setData(updatedData);
-  }
+  };
 
   const handleContinuar = () => {
     if (activeStep === 0) {
@@ -95,12 +101,12 @@ export default function CreateSurvey() {
     } else if (activeStep === 1) {
       setActiveStep((val) => val + 1);
     } else if (activeStep === 2) {
-      console.log("submit to api");
+      console.log('submit to api');
     }
   };
   const handleCerrar = () => {
     if (activeStep === 0) {
-      navigate("/journey");
+      navigate('/journey');
     } else {
       setActiveStep((val) => val - 1);
     }
@@ -135,29 +141,29 @@ export default function CreateSurvey() {
   };
   const handleaddstars = () => {
     if (information.stars.length === 10) {
-      setStarmsg("Elija un valor entre 3 y 10");
+      setStarmsg('Elija un valor entre 3 y 10');
     } else {
-      setStarmsg("");
+      setStarmsg('');
       let holder = [...information.stars];
-      holder.push("");
+      holder.push('');
       setInformation({ ...information, stars: holder });
     }
   };
   const handleeditstars = () => {
     let holder = [...question.stars];
     if (holder.length === 10) {
-      setStarmsg("Elija un valor entre 3 y 10");
+      setStarmsg('Elija un valor entre 3 y 10');
     } else {
-      setStarmsg("");
-      holder.push("");
+      setStarmsg('');
+      holder.push('');
       setQuestion({ ...question, stars: holder });
     }
   };
   const handledeletestars = () => {
     if (information.stars.length === 3) {
-      setStarmsg("Elija un valor entre 3 y 10");
+      setStarmsg('Elija un valor entre 3 y 10');
     } else {
-      setStarmsg("");
+      setStarmsg('');
       let holder = [...information.stars];
       holder.splice(1, 1);
       setInformation({ ...information, stars: holder });
@@ -166,21 +172,21 @@ export default function CreateSurvey() {
   const handleeditdeletestars = () => {
     let holder = [...question.stars];
     if (holder.length === 3) {
-      setStarmsg("Elija un valor entre 3 y 10");
+      setStarmsg('Elija un valor entre 3 y 10');
     } else {
-      setStarmsg("");
+      setStarmsg('');
       holder.splice(1, 1);
       setQuestion({ ...question, stars: holder });
     }
   };
   const handleaddoption = () => {
     let holder = [...information.customOptions];
-    holder.push("");
+    holder.push('');
     setInformation({ ...information, customOptions: holder });
   };
   const handleeditaddoption = () => {
     let holder = [...question.customOptions];
-    holder.push("");
+    holder.push('');
     setQuestion({ ...question, customOptions: holder });
   };
   const handleAdd = () => {
@@ -208,9 +214,25 @@ export default function CreateSurvey() {
     });
     setQuestions(holder);
   };
-  const handleSelect = (value) => {
-    setData({ ...data, mapa: value });
+
+  /**
+   * Handle checked demographic.
+   * 
+   * @param {string[]} demographics Can be ID or unique name.
+   */
+  const handleCheckedDemographic = (demographics) => {
+    setData({ ...data, demographics });
   };
+
+  /**
+   * Handle new demographic change.
+   *
+   * @param {Object[]} demographics 
+   */
+  const handleNewDemographicChange = (demographics) => {
+    setNewDemographics(demographics);
+  };
+
   const renderSwitch = (activeStep) => {
     switch (activeStep) {
       case 0:
@@ -223,13 +245,21 @@ export default function CreateSurvey() {
         );
       case 1:
         return (
-          <Cuestionario
-            questions={questions}
-            onEnd={onEnd}
-            handleAdd={handleAdd}
-            handleDelete={handledelete}
-            handleEdit={handleEdit}
-          />
+          <Fragment>
+            <MyCard>
+              <DemographicDataForm
+                onChange={handleCheckedDemographic}
+                onChangeNewDemographics={handleNewDemographicChange}
+              />
+            </MyCard>
+            <Cuestionario
+              questions={questions}
+              onEnd={onEnd}
+              handleAdd={handleAdd}
+              handleDelete={handledelete}
+              handleEdit={handleEdit}
+            />
+          </Fragment>
         );
       case 2:
         return <Intimidad anonyme={anonyme} handleAnonyme={handleanonyme} />;
@@ -274,11 +304,11 @@ export default function CreateSurvey() {
     } else {
       let bad = false;
       if (information.name.length < 5) {
-        helperText.name = "Se requiere un mínimo de 5 caracteres.";
+        helperText.name = 'Se requiere un mínimo de 5 caracteres.';
         error.name = true;
         bad = true;
       } else {
-        helperText.name = "";
+        helperText.name = '';
         error.name = false;
       }
       if (bad) {
@@ -287,15 +317,15 @@ export default function CreateSurvey() {
       } else {
         setErrorMessage({});
         setHelperText({});
-        if (type === "Texto corto") {
+        if (type === 'Texto corto') {
           handleAddQuestion({
-            type: "Texto corto",
+            type: 'Texto corto',
             name: information.name,
             description: information.description,
           });
-        } else if (type === "Escala Likert") {
+        } else if (type === 'Escala Likert') {
           handleAddQuestion({
-            type: "Escala Likert",
+            type: 'Escala Likert',
             name: information.name,
             description: information.description,
             options: information.options,
@@ -314,9 +344,9 @@ export default function CreateSurvey() {
             description: information.description,
             customOptions: information.customOptions,
           });
-        } else if (type === "Calificaciones") {
+        } else if (type === 'Calificaciones') {
           handleAddQuestion({
-            type: "Calificaciones",
+            type: 'Calificaciones',
             name: information.name,
             description: information.description,
             stars: information.stars,
@@ -325,20 +355,20 @@ export default function CreateSurvey() {
       }
     }
     setInformation({
-      name: "",
-      description: "",
+      name: '',
+      description: '',
       options: [
-        "Muy en desacuerdo",
-        "Discrepar",
-        "Neutral",
-        "Estar de acuerdo",
-        "Totalmente de acuerdo",
+        'Muy en desacuerdo',
+        'Discrepar',
+        'Neutral',
+        'Estar de acuerdo',
+        'Totalmente de acuerdo',
       ],
-      customOptions: Array(2).fill(""),
-      stars: Array(3).fill(""),
+      customOptions: Array(2).fill(''),
+      stars: Array(3).fill(''),
     });
-    setQuestion("");
-    setType("");
+    setQuestion('');
+    setType('');
     handleCloseModal();
   };
   const handleAddQuestion = (question) => {
@@ -368,22 +398,22 @@ export default function CreateSurvey() {
     }
 
     return 'Crear encuesta';
-  }
+  };
 
   useEffect(() => {
     if (
-      userInfo?.role.findIndex((p) => p === "Journey") < 0 &&
-      userInfo?.role.findIndex((p) => p === "Administrador") < 0
+      userInfo?.role.findIndex((p) => p === 'Journey') < 0 &&
+      userInfo?.role.findIndex((p) => p === 'Administrador') < 0
     ) {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+      alert('No tiene permiso para acceder a esta funcionalidad');
+      navigate('/dashboard');
     }
     setQuestions(questions);
   }, [questions]);
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: 'flex' }}>
         <Dialog
           maxWidth="md"
           open={open}
@@ -399,14 +429,14 @@ export default function CreateSurvey() {
                   <div className={styles.input}>
                     <Autocomplete
                       id="combo-box-demo"
-                      style={{ flexBasis: "40%" }}
+                      style={{ flexBasis: '40%' }}
                       options={questionTypes}
                       value={type}
                       onChange={(e, value) => {
                         handleAutocomplete(value);
                       }}
                       getOptionLabel={(option) => option}
-                      noOptionsText={"No se ha encontrado ningún IdTipoDocumento"}
+                      noOptionsText={'No se ha encontrado ningún IdTipoDocumento'}
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -494,7 +524,7 @@ export default function CreateSurvey() {
         </Dialog>
         <Navbar />
         <IconSidebar />
-        <div style={{ backgroundColor: "white" }}>
+        <div style={{ backgroundColor: 'white' }}>
           <div className={styles.content}>
             <div className={styles.survey_template}>
               <div className={styles.data}>
@@ -517,11 +547,11 @@ export default function CreateSurvey() {
                 <div className={styles.display}>{renderSwitch(activeStep)}</div>
                 <div
                   className={styles.display}
-                  style={{ position: "sticky", bottom: 0 }}
+                  style={{ position: 'sticky', bottom: 0 }}
                 >
                   <div className={styles.impexp}>
                     <Button variant="text" onClick={handleCerrar}>
-                      {activeStep === 0 ? "Cerrar" : "atrás"}
+                      {activeStep === 0 ? 'Cerrar' : 'atrás'}
                     </Button>
                     <Button
                       variant="contained"
@@ -529,8 +559,8 @@ export default function CreateSurvey() {
                       disabled={activeStep !== 0 && questions.length === 0}
                     >
                       {activeStep === 2
-                        ? "Seleccionar encuestados"
-                        : "Continuar"}
+                        ? 'Seleccionar encuestados'
+                        : 'Continuar'}
                     </Button>
                   </div>
                 </div>
