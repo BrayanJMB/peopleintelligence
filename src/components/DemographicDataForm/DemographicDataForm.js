@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import SaveIcon from '@mui/icons-material/Save';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -211,6 +212,10 @@ const DemographicDataForm = ({ surveyId, onChange, onChangeNewDemographics }) =>
   useEffect(() => {
     // merge with new demographics, preventing duplicates
     setDemographicData((prevDemographicData) => {
+      if (prevDemographicData === null) {
+        return null;
+      }
+
       const newDemographicData = newDemographics.map((name) => ({
         value: name,
       }));
@@ -235,7 +240,6 @@ const DemographicDataForm = ({ surveyId, onChange, onChangeNewDemographics }) =>
     >
       <Box sx={{
         flexGrow: 1,
-        marginTop: 4,
       }}>
         {isLoading === true && demographicData === null && <MyLoader />}
 
@@ -248,12 +252,23 @@ const DemographicDataForm = ({ surveyId, onChange, onChangeNewDemographics }) =>
               item
               xs={12}
             >
-              <Typography
-                variant="subtitle1"
-                gutterBottom
-              >
-                Datos demográficos
-              </Typography>
+              <Box className={styles.DemographicDataForm__header}>
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                >
+                  Datos demográficos
+                </Typography>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleOpenDialog}
+                  className={styles.DemographicDataForm__header__button}
+                  startIcon={<AddIcon />}
+                >
+                  Demográfico
+                </Button>
+              </Box>
             </Grid>
 
             {demographicData.map(({ value }) => (
@@ -283,13 +298,6 @@ const DemographicDataForm = ({ surveyId, onChange, onChangeNewDemographics }) =>
           marginTop: 2,
           display: 'flex',
         }}>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={handleOpenDialog}
-          >
-            Crear nuevo demográfico
-          </Button>
           {surveyId !== null && (
             <Button
               color="primary"
@@ -298,8 +306,9 @@ const DemographicDataForm = ({ surveyId, onChange, onChangeNewDemographics }) =>
               sx={{
                 marginLeft: 'auto',
               }}
+              startIcon={<SaveIcon />}
             >
-              Guardar demográficos
+              Demográficos
             </Button>
           )}
         </Box>
