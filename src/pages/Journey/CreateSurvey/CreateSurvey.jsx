@@ -1,6 +1,7 @@
-import { Fragment, useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import DesignServicesIcon from '@mui/icons-material/DesignServices';
+import { Divider } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -11,14 +12,12 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import * as uuid from 'uuid';
 
 import DemographicDataForm from '../../../components/DemographicDataForm/DemographicDataForm';
 import EditForm from '../../../components/EditForm/EditForm';
 import Form from '../../../components/Form/Form';
-import MyCard from '../../../components/MyCard/MyCard';
 import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
 import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../../Layout/Navbar/Navbar';
@@ -29,13 +28,7 @@ import Introduction from './Introduction/Introduction';
 
 import styles from './CreateSurvey.module.css';
 
-const theme = createTheme({
-  palette: {
-    blue: {
-      main: '#03aae4',
-    },
-  },
-});
+
 const steps = [
   'Introducción',
   'Cuestionario',
@@ -245,13 +238,14 @@ export default function CreateSurvey() {
         );
       case 1:
         return (
-          <Fragment>
-            <MyCard>
-              <DemographicDataForm
-                onChange={handleCheckedDemographic}
-                onChangeNewDemographics={handleNewDemographicChange}
-              />
-            </MyCard>
+          <Box
+            width="100%"
+          >
+            <DemographicDataForm
+              onChange={handleCheckedDemographic}
+              onChangeNewDemographics={handleNewDemographicChange}
+            />
+            <Divider />
             <Cuestionario
               questions={questions}
               onEnd={onEnd}
@@ -259,7 +253,7 @@ export default function CreateSurvey() {
               handleDelete={handledelete}
               handleEdit={handleEdit}
             />
-          </Fragment>
+          </Box>
         );
       case 2:
         return <Intimidad anonyme={anonyme} handleAnonyme={handleanonyme} />;
@@ -412,163 +406,164 @@ export default function CreateSurvey() {
   }, [questions]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <Box sx={{ display: 'flex' }}>
-        <Dialog
-          maxWidth="md"
-          open={open}
-          onClose={handleCloseModal}
-        >
-          <DialogTitle>
-            Agregar pregunta
-          </DialogTitle>
-          <DialogContent>
-            <Box className={styles.modal}>
-              <div className={styles.modalbuttom}>
-                <div className={styles.form}>
-                  <div className={styles.input}>
-                    <Autocomplete
-                      id="combo-box-demo"
-                      style={{ flexBasis: '40%' }}
-                      options={questionTypes}
-                      value={type}
-                      onChange={(e, value) => {
-                        handleAutocomplete(value);
-                      }}
-                      getOptionLabel={(option) => option}
-                      noOptionsText={'No se ha encontrado ningún IdTipoDocumento'}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          error={errorMessage.IdTipoDocumento}
-                          helperText={helperText.IdTipoDocumento}
-                          label="Seleccionar tipo de pregunta"
-                        />
-                      )}
-                      size="small"
-                    />
-                  </div>
-                  <Form
-                    type={type}
-                    information={information}
-                    handleInformation={handleinformation}
-                    errorMessage={errorMessage}
-                    helperText={helperText}
-                    handleinformationoptions={handleinformationoptions}
-                    handleaddoption={handleaddoption}
-                    handleaddstars={handleaddstars}
-                    handledeletestars={handledeletestars}
-                    starmsg={starmsg}
+    <Box sx={{ display: 'flex' }}>
+      <Dialog
+        maxWidth="md"
+        open={open}
+        onClose={handleCloseModal}
+      >
+        <DialogTitle>
+          Agregar pregunta
+        </DialogTitle>
+        <DialogContent>
+          <Box className={styles.modal}>
+            <div className={styles.modalbuttom}>
+              <div className={styles.form}>
+                <div className={styles.input}>
+                  <Autocomplete
+                    id="combo-box-demo"
+                    style={{ flexBasis: '40%' }}
+                    options={questionTypes}
+                    value={type}
+                    onChange={(e, value) => {
+                      handleAutocomplete(value);
+                    }}
+                    getOptionLabel={(option) => option}
+                    noOptionsText={'No se ha encontrado ningún IdTipoDocumento'}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        error={errorMessage.IdTipoDocumento}
+                        helperText={helperText.IdTipoDocumento}
+                        label="Seleccionar tipo de pregunta"
+                      />
+                    )}
+                    size="small"
                   />
                 </div>
-              </div>
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={handleCloseModal}
-              variant="outlined"
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleAgregar}
-              variant="contained"
-            >
-              Agregar
-            </Button>
-          </DialogActions>
-        </Dialog>
-        <Dialog
-          maxWidth="md"
-          onClose={handleCloseEditModal}
-          open={edit}
-        >
-          <DialogTitle>
-            Editar pregunta
-          </DialogTitle>
-          <DialogContent>
-            <Box className={styles.modal}>
-              <div className={styles.modalbuttom}>
-                <div className={styles.form}>
-                  <EditForm
-                    question={question}
-                    handleInformation={handleQuestion}
-                    errorMessage={errorMessage}
-                    helperText={helperText}
-                    handleInformationOptions={handleeditoption}
-                    handleAddOption={handleeditaddoption}
-                    handleAddStars={handleeditstars}
-                    handleDeleteStars={handleeditdeletestars}
-                    starMessage={starmsg}
-                    questionNumber={Number(target + 1)}
-                  />
-                </div>
-              </div>
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={handleCloseEditModal}
-              variant="outlined"
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleAgregar}
-              variant="contained"
-            >
-              Actualizar
-            </Button>
-          </DialogActions>
-        </Dialog>
-        <Navbar />
-        <IconSidebar />
-        <div style={{ backgroundColor: 'white' }}>
-          <div className={styles.content}>
-            <div className={styles.survey_template}>
-              <div className={styles.data}>
-                <MyPageHeader
-                  title={getHeaderTitle()}
-                  Icon={<DesignServicesIcon />}
+                <Form
+                  type={type}
+                  information={information}
+                  handleInformation={handleinformation}
+                  errorMessage={errorMessage}
+                  helperText={helperText}
+                  handleinformationoptions={handleinformationoptions}
+                  handleaddoption={handleaddoption}
+                  handleaddstars={handleaddstars}
+                  handledeletestars={handledeletestars}
+                  starmsg={starmsg}
                 />
+              </div>
+            </div>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleCloseModal}
+            variant="outlined"
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleAgregar}
+            variant="contained"
+          >
+            Agregar
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        maxWidth="md"
+        onClose={handleCloseEditModal}
+        open={edit}
+      >
+        <DialogTitle>
+          Editar pregunta
+        </DialogTitle>
+        <DialogContent>
+          <Box className={styles.modal}>
+            <div className={styles.modalbuttom}>
+              <div className={styles.form}>
+                <EditForm
+                  question={question}
+                  handleInformation={handleQuestion}
+                  errorMessage={errorMessage}
+                  helperText={helperText}
+                  handleInformationOptions={handleeditoption}
+                  handleAddOption={handleeditaddoption}
+                  handleAddStars={handleeditstars}
+                  handleDeleteStars={handleeditdeletestars}
+                  starMessage={starmsg}
+                  questionNumber={Number(target + 1)}
+                />
+              </div>
+            </div>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleCloseEditModal}
+            variant="outlined"
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleAgregar}
+            variant="contained"
+          >
+            Actualizar
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Navbar />
+      <IconSidebar />
+      <div style={{ backgroundColor: 'white' }}>
+        <div className={styles.content}>
+          <div className={styles.survey_template}>
+            <div className={styles.data}>
+              <MyPageHeader
+                title={getHeaderTitle()}
+                Icon={<DesignServicesIcon />}
+              />
 
-                <div className={styles.display}>
-                  <Stepper activeStep={activeStep} className={styles.stepper}>
-                    {steps.map((label, index) => {
-                      return (
-                        <Step key={label}>
-                          <StepLabel>{label}</StepLabel>
-                        </Step>
-                      );
-                    })}
-                  </Stepper>
-                </div>
-                <div className={styles.display}>{renderSwitch(activeStep)}</div>
-                <div
-                  className={styles.display}
-                  style={{ position: 'sticky', bottom: 0 }}
+              <div className={styles.display}>
+                <Stepper
+                  activeStep={activeStep}
+                  className={styles.stepper}
                 >
-                  <div className={styles.impexp}>
-                    <Button variant="text" onClick={handleCerrar}>
-                      {activeStep === 0 ? 'Cerrar' : 'atrás'}
-                    </Button>
-                    <Button
-                      variant="contained"
-                      onClick={handleContinuar}
-                      disabled={activeStep !== 0 && questions.length === 0}
-                    >
-                      {activeStep === 2
-                        ? 'Seleccionar encuestados'
-                        : 'Continuar'}
-                    </Button>
-                  </div>
+                  {steps.map((label, index) => {
+                    return (
+                      <Step key={label}>
+                        <StepLabel>{label}</StepLabel>
+                      </Step>
+                    );
+                  })}
+                </Stepper>
+              </div>
+              <div className={styles.display}>{renderSwitch(activeStep)}</div>
+              <div
+                className={styles.display}
+                style={{ position: 'sticky', bottom: 0 }}
+              >
+                <div className={styles.impexp}>
+                  <Button variant="text" onClick={handleCerrar}>
+                    {activeStep === 0 ? 'Cerrar' : 'atrás'}
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={handleContinuar}
+                    disabled={activeStep !== 0 && questions.length === 0}
+                  >
+                    {activeStep === 2
+                      ? 'Seleccionar encuestados'
+                      : 'Continuar'}
+                  </Button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </Box>
-    </ThemeProvider>
+      </div>
+    </Box>
   );
 }

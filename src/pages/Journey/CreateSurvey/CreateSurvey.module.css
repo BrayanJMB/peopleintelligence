@@ -51,6 +51,7 @@
   border-radius: 8px;
   padding: 20px;
   box-shadow: rgb(79 81 110 / 30%) 0px 2px 4px;
+  justify-content: center;
 }
 .stepper {
   display: flex;
