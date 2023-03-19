@@ -1,43 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import Box from "@mui/material/Box";
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DownloadIcon from '@mui/icons-material/Download';
+import EditIcon from '@mui/icons-material/Edit';
+import EmailIcon from '@mui/icons-material/Email';
+import LinkIcon from '@mui/icons-material/Link';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ReplyIcon from '@mui/icons-material/Reply';
+import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
+import { Divider } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+import { amber, blue, teal } from '@mui/material/colors';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Typography from '@mui/material/Typography';
-import EditIcon from '@mui/icons-material/Edit';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
-import { blue, amber, teal } from '@mui/material/colors';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import EmailIcon from '@mui/icons-material/Email';
-import ReplyIcon from '@mui/icons-material/Reply';
-import Button from '@mui/material/Button';
-import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
-import LinkIcon from '@mui/icons-material/Link';
-import DownloadIcon from '@mui/icons-material/Download';
 import Snackbar from '@mui/material/Snackbar';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
-import Navbar from '../../Layout/Navbar/Navbar';
-import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
-import styles from './SurveyDetailPage.module.css';
-import MyCard from '../../components/MyCard/MyCard';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  selectSurveysStatus,
-  selectCurrentSurvey,
-  fetchSurveyByIdAndCompanyId
-} from '../../features/surveys/surveysSlice';
-import { useParams } from 'react-router-dom';
-import client, { API } from '../../utils/axiosInstance';
+import Typography from '@mui/material/Typography';
+
 import DemographicDataForm from '../../components/DemographicDataForm/DemographicDataForm';
-import SendInvitationDialog from './components/SendInvitationDialog/SendInvitationDialog';
+import MyCard from '../../components/MyCard/MyCard';
 import MyPageHeader from '../../components/MyPageHeader/MyPageHeader';
+import {
+  fetchSurveyByIdAndCompanyId,
+  selectCurrentSurvey,
+  selectSurveysStatus} from '../../features/surveys/surveysSlice';
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../Layout/Navbar/Navbar';
+import client, { API } from '../../utils/axiosInstance';
+
+import SendInvitationDialog from './components/SendInvitationDialog/SendInvitationDialog';
+
+import styles from './SurveyDetailPage.module.css';
 
 // survey options
 const options = [
@@ -139,7 +142,7 @@ const SurveyDetailPage = () => {
 
     navigator.clipboard.writeText(currentSurvey.response.link);
     setLinkCopied(true);
-  }
+  };
 
   /**
    * Handle close snackbar.
@@ -147,7 +150,7 @@ const SurveyDetailPage = () => {
   const handleCloseSnackbar = () => {
     setLinkCopied(false);
     setReminderSent(false);
-  }
+  };
 
   /**
    * Send reminder to users.
@@ -203,11 +206,11 @@ const SurveyDetailPage = () => {
   }, [currentSurvey]);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Navbar />
       <IconSidebar />
 
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: 'white' }}>
         <div className={styles.SurveyDetailPage}>
           <div className={styles.SurveyDetailPage__content}>
             {currentSurvey !== null && surveysStatus === 'succeeded' && (
@@ -323,9 +326,16 @@ const SurveyDetailPage = () => {
 
                     {/* demographic data form */}
                     {showDemographicData === true && (
-                      <DemographicDataForm
-                        surveyId={Number(surveyId)}
-                      />
+                      <Box
+                        mt={3}
+                      >
+                        <Divider
+                          sx={{ margin: '21px 0' }}
+                        />
+                        <DemographicDataForm
+                          surveyId={Number(surveyId)}
+                        />
+                      </Box>
                     )}
                   </MyCard>
                 </Grid>
