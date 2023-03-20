@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import DesignServicesIcon from '@mui/icons-material/DesignServices';
 import { Divider } from '@mui/material';
@@ -13,6 +14,7 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import TextField from '@mui/material/TextField';
+import { useSnackbar } from 'notistack';
 import * as uuid from 'uuid';
 
 import DemographicDataForm from '../../../components/DemographicDataForm/DemographicDataForm';
@@ -21,6 +23,7 @@ import Form from '../../../components/Form/Form';
 import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
 import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../../Layout/Navbar/Navbar';
+import client from '../../../utils/axiosInstance';
 
 import Cuestionario from './Cuestionario/Cuestionario';
 import Intimidad from './Intimidad/Intimidad.jsx';
@@ -69,11 +72,15 @@ export default function CreateSurvey() {
     customOptions: Array(2).fill(''),
     stars: Array(3).fill(''),
   });
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [question, setQuestion] = useState();
-  const [anonyme, setAnonyme] = useState(true);
+  const [anonymous, setAnonymous] = useState(true);
   const [checkForm, setCheckForm] = useState(false);
   const [newDemographics, setNewDemographics] = useState([]);
-
+  const [loading, setLoading] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const isTemplate = searchParams.get('isTemplate') === 'true';
+  
   /**
    * Handle introduction change.
    *
@@ -83,20 +90,106 @@ export default function CreateSurvey() {
     setData(updatedData);
   };
 
-  const handleContinuar = () => {
-    if (activeStep === 0) {
-      setCheckForm(true);
+  /**
+   * Create survey.
+   */
+  const createSurvey = async () => {
+    setLoading(true);
 
-      if (data.isValid) {
-        setActiveStep((val) => val + 1);
-        setCheckForm(false);
+    const demographics = [];
+
+    data.demographics.forEach((demographic) => {
+      const index = newDemographics.findIndex(
+        (item) => item.name === demographic,
+      );
+
+      if (index !== -1) {
+        demographics.push({
+          name: newDemographics[index].name,
+          options: newDemographics[index].options.map((option) => ({
+            value: option,
+            text: option,
+          })),
+        });
+      } else {
+        demographics.push({
+          name: demographic,
+          options: [],
+        });
       }
-    } else if (activeStep === 1) {
-      setActiveStep((val) => val + 1);
-    } else if (activeStep === 2) {
-      console.log('submit to api');
+    });
+
+    const newSurvey = {
+      survey: {
+        nameSurvey: data.title,
+        descriptionSurvey: data.description,
+        ispersonal: !anonymous,
+        jorneyMapId: data.map.id,
+        companyId: currentCompany.id,
+      },
+      questions: questions.map((question) => ({
+        question: {
+          nameQuestion: question.name,
+          typeQuestionId: question.type,
+          questionId: 0,
+          score: question.stars?.length,
+        },
+        options: question.customOptions?.map((option, index) => ({
+          optionsName: option,
+          numberOption: index + 1,
+        })),
+      })),
+      demographics,
+    };
+    try {
+      await client.post(`/createJourney/${currentCompany.id}`, newSurvey);
+    } catch (e) {}
+
+    setLoading(false);
+    navigate('/journey/survey-template');
+    enqueueSnackbar('Cuestionario creado con éxito', {
+      variant: 'success',
+    });
+  };
+
+  /**
+   * Create survey template.
+   */
+  const createTemplate = async () => {
+    setLoading(true);
+
+    // Create survey
+
+    setLoading(false);
+    navigate('/journey/survey-template');
+    enqueueSnackbar('Plantilla creada con éxito', {
+      variant: 'success',
+    });
+  };
+
+  /**
+   * Handle next step.
+   */
+  const handleNextStep = () => {
+    switch (activeStep) {
+      case 0:
+        setCheckForm(true);
+        if (data.isValid) {
+          setActiveStep((val) => val + 1);
+          setCheckForm(false);
+        }
+        break;
+      case 1:
+        setActiveStep((val) => val + 1);
+        break;
+      case 2:
+        isTemplate ? createTemplate() : createSurvey();
+        break;
+      default:
+        setActiveStep(0);
     }
   };
+
   const handleCerrar = () => {
     if (activeStep === 0) {
       navigate('/journey');
@@ -256,7 +349,7 @@ export default function CreateSurvey() {
           </Box>
         );
       case 2:
-        return <Intimidad anonyme={anonyme} handleAnonyme={handleanonyme} />;
+        return <Intimidad anonyme={anonymous} handleAnonyme={handleanonyme} />;
       default:
         return null;
     }
@@ -267,7 +360,7 @@ export default function CreateSurvey() {
   };
   const handleCloseEditModal = () => setEdit(false);
   const handleanonyme = (event) => {
-    setAnonyme(event.target.value);
+    setAnonymous(event.target.value);
   };
 
   const reorder = (list, start, end) => {
@@ -385,9 +478,7 @@ export default function CreateSurvey() {
    * @returns {string}
    */
   const getHeaderTitle = () => {
-    const isTemplate = searchParams.get('isTemplate');
-
-    if (isTemplate === 'true') {
+    if (isTemplate) {
       return 'Crear plantilla';
     }
 
@@ -551,8 +642,8 @@ export default function CreateSurvey() {
                   </Button>
                   <Button
                     variant="contained"
-                    onClick={handleContinuar}
-                    disabled={activeStep !== 0 && questions.length === 0}
+                    onClick={handleNextStep}
+                    disabled={(activeStep !== 0 && questions.length === 0) || loading === true}
                   >
                     {activeStep === 2
                       ? 'Seleccionar encuestados'
