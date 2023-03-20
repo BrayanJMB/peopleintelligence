@@ -1,15 +1,17 @@
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import styles from './Introduction.module.css';
 import { useEffect, useState } from 'react';
-import FormControl from '@mui/material/FormControl';
-import PropTypes from 'prop-types';
-import client from '../../../../utils/axiosInstance';
 import { useSearchParams } from 'react-router-dom';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormLabel from '@mui/material/FormLabel';
+import Autocomplete from '@mui/material/Autocomplete';
+import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
 import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import TextField from '@mui/material/TextField';
+import PropTypes from 'prop-types';
+
+import client from '../../../../utils/axiosInstance';
+
+import styles from './Introduction.module.css';
 
 /**
  * Introduction component for the create survey page. Step 1.
@@ -54,7 +56,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
       default:
         break;
     }
-  }
+  };
 
   /**
    * Handle change map.
@@ -130,7 +132,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
       setIsValidMailingMessage('Este campo debe tener al menos 5 caracteres');
       setIsValid(false);
     }
-  }
+  };
 
   /**
    * Returns true if the survey is a template.
@@ -293,16 +295,16 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
       </FormControl>
     </div>
   );
-}
+};
 
 Introduction.propTypes = {
   onUpdated: PropTypes.func.isRequired,
   checkForm: PropTypes.bool.isRequired,
   previousData: PropTypes.object,
-}
+};
 
 Introduction.defaultProps = {
   previousData: {},
-}
+};
 
 export default Introduction;
