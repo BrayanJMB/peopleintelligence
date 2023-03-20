@@ -1,13 +1,13 @@
-import axios from "axios";
+import axios from 'axios';
 
-export const API = "https://peopleintelligenceapi.azurewebsites.net/api/";
+export const API = 'https://peopleintelligenceapi.azurewebsites.net/api/';
 
 const instance = axios.create({
   baseURL: API,
 });
 instance.interceptors.request.use(
   (config) => {
-    let userParsed = JSON.parse(localStorage.getItem("userInfo"));
+    let userParsed = JSON.parse(localStorage.getItem('userInfo'));
 
     if (userParsed) {
       config.headers.Authorization = `Bearer ${userParsed.accessToken}`;
