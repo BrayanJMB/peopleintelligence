@@ -81,7 +81,10 @@ const DemographicDataForm = ({ surveyId, onChange, onChangeNewDemographics }) =>
     enqueueSnackbar('Demográfico creado correctamente.', {
       variant: 'success',
     });
-    setNewDemographics((prev) => [...prev, newDemographicName]);
+    setNewDemographics((prev) => [...prev, {
+      name: newDemographicName,
+      options: newDemographicOptions,
+    }]);
     setIsLoading(false);
     setOpenDialog(false);
   };
@@ -163,15 +166,18 @@ const DemographicDataForm = ({ surveyId, onChange, onChangeNewDemographics }) =>
    */
   const handleCheckboxChange = (event) => {
     const { checked, value } = event.target;
+    let updatedDemographicChecked = [];
 
     if (checked) {
       setDemographicChecked((prev) => [...prev, value]);
+      updatedDemographicChecked = [...demographicChecked, value];
     } else {
-      setDemographicChecked((prev) => prev.filter((item) => item !== value));
+      updatedDemographicChecked = demographicChecked.filter((item) => item !== value);
     }
 
+    setDemographicChecked(updatedDemographicChecked);
     // emit change event (callback prop) for new survey or template
-    onChange(demographicChecked);
+    onChange(updatedDemographicChecked);
   };
 
   /**
@@ -216,11 +222,14 @@ const DemographicDataForm = ({ surveyId, onChange, onChangeNewDemographics }) =>
         return null;
       }
 
-      const newDemographicData = newDemographics.map((name) => ({
+      const newDemographicData = newDemographics.map(({ name }) => ({
         value: name,
       }));
 
-      const updatedDemographicData = [...prevDemographicData, ...newDemographicData];
+      const updatedDemographicData = [
+        ...prevDemographicData,
+        ...newDemographicData,
+      ];
 
       // remove duplicates (by value)
       return updatedDemographicData.filter((item, index) => {
