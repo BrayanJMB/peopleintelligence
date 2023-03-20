@@ -91,11 +91,11 @@ export default function CreateSurvey() {
   };
 
   /**
-   * Create survey.
+   * Get demographics for create survey or template.
+   * 
+   * @returns 
    */
-  const createSurvey = async () => {
-    setLoading(true);
-
+  const getDemographics = () => {
     const demographics = [];
 
     data.demographics.forEach((demographic) => {
@@ -119,6 +119,15 @@ export default function CreateSurvey() {
       }
     });
 
+    return demographics;
+  };
+
+  /**
+   * Create survey.
+   */
+  const createSurvey = async () => {
+    setLoading(true);
+
     const newSurvey = {
       survey: {
         nameSurvey: data.title,
@@ -139,8 +148,9 @@ export default function CreateSurvey() {
           numberOption: index + 1,
         })),
       })),
-      demographics,
+      demographics: getDemographics(),
     };
+
     try {
       await client.post(`/createJourney/${currentCompany.id}`, newSurvey);
     } catch (e) {}
@@ -159,6 +169,31 @@ export default function CreateSurvey() {
     setLoading(true);
 
     // Create survey
+    const newTemplate = {
+      templateSurvey: {
+        nameSurvey: data.title,
+        descriptionSurvey: data.description,
+        messagemail: data.mailingMessage,
+        isObligatory: data.surveyOrMap === 'survey',
+        demograficos: getDemographics(),
+      },
+      seccionQuestion: questions.map((question) => ({
+        templateQuestion: {
+          nameQuestion: question.name,
+          typeQuestionId: question.type,
+          questionId: 0,
+          score: question.stars?.length,
+        },
+        templateOption: question.customOptions?.map((option, index) => ({
+          templateOptionsName: option,
+          numberOption: index + 1,
+        })),
+      })),
+    };
+
+    try {
+      await client.post('Administrator/createTemplate', newTemplate);
+    } catch (e) {}
 
     setLoading(false);
     navigate('/journey/survey-template');
@@ -197,9 +232,7 @@ export default function CreateSurvey() {
       setActiveStep((val) => val - 1);
     }
   };
-  const handlechange = (event) => {
-    setData({ ...data, [event.target.name]: event.target.value });
-  };
+
   const handleinformation = (event) => {
     setInformation({ ...information, [event.target.name]: event.target.value });
   };
