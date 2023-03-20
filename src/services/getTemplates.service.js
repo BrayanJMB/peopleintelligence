@@ -1,8 +1,3 @@
-import axios from "../utils/axiosInstance";
+import axios from '../utils/axiosInstance';
 
-export const getTemplatesAPI = async () => {
-  console.log("getTemplatesAPI");
-
-  const response = await axios.get("GetTemplates/");
-  return response;
-};
+export const fetchTemplatesAPI = async () => axios.get('GetTemplates/');
