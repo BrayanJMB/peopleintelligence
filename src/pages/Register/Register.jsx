@@ -1,28 +1,30 @@
-import { useState, useCallback, useEffect } from "react";
-import styles from "./Register.module.css";
-import { useParams } from "react-router-dom";
-import Navbar from "../../Layout/Navbar/Navbar";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Building from "../../assets/Building.svg";
-import Modal from "@mui/material/Modal";
-import ClearIcon from "@mui/icons-material/Clear";
-import IconButton from "@mui/material/IconButton";
-import NewDashboard from "../../components/NewDashboard/NewDashboard";
-import NewReport from "../../components/NewReport/NewReport";
-import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
-import Table from "../../components/Table";
-import * as uuid from "uuid";
-import axios from "../../utils/axiosInstance";
-import { getReportsAPI } from "../../services/getReports.service";
-import { getDashboardsAPI } from "../../services/getDashboards.service";
-import { useSelector, useDispatch } from "react-redux";
-import { addItem, storeItems, updateItem } from "../../features/powerBiSlice";
-import { postReportAPI } from "../../services/postReport.service";
-import { postDashboardAPI } from "../../services/postDashboard.service";
-import { editReportAPI } from "../../services/editReport.service";
-import { editDashboardAPI } from "../../services/editDashboard.service";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect,useState } from 'react';
+import { useDispatch,useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import ClearIcon from '@mui/icons-material/Clear';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Modal from '@mui/material/Modal';
+import * as uuid from 'uuid';
+
+import Building from '../../assets/Building.svg';
+import NewDashboard from '../../components/NewDashboard/NewDashboard';
+import NewReport from '../../components/NewReport/NewReport';
+import Table from '../../components/Table';
+import { addItem, storeItems, updateItem } from '../../features/powerBiSlice';
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../Layout/Navbar/Navbar';
+import { editDashboardAPI } from '../../services/editDashboard.service';
+import { editReportAPI } from '../../services/editReport.service';
+import { getDashboardsAPI } from '../../services/getDashboards.service';
+import { getReportsAPI } from '../../services/getReports.service';
+import { postDashboardAPI } from '../../services/postDashboard.service';
+import { postReportAPI } from '../../services/postReport.service';
+import axios from '../../utils/axiosInstance';
+
+import styles from './Register.module.css';
 
 const search = (value, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -39,19 +41,19 @@ export default function Register() {
   const { type } = useParams();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
   // state for input
   const [dashboard, setDashboard] = useState({
-    reportId: "",
-    groupId: "",
-    reportName: "",
-    descriptionReport: "",
-    companyId: "",
+    reportId: '',
+    groupId: '',
+    reportName: '',
+    descriptionReport: '',
+    companyId: '',
   });
   const [report, setReport] = useState({
-    name: "",
-    descripcion: "",
+    name: '',
+    descripcion: '',
   });
 
   const tableData = powerBi[type];
@@ -66,7 +68,7 @@ export default function Register() {
 
   const companyConsume = async () => {
     try {
-      await axios.get("companias/").then((res) => {
+      await axios.get('companias/').then((res) => {
         let fetch = [];
         let id = [];
         res.data.forEach((val) => {
@@ -86,7 +88,7 @@ export default function Register() {
   };
   const reportConsume = async () => {
     try {
-      await axios.get("ListaDashboards/").then((res) => {
+      await axios.get('ListaDashboards/').then((res) => {
         let fetch = [];
         let id = [];
         res.data.forEach((val) => {
@@ -116,8 +118,8 @@ export default function Register() {
 
   const handleAutoCompleteDashboard = useCallback(
     (name, value) => {
-      if (name === "reportName") {
-        let holder = search(value, data.ids.report, "descripcion", "name");
+      if (name === 'reportName') {
+        let holder = search(value, data.ids.report, 'descripcion', 'name');
         setDashboard({
           ...dashboard,
           [name]: value,
@@ -152,24 +154,24 @@ export default function Register() {
       tmp.companyId = search(
         dashboard.companyId,
         data.ids.company,
-        "id",
-        "nombreCompania"
+        'id',
+        'nombreCompania'
       );
       postDashboardAPI(tmp)
         .then((res) => dispatch(addItem({ data: holder, type: type })))
         .catch((err) => {
           if (err.response.status === 500) {
-            alert("no puede haber dashboard Iguales");
+            alert('no puede haber dashboard Iguales');
           }
         });
     }
     setDashboard({
-      nombreCompania: "",
-      IdPais: "",
-      Sede: "",
-      direccion: "",
-      IdTamanoCompania: "",
-      SectorId: "",
+      nombreCompania: '',
+      IdPais: '',
+      Sede: '',
+      direccion: '',
+      IdTamanoCompania: '',
+      SectorId: '',
     });
     handleCloseModal();
   };
@@ -185,8 +187,8 @@ export default function Register() {
       postReportAPI(holder);
     }
     setReport({
-      name: "",
-      descripcion: "",
+      name: '',
+      descripcion: '',
     });
     handleCloseModal();
   };
@@ -210,7 +212,7 @@ export default function Register() {
 
   const renderModal = () => {
     switch (type) {
-      case "dashboard":
+      case 'dashboard':
         return (
           <NewDashboard
             info={dashboard}
@@ -222,7 +224,7 @@ export default function Register() {
             handleAddDashboard={handleDashboard}
           />
         );
-      case "report":
+      case 'report':
         return (
           <NewReport
             info={report}
@@ -252,9 +254,9 @@ export default function Register() {
       holder._id = row._id;
       dispatch(updateItem({ data: holder, type: type, id: holder._id }));
       if (event.target.checked) {
-        alert("El dashborad esta desactivado");
+        alert('El dashborad esta desactivado');
       } else {
-        alert("El dashboard esta activo");
+        alert('El dashboard esta activo');
       }
     });
   };
@@ -262,12 +264,12 @@ export default function Register() {
   //edit item
   const handleEditItem = (row) => {
     switch (type) {
-      case "dashboard":
+      case 'dashboard':
         setDashboard({
           ...row,
         });
         break;
-      case "report":
+      case 'report':
         setReport({ ...row });
         break;
       default:
@@ -278,7 +280,7 @@ export default function Register() {
 
   const getTableData = () => {
     switch (type) {
-      case "dashboard":
+      case 'dashboard':
         reportConsume();
         companyConsume();
         getDashboardsAPI()
@@ -296,7 +298,7 @@ export default function Register() {
           })
           .catch((e) => console.log(e));
         break;
-      case "report":
+      case 'report':
         companyConsume();
         getReportsAPI()
           .then((res) => {
@@ -320,15 +322,15 @@ export default function Register() {
   };
 
   useEffect(() => {
-    if (userInfo?.role.findIndex((p) => p === "PowerBiAdministrator") < 0) {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+    if (userInfo?.role.findIndex((p) => p === 'PowerBiAdministrator') < 0) {
+      alert('No tiene permiso para acceder a esta funcionalidad');
+      navigate('/dashboard');
     }
     getTableData();
   }, [type]);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Navbar />
       <IconSidebar />
       <Modal
@@ -340,18 +342,18 @@ export default function Register() {
         <Box className={styles.modal}>
           <div className={styles.modaltop}>
             <h2>
-              {open ? "Nueva" : "Editar"} {type}
+              {open ? 'Nueva' : 'Editar'} {type}
             </h2>
             <div>
               <IconButton onClick={handleCloseModal}>
-                <ClearIcon sx={{ fontSize: "40px" }} />
+                <ClearIcon sx={{ fontSize: '40px' }} />
               </IconButton>
             </div>
           </div>
           <div className={styles.modalbuttom}>{renderModal()}</div>
         </Box>
       </Modal>
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: 'white' }}>
         <div className={styles.content}>
           <div className={styles.crud}>
             <div className={styles.top}>
@@ -368,9 +370,9 @@ export default function Register() {
                 <Button
                   variant="contained"
                   style={{
-                    whiteSpace: "nowrap",
-                    padding: "1rem 1rem",
-                    color: "white",
+                    whiteSpace: 'nowrap',
+                    padding: '1rem 1rem',
+                    color: 'white',
                   }}
                   color="primary"
                   onClick={handleOpenModal}

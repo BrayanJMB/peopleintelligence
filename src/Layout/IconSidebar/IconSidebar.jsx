@@ -1,49 +1,51 @@
-import { useState } from "react";
-import styles from "./IconSidebar.module.css";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import Toolbar from "@mui/material/Toolbar";
-import Iletter from "../../assets/icons/Iletter.png";
-import Aletter from "../../assets/icons/Aletter.png";
-import Oletter from "../../assets/icons/Oletter.png";
-import Dletter from "../../assets/icons/Dletter.png";
-import Jletter from "../../assets/icons/Jletter.png";
-import Sletter from "../../assets/icons/Sletter.png";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import Drawer from "@mui/material/Drawer";
-import Box from "@mui/material/Box";
-import multicompani from "../../assets/multicompani.jpeg";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar from '@mui/material/Toolbar';
+
+import Aletter from '../../assets/icons/Aletter.png';
+import Dletter from '../../assets/icons/Dletter.png';
+import Iletter from '../../assets/icons/Iletter.png';
+import Jletter from '../../assets/icons/Jletter.png';
+import Oletter from '../../assets/icons/Oletter.png';
+import Sletter from '../../assets/icons/Sletter.png';
+import multicompani from '../../assets/multicompani.jpeg';
+
+import styles from './IconSidebar.module.css';
 
 const names = [
-  "Information Management",
-  "Advanced Analytics & Dashboards",
-  "Organizational Network Analysis",
-  "Dynamic Live Conversations",
-  "Employee Journey",
-  "Sentiment Analysis",
+  'Information Management',
+  'Advanced Analytics & Dashboards',
+  'Organizational Network Analysis',
+  'Dynamic Live Conversations',
+  'Employee Journey',
+  'Sentiment Analysis',
 ];
 
 const list = [Iletter, Aletter, Oletter, Dletter, Jletter, Sletter];
 
 const drop = [
-  ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
-  ["powerbi"],
-  ["Crear encuesta", "Ver encuestas"],
-  ["Build", "Live", "Analysis"],
-  ["journey"],
-  ["Empresas", "Empleados", "Oficinas", "Departamentos"],
+  ['Empresas', 'Empleados', 'Oficinas', 'Departamentos', 'Otros campos'],
+  ['powerbi'],
+  ['Crear encuesta', 'Ver encuestas'],
+  ['Build', 'Live', 'Analysis'],
+  ['journey'],
+  ['Empresas', 'Empleados', 'Oficinas', 'Departamentos'],
 ];
 const project = [
-  "infoadmin",
-  "powerbi",
-  "onas",
-  "conversation",
-  "journey",
-  "analysis",
+  'infoadmin',
+  'powerbi',
+  'onas',
+  'conversation',
+  'journey',
+  'analysis',
 ];
 
 const drawerWidth = 150;
@@ -51,39 +53,39 @@ const drawerWidth = 150;
 export default function IconSidebar() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(Array(6).fill(null));
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
   const handleItemClick = (index) => (event) => {
     if (
       index === 0 &&
-      userInfo?.role.findIndex((p) => p === "Administrador") < 0 &&
-      userInfo?.role.findIndex((p) => p === "Management") < 0 &&
-      userInfo?.role.findIndex((p) => p === "MultiCompania") < 0
+      userInfo?.role.findIndex((p) => p === 'Administrador') < 0 &&
+      userInfo?.role.findIndex((p) => p === 'Management') < 0 &&
+      userInfo?.role.findIndex((p) => p === 'MultiCompania') < 0
     ) {
       event.preventDefault();
     } else if (
       index === 1 &&
-      userInfo?.role.findIndex((p) => p === "PowerBiDashboard") < 0
+      userInfo?.role.findIndex((p) => p === 'PowerBiDashboard') < 0
     ) {
       event.preventDefault();
     } else if (
       index === 2 &&
-      userInfo?.role.findIndex((p) => p === "Onas") < 0
+      userInfo?.role.findIndex((p) => p === 'Onas') < 0
     ) {
       event.preventDefault();
     } else if (
       index === 3 &&
-      userInfo?.role.findIndex((p) => p === "Dinamyc") < 0
+      userInfo?.role.findIndex((p) => p === 'Dinamyc') < 0
     ) {
       event.preventDefault();
     } else if (
       index === 4 &&
-      userInfo?.role.findIndex((p) => p === "Journey") < 0
+      userInfo?.role.findIndex((p) => p === 'Journey') < 0
     ) {
       event.preventDefault();
     } else if (
       index === 5 &&
-      userInfo?.role.findIndex((p) => p === "Sentimental") < 0
+      userInfo?.role.findIndex((p) => p === 'Sentimental') < 0
     ) {
       event.preventDefault();
     } else {
@@ -110,17 +112,17 @@ export default function IconSidebar() {
 
   const handleRedirect = (index, key) => {
     if (index === 1) {
-      navigate("/" + project[index]);
+      navigate('/' + project[index]);
     } else if (index === 2) {
       if (key === 1) {
-        navigate("/onas/ver-encuestas");
+        navigate('/onas/ver-encuestas');
       } else {
-        navigate("/onas");
+        navigate('/onas');
       }
     } else if (index === 4) {
-      navigate("/journey");
+      navigate('/journey');
     } else {
-      navigate("/" + project[index] + "/" + drop[index][key]);
+      navigate('/' + project[index] + '/' + drop[index][key]);
     }
 
     handleClose(index);
@@ -137,20 +139,20 @@ export default function IconSidebar() {
       <Drawer
         variant="permanent"
         sx={{
-          display: { sm: "block" },
-          "& .MuiDrawer-paper": {
+          display: { sm: 'block' },
+          '& .MuiDrawer-paper': {
             width: { md: 220, lg: drawerWidth, sm: 180 },
-            overflow: "hidden",
-            border: "none",
+            overflow: 'hidden',
+            border: 'none',
           },
         }}
         open
       >
-        <Toolbar style={{ marginTop: "1.5em" }}>
+        <Toolbar style={{ marginTop: '1.5em' }}>
           <img
             src={
-              userInfo?.role.findIndex((p) => p === "MultiCompania") < 0
-                ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+              userInfo?.role.findIndex((p) => p === 'MultiCompania') < 0
+                ? 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
                 : multicompani
             }
             alt="profile"
@@ -159,11 +161,11 @@ export default function IconSidebar() {
         </Toolbar>
         <List
           style={{
-            marginTop: "0.5rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-around",
-            gap: "1em",
+            marginTop: '0.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-around',
+            gap: '1em',
           }}
         >
           {names.map((text, index) => (
@@ -172,16 +174,16 @@ export default function IconSidebar() {
                 onMouseEnter={handleItemClick(index)}
                 onClick={handleItemClick(index)}
                 style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "center",
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
                 }}
-                id={"demo-positioned-button" + index}
+                id={'demo-positioned-button' + index}
                 aria-controls={
-                  Boolean(anchorEl[index]) ? "demo-positioned-menu" : undefined
+                  Boolean(anchorEl[index]) ? 'demo-positioned-menu' : undefined
                 }
                 aria-haspopup="true"
-                aria-expanded={Boolean(anchorEl[index]) ? "true" : undefined}
+                aria-expanded={Boolean(anchorEl[index]) ? 'true' : undefined}
               >
                 <ListItemIcon>
                   <img
@@ -197,20 +199,20 @@ export default function IconSidebar() {
                 anchorEl={anchorEl[index]}
                 open={Boolean(anchorEl[index])}
                 anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
+                  vertical: 'top',
+                  horizontal: 'right',
                 }}
                 transformOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
+                  vertical: 'top',
+                  horizontal: 'left',
                 }}
                 onClose={() => handleClose(index)}
                 MenuListProps={{ onMouseLeave: () => handleClose(index) }}
               >
                 {drop[index].map((val, key) => {
                   if (
-                    val === "Empresas" &&
-                    userInfo?.role.findIndex((p) => p === "MultiCompania") < 0
+                    val === 'Empresas' &&
+                    userInfo?.role.findIndex((p) => p === 'MultiCompania') < 0
                   ) {
                     return null;
                   } else {

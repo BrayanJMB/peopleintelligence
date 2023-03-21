@@ -51,6 +51,7 @@
   border-radius: 8px;
   padding: 20px;
   box-shadow: rgb(79 81 110 / 30%) 0px 2px 4px;
+  justify-content: center;
 }
 .stepper {
   display: flex;
@@ -65,8 +66,7 @@
   margin-bottom: 0.5em;
 }
 .modal {
-  height: 95vh;
-  width: 90vw;
+  width: 600px;
   background-color: white;
   box-shadow: 24px;
   padding: 1rem;
@@ -80,8 +80,6 @@
 .modalbuttom {
   display: flex;
   flex-direction: column;
-  margin: 1em 5em;
-  padding: 1em 8em;
 }
 .bottom {
   position: fixed;

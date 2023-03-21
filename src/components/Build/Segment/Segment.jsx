@@ -1,17 +1,18 @@
-import { useState } from "react";
-import styles from "./Segment.module.css";
-import Button from "@mui/material/Button";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import Divider from "@mui/material/Divider";
-import TextField from "@mui/material/TextField";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
+import { useState } from 'react';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import TextField from '@mui/material/TextField';
+
+import styles from './Segment.module.css';
 
 export default function Segment(props) {
   const [empty, setEmpty] = useState(true);
-  const [segment, setSegment] = useState({ name: "", gender: "", range: "" });
+  const [segment, setSegment] = useState({ name: '', gender: '', range: '' });
 
   const handleempty = () => {
     setEmpty(false);
@@ -27,9 +28,9 @@ export default function Segment(props) {
     <div className={styles.segment}>
       <span
         style={{
-          marginLeft: "2rem",
-          fontWeight: "bold",
-          fontSize: "1.2rem",
+          marginLeft: '2rem',
+          fontWeight: 'bold',
+          fontSize: '1.2rem',
         }}
       >
         Segments
@@ -41,7 +42,7 @@ export default function Segment(props) {
             : props.info.segments.map((val, key) => {
                 return (
                   <div key={key}>
-                    <p style={{ marginBottom: "1rem" }}>
+                    <p style={{ marginBottom: '1rem' }}>
                       {val.gender} {val.range}
                     </p>
                     <Divider />
@@ -52,7 +53,7 @@ export default function Segment(props) {
             variant="text"
             startIcon={<AddCircleIcon />}
             onClick={handleempty}
-            style={{ width: "50%", marginTop: "1rem" }}
+            style={{ width: '50%', marginTop: '1rem' }}
           >
             Create Segment
           </Button>
@@ -91,10 +92,10 @@ export default function Segment(props) {
                   name="name"
                   onChange={handlechange}
                   size="small"
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                 />
-                <span style={{ marginTop: "1rem" }}>
-                  Added: {segment.gender} {","} {segment.range}
+                <span style={{ marginTop: '1rem' }}>
+                  Added: {segment.gender} {','} {segment.range}
                 </span>
                 <div className={styles.impexp}>
                   <Button variant="text" size="small" onClick={handlecancel}>
@@ -109,7 +110,7 @@ export default function Segment(props) {
               <div className={styles.bottom}>
                 <div>
                   <p>What's your Gender?</p>
-                  <FormControl style={{ margin: "0 0.8rem" }}>
+                  <FormControl style={{ margin: '0 0.8rem' }}>
                     <RadioGroup
                       aria-labelledby="demo-radio-buttons-group-label"
                       name="radio-buttons-group"
@@ -138,9 +139,9 @@ export default function Segment(props) {
                     </RadioGroup>
                   </FormControl>
                 </div>
-                <div style={{ marginTop: "1rem" }}>
+                <div style={{ marginTop: '1rem' }}>
                   <p>What's your age range?</p>
-                  <FormControl style={{ margin: "0 0.8rem" }}>
+                  <FormControl style={{ margin: '0 0.8rem' }}>
                     <RadioGroup
                       aria-labelledby="demo-radio-buttons-group-label"
                       name="radio-buttons-group"

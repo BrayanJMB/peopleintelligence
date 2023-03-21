@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+
 import client from '../../utils/axiosInstance';
 
 const initialState = {
@@ -11,7 +12,7 @@ const initialState = {
 export const fetchSurveyByIdAndCompanyId = createAsyncThunk(
   'surveys/fetchByIdAndCompanyId',
   async ({ surveyId, companyId }) => {
-    const { data } = await client.get(`ShowQuestion/${surveyId}/${companyId}`)
+    const { data } = await client.get(`ShowQuestion/${surveyId}/${companyId}`);
 
     return data;
   }
@@ -20,7 +21,7 @@ export const fetchSurveyByIdAndCompanyId = createAsyncThunk(
 export const fetchSurveyForAnswer = createAsyncThunk(
   'surveys/fetchSurveyForAnswer',
   async ({ surveyId, companyId }) => {
-    const { data } = await client.get(`ShowQuestionAnswer/${surveyId}/${companyId}`)
+    const { data } = await client.get(`ShowQuestionAnswer/${surveyId}/${companyId}`);
 
     return data;
   }

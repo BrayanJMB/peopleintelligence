@@ -1,110 +1,31 @@
-import styles from "./Template.module.css";
-import IconSidebar from "../../../Layout/IconSidebar/IconSidebar";
-import Navbar from "../../../Layout/Navbar/Navbar";
-import Box from "@mui/material/Box";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import IconButton from "@mui/material/IconButton";
-import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { useNavigate } from "react-router-dom";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { useEffect, useState } from "react";
-import { getTemplatesAPI } from "../../../services/getTemplates.service";
-import { isAdmin } from '../../../utils/helpers';
-import useNavigateSearch from '../../../hooks/useNavigateSearch';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import TablePagination from '@mui/material/TablePagination';
+import Typography from '@mui/material/Typography';
+import { useSnackbar } from 'notistack';
+
 import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
+import useNavigateSearch from '../../../hooks/useNavigateSearch';
+import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../../Layout/Navbar/Navbar';
+import { fetchTemplatesAPI } from '../../../services/getTemplates.service';
+import { isAdmin, isJourney } from '../../../utils/helpers';
+
+import styles from './Template.module.css';
 
 const theme = createTheme({
   palette: {
-    blue: {
-      main: "#03aae4",
+    blue: { 
+      main: '#03aae4',
     },
   },
 });
-
-const datatemplates = [
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 1,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 2,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 3,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 4,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 5,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 6,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 7,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 8,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 9,
-  },
-  {
-    title: "Encuesta del dia 30",
-    description:
-      "Controle a los nuevos empleados sobre su experiencia de incorporación y aprendizaje durante el primer mes después de unirse.",
-    icon: InsertEmoticonIcon,
-    templateUrl: "",
-    id: 10,
-  },
-];
 
 /**
  * Survey index page.
@@ -115,11 +36,31 @@ const datatemplates = [
 const Template = () => {
   const navigate = useNavigate();
   const navigateSearch = useNavigateSearch();
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const [data, setData] = useState([]);
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  const [templates, setTemplates] = useState([]);
+  const { enqueueSnackbar } = useSnackbar();
+  const [page, setPage] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [perPage, setPerPage] = useState(9);
 
-  const handleGoBack = () => {
-    navigate("/journey");
+  /**
+   * Handle change page.
+   * 
+   * @param {object} event 
+   * @param {number} newPage 
+   */
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  /**
+   * Handle change rows per page.
+   * 
+   * @param {object} event 
+   */
+  const handleChangeRowsPerPage = (event) => {
+    setPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   /**
@@ -139,50 +80,65 @@ const Template = () => {
     navigateSearch('/journey/create-survey', querySearch);
   };
 
+  /**
+   * Fetch templates.
+   */
+  const fetchTemplates = async () => {
+    const { data } = await fetchTemplatesAPI();
+
+    setTemplates(data);
+    setTotal(data.length);
+    setPage(0);
+  };
+
+  // component did mount
   useEffect(() => {
-    if (
-      userInfo?.role.findIndex((p) => p === "Journey") < 0 &&
-      userInfo?.role.findIndex((p) => p === "Administrador") < 0
-    ) {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+    if (!isAdmin(userInfo) && !isJourney(userInfo)) {
+      enqueueSnackbar('No tiene permiso para acceder a esta funcionalidad', {
+        variant: 'error',
+      });
+      navigate('/dashboard');
+
+      return;
     }
-    getTemplatesAPI().then((res) => {
-      setData(res.data);
-    });
-  }, []);
+
+    fetchTemplates();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex" }}>
-        <Navbar />
-        <IconSidebar />
-        <div style={{ backgroundColor: "white" }}>
-          <div className={styles.content}>
-            <div className={styles.survey_template}>
+    <Box sx={{ display: 'flex' }}>
+      <Navbar />
+      <IconSidebar />
+      <div style={{ backgroundColor: 'white' }}>
+        <div className={styles.content}>
+          <div className={styles.survey_template}>
 
-              <div
-                className={styles.heading}
+            <div
+              className={styles.heading}
+            >
+              <MyPageHeader
+                title="Plantilla de encuesta"
+              />
+            </div>
+
+            <div
+              className={styles.templates}
+            >
+              <Typography
+                variant="h6"
+                gutterBottom
               >
-                <MyPageHeader
-                  title="Plantilla de encuesta"
-                />
-              </div>
-
-              <div className={styles.templates}>
-                <p
-                  style={{
-                    fontWeight: "500",
-                    fontSize: "18px",
-                    letterSpacing: "0.5px",
-                  }}
+                Empezar desde el principio
+              </Typography>
+              <Grid
+                container
+                spacing={2}
+              >
+                {/* create template */}
+                <Grid
+                  item 
+                  xs={4}
                 >
-                  Empezar desde el principio
-                </p>
-                <div
-                  style={{ display: "flex", flexDirection: "row", gap: "6em" }}
-                >
-                  {/* create template */}
                   <div
                     className={styles.template}
                     onClick={() => handleCreateSurvey(true)}>
@@ -197,8 +153,13 @@ const Template = () => {
                       <KeyboardArrowRightIcon />
                     </div>
                   </div>
-
-                  {/* create survey */}
+                </Grid>
+                
+                {/* create survey */}
+                <Grid
+                  item 
+                  xs={4}
+                >
                   <div
                     className={styles.template}
                     onClick={() => handleCreateSurvey()}
@@ -214,49 +175,65 @@ const Template = () => {
                       <KeyboardArrowRightIcon />
                     </div>
                   </div>
-                </div>
-                <p
-                  style={{
-                    fontWeight: "500",
-                    fontSize: "18px",
-                    letterSpacing: "0.5px",
-                  }}
-                >
-                  O usa una plantilla
-                </p>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    gap: "1em",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  {data.map((val, key) => {
-                    return (
-                      <div key={key} className={styles.template}>
-                        <div className={styles.title}>
-                           {val.nameSurvey}
-                        </div>
-                        <div className={styles.description}>
-                          {val.descriptionSurvey}
-                        </div>
-                        <div className={styles.bottom}>
-                          <p>Usa esta plantilla</p>
-                          <KeyboardArrowRightIcon />
-                        </div>
+                </Grid>
+              </Grid>
+
+              <Divider
+                sx={{ my: 3 }}
+              />
+
+              <Typography
+                variant="h6"
+                gutterBottom
+              >
+                O usa una plantilla
+              </Typography>
+              <Grid
+                container
+                spacing={2}
+              >
+                {templates.slice((page + 1 - 1) * perPage, (page + 1) * perPage).map((val, key) => (
+                  <Grid
+                    item 
+                    key={key}
+                    xs={4}
+                  >
+                    <div
+                      className={styles.template}
+                    >
+                      <div className={styles.title}>
+                          {val.nameSurvey}
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
+                      <div className={styles.description}>
+                        {val.descriptionSurvey}
+                      </div>
+                      <div className={styles.bottom}>
+                        <p>Usa esta plantilla</p>
+                        <KeyboardArrowRightIcon />
+                      </div>
+                    </div>
+                  </Grid>
+                ))}
+              </Grid>
+
+              <Box>
+                <TablePagination
+                  component="div"
+                  count={total}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  rowsPerPage={perPage}
+                  rowsPerPageOptions={[9, 18, 27]}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  labelRowsPerPage="Filas por página"
+                />
+              </Box>
             </div>
           </div>
         </div>
-      </Box>
-    </ThemeProvider>
+      </div>
+    </Box>
   );
-}
+};
 
 export default Template;

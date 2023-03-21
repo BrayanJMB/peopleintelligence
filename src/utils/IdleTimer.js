@@ -12,7 +12,7 @@ class IdleTimer {
     this.updateExpiredTime();
     this.interval = setInterval(() => {
       const expiredTime = parseInt(
-        localStorage.getItem("_expiredTime") || 0,
+        localStorage.getItem('_expiredTime') || 0,
         10
       );
       if (expiredTime < Date.now()) {
@@ -29,21 +29,21 @@ class IdleTimer {
       clearTimeout(this.timeoutTracker);
     }
     this.timeoutTracker = setTimeout(() => {
-      localStorage.setItem("_expiredTime", Date.now() + this.timeout * 1000);
+      localStorage.setItem('_expiredTime', Date.now() + this.timeout * 1000);
     }, 300);
   }
   tracker() {
-    window.addEventListener("mousemove", this.eventHandler);
-    window.addEventListener("scroll", this.eventHandler);
-    window.addEventListener("keydown", this.eventHandler);
+    window.addEventListener('mousemove', this.eventHandler);
+    window.addEventListener('scroll', this.eventHandler);
+    window.addEventListener('keydown', this.eventHandler);
   }
 
   cleanUp() {
-    localStorage.removeItem("_expiredTime");
+    localStorage.removeItem('_expiredTime');
     clearInterval(this.interval);
-    window.removeEventListener("mousemove", this.eventHandler);
-    window.removeEventListener("scroll", this.eventHandler);
-    window.removeEventListener("keydown", this.eventHandler);
+    window.removeEventListener('mousemove', this.eventHandler);
+    window.removeEventListener('scroll', this.eventHandler);
+    window.removeEventListener('keydown', this.eventHandler);
   }
 }
 export default IdleTimer;

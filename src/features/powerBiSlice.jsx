@@ -1,7 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const powerBiSlice = createSlice({
-  name: "powerBi",
+  name: 'powerBi',
   initialState: {
     dashboard: [],
     report: [],

@@ -1,8 +1,8 @@
-import axios from "../utils/axiosInstance";
+import axios from '../utils/axiosInstance';
 
 export const getReportsAPI = async () => {
-  console.log("getReportsAPI");
+  console.log('getReportsAPI');
 
-  const response = await axios.get("ListaDashboards/");
+  const response = await axios.get('ListaDashboards/');
   return response;
 };

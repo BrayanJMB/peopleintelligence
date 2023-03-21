@@ -1,11 +1,17 @@
-import TextField from '@mui/material/TextField';
-import TextareaAutosize from '@mui/material/TextareaAutosize';
-import Autocomplete from '@mui/material/Autocomplete';
-import styles from './Introduction.module.css';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import Autocomplete from '@mui/material/Autocomplete';
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
+
 import client from '../../../../utils/axiosInstance';
+
+import styles from './Introduction.module.css';
 
 /**
  * Introduction component for the create survey page. Step 1.
@@ -18,6 +24,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
   const [maps, setMaps] = useState([]);
   const [map, setMap] = useState(null);
   const [isValidMap, setIsValidMap] = useState('');
+  const [surveyOrMap, setSurveyOrMap] = useState('survey');
   const [title, setTitle] = useState('');
   const [isValidTitle, setIsValidTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -25,6 +32,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
   const [mailingMessage, setMailingMessage] = useState('');
   const [isValidMailingMessage, setIsValidMailingMessage] = useState('');
   const [isValid, setIsValid] = useState(false);
+  const [searchParams] = useSearchParams();
 
   /**
    * Handel change.
@@ -42,10 +50,13 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
       case 'mailingMessage':
         setMailingMessage(event.target.value);
         break;
+      case 'surveyOrMap':
+        setSurveyOrMap(event.target.value);
+        break;
       default:
         break;
     }
-  }
+  };
 
   /**
    * Handle change map.
@@ -121,7 +132,14 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
       setIsValidMailingMessage('Este campo debe tener al menos 5 caracteres');
       setIsValid(false);
     }
-  }
+  };
+
+  /**
+   * Returns true if the survey is a template.
+   *
+   * @returns {boolean}
+   */
+  const isTemplate = () => searchParams.get('isTemplate') === 'true';
 
   // component did mount
   useEffect(() => {
@@ -133,7 +151,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
       setDescription(previousData.description);
       setMailingMessage(previousData.mailingMessage);
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // listen changes in touched form
   useEffect(() => {
@@ -146,6 +164,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
   useEffect(() => {
     onUpdated({
       map,
+      surveyOrMap,
       title,
       description,
       mailingMessage,
@@ -155,10 +174,43 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
     if (checkForm || (map && title && description && mailingMessage)) {
       validate();
     }
-  }, [map, title, description, mailingMessage, isValid]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [map, title, description, mailingMessage, isValid, surveyOrMap]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={styles.form}>
+      {isTemplate() === true && (
+        <FormControl
+          className={styles.Introduction__formControl}
+        >
+          <FormLabel
+            id="survey-or-map"
+          >
+            Encuesta o ruta de mapa
+          </FormLabel>
+          <RadioGroup
+            row
+            name="surveyOrMap"
+            value={surveyOrMap}
+            onChange={handleChange}
+          >
+            <FormControlLabel
+              value="survey"
+              control={
+                <Radio />
+              }
+              label="Encuesta"
+            />
+            <FormControlLabel
+              value="map"
+              control={
+                <Radio />
+              }
+              label="Ruta de mapa"
+            />
+          </RadioGroup>
+        </FormControl>
+      )}
+      {/* survey/template title */}
       <FormControl
         style={{
           marginBottom: '1.5em',
@@ -243,16 +295,16 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
       </FormControl>
     </div>
   );
-}
+};
 
 Introduction.propTypes = {
   onUpdated: PropTypes.func.isRequired,
   checkForm: PropTypes.bool.isRequired,
   previousData: PropTypes.object,
-}
+};
 
 Introduction.defaultProps = {
   previousData: {},
-}
+};
 
 export default Introduction;

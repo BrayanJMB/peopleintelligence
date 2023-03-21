@@ -1,4 +1,4 @@
-import axios from "../utils/axiosInstance";
+import axios from '../utils/axiosInstance';
 
 export const editDashboardAPI = async (
   id,
@@ -9,9 +9,9 @@ export const editDashboardAPI = async (
   isActive,
   companyId
 ) => {
-  console.log("editDashboardAPI");
+  console.log('editDashboardAPI');
 
-  const response = await axios.put("PowerBy/UpdateDashboard", {
+  const response = await axios.put('PowerBy/UpdateDashboard', {
     id: id,
     reportId: reportId,
     groupId: groupId,

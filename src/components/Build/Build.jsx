@@ -1,48 +1,50 @@
-import { useState, useCallback } from "react";
-import styles from "./Build.module.css";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import Box from "@mui/material/Box";
-import Basic from "./Basic/Basic";
-import Discussion from "./Discussion/Discussion";
-import Quota from "./Quota/Quota";
-import Segment from "./Segment/Segment";
-import Button from "@mui/material/Button";
+import { useCallback,useState } from 'react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+
+import Basic from './Basic/Basic';
+import Discussion from './Discussion/Discussion';
+import Quota from './Quota/Quota';
+import Segment from './Segment/Segment';
+
+import styles from './Build.module.css';
 
 const list = [
-  "Basic Details",
-  "Schedule",
-  "Audience",
-  "Discussion Guide",
-  "Segments",
-  " Quota Targeting",
+  'Basic Details',
+  'Schedule',
+  'Audience',
+  'Discussion Guide',
+  'Segments',
+  ' Quota Targeting',
 ];
 
 const root = [
-  "basic",
-  "schedule",
-  "audience",
-  "discussion",
-  "segments",
-  "quota",
+  'basic',
+  'schedule',
+  'audience',
+  'discussion',
+  'segments',
+  'quota',
 ];
 
 export default function Build() {
-  const [stage, setStage] = useState("basic");
+  const [stage, setStage] = useState('basic');
   const [info, setInfo] = useState({
     open: false,
-    title: "",
-    language: "",
-    name: "",
-    avatar: "",
-    cover: "",
-    introduction: "",
-    segments: [{ gender: "Female", range: "31-40" }],
+    title: '',
+    language: '',
+    name: '',
+    avatar: '',
+    cover: '',
+    introduction: '',
+    segments: [{ gender: 'Female', range: '31-40' }],
     quotas: [
       {
-        type: "gender",
-        gender: { male: "40", female: "40", nothing: "20" },
+        type: 'gender',
+        gender: { male: '40', female: '40', nothing: '20' },
       },
     ],
   });
@@ -62,7 +64,7 @@ export default function Build() {
   };
 
   const handlereset = (name) => {
-    setInfo({ ...info, [name]: "" });
+    setInfo({ ...info, [name]: '' });
   };
 
   const handlechange = useCallback(
@@ -78,7 +80,7 @@ export default function Build() {
 
   const renderSwitch = (type) => {
     switch (type) {
-      case "basic":
+      case 'basic':
         return (
           <Basic
             info={info}
@@ -89,15 +91,15 @@ export default function Build() {
             handleSave={handlesave}
           />
         );
-      case "schedule":
+      case 'schedule':
         return null;
-      case "audience":
+      case 'audience':
         return null;
-      case "discussion":
+      case 'discussion':
         return <Discussion />;
-      case "segments":
+      case 'segments':
         return <Segment info={info} />;
-      case "quota":
+      case 'quota':
         return <Quota info={info} />;
       default:
         return null;
@@ -108,13 +110,13 @@ export default function Build() {
     <div className={styles.build}>
       <Box
         sx={{
-          height: "100vh",
-          width: "200px",
+          height: '100vh',
+          width: '200px',
         }}
         style={{
-          backgroundColor: "rgb(233, 229, 229)",
-          borderRight: "2px solid grey",
-          borderLeft: "2px solid grey",
+          backgroundColor: 'rgb(233, 229, 229)',
+          borderRight: '2px solid grey',
+          borderLeft: '2px solid grey',
         }}
         aria-label="mailbox folders"
       >
@@ -122,18 +124,18 @@ export default function Build() {
           <ListItem
             disablePadding
             style={{
-              marginTop: "1rem ",
-              marginBottom: "1.5rem ",
-              textAlign: "center",
+              marginTop: '1rem ',
+              marginBottom: '1.5rem ',
+              textAlign: 'center',
             }}
           >
             <p
               style={{
-                textOverflow: "ellipsis",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
-                width: "70%",
-                margin: "0 auto",
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                width: '70%',
+                margin: '0 auto',
               }}
             >
               Lorem ipsum dolor sit, amet
@@ -145,8 +147,8 @@ export default function Build() {
               <ListItem onClick={() => handlemove(root[index])} key={index}>
                 <ListItemButton
                   style={{
-                    color: stage === root[index] ? "#00b0f0" : "grey",
-                    fontWeight: "bold",
+                    color: stage === root[index] ? '#00b0f0' : 'grey',
+                    fontWeight: 'bold',
                   }}
                 >
                   {val}
@@ -159,17 +161,17 @@ export default function Build() {
       <div className={styles.content}>
         <div
           style={{
-            width: "100%",
-            display: "flex",
-            marginTop: "0.5rem",
+            width: '100%',
+            display: 'flex',
+            marginTop: '0.5rem',
           }}
         >
           <div
             style={{
               flexGrow: 1,
-              display: "flex",
-              justifyContent: "flex-start",
-              marginLeft: "2rem",
+              display: 'flex',
+              justifyContent: 'flex-start',
+              marginLeft: '2rem',
             }}
           >
             {info.open ? <p>{info.title}</p> : null}
@@ -177,24 +179,24 @@ export default function Build() {
           <div
             style={{
               flexGrow: 1,
-              display: "flex",
-              justifyContent: "flex-end",
-              marginRight: "2rem",
+              display: 'flex',
+              justifyContent: 'flex-end',
+              marginRight: '2rem',
             }}
           >
             <Button
               variant="text"
-              style={{ marginRight: "1.5rem" }}
+              style={{ marginRight: '1.5rem' }}
               disabled={!info.open}
               size="small"
             >
               Share
             </Button>
-            {stage === "discussion" ? (
+            {stage === 'discussion' ? (
               <Button
                 size="small"
                 variant="text"
-                style={{ marginRight: "1.5rem" }}
+                style={{ marginRight: '1.5rem' }}
                 disabled={!info.open}
               >
                 Practice

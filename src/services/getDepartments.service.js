@@ -1,8 +1,8 @@
-import axios from "../utils/axiosInstance";
+import axios from '../utils/axiosInstance';
 
 export const getDepartmentsAPI = async () => {
-  console.log("getDepartmentsAPI");
+  console.log('getDepartmentsAPI');
 
-  const response = await axios.get("departamentos/");
+  const response = await axios.get('departamentos/');
   return response;
 };

@@ -1,25 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import Grid from '@mui/material/Grid';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import SaveIcon from '@mui/icons-material/Save';
 import Box from '@mui/material/Box';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
-import RemoveIcon from '@mui/icons-material/Remove';
-import AddIcon from '@mui/icons-material/Add';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { useSnackbar } from 'notistack';
+import PropTypes from 'prop-types';
+
+import client from '../../utils/axiosInstance';
+import MyLoader from '../MyLoader/MyLoader'; 
+
 import styles from './DemographicDataForm.module.css';
-import client from '../../../../utils/axiosInstance';
-import MyLoader from '../../../../components/MyLoader/MyLoader';
 
 
 /**
@@ -28,12 +32,13 @@ import MyLoader from '../../../../components/MyLoader/MyLoader';
  * @returns {JSX.Element}
  * @constructor
  */
-const DemographicDataForm = ({ surveyId }) => {
+const DemographicDataForm = ({ surveyId, onChange, onChangeNewDemographics }) => {
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [demographicData, setDemographicData] = useState(null);
   const [demographicChecked, setDemographicChecked] = useState([]);
   const [newDemographicName, setNewDemographicName] = useState('');
   const [newDemographicOptions, setNewDemographicOptions] = useState(['', '', '']);
+  const [newDemographics, setNewDemographics] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -64,20 +69,25 @@ const DemographicDataForm = ({ surveyId }) => {
   const storeNewDemographicData = async () => {
     setIsLoading(true);
 
-    const companyId = currentCompany.id;
+    if (surveyId !== null) {
+      const companyId = currentCompany.id;
 
-    await client.post(`SendDemoDinamic/${companyId}/${surveyId}`, {
-      name: newDemographicName,
-      options: newDemographicOptions,
-    });
+      await client.post(`SendDemoDinamic/${companyId}/${surveyId}`, {
+        name: newDemographicName,
+        options: newDemographicOptions,
+      });
+    }
 
     enqueueSnackbar('Demográfico creado correctamente.', {
       variant: 'success',
     });
-
+    setNewDemographics((prev) => [...prev, {
+      name: newDemographicName,
+      options: newDemographicOptions,
+    }]);
     setIsLoading(false);
     setOpenDialog(false);
-  }
+  };
 
   /**
    * Handle new demographic name change.
@@ -100,14 +110,14 @@ const DemographicDataForm = ({ surveyId }) => {
     newOptions[index] = value;
 
     setNewDemographicOptions(newOptions);
-  }
+  };
 
   /**
    * Add new demographic option.
    */
   const addNewDemographicOption = () => {
     setNewDemographicOptions((prev) => [...prev, '']);
-  }
+  };
 
   /**
    * Remove new demographic option.
@@ -119,7 +129,7 @@ const DemographicDataForm = ({ surveyId }) => {
     newOptions.splice(index, 1);
 
     setNewDemographicOptions(newOptions);
-  }
+  };
 
   /**
    * Fetch demographic data from API.
@@ -149,17 +159,25 @@ const DemographicDataForm = ({ surveyId }) => {
 
   /**
    * Handle checkbox change.
+   * This is triggered when a demographic item is checked or unchecked.
+   * The demographic items was previously fetched from the API.
    *
    * @param event
    */
   const handleCheckboxChange = (event) => {
     const { checked, value } = event.target;
+    let updatedDemographicChecked = [];
 
     if (checked) {
       setDemographicChecked((prev) => [...prev, value]);
+      updatedDemographicChecked = [...demographicChecked, value];
     } else {
-      setDemographicChecked((prev) => prev.filter((item) => item !== value));
+      updatedDemographicChecked = demographicChecked.filter((item) => item !== value);
     }
+
+    setDemographicChecked(updatedDemographicChecked);
+    // emit change event (callback prop) for new survey or template
+    onChange(updatedDemographicChecked);
   };
 
   /**
@@ -195,11 +213,42 @@ const DemographicDataForm = ({ surveyId }) => {
 
     fetchDemographicData();
   }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // watch for newDemographics changes for merging with demographicData and emit change event
+  useEffect(() => {
+    // merge with new demographics, preventing duplicates
+    setDemographicData((prevDemographicData) => {
+      if (prevDemographicData === null) {
+        return null;
+      }
+
+      const newDemographicData = newDemographics.map(({ name }) => ({
+        value: name,
+      }));
+
+      const updatedDemographicData = [
+        ...prevDemographicData,
+        ...newDemographicData,
+      ];
+
+      // remove duplicates (by value)
+      return updatedDemographicData.filter((item, index) => {
+        const itemValue = item.value;
+        const firstIndex = updatedDemographicData.findIndex((i) => i.value === itemValue);
+
+        return firstIndex === index;
+      });
+    });
+
+    onChangeNewDemographics(newDemographics);
+  }, [newDemographics]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <div className={styles.DemographicDataForm}>
+    <div
+      className={styles.DemographicDataForm}
+    >
       <Box sx={{
         flexGrow: 1,
-        marginTop: 2,
       }}>
         {isLoading === true && demographicData === null && <MyLoader />}
 
@@ -208,13 +257,36 @@ const DemographicDataForm = ({ surveyId }) => {
             container
             spacing={2}
           >
+            <Grid
+              item
+              xs={12}
+            >
+              <Box className={styles.DemographicDataForm__header}>
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                >
+                  Datos demográficos
+                </Typography>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleOpenDialog}
+                  className={styles.DemographicDataForm__header__button}
+                  startIcon={<AddIcon />}
+                >
+                  Demográfico
+                </Button>
+              </Box>
+            </Grid>
+
             {demographicData.map(({ value }) => (
               <Grid
                 key={value}
                 item
-                xs={12}
-                sm={6}
-                md={4}
+                xs={6}
+                sm={4}
+                md={3}
               >
                 <FormGroup>
                   <FormControlLabel
@@ -235,23 +307,19 @@ const DemographicDataForm = ({ surveyId }) => {
           marginTop: 2,
           display: 'flex',
         }}>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={handleOpenDialog}
-          >
-            Crear nuevo demográfico
-          </Button>
-          <Button
-            color="primary"
-            onClick={handleClickSaveDemographicData}
-            variant="contained"
-            sx={{
-              marginLeft: 'auto',
-            }}
-          >
-            Guardar demográficos
-          </Button>
+          {surveyId !== null && (
+            <Button
+              color="primary"
+              onClick={handleClickSaveDemographicData}
+              variant="contained"
+              sx={{
+                marginLeft: 'auto',
+              }}
+              startIcon={<SaveIcon />}
+            >
+              Demográficos
+            </Button>
+          )}
         </Box>
 
         <Dialog
@@ -363,9 +431,15 @@ const DemographicDataForm = ({ surveyId }) => {
 };
 
 DemographicDataForm.propTypes = {
-  surveyId: PropTypes.number.isRequired,
+  surveyId: PropTypes.number,
+  onChange: PropTypes.func,
+  onChangeNewDemographics: PropTypes.func,
 };
 
-DemographicDataForm.defaultProps = {};
-
+DemographicDataForm.defaultProps = {
+  surveyId: null,
+  onChange: () => {},
+  onChangeNewDemographics: () => {},
+};  
+ 
 export default DemographicDataForm;

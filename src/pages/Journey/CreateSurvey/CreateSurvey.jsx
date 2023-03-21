@@ -1,35 +1,37 @@
-import styles from "./CreateSurvey.module.css";
-import IconSidebar from "../../../Layout/IconSidebar/IconSidebar";
-import Navbar from "../../../Layout/Navbar/Navbar";
-import Box from "@mui/material/Box";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import DesignServicesIcon from "@mui/icons-material/DesignServices";
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
-import Button from "@mui/material/Button";
-import Introduction from "./Introduction/Introduction";
-import Cuestionario from "./Cuestionario/Cuestionario";
-import Intimidad from "./Intimidad/Intimidad.jsx";
-import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import Modal from "@mui/material/Modal";
-import ClearIcon from "@mui/icons-material/Clear";
-import IconButton from "@mui/material/IconButton";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import Form from "../../../components/Form/Form";
-import EditForm from "../../../components/EditForm/EditForm";
-import * as uuid from "uuid";
-import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import DesignServicesIcon from '@mui/icons-material/DesignServices';
+import { Divider } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog'; 
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Stepper from '@mui/material/Stepper';
+import TextField from '@mui/material/TextField';
+import { useSnackbar } from 'notistack';
+import * as uuid from 'uuid';
 
-const theme = createTheme({
-  palette: {
-    blue: {
-      main: "#03aae4",
-    },
-  },
-});
+import DemographicDataForm from '../../../components/DemographicDataForm/DemographicDataForm';
+import EditForm from '../../../components/EditForm/EditForm';
+import Form from '../../../components/Form/Form';
+import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
+import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../../Layout/Navbar/Navbar';
+import client from '../../../utils/axiosInstance';
+
+import Cuestionario from './Cuestionario/Cuestionario';
+import Intimidad from './Intimidad/Intimidad.jsx';
+import Introduction from './Introduction/Introduction';
+
+import styles from './CreateSurvey.module.css';
+
+
 const steps = [
   'Introducción',
   'Cuestionario',
@@ -44,36 +46,41 @@ const questionTypes = [
 ];
 
 export default function CreateSurvey() {
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [activeStep, setActiveStep] = useState(0);
   const [questions, setQuestions] = useState([]);
-  const [target, setTarget] = useState("");
+  const [target, setTarget] = useState('');
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
   const [data, setData] = useState(null);
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
-  const [type, setType] = useState("");
-  const [starmsg, setStarmsg] = useState("");
+  const [type, setType] = useState('');
+  const [starmsg, setStarmsg] = useState('');
   const [information, setInformation] = useState({
-    name: "",
-    description: "",
+    name: '',
+    description: '',
     options: [
-      "Muy en desacuerdo",
-      "Discrepar",
-      "Neutral",
-      "Estar de acuerdo",
-      "Totalmente de acuerdo",
+      'Muy en desacuerdo',
+      'Discrepar',
+      'Neutral',
+      'Estar de acuerdo',
+      'Totalmente de acuerdo',
     ],
-    customOptions: Array(2).fill(""),
-    stars: Array(3).fill(""),
+    customOptions: Array(2).fill(''),
+    stars: Array(3).fill(''),
   });
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [question, setQuestion] = useState();
-  const [anonyme, setAnonyme] = useState(true);
+  const [anonymous, setAnonymous] = useState(true);
   const [checkForm, setCheckForm] = useState(false);
-
+  const [newDemographics, setNewDemographics] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const isTemplate = searchParams.get('isTemplate') === 'true';
+  
   /**
    * Handle introduction change.
    *
@@ -81,32 +88,151 @@ export default function CreateSurvey() {
    */
   const handleIntroductionChange = (updatedData) => {
     setData(updatedData);
-  }
+  };
 
-  const handleContinuar = () => {
-    if (activeStep === 0) {
-      setCheckForm(true);
+  /**
+   * Get demographics for create survey or template.
+   * 
+   * @returns 
+   */
+  const getDemographics = () => {
+    const demographics = [];
 
-      if (data.isValid) {
-        setActiveStep((val) => val + 1);
-        setCheckForm(false);
+    data.demographics.forEach((demographic) => {
+      const index = newDemographics.findIndex(
+        (item) => item.name === demographic,
+      );
+
+      if (index !== -1) {
+        demographics.push({
+          name: newDemographics[index].name,
+          options: newDemographics[index].options.map((option) => ({
+            value: option,
+            text: option,
+          })),
+        });
+      } else {
+        demographics.push({
+          name: demographic,
+          options: [],
+        });
       }
-    } else if (activeStep === 1) {
-      setActiveStep((val) => val + 1);
-    } else if (activeStep === 2) {
-      console.log("submit to api");
+    });
+
+    return demographics;
+  };
+
+  /**
+   * Create survey.
+   */
+  const createSurvey = async () => {
+    setLoading(true);
+
+    const newSurvey = {
+      survey: {
+        nameSurvey: data.title,
+        descriptionSurvey: data.description,
+        ispersonal: !anonymous,
+        jorneyMapId: data.map.id,
+        companyId: currentCompany.id,
+      },
+      questions: questions.map((question) => ({
+        question: {
+          nameQuestion: question.name,
+          typeQuestionId: question.type,
+          questionId: 0,
+          score: question.stars?.length,
+        },
+        options: question.customOptions?.map((option, index) => ({
+          optionsName: option,
+          numberOption: index + 1,
+        })),
+      })),
+      demographics: getDemographics(),
+    };
+
+    try {
+      await client.post(`/createJourney/${currentCompany.id}`, newSurvey);
+    } catch (e) {}
+
+    setLoading(false);
+    navigate('/journey/survey-template');
+    enqueueSnackbar('Cuestionario creado con éxito', {
+      variant: 'success',
+    });
+  };
+
+  /**
+   * Create survey template.
+   */
+  const createTemplate = async () => {
+    setLoading(true);
+
+    // Create survey
+    const newTemplate = {
+      templateSurvey: {
+        nameSurvey: data.title,
+        descriptionSurvey: data.description,
+        messagemail: data.mailingMessage,
+        isObligatory: data.surveyOrMap === 'survey',
+        demograficos: getDemographics(),
+      },
+      seccionQuestion: questions.map((question) => ({
+        templateQuestion: {
+          nameQuestion: question.name,
+          typeQuestionId: question.type,
+          questionId: 0,
+          score: question.stars?.length,
+        },
+        templateOption: question.customOptions?.map((option, index) => ({
+          templateOptionsName: option,
+          numberOption: index + 1,
+        })),
+      })),
+    };
+
+    try {
+      await client.post('Administrator/createTemplate', newTemplate);
+    } catch (e) {}
+
+    setLoading(false);
+    navigate('/journey/survey-template');
+    enqueueSnackbar('Plantilla creada con éxito', {
+      variant: 'success',
+    });
+  };
+
+  /**
+   * Handle next step.
+   */
+  const handleNextStep = () => {
+    switch (activeStep) {
+      case 0:
+        setCheckForm(true);
+        if (data.isValid) {
+          setActiveStep((val) => val + 1);
+          setCheckForm(false);
+        }
+        break;
+      case 1:
+        setActiveStep((val) => val + 1);
+        break;
+      case 2:
+        isTemplate ? createTemplate() : createSurvey();
+        break;
+      default:
+        setActiveStep(0);
     }
   };
+
   const handleCerrar = () => {
     if (activeStep === 0) {
-      navigate("/journey");
+      navigate('/journey');
     } else {
       setActiveStep((val) => val - 1);
     }
   };
-  const handlechange = (event) => {
-    setData({ ...data, [event.target.name]: event.target.value });
-  };
+
   const handleinformation = (event) => {
     setInformation({ ...information, [event.target.name]: event.target.value });
   };
@@ -134,29 +260,29 @@ export default function CreateSurvey() {
   };
   const handleaddstars = () => {
     if (information.stars.length === 10) {
-      setStarmsg("Elija un valor entre 3 y 10");
+      setStarmsg('Elija un valor entre 3 y 10');
     } else {
-      setStarmsg("");
+      setStarmsg('');
       let holder = [...information.stars];
-      holder.push("");
+      holder.push('');
       setInformation({ ...information, stars: holder });
     }
   };
   const handleeditstars = () => {
     let holder = [...question.stars];
     if (holder.length === 10) {
-      setStarmsg("Elija un valor entre 3 y 10");
+      setStarmsg('Elija un valor entre 3 y 10');
     } else {
-      setStarmsg("");
-      holder.push("");
+      setStarmsg('');
+      holder.push('');
       setQuestion({ ...question, stars: holder });
     }
   };
   const handledeletestars = () => {
     if (information.stars.length === 3) {
-      setStarmsg("Elija un valor entre 3 y 10");
+      setStarmsg('Elija un valor entre 3 y 10');
     } else {
-      setStarmsg("");
+      setStarmsg('');
       let holder = [...information.stars];
       holder.splice(1, 1);
       setInformation({ ...information, stars: holder });
@@ -165,21 +291,21 @@ export default function CreateSurvey() {
   const handleeditdeletestars = () => {
     let holder = [...question.stars];
     if (holder.length === 3) {
-      setStarmsg("Elija un valor entre 3 y 10");
+      setStarmsg('Elija un valor entre 3 y 10');
     } else {
-      setStarmsg("");
+      setStarmsg('');
       holder.splice(1, 1);
       setQuestion({ ...question, stars: holder });
     }
   };
   const handleaddoption = () => {
     let holder = [...information.customOptions];
-    holder.push("");
+    holder.push('');
     setInformation({ ...information, customOptions: holder });
   };
   const handleeditaddoption = () => {
     let holder = [...question.customOptions];
-    holder.push("");
+    holder.push('');
     setQuestion({ ...question, customOptions: holder });
   };
   const handleAdd = () => {
@@ -207,9 +333,25 @@ export default function CreateSurvey() {
     });
     setQuestions(holder);
   };
-  const handleSelect = (value) => {
-    setData({ ...data, mapa: value });
+
+  /**
+   * Handle checked demographic.
+   * 
+   * @param {string[]} demographics Can be ID or unique name.
+   */
+  const handleCheckedDemographic = (demographics) => {
+    setData({ ...data, demographics });
   };
+
+  /**
+   * Handle new demographic change.
+   *
+   * @param {Object[]} demographics 
+   */
+  const handleNewDemographicChange = (demographics) => {
+    setNewDemographics(demographics);
+  };
+
   const renderSwitch = (activeStep) => {
     switch (activeStep) {
       case 0:
@@ -222,16 +364,25 @@ export default function CreateSurvey() {
         );
       case 1:
         return (
-          <Cuestionario
-            questions={questions}
-            onEnd={onEnd}
-            handleAdd={handleAdd}
-            handleDelete={handledelete}
-            handleEdit={handleEdit}
-          />
+          <Box
+            width="100%"
+          >
+            <DemographicDataForm
+              onChange={handleCheckedDemographic}
+              onChangeNewDemographics={handleNewDemographicChange}
+            />
+            <Divider />
+            <Cuestionario
+              questions={questions}
+              onEnd={onEnd}
+              handleAdd={handleAdd}
+              handleDelete={handledelete}
+              handleEdit={handleEdit}
+            />
+          </Box>
         );
       case 2:
-        return <Intimidad anonyme={anonyme} handleAnonyme={handleanonyme} />;
+        return <Intimidad anonyme={anonymous} handleAnonyme={handleanonyme} />;
       default:
         return null;
     }
@@ -242,7 +393,7 @@ export default function CreateSurvey() {
   };
   const handleCloseEditModal = () => setEdit(false);
   const handleanonyme = (event) => {
-    setAnonyme(event.target.value);
+    setAnonymous(event.target.value);
   };
 
   const reorder = (list, start, end) => {
@@ -273,11 +424,11 @@ export default function CreateSurvey() {
     } else {
       let bad = false;
       if (information.name.length < 5) {
-        helperText.name = "Se requiere un mínimo de 5 caracteres.";
+        helperText.name = 'Se requiere un mínimo de 5 caracteres.';
         error.name = true;
         bad = true;
       } else {
-        helperText.name = "";
+        helperText.name = '';
         error.name = false;
       }
       if (bad) {
@@ -286,15 +437,15 @@ export default function CreateSurvey() {
       } else {
         setErrorMessage({});
         setHelperText({});
-        if (type === "Texto corto") {
+        if (type === 'Texto corto') {
           handleAddQuestion({
-            type: "Texto corto",
+            type: 'Texto corto',
             name: information.name,
             description: information.description,
           });
-        } else if (type === "Escala Likert") {
+        } else if (type === 'Escala Likert') {
           handleAddQuestion({
-            type: "Escala Likert",
+            type: 'Escala Likert',
             name: information.name,
             description: information.description,
             options: information.options,
@@ -313,9 +464,9 @@ export default function CreateSurvey() {
             description: information.description,
             customOptions: information.customOptions,
           });
-        } else if (type === "Calificaciones") {
+        } else if (type === 'Calificaciones') {
           handleAddQuestion({
-            type: "Calificaciones",
+            type: 'Calificaciones',
             name: information.name,
             description: information.description,
             stars: information.stars,
@@ -324,20 +475,20 @@ export default function CreateSurvey() {
       }
     }
     setInformation({
-      name: "",
-      description: "",
+      name: '',
+      description: '',
       options: [
-        "Muy en desacuerdo",
-        "Discrepar",
-        "Neutral",
-        "Estar de acuerdo",
-        "Totalmente de acuerdo",
+        'Muy en desacuerdo',
+        'Discrepar',
+        'Neutral',
+        'Estar de acuerdo',
+        'Totalmente de acuerdo',
       ],
-      customOptions: Array(2).fill(""),
-      stars: Array(3).fill(""),
+      customOptions: Array(2).fill(''),
+      stars: Array(3).fill(''),
     });
-    setQuestion("");
-    setType("");
+    setQuestion('');
+    setType('');
     handleCloseModal();
   };
   const handleAddQuestion = (question) => {
@@ -360,57 +511,49 @@ export default function CreateSurvey() {
    * @returns {string}
    */
   const getHeaderTitle = () => {
-    const isTemplate = searchParams.get('isTemplate');
-
-    if (isTemplate === 'true') {
+    if (isTemplate) {
       return 'Crear plantilla';
     }
 
     return 'Crear encuesta';
-  }
+  };
 
   useEffect(() => {
     if (
-      userInfo?.role.findIndex((p) => p === "Journey") < 0 &&
-      userInfo?.role.findIndex((p) => p === "Administrador") < 0
+      userInfo?.role.findIndex((p) => p === 'Journey') < 0 &&
+      userInfo?.role.findIndex((p) => p === 'Administrador') < 0
     ) {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+      alert('No tiene permiso para acceder a esta funcionalidad');
+      navigate('/dashboard');
     }
     setQuestions(questions);
   }, [questions]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex" }}>
-        <Modal
-          open={open}
-          onClose={handleCloseModal}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
+    <Box sx={{ display: 'flex' }}>
+      <Dialog
+        maxWidth="md"
+        open={open}
+        onClose={handleCloseModal}
+      >
+        <DialogTitle>
+          Agregar pregunta
+        </DialogTitle>
+        <DialogContent>
           <Box className={styles.modal}>
-            <div className={styles.modaltop}>
-              <div>
-                <IconButton onClick={handleCloseModal}>
-                  <ClearIcon sx={{ fontSize: "40px" }} />
-                </IconButton>
-              </div>
-            </div>
             <div className={styles.modalbuttom}>
-              <h3 style={{ fontWeight: "500" }}>Agregar pregunta</h3>
               <div className={styles.form}>
                 <div className={styles.input}>
                   <Autocomplete
                     id="combo-box-demo"
-                    style={{ flexBasis: "40%" }}
+                    style={{ flexBasis: '40%' }}
                     options={questionTypes}
                     value={type}
                     onChange={(e, value) => {
                       handleAutocomplete(value);
                     }}
                     getOptionLabel={(option) => option}
-                    noOptionsText={"No se ha encontrado ningún IdTipoDocumento"}
+                    noOptionsText={'No se ha encontrado ningún IdTipoDocumento'}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -436,32 +579,34 @@ export default function CreateSurvey() {
                 />
               </div>
             </div>
-            <div className={styles.bottom}>
-              <Button variant="text" onClick={handleCloseModal}>
-                CANCELAR
-              </Button>
-              <Button variant="contained" onClick={handleAgregar}>
-                Agregar
-              </Button>
-            </div>
           </Box>
-        </Modal>
-        <Modal
-          open={edit}
-          onClose={handleCloseEditModal}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleCloseModal}
+            variant="outlined"
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleAgregar}
+            variant="contained"
+          >
+            Agregar
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        maxWidth="md"
+        onClose={handleCloseEditModal}
+        open={edit}
+      >
+        <DialogTitle>
+          Editar pregunta
+        </DialogTitle>
+        <DialogContent>
           <Box className={styles.modal}>
-            <div className={styles.modaltop}>
-              <div>
-                <IconButton onClick={handleCloseEditModal}>
-                  <ClearIcon sx={{ fontSize: "40px" }} />
-                </IconButton>
-              </div>
-            </div>
             <div className={styles.modalbuttom}>
-              <h3 style={{ fontWeight: "500" }}>Editar pregunta</h3>
               <div className={styles.form}>
                 <EditForm
                   question={question}
@@ -477,63 +622,72 @@ export default function CreateSurvey() {
                 />
               </div>
             </div>
-            <div className={styles.bottom}>
-              <Button variant="text" onClick={handleCloseEditModal}>
-                CANCELAR
-              </Button>
-              <Button variant="contained" onClick={handleAgregar}>
-                {edit ? "Actualizar" : "Agregar"}
-              </Button>
-            </div>
           </Box>
-        </Modal>
-        <Navbar />
-        <IconSidebar />
-        <div style={{ backgroundColor: "white" }}>
-          <div className={styles.content}>
-            <div className={styles.survey_template}>
-              <div className={styles.data}>
-                <MyPageHeader
-                  title={getHeaderTitle()}
-                  Icon={<DesignServicesIcon />}
-                />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleCloseEditModal}
+            variant="outlined"
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleAgregar}
+            variant="contained"
+          >
+            Actualizar
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Navbar />
+      <IconSidebar />
+      <div style={{ backgroundColor: 'white' }}>
+        <div className={styles.content}>
+          <div className={styles.survey_template}>
+            <div className={styles.data}>
+              <MyPageHeader
+                title={getHeaderTitle()}
+                Icon={<DesignServicesIcon />}
+              />
 
-                <div className={styles.display}>
-                  <Stepper activeStep={activeStep} className={styles.stepper}>
-                    {steps.map((label, index) => {
-                      return (
-                        <Step key={label}>
-                          <StepLabel>{label}</StepLabel>
-                        </Step>
-                      );
-                    })}
-                  </Stepper>
-                </div>
-                <div className={styles.display}>{renderSwitch(activeStep)}</div>
-                <div
-                  className={styles.display}
-                  style={{ position: "sticky", bottom: 0 }}
+              <div className={styles.display}>
+                <Stepper
+                  activeStep={activeStep}
+                  className={styles.stepper}
                 >
-                  <div className={styles.impexp}>
-                    <Button variant="text" onClick={handleCerrar}>
-                      {activeStep === 0 ? "Cerrar" : "atrás"}
-                    </Button>
-                    <Button
-                      variant="contained"
-                      onClick={handleContinuar}
-                      disabled={activeStep !== 0 && questions.length === 0}
-                    >
-                      {activeStep === 2
-                        ? "Seleccionar encuestados"
-                        : "Continuar"}
-                    </Button>
-                  </div>
+                  {steps.map((label, index) => {
+                    return (
+                      <Step key={label}>
+                        <StepLabel>{label}</StepLabel>
+                      </Step>
+                    );
+                  })}
+                </Stepper>
+              </div>
+              <div className={styles.display}>{renderSwitch(activeStep)}</div>
+              <div
+                className={styles.display}
+                style={{ position: 'sticky', bottom: 0 }}
+              >
+                <div className={styles.impexp}>
+                  <Button variant="text" onClick={handleCerrar}>
+                    {activeStep === 0 ? 'Cerrar' : 'atrás'}
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={handleNextStep}
+                    disabled={(activeStep !== 0 && questions.length === 0) || loading === true}
+                  >
+                    {activeStep === 2
+                      ? 'Seleccionar encuestados'
+                      : 'Continuar'}
+                  </Button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </Box>
-    </ThemeProvider>
+      </div>
+    </Box>
   );
 }

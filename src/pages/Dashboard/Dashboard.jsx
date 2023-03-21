@@ -1,56 +1,58 @@
-import styles from "./Dashboard.module.css";
-import Navbar from "../../Layout/Navbar/Navbar";
-import Box from "@mui/material/Box";
-import Iletter from "../../assets/icons/Iletter.png";
-import Aletter from "../../assets/icons/Aletter.png";
-import Oletter from "../../assets/icons/Oletter.png";
-import Dletter from "../../assets/icons/Dletter.png";
-import Jletter from "../../assets/icons/Jletter.png";
-import { useNavigate } from "react-router-dom";
-import Sidebar from "../../Layout/Sidebar/Sidebar";
-import { useEffect } from "react";
-import axios from "../../utils/axiosInstance";
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
+
+import Aletter from '../../assets/icons/Aletter.png';
+import Dletter from '../../assets/icons/Dletter.png';
+import Iletter from '../../assets/icons/Iletter.png';
+import Jletter from '../../assets/icons/Jletter.png';
+import Oletter from '../../assets/icons/Oletter.png';
+import Navbar from '../../Layout/Navbar/Navbar';
+import Sidebar from '../../Layout/Sidebar/Sidebar';
+import axios from '../../utils/axiosInstance';
+
+import styles from './Dashboard.module.css';
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const handleOnas = (e) => {
     if (
-      userInfo?.role.findIndex((p) => p === "Onas") > -1 ||
-      userInfo?.role.findIndex((p) => p === "Administrador") > -1
+      userInfo?.role.findIndex((p) => p === 'Onas') > -1 ||
+      userInfo?.role.findIndex((p) => p === 'Administrador') > -1
     ) {
-      navigate("/onas");
+      navigate('/onas');
     } else {
       e.preventDefault();
     }
   };
   const handlePowerBI = (e) => {
-    if (userInfo?.role.findIndex((p) => p === "PowerBiDashboard") > -1) {
-      navigate("/powerbi");
+    if (userInfo?.role.findIndex((p) => p === 'PowerBiDashboard') > -1) {
+      navigate('/powerbi');
     } else {
       e.preventDefault();
     }
   };
   const handleConversation = (e) => {
     if (
-      userInfo?.role.findIndex((p) => p === "Dinamyc") > -1 ||
-      userInfo?.role.findIndex((p) => p === "Administrador") > -1
+      userInfo?.role.findIndex((p) => p === 'Dinamyc') > -1 ||
+      userInfo?.role.findIndex((p) => p === 'Administrador') > -1
     ) {
-      navigate("/conversation/Build");
+      navigate('/conversation/Build');
     } else {
       e.preventDefault();
     }
   };
   const handleJourney = (e) => {
     if (
-      userInfo?.role.findIndex((p) => p === "Journey") > -1 ||
-      userInfo?.role.findIndex((p) => p === "Administrador") > -1
+      userInfo?.role.findIndex((p) => p === 'Journey') > -1 ||
+      userInfo?.role.findIndex((p) => p === 'Administrador') > -1
     ) {
       let data = companyConsume(userInfo.user);
       if (data.length === 0) {
-        navigate("infoadmin/Empresas");
+        navigate('infoadmin/Empresas');
       } else {
-        navigate("/journey");
+        navigate('/journey');
       }
     } else {
       e.preventDefault();
@@ -58,7 +60,7 @@ export default function Dashboard() {
   };
   const companyConsume = async (id) => {
     try {
-      await axios.get("companias/GetCompanias/" + id).then((res) => {
+      await axios.get('companias/GetCompanias/' + id).then((res) => {
         return res.data;
       });
     } catch (error) {
@@ -69,10 +71,10 @@ export default function Dashboard() {
   useEffect(() => {}, []);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Navbar />
       <Sidebar />
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: 'white' }}>
         <div className={styles.content}>
           <div className={styles.cases}>
             <div className={styles.case}>
@@ -80,15 +82,15 @@ export default function Dashboard() {
                 className={styles.project}
                 style={{
                   backgroundColor:
-                    userInfo?.role.findIndex((p) => p === "Management") > -1 ||
-                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
-                      ? ""
-                      : "grey",
+                    userInfo?.role.findIndex((p) => p === 'Management') > -1 ||
+                    userInfo?.role.findIndex((p) => p === 'Administrador') > -1
+                      ? ''
+                      : 'grey',
                   cursor:
-                    userInfo?.role.findIndex((p) => p === "Management") > -1 ||
-                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
-                      ? ""
-                      : "default",
+                    userInfo?.role.findIndex((p) => p === 'Management') > -1 ||
+                    userInfo?.role.findIndex((p) => p === 'Administrador') > -1
+                      ? ''
+                      : 'default',
                 }}
               >
                 <div>
@@ -104,15 +106,15 @@ export default function Dashboard() {
                 onClick={handlePowerBI}
                 style={{
                   backgroundColor:
-                    userInfo?.role.findIndex((p) => p === "PowerBiDashboard") >
+                    userInfo?.role.findIndex((p) => p === 'PowerBiDashboard') >
                     -1
-                      ? ""
-                      : "grey",
+                      ? ''
+                      : 'grey',
                   cursor:
-                    userInfo?.role.findIndex((p) => p === "PowerBiDashboard") >
+                    userInfo?.role.findIndex((p) => p === 'PowerBiDashboard') >
                     -1
-                      ? ""
-                      : "default",
+                      ? ''
+                      : 'default',
                 }}
               >
                 <div>
@@ -130,15 +132,15 @@ export default function Dashboard() {
                 onClick={handleOnas}
                 style={{
                   backgroundColor:
-                    userInfo?.role.findIndex((p) => p === "Onas") > -1 ||
-                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
-                      ? ""
-                      : "grey",
+                    userInfo?.role.findIndex((p) => p === 'Onas') > -1 ||
+                    userInfo?.role.findIndex((p) => p === 'Administrador') > -1
+                      ? ''
+                      : 'grey',
                   cursor:
-                    userInfo?.role.findIndex((p) => p === "Onas") > -1 ||
-                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
-                      ? ""
-                      : "default",
+                    userInfo?.role.findIndex((p) => p === 'Onas') > -1 ||
+                    userInfo?.role.findIndex((p) => p === 'Administrador') > -1
+                      ? ''
+                      : 'default',
                 }}
               >
                 <div>
@@ -158,15 +160,15 @@ export default function Dashboard() {
                 onClick={handleConversation}
                 style={{
                   backgroundColor:
-                    userInfo?.role.findIndex((p) => p === "Dinamyc") > -1 ||
-                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
-                      ? ""
-                      : "grey",
+                    userInfo?.role.findIndex((p) => p === 'Dinamyc') > -1 ||
+                    userInfo?.role.findIndex((p) => p === 'Administrador') > -1
+                      ? ''
+                      : 'grey',
                   cursor:
-                    userInfo?.role.findIndex((p) => p === "Dinamyc") > -1 ||
-                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
-                      ? ""
-                      : "default",
+                    userInfo?.role.findIndex((p) => p === 'Dinamyc') > -1 ||
+                    userInfo?.role.findIndex((p) => p === 'Administrador') > -1
+                      ? ''
+                      : 'default',
                 }}
               >
                 <div>
@@ -183,15 +185,15 @@ export default function Dashboard() {
                 onClick={handleJourney}
                 style={{
                   backgroundColor:
-                    userInfo?.role.findIndex((p) => p === "Journey") > -1 ||
-                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
-                      ? ""
-                      : "grey",
+                    userInfo?.role.findIndex((p) => p === 'Journey') > -1 ||
+                    userInfo?.role.findIndex((p) => p === 'Administrador') > -1
+                      ? ''
+                      : 'grey',
                   cursor:
-                    userInfo?.role.findIndex((p) => p === "Journey") > -1 ||
-                    userInfo?.role.findIndex((p) => p === "Administrador") > -1
-                      ? ""
-                      : "default",
+                    userInfo?.role.findIndex((p) => p === 'Journey') > -1 ||
+                    userInfo?.role.findIndex((p) => p === 'Administrador') > -1
+                      ? ''
+                      : 'default',
                 }}
               >
                 <div>

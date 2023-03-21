@@ -1,17 +1,18 @@
-import { useState } from "react";
-import styles from "./Discussion.module.css";
-import Avatar from "@mui/material/Avatar";
-import AvatarGroup from "@mui/material/AvatarGroup";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import ClearIcon from "@mui/icons-material/Clear";
-import IconButton from "@mui/material/IconButton";
-import ClassIcon from "@mui/icons-material/Class";
-import ForumOutlinedIcon from "@mui/icons-material/ForumOutlined";
-import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import { useState } from 'react';
+import ClassIcon from '@mui/icons-material/Class';
+import ClearIcon from '@mui/icons-material/Clear';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
+import Avatar from '@mui/material/Avatar';
+import AvatarGroup from '@mui/material/AvatarGroup';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Modal from '@mui/material/Modal';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+
+import styles from './Discussion.module.css';
 
 function stringToColor(string) {
   let hash = 0;
@@ -22,7 +23,7 @@ function stringToColor(string) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }
 
-  let color = "#";
+  let color = '#';
 
   for (i = 0; i < 3; i += 1) {
     const value = (hash >> (i * 8)) & 0xff;
@@ -36,7 +37,7 @@ function stringToColor(string) {
 function stringAvatar(name) {
   return {
     style: { backgroundColor: stringToColor(name) },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+    children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
   };
 }
 
@@ -48,12 +49,12 @@ export default function Discussion() {
   const handleOpenModaltemplate = () => setOpentemplate(true);
   const handleCloseModaltemplate = () => setOpentemplate(false);
   const handleTemplateModal = () => {
-    console.log("test");
+    console.log('test');
     handleCloseModal();
     handleOpenModaltemplate();
   };
 
-  const [toogle, setToggle] = useState("edit");
+  const [toogle, setToggle] = useState('edit');
 
   const handletoggle = (event, newAlignment) => {
     setToggle(newAlignment);
@@ -67,9 +68,9 @@ export default function Discussion() {
             <div>
               <span
                 style={{
-                  marginLeft: "2rem",
-                  fontWeight: "bold",
-                  fontSize: "1.2rem",
+                  marginLeft: '2rem',
+                  fontWeight: 'bold',
+                  fontSize: '1.2rem',
                 }}
               >
                 Discussion Guide
@@ -77,19 +78,19 @@ export default function Discussion() {
             </div>
             <div>
               <AvatarGroup max={6} className={styles.group}>
-                <Avatar {...stringAvatar("Kent Kevin")} />
-                <Avatar {...stringAvatar("Davis Samuel")} />
-                <Avatar {...stringAvatar("Samuel Kent")} />
-                <Avatar {...stringAvatar("Ben Dodds")} />
-                <Avatar {...stringAvatar("Richard Dadid")} />
-                <Avatar {...stringAvatar("Kevin Davis")} />
-                <Avatar {...stringAvatar("Dadid Ben")} />
+                <Avatar {...stringAvatar('Kent Kevin')} />
+                <Avatar {...stringAvatar('Davis Samuel')} />
+                <Avatar {...stringAvatar('Samuel Kent')} />
+                <Avatar {...stringAvatar('Ben Dodds')} />
+                <Avatar {...stringAvatar('Richard Dadid')} />
+                <Avatar {...stringAvatar('Kevin Davis')} />
+                <Avatar {...stringAvatar('Dadid Ben')} />
               </AvatarGroup>
             </div>
           </div>
           <div className={styles.right}>
-            <div style={{ marginRight: "1rem" }}>
-              <p style={{ color: "grey" }}>Unsaved Changes</p>
+            <div style={{ marginRight: '1rem' }}>
+              <p style={{ color: 'grey' }}>Unsaved Changes</p>
             </div>
             <div>
               <ToggleButtonGroup
@@ -99,12 +100,12 @@ export default function Discussion() {
                 onChange={handletoggle}
                 aria-label="Platform"
                 size="small"
-                style={{ width: "100%", padding: "0 0.5rem" }}
+                style={{ width: '100%', padding: '0 0.5rem' }}
               >
-                <ToggleButton value="edit" style={{ width: "100%" }}>
+                <ToggleButton value="edit" style={{ width: '100%' }}>
                   Edit
                 </ToggleButton>
-                <ToggleButton value="review" style={{ width: "50%" }}>
+                <ToggleButton value="review" style={{ width: '50%' }}>
                   Review
                 </ToggleButton>
               </ToggleButtonGroup>
@@ -121,11 +122,11 @@ export default function Discussion() {
               />
             </div>
             <div className={styles.rightbox}>
-              <p style={{ width: "60%" }}>
+              <p style={{ width: '60%' }}>
                 Prepare messages and questions you will ask participants during
                 this Conversation.
               </p>
-              <p style={{ width: "60%" }}>
+              <p style={{ width: '60%' }}>
                 Not sur where to start? Try a free template crafted by your
                 Remesh Research Team
               </p>
@@ -147,53 +148,53 @@ export default function Discussion() {
           >
             <Box className={styles.modal}>
               <div className={styles.modaltop}>
-                <p style={{ fontWeight: "bold", marginTop: "0.8rem" }}>
+                <p style={{ fontWeight: 'bold', marginTop: '0.8rem' }}>
                   Select how you would to import:
                 </p>
                 <div>
                   <IconButton onClick={handleCloseModal}>
-                    <ClearIcon sx={{ fontSize: "40px" }} />
+                    <ClearIcon sx={{ fontSize: '40px' }} />
                   </IconButton>
                 </div>
               </div>
               <div className={styles.modalbuttom}>
                 <div className={styles.blocks} onClick={handleTemplateModal}>
-                  <ClassIcon sx={{ fontSize: "40px" }} />
-                  <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                  <ClassIcon sx={{ fontSize: '40px' }} />
+                  <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
                     Template
                   </p>
                   <p
                     style={{
-                      color: "grey",
-                      fontSize: "0.8rem",
+                      color: 'grey',
+                      fontSize: '0.8rem',
                     }}
                   >
                     Use an available template
                   </p>
                 </div>
                 <div className={styles.blocks}>
-                  <ForumOutlinedIcon sx={{ fontSize: "40px" }} />
-                  <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                  <ForumOutlinedIcon sx={{ fontSize: '40px' }} />
+                  <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
                     Existing Conversation
                   </p>
                   <p
                     style={{
-                      color: "grey",
-                      fontSize: "0.8rem",
+                      color: 'grey',
+                      fontSize: '0.8rem',
                     }}
                   >
                     Grab the discussion guide from another conversation
                   </p>
                 </div>
                 <div className={styles.blocks}>
-                  <DescriptionOutlinedIcon sx={{ fontSize: "40px" }} />
-                  <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                  <DescriptionOutlinedIcon sx={{ fontSize: '40px' }} />
+                  <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
                     Excel file
                   </p>
                   <p
                     style={{
-                      color: "grey",
-                      fontSize: "0.8rem",
+                      color: 'grey',
+                      fontSize: '0.8rem',
                     }}
                   >
                     Import an axcel file from your computer
@@ -210,12 +211,12 @@ export default function Discussion() {
           >
             <Box className={styles.templatemodal}>
               <div className={styles.modaltop}>
-                <p style={{ fontWeight: "bold", marginTop: "0.8rem" }}>
+                <p style={{ fontWeight: 'bold', marginTop: '0.8rem' }}>
                   Choose Template
                 </p>
                 <div>
                   <IconButton onClick={handleCloseModaltemplate}>
-                    <ClearIcon sx={{ fontSize: "40px" }} />
+                    <ClearIcon sx={{ fontSize: '40px' }} />
                   </IconButton>
                 </div>
               </div>
@@ -228,10 +229,10 @@ export default function Discussion() {
                       className={styles.templatephoto}
                     />
                     <div className={styles.templatecontent}>
-                      <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
                         Concept Test (Single)
                       </p>
-                      <p style={{ color: "grey", fontSize: "0.8rem" }}>
+                      <p style={{ color: 'grey', fontSize: '0.8rem' }}>
                         Evaluate consumer reactions to a single product concept
                       </p>
                     </div>
@@ -245,10 +246,10 @@ export default function Discussion() {
                       className={styles.templatephoto}
                     />
                     <div className={styles.templatecontent}>
-                      <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
                         Concept Test (Single)
                       </p>
-                      <p style={{ color: "grey", fontSize: "0.8rem" }}>
+                      <p style={{ color: 'grey', fontSize: '0.8rem' }}>
                         Evaluate consumer reactions to a single product concept
                       </p>
                     </div>
@@ -262,10 +263,10 @@ export default function Discussion() {
                       className={styles.templatephoto}
                     />
                     <div className={styles.templatecontent}>
-                      <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
                         Concept Test (Single)
                       </p>
-                      <p style={{ color: "grey", fontSize: "0.8rem" }}>
+                      <p style={{ color: 'grey', fontSize: '0.8rem' }}>
                         Evaluate consumer reactions to a single product concept
                       </p>
                     </div>
@@ -279,10 +280,10 @@ export default function Discussion() {
                       className={styles.templatephoto}
                     />
                     <div className={styles.templatecontent}>
-                      <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
                         Concept Test (Single)
                       </p>
-                      <p style={{ color: "grey", fontSize: "0.8rem" }}>
+                      <p style={{ color: 'grey', fontSize: '0.8rem' }}>
                         Evaluate consumer reactions to a single product concept
                       </p>
                     </div>
@@ -296,10 +297,10 @@ export default function Discussion() {
                       className={styles.templatephoto}
                     />
                     <div className={styles.templatecontent}>
-                      <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
                         Concept Test (Single)
                       </p>
-                      <p style={{ color: "grey", fontSize: "0.8rem" }}>
+                      <p style={{ color: 'grey', fontSize: '0.8rem' }}>
                         Evaluate consumer reactions to a single product concept
                       </p>
                     </div>
@@ -313,10 +314,10 @@ export default function Discussion() {
                       className={styles.templatephoto}
                     />
                     <div className={styles.templatecontent}>
-                      <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
                         Concept Test (Single)
                       </p>
-                      <p style={{ color: "grey", fontSize: "0.8rem" }}>
+                      <p style={{ color: 'grey', fontSize: '0.8rem' }}>
                         Evaluate consumer reactions to a single product concept
                       </p>
                     </div>

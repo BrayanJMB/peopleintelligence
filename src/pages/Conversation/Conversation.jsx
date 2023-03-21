@@ -1,32 +1,33 @@
-import Box from "@mui/material/Box";
-import ConSidebar from "../../Layout/ConSidebar/ConSidebar";
-import Build from "../../components/Build/Build";
-import Live from "../../components/Live/Live";
-import { useParams } from "react-router-dom";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+import Build from '../../components/Build/Build';
+import Live from '../../components/Live/Live';
+import ConSidebar from '../../Layout/ConSidebar/ConSidebar';
 
 export default function Conversation() {
   const { type } = useParams();
   const navigate = useNavigate();
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const theme = createTheme({
     palette: {
       blue: {
-        main: "#00b0f0",
+        main: '#00b0f0',
       },
       grey: {
-        main: "#808080",
+        main: '#808080',
       },
     },
   });
 
   const renderSwitch = () => {
     switch (type) {
-      case "Build":
+      case 'Build':
         return <Build />;
-      case "Live":
+      case 'Live':
         return <Live />;
       default:
         return null;
@@ -35,17 +36,17 @@ export default function Conversation() {
 
   useEffect(() => {
     if (
-      userInfo?.role.findIndex((p) => p === "Dinamyc") < 0 &&
-      userInfo?.role.findIndex((p) => p === "Administrador") < 0
+      userInfo?.role.findIndex((p) => p === 'Dinamyc') < 0 &&
+      userInfo?.role.findIndex((p) => p === 'Administrador') < 0
     ) {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+      alert('No tiene permiso para acceder a esta funcionalidad');
+      navigate('/dashboard');
     }
   }, []);
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: 'flex' }}>
         <ConSidebar type={type} />
         {renderSwitch(type)}
       </Box>

@@ -1,18 +1,19 @@
-import { grey } from "@mui/material/colors";
-import { DataGrid, gridClasses } from "@mui/x-data-grid";
-import { useMemo, useState, useEffect } from "react";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/DeleteOutlined";
-import IconButton from "@mui/material/IconButton";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import { removeItem } from "../features/adminSlice";
-import { removeItemBi } from "../features/powerBiSlice";
-import { useDispatch } from "react-redux";
-import { deleteReportAPI } from "../services/deleteReport.service";
-import { useNavigate } from "react-router-dom";
-import Switch from "@mui/material/Switch";
-import axios from "../utils/axiosInstance";
-import { deleteDashboardAPI } from "../services/deleteDashboard.service";
+import { useEffect,useMemo, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
+import Switch from '@mui/material/Switch';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
+
+import { removeItem } from '../features/adminSlice';
+import { removeItemBi } from '../features/powerBiSlice';
+import { deleteDashboardAPI } from '../services/deleteDashboard.service';
+import { deleteReportAPI } from '../services/deleteReport.service';
+import axios from '../utils/axiosInstance';
 
 const search = (id, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -30,18 +31,18 @@ export default function Table(props) {
 
   const handleDeleteItem = async (id, trueid) => {
     dispatch(removeItem({ id: id, type: props.type }));
-    await axios.delete("companias/" + trueid);
+    await axios.delete('companias/' + trueid);
   };
   const handleRedirect = (id) => {
-    navigate("/powerbi/" + id);
+    navigate('/powerbi/' + id);
   };
   const handleDeleteItemBi = (_id, id) => {
     dispatch(removeItemBi({ id: _id, type: props.type }));
     switch (props.type) {
-      case "dashboard":
+      case 'dashboard':
         deleteDashboardAPI(id);
         break;
-      case "report":
+      case 'report':
         deleteReportAPI(id);
         break;
 
@@ -52,71 +53,71 @@ export default function Table(props) {
 
   const company = [
     {
-      field: "nombreCompania",
+      field: 'nombreCompania',
       flex: 1,
-      headerName: "Nombre Empresa",
-      headerAlign: "center",
-      align: "center",
-      editable: "true",
+      headerName: 'Nombre Empresa',
+      headerAlign: 'center',
+      align: 'center',
+      editable: 'true',
     },
     {
-      field: "IdPais",
+      field: 'IdPais',
       flex: 1,
-      headerName: "Pais",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Pais',
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) =>
         isNaN(params.row.IdPais)
           ? params.row.IdPais
-          : search(params.row.IdPais, props.ids.country, "pais", "id"),
+          : search(params.row.IdPais, props.ids.country, 'pais', 'id'),
     },
     {
-      field: "Sede",
+      field: 'Sede',
       flex: 1,
-      headerName: "Sede",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Sede',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "direccion",
+      field: 'direccion',
       flex: 1,
-      headerName: "Dirección",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Dirección',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "IdTamanoCompania",
+      field: 'IdTamanoCompania',
       flex: 2,
-      headerName: "Tamaño Empresa",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Tamaño Empresa',
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) =>
         isNaN(params.row.IdTamanoCompania)
           ? params.row.IdTamanoCompania
           : search(
               params.row.IdTamanoCompania,
               props.ids.sizeCompany,
-              "quantityOfEmployees",
-              "id"
+              'quantityOfEmployees',
+              'id'
             ),
     },
     {
-      field: "SectorId",
+      field: 'SectorId',
       flex: 2.5,
-      headerName: "Sector",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Sector',
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) =>
         isNaN(params.row.SectorId)
           ? params.row.SectorId
-          : search(params.row.SectorId, props.ids.sector, "Sector", "id"),
+          : search(params.row.SectorId, props.ids.sector, 'Sector', 'id'),
     },
     {
-      field: "actions",
-      type: "actions",
-      headerName: "Acciones",
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Acciones',
       width: 100,
-      cellClassName: "actions",
+      cellClassName: 'actions',
       getActions: (params) => {
         return [
           <IconButton onClick={() => props.handleEditItem(params.row)}>
@@ -134,29 +135,29 @@ export default function Table(props) {
 
   const office = [
     {
-      field: "sede",
+      field: 'sede',
       flex: 1,
-      headerName: "Sede",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Sede',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "IdCompania",
+      field: 'IdCompania',
       flex: 1,
-      headerName: "Compania",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Compania',
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) =>
         isNaN(params.row.IdCompania)
           ? params.row.IdCompania
-          : search(params.row.IdCompania, props.ids.company, "nombreCompania"),
+          : search(params.row.IdCompania, props.ids.company, 'nombreCompania'),
     },
     {
-      field: "actions",
-      type: "actions",
-      headerName: "Actions",
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Actions',
       width: 100,
-      cellClassName: "actions",
+      cellClassName: 'actions',
       getActions: (params) => {
         return [
           <IconButton onClick={() => props.handleEditItem(params.row)}>
@@ -172,47 +173,47 @@ export default function Table(props) {
 
   const employee = [
     {
-      field: "sede",
+      field: 'sede',
       flex: 1,
-      headerName: "Nombre",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Nombre',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "corroe",
+      field: 'corroe',
       flex: 1,
-      headerName: "Correo electrónico",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Correo electrónico',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "fecha",
+      field: 'fecha',
       flex: 1,
-      headerName: "Fecha de admisión",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Fecha de admisión',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "cargo",
+      field: 'cargo',
       flex: 1,
-      headerName: "Cargo",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Cargo',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "area",
+      field: 'area',
       flex: 1,
-      headerName: "Área",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Área',
+      headerAlign: 'center',
+      align: 'center',
     },
 
     {
-      field: "actions",
-      type: "actions",
-      headerName: "Actions",
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Actions',
       width: 100,
-      cellClassName: "actions",
+      cellClassName: 'actions',
       getActions: (params) => {
         return [
           <IconButton onClick={() => props.handleEditItem(params.row)}>
@@ -228,51 +229,51 @@ export default function Table(props) {
 
   const dashboard = [
     {
-      field: "companyId",
+      field: 'companyId',
       flex: 1,
-      headerName: "Nombre compañia",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Nombre compañia',
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) => {
         return isNaN(params.row.companyId)
           ? params.row.companyId
           : search(
               params.row.companyId,
               props.ids.company,
-              "nombreCompania",
-              "id"
+              'nombreCompania',
+              'id'
             );
       },
     },
     {
-      field: "reportName",
+      field: 'reportName',
       flex: 1,
-      headerName: "Titulo Dashbord",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Titulo Dashbord',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "isActive",
+      field: 'isActive',
       flex: 1,
-      headerName: "Estado",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Estado',
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) => {
         return (
           <Switch
             checked={params.row.isActive}
             onChange={(event) => props.handleSwitch(event, params.row)}
-            inputProps={{ "aria-label": "controlled" }}
+            inputProps={{ 'aria-label': 'controlled' }}
           />
         );
       },
     },
     {
-      field: "actions",
-      type: "actions",
-      headerName: "Acciones",
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Acciones',
       width: 150,
-      cellClassName: "actions",
+      cellClassName: 'actions',
       getActions: (params) => {
         return [
           <IconButton onClick={() => props.handleEditItem(params.row)}>
@@ -293,25 +294,25 @@ export default function Table(props) {
 
   const report = [
     {
-      field: "name",
+      field: 'name',
       flex: 1,
-      headerName: "Nombre Reporte",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Nombre Reporte',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "descripcion",
+      field: 'descripcion',
       flex: 1,
-      headerName: "Descripción",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Descripción',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "actions",
-      type: "actions",
-      headerName: "Acciones",
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Acciones',
       width: 100,
-      cellClassName: "actions",
+      cellClassName: 'actions',
       getActions: (params) => {
         return [
           <IconButton onClick={() => props.handleEditItem(params.row)}>
@@ -329,38 +330,38 @@ export default function Table(props) {
 
   const department = [
     {
-      field: "codigoDepartamento",
+      field: 'codigoDepartamento',
       flex: 1,
-      headerName: "Department Code",
-      headerAlign: "center",
-      align: "center",
-      editable: "true",
+      headerName: 'Department Code',
+      headerAlign: 'center',
+      align: 'center',
+      editable: 'true',
     },
     {
-      field: "IdPais",
+      field: 'IdPais',
       flex: 1,
-      headerName: "Pais",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Pais',
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) =>
         isNaN(params.row.IdPais)
           ? params.row.IdPais
-          : search(params.row.IdPais, props.ids.country, "pais", "id"),
+          : search(params.row.IdPais, props.ids.country, 'pais', 'id'),
     },
 
     {
-      field: "departamento",
+      field: 'departamento',
       flex: 1,
-      headerName: "departamento",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'departamento',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "actions",
-      type: "actions",
-      headerName: "Actions",
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Actions',
       width: 100,
-      cellClassName: "actions",
+      cellClassName: 'actions',
       getActions: (params) => {
         return [
           <IconButton onClick={() => props.handleEditItem(params.row)}>
@@ -376,17 +377,17 @@ export default function Table(props) {
 
   const renderColumn = () => {
     switch (props.type) {
-      case "Empresas":
+      case 'Empresas':
         return company;
-      case "Oficinas":
+      case 'Oficinas':
         return office;
-      case "Empleados":
+      case 'Empleados':
         return employee;
-      case "dashboard":
+      case 'dashboard':
         return dashboard;
-      case "report":
+      case 'report':
         return report;
-      case "Departamentos":
+      case 'Departamentos':
         return department;
       default:
         return null;
@@ -414,7 +415,7 @@ export default function Table(props) {
       sx={{
         [`& .${gridClasses.row}`]: {
           bgcolor: (theme) =>
-            theme.palette.mode === "light" ? grey[200] : grey[900],
+            theme.palette.mode === 'light' ? grey[200] : grey[900],
         },
       }}
     />

@@ -1,8 +1,8 @@
-import axios from "../utils/axiosInstance";
+import axios from '../utils/axiosInstance';
 
 export const deleteReportAPI = async (id) => {
-  console.log("deleteReportAPI");
+  console.log('deleteReportAPI');
 
-  const response = await axios.delete("ListaDashboards/" + id);
+  const response = await axios.delete('ListaDashboards/' + id);
   return response;
 };

@@ -1,11 +1,13 @@
-import styles from "./Cuestionario.module.css";
-import Button from "@mui/material/Button";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import ModeOutlinedIcon from "@mui/icons-material/ModeOutlined";
-import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
+import { DragDropContext, Draggable,Droppable } from 'react-beautiful-dnd';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
+import ModeOutlinedIcon from '@mui/icons-material/ModeOutlined';
+import { Typography } from '@mui/material';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+
+import styles from './Cuestionario.module.css';
 
 export default function Cuestionario(props) {
   return (
@@ -13,43 +15,41 @@ export default function Cuestionario(props) {
       <div className={styles.questions}>
         <div className={styles.top}>
           <div className={styles.left}>
-            <h3
-              style={{
-                fontSize: "14px",
-                fontWeight: "500",
-                lineHeight: "24px",
-                letterSpacing: "0.15px",
-              }}
+            <Typography
+              variant="subtitle1"
+              fontWeight="bold"
+              gutterBottom
             >
               Cuestionario de encuesta
-            </h3>
+            </Typography>
+            
             <p
               style={{
-                fontSize: "14px",
-                fontWeight: "300",
-                lineHeight: "20px",
-                letterSpacing: "0.25px",
+                fontSize: '14px',
+                fontWeight: '300',
+                lineHeight: '20px',
+                letterSpacing: '0.25px',
               }}
             >
               Puede reorganizar, editar o eliminar preguntas de esta sección
             </p>
           </div>
           <Button
-            color="blue"
+            color="primary"
             variant="outlined"
             onClick={props.handleAdd}
-            startIcon={<AddCircleOutlineIcon />}
+            startIcon={<AddIcon />}
           >
-            ANADIR PREGUNTA
+            Pregunta
           </Button>
         </div>
         {props.questions.length === 0 ? (
           <p
             style={{
-              fontSize: "12px",
-              fontWeight: "300",
-              lineHeight: "16px",
-              letterSpacing: "0.25px",
+              fontSize: '12px',
+              fontWeight: '300',
+              lineHeight: '16px',
+              letterSpacing: '0.25px',
             }}
           >
             ¡Aún no se agregaron preguntas!

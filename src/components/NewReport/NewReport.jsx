@@ -1,8 +1,9 @@
-import { useState } from "react";
-import TextField from "@mui/material/TextField";
-import styles from "./NewReport.module.css";
-import Button from "@mui/material/Button";
-import TextareaAutosize from "@mui/material/TextareaAutosize";
+import { useState } from 'react';
+import Button from '@mui/material/Button';
+import TextareaAutosize from '@mui/material/TextareaAutosize';
+import TextField from '@mui/material/TextField';
+
+import styles from './NewReport.module.css';
 
 export default function NewReport(props) {
   const [helperText, setHelperText] = useState({});
@@ -11,11 +12,11 @@ export default function NewReport(props) {
   const handleBlur = (event) => {
     let helperText = {};
     let error = {};
-    if (event.target.value === "") {
-      helperText[event.target.name] = "El campo no puede ir vacio";
+    if (event.target.value === '') {
+      helperText[event.target.name] = 'El campo no puede ir vacio';
       error[event.target.name] = true;
     } else {
-      helperText[event.target.name] = "";
+      helperText[event.target.name] = '';
       error[event.target.name] = false;
     }
     setErrorMessage(error);
@@ -31,7 +32,7 @@ export default function NewReport(props) {
           value={props.info.name}
           name="name"
           onChange={props.handleChangeReport}
-          style={{ flexBasis: "85.5%" }}
+          style={{ flexBasis: '85.5%' }}
           error={errorMessage.name}
           helperText={helperText.name}
           size="small"
@@ -43,9 +44,9 @@ export default function NewReport(props) {
           aria-label="empty textarea"
           placeholder="Type your welcome message..."
           style={{
-            width: "85.5%",
-            height: "100px",
-            marginTop: "0.5rem",
+            width: '85.5%',
+            height: '100px',
+            marginTop: '0.5rem',
           }}
           name="descripcion"
           value={props.info.descripcion}

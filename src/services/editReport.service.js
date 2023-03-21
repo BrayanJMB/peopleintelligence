@@ -1,9 +1,9 @@
-import axios from "../utils/axiosInstance";
+import axios from '../utils/axiosInstance';
 
 export const editReportAPI = async (id, name, descripcion) => {
-  console.log("editReportAPI");
+  console.log('editReportAPI');
 
-  const response = await axios.put("ListaDashboards?Id=" + id, {
+  const response = await axios.put('ListaDashboards?Id=' + id, {
     name: name,
     descripcion: descripcion,
   });

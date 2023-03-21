@@ -1,0 +1,10 @@
+.DemographicDataForm {}
+
+.DemographicDataForm__header {
+    display: flex;
+    align-items: center;
+}
+
+.DemographicDataForm__header__button {
+    margin-left: auto !important;
+}

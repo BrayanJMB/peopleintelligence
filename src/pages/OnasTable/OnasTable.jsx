@@ -1,23 +1,25 @@
-import { useState, useEffect, useMemo, useRef } from "react";
-import styles from "./OnasTable.module.css";
-import { DataGrid, gridClasses } from "@mui/x-data-grid";
-import Navbar from "../../Layout/Navbar/Navbar";
-import Box from "@mui/material/Box";
-import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
-import * as uuid from "uuid";
-import { grey } from "@mui/material/colors";
-import IconButton from "@mui/material/IconButton";
-import { useNavigate } from "react-router-dom";
-import { getOnasAPI } from "../../services/getOnas.service";
-import DownloadIcon from "@mui/icons-material/Download";
-import { downloadOnasAPI } from "../../services/downloadonas.service";
-import { CSVLink } from "react-csv";
-import Button from "@mui/material/Button";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import { useSelector } from "react-redux";
+import { useEffect, useMemo, useRef,useState } from 'react';
+import { CSVLink } from 'react-csv';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import DownloadIcon from '@mui/icons-material/Download';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
+import * as uuid from 'uuid';
+
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../Layout/Navbar/Navbar';
+import { downloadOnasAPI } from '../../services/downloadonas.service';
+import { getOnasAPI } from '../../services/getOnas.service';
+
+import styles from './OnasTable.module.css';
 
 function padTo2Digits(num) {
-  return num.toString().padStart(2, "0");
+  return num.toString().padStart(2, '0');
 }
 function formatDate(date) {
   return (
@@ -25,22 +27,22 @@ function formatDate(date) {
       date.getFullYear(),
       padTo2Digits(date.getMonth() + 1),
       padTo2Digits(date.getDate()),
-    ].join("_") +
-    "&" +
+    ].join('_') +
+    '&' +
     [
       padTo2Digits(date.getHours()),
       padTo2Digits(date.getMinutes()),
       padTo2Digits(date.getSeconds()),
-    ].join("_")
+    ].join('_')
   );
 }
 
 export default function OnasTable() {
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [rows, setRows] = useState([]);
-  const [transactionData, setTransactionData] = useState("");
+  const [transactionData, setTransactionData] = useState('');
   const [datetime, setDatetime] = useState(formatDate(new Date()));
   const [pageSize, setpageSize] = useState(5);
   const csvLink = useRef();
@@ -53,50 +55,50 @@ export default function OnasTable() {
   };
 
   const handleOnasDetails = (id) => {
-    navigate("/onas/details", { state: id });
+    navigate('/onas/details', { state: id });
   };
 
   const handleRedirect = (company, id) => {
-    navigate("/onas/" + company + "/" + id);
+    navigate('/onas/' + company + '/' + id);
   };
 
   const onasColumn = [
     {
-      field: "onasName",
+      field: 'onasName',
       flex: 1,
-      headerName: "Nombre Encuesta",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Nombre Encuesta',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "creatinDate",
+      field: 'creatinDate',
       flex: 1,
-      headerName: "Fecha Creacion",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Fecha Creacion',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "limitDate",
+      field: 'limitDate',
       flex: 1,
-      headerName: "Fecha limite",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Fecha limite',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "actions",
-      type: "actions",
-      headerName: "Actions",
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Actions',
       width: 250,
-      cellClassName: "actions",
+      cellClassName: 'actions',
       getActions: (params) => {
         return [
           <Button
             variant="contained"
             style={{
-              whiteSpace: "nowrap",
-              padding: "0.5em 1em",
-              color: "white",
-              textTransform: "none",
+              whiteSpace: 'nowrap',
+              padding: '0.5em 1em',
+              color: 'white',
+              textTransform: 'none',
             }}
             color="primary"
             onClick={() => handleRedirect(params.row.companyId, params.row.id)}
@@ -137,11 +139,11 @@ export default function OnasTable() {
 
   useEffect(() => {
     if (
-      userInfo?.role.findIndex((p) => p === "Onas") < 0 &&
-      userInfo?.role.findIndex((p) => p === "Administrador") < 0
+      userInfo?.role.findIndex((p) => p === 'Onas') < 0 &&
+      userInfo?.role.findIndex((p) => p === 'Administrador') < 0
     ) {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+      alert('No tiene permiso para acceder a esta funcionalidad');
+      navigate('/dashboard');
     }
     if (transactionData) {
       csvLink.current.link.click();
@@ -150,17 +152,17 @@ export default function OnasTable() {
   }, [transactionData, auth]);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Navbar />
       <IconSidebar />
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: 'white' }}>
         <div className={styles.content}>
           <div className={styles.crud}>
             <div className={styles.buttom}>
               <CSVLink
                 data={transactionData}
-                filename={"ResultadoOnas" + datetime + ".csv"}
-                style={{ display: "none" }}
+                filename={'ResultadoOnas' + datetime + '.csv'}
+                style={{ display: 'none' }}
                 ref={csvLink}
                 target="_blank"
               />

@@ -1,31 +1,32 @@
-import { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useEffect } from 'react';
+import { Provider } from 'react-redux';
+import { BrowserRouter as Router, Route,Routes } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
-import Home from "./pages/Home/Home";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import Onas from "./pages/Onas/Onas";
-import PowerBI from "./pages/PowerBI/PowerBI";
-import PowerBiDashboard from "./pages/PowerBiDashboard/PowerBiDashboard";
-import Register from "./pages/Register/Register";
-import InfoAdmin from "./pages/InfoAdmin/InfoAdmin";
-import Conversation from "./pages/Conversation/Conversation";
-import Journey from "./pages/Journey/Journey";
-import Template from "./pages/Journey/Template/Template";
-import CreateSurvey from "./pages/Journey/CreateSurvey/CreateSurvey";
-import OnasTable from "./pages/OnasTable/OnasTable";
-import JourneySettingsPage from "./pages/JourneySettingsPage/JourneySettingsPage";
-import Roles from "./pages/Roles/Roles";
-import Error from "./pages/Error/Error";
-import PrivateRoutes from "./utils/PrivateRoutes";
-import NoAccess from "./pages/NoAccess/NoAccess";
-import OnasDetails from "./pages/OnasDetails/OnasDetails";
-import { Provider } from "react-redux";
-import { store } from "./redux/store";
-import IdleTimer from "./utils/IdleTimer";
-import Questions from "./pages/Questions/Questions";
-import SurveyDetailPage from "./pages/SurveyDetailPage/SurveyDetailPage";
+
 import AnswerSurvey from './pages/AnswerSurvey/AnswerSurvey';
+import Conversation from './pages/Conversation/Conversation';
+import Dashboard from './pages/Dashboard/Dashboard';
+import Error from './pages/Error/Error';
+import Home from './pages/Home/Home';
+import InfoAdmin from './pages/InfoAdmin/InfoAdmin';
+import CreateSurvey from './pages/Journey/CreateSurvey/CreateSurvey';
+import Journey from './pages/Journey/Journey';
+import Template from './pages/Journey/Template/Template';
+import JourneySettingsPage from './pages/JourneySettingsPage/JourneySettingsPage';
+import NoAccess from './pages/NoAccess/NoAccess';
+import Onas from './pages/Onas/Onas';
+import OnasDetails from './pages/OnasDetails/OnasDetails';
+import OnasTable from './pages/OnasTable/OnasTable';
+import PowerBI from './pages/PowerBI/PowerBI';
+import PowerBiDashboard from './pages/PowerBiDashboard/PowerBiDashboard';
+import Questions from './pages/Questions/Questions';
+import Register from './pages/Register/Register';
+import Roles from './pages/Roles/Roles';
+import SurveyDetailPage from './pages/SurveyDetailPage/SurveyDetailPage';
+import { store } from './redux/store';
+import IdleTimer from './utils/IdleTimer';
+import PrivateRoutes from './utils/PrivateRoutes';
 
 // custom theme
 const theme = createTheme({
@@ -46,10 +47,10 @@ export default function App() {
           return;
         }
 
-        alert("Session Expired after 20 minutes on Inactivity");
-        localStorage.removeItem("userInfo");
+        alert('Session Expired after 20 minutes on Inactivity');
+        localStorage.removeItem('userInfo');
         window.location.replace(
-          "https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fsuite.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login"
+          'https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fsuite.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login'
         );
       },
     });

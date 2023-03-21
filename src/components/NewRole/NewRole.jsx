@@ -1,7 +1,8 @@
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import styles from "./NewRole.module.css";
-import Button from "@mui/material/Button";
+import Autocomplete from '@mui/material/Autocomplete';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+
+import styles from './NewRole.module.css';
 
 const search = (value, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -9,7 +10,7 @@ const search = (value, inputArray, field, proprety) => {
       if (inputArray[i][field]) {
         return inputArray[i][field];
       } else {
-        return "";
+        return '';
       }
     }
   }
@@ -21,20 +22,20 @@ export default function NewRole(props) {
       <div className={styles.input}>
         <Autocomplete
           id="combo-box-demo"
-          style={{ flexBasis: "40%" }}
+          style={{ flexBasis: '40%' }}
           options={props.content.company}
           clearOnEscape
           value={search(
             props.info.companyId,
             props.ids.company,
-            "nombreCompania",
-            "id"
+            'nombreCompania',
+            'id'
           )}
           onChange={(e, value) => {
-            props.handleAutocomplete("companyId", value);
+            props.handleAutocomplete('companyId', value);
           }}
           getOptionLabel={(option) => option}
-          noOptionsText={"No se ha encontrado ningún País"}
+          noOptionsText={'No se ha encontrado ningún País'}
           renderInput={(params) => (
             <TextField {...params} label="company Name" />
           )}
@@ -42,15 +43,15 @@ export default function NewRole(props) {
         />
         <Autocomplete
           id="combo-box-demo"
-          style={{ flexBasis: "40%" }}
+          style={{ flexBasis: '40%' }}
           options={props.content.roles}
           clearOnEscape
-          value={search(props.info.roleId, props.ids.roles, "name", "id")}
+          value={search(props.info.roleId, props.ids.roles, 'name', 'id')}
           onChange={(e, value) => {
-            props.handleAutocomplete("roleId", value);
+            props.handleAutocomplete('roleId', value);
           }}
           getOptionLabel={(option) => option}
-          noOptionsText={"No roles"}
+          noOptionsText={'No roles'}
           renderInput={(params) => <TextField {...params} label="Roles" />}
           size="small"
         />

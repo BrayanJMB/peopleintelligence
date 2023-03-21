@@ -1,10 +1,10 @@
-import axios from "../utils/axiosInstance";
+import axios from '../utils/axiosInstance';
 
 export const downloadOnasAPI = async (company, version) => {
-  console.log("downloadOnasAPI");
+  console.log('downloadOnasAPI');
 
   const response = await axios.get(
-    "OnasSurvey/OnasDownload/" + company + "/" + version
+    'OnasSurvey/OnasDownload/' + company + '/' + version
   );
   return response;
 };

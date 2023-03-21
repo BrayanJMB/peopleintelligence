@@ -1,11 +1,12 @@
-import { useState } from "react";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import styles from "./NewDashboard.module.css";
-import Button from "@mui/material/Button";
-import TextareaAutosize from "@mui/material/TextareaAutosize";
+import { useState } from 'react';
+import Autocomplete from '@mui/material/Autocomplete';
+import Button from '@mui/material/Button';
+import TextareaAutosize from '@mui/material/TextareaAutosize';
+import TextField from '@mui/material/TextField';
 
-const validphone = new RegExp("^[0-9]{12,15}$");
+import styles from './NewDashboard.module.css';
+
+const validphone = new RegExp('^[0-9]{12,15}$');
 
 const search = (value, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -13,7 +14,7 @@ const search = (value, inputArray, field, proprety) => {
       if (inputArray[i][field]) {
         return inputArray[i][field];
       } else {
-        return "";
+        return '';
       }
     }
   }
@@ -26,16 +27,16 @@ export default function NewDashboard(props) {
   const handleBlur = (event) => {
     let helperText = {};
     let error = {};
-    if (event.target.value === "") {
-      helperText[event.target.name] = "El campo no puede ir vacio";
+    if (event.target.value === '') {
+      helperText[event.target.name] = 'El campo no puede ir vacio';
       error[event.target.name] = true;
     } else {
-      helperText[event.target.name] = "";
+      helperText[event.target.name] = '';
       error[event.target.name] = false;
     }
-    if (event.target.name === "phoneNumber") {
+    if (event.target.name === 'phoneNumber') {
       if (!validphone.test(event.target.value)) {
-        helperText[event.target.name] = "Solo puede escirbir números";
+        helperText[event.target.name] = 'Solo puede escirbir números';
         error[event.target.name] = true;
       }
     }
@@ -52,7 +53,7 @@ export default function NewDashboard(props) {
           value={props.info.reportId}
           name="reportId"
           onChange={props.handleChangeDashboard}
-          style={{ flexBasis: "40%" }}
+          style={{ flexBasis: '40%' }}
           error={errorMessage.reportId}
           helperText={helperText.reportId}
           size="small"
@@ -64,7 +65,7 @@ export default function NewDashboard(props) {
           value={props.info.groupId}
           name="groupId"
           onChange={props.handleChangeDashboard}
-          style={{ flexBasis: "40%" }}
+          style={{ flexBasis: '40%' }}
           error={errorMessage.groupId}
           helperText={helperText.groupId}
           size="small"
@@ -74,20 +75,20 @@ export default function NewDashboard(props) {
       <div className={styles.input}>
         <Autocomplete
           id="combo-box-demo"
-          style={{ flexBasis: "40%" }}
+          style={{ flexBasis: '40%' }}
           options={props.content.company}
           clearOnEscape
           value={search(
             props.info.companyId,
             props.ids.company,
-            "nombreCompania",
-            "id"
+            'nombreCompania',
+            'id'
           )}
           onChange={(e, value) => {
-            props.handleAutocomplete("companyId", value);
+            props.handleAutocomplete('companyId', value);
           }}
           getOptionLabel={(option) => option}
-          noOptionsText={"No se ha encontrado ningún País"}
+          noOptionsText={'No se ha encontrado ningún País'}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -100,15 +101,15 @@ export default function NewDashboard(props) {
         />
         <Autocomplete
           id="combo-box-demo"
-          style={{ flexBasis: "40%" }}
+          style={{ flexBasis: '40%' }}
           options={props.content.report}
           clearOnEscape
           value={props.info.reportName}
           onChange={(e, value) => {
-            props.handleAutocomplete("reportName", value);
+            props.handleAutocomplete('reportName', value);
           }}
           getOptionLabel={(option) => option}
-          noOptionsText={"No se ha encontrado ningún País"}
+          noOptionsText={'No se ha encontrado ningún País'}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -125,9 +126,9 @@ export default function NewDashboard(props) {
           aria-label="empty textarea"
           placeholder="Type your welcome message..."
           style={{
-            width: "85.5%",
-            height: "100px",
-            marginTop: "0.5rem",
+            width: '85.5%',
+            height: '100px',
+            marginTop: '0.5rem',
           }}
           name="descriptionReport"
           value={props.info.descriptionReport}

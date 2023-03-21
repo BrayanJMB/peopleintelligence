@@ -27,7 +27,7 @@ export const isJourney = (user) => {
   }
 
   return user.role.some((role) => role === JOURNEY_ROLE);
-}
+};
 
 /**
  * Chunk an array.
@@ -47,4 +47,4 @@ export const  chunkArray = (arr, chunkSize) => {
 
     return result;
   }, []);
-}
+};

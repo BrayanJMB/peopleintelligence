@@ -1,4 +1,4 @@
-import axios from "../utils/axiosInstance";
+import axios from '../utils/axiosInstance';
 
 export const postCompanyAPI = async (
   data,
@@ -8,9 +8,9 @@ export const postCompanyAPI = async (
   id,
   logoTipo
 ) => {
-  console.log("postCompanyAPI");
+  console.log('postCompanyAPI');
 
-  const response = await axios.post("companias/" + id, {
+  const response = await axios.post('companias/' + id, {
     IdPais: pais,
     IdTamanoCompania: size,
     SectorId: sector,

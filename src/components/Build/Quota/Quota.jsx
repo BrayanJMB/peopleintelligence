@@ -1,25 +1,26 @@
-import { useState } from "react";
-import styles from "./Quota.module.css";
-import Alert from "@mui/material/Alert";
-import Button from "@mui/material/Button";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
-import TextField from "@mui/material/TextField";
+import { useState } from 'react';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+
+import styles from './Quota.module.css';
 
 export default function Quota(props) {
   const [empty, setEmpty] = useState(true);
   const [quota, setQuota] = useState({
-    type: "range",
-    gender: { male: "", female: "", nothing: "" },
+    type: 'range',
+    gender: { male: '', female: '', nothing: '' },
     range: {
-      under21: "",
-      r21_30: "",
-      r31_40: "",
-      r41_50: "",
-      r51_60: "",
+      under21: '',
+      r21_30: '',
+      r31_40: '',
+      r41_50: '',
+      r51_60: '',
     },
   });
 
@@ -44,9 +45,9 @@ export default function Quota(props) {
     <div className={styles.quota}>
       <span
         style={{
-          marginLeft: "2rem",
-          fontWeight: "bold",
-          fontSize: "1.2rem",
+          marginLeft: '2rem',
+          fontWeight: 'bold',
+          fontSize: '1.2rem',
         }}
       >
         Quota Targeting
@@ -59,9 +60,9 @@ export default function Quota(props) {
             : props.info.quotas.map((val, key) => {
                 return (
                   <div key={key} className={styles.options}>
-                    {val.type === "gender" ? (
+                    {val.type === 'gender' ? (
                       <>
-                        <p style={{ margin: " 1rem 0" }}>What's your gender?</p>
+                        <p style={{ margin: ' 1rem 0' }}>What's your gender?</p>
                         <div className={styles.option}>
                           <p>Male</p>
                           <p>{val.gender.male}%</p>
@@ -77,7 +78,7 @@ export default function Quota(props) {
                       </>
                     ) : (
                       <>
-                        <p style={{ margin: " 0.5rem 0" }}>
+                        <p style={{ margin: ' 0.5rem 0' }}>
                           What's your age range?
                         </p>
                         <div className={styles.option}>
@@ -109,7 +110,7 @@ export default function Quota(props) {
             <Button
               variant="text"
               startIcon={<AddCircleIcon />}
-              style={{ marginTop: "1rem" }}
+              style={{ marginTop: '1rem' }}
               onClick={handleempty}
               disabled={props.info.quotas.length > 1}
             >
@@ -156,12 +157,12 @@ export default function Quota(props) {
                   onChange={handletype}
                   name="type"
                 >
-                  <MenuItem value={""}></MenuItem>
-                  <MenuItem value={"range"}>What's your age range?</MenuItem>
-                  <MenuItem value={"gender"}>What's your gender?</MenuItem>
+                  <MenuItem value={''}></MenuItem>
+                  <MenuItem value={'range'}>What's your age range?</MenuItem>
+                  <MenuItem value={'gender'}>What's your gender?</MenuItem>
                 </Select>
               </FormControl>
-              {quota.type === "gender" ? (
+              {quota.type === 'gender' ? (
                 <div className={styles.forms}>
                   <div className={styles.form}>
                     <p>Poll Options (5)</p>
@@ -169,7 +170,7 @@ export default function Quota(props) {
                     <p>Participants</p>
                   </div>
                   <div className={styles.form}>
-                    <p style={{ width: "12%" }}>Male</p>
+                    <p style={{ width: '12%' }}>Male</p>
                     <div className={styles.ratio}>
                       <TextField
                         id="outlined-name"
@@ -178,14 +179,14 @@ export default function Quota(props) {
                         onChange={handlechange}
                         size="small"
                         type="number"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       />
                       %
                     </div>
                     <p>0</p>
                   </div>
                   <div className={styles.form}>
-                    <p style={{ width: "12%" }}>Female</p>
+                    <p style={{ width: '12%' }}>Female</p>
                     <div className={styles.ratio}>
                       <TextField
                         id="outlined-name"
@@ -194,14 +195,14 @@ export default function Quota(props) {
                         onChange={handlechange}
                         size="small"
                         type="number"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       />
                       %
                     </div>
                     <p>0</p>
                   </div>
                   <div className={styles.form}>
-                    <p style={{ width: "12%" }}>Prefer not to say</p>
+                    <p style={{ width: '12%' }}>Prefer not to say</p>
                     <div className={styles.ratio}>
                       <TextField
                         id="outlined-name"
@@ -210,7 +211,7 @@ export default function Quota(props) {
                         onChange={handlechange}
                         size="small"
                         type="number"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       />
                       %
                     </div>
@@ -225,7 +226,7 @@ export default function Quota(props) {
                     <p>Participants</p>
                   </div>
                   <div className={styles.form}>
-                    <p style={{ width: "12%" }}>Under 21</p>
+                    <p style={{ width: '12%' }}>Under 21</p>
                     <div className={styles.ratio}>
                       <TextField
                         id="outlined-name"
@@ -234,7 +235,7 @@ export default function Quota(props) {
                         onChange={handlechange}
                         size="small"
                         type="number"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       />
                       %
                     </div>
@@ -250,7 +251,7 @@ export default function Quota(props) {
                         onChange={handlechange}
                         size="small"
                         type="number"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       />
                       %
                     </div>
@@ -266,7 +267,7 @@ export default function Quota(props) {
                         onChange={handlechange}
                         size="small"
                         type="number"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       />
                       %
                     </div>
@@ -282,7 +283,7 @@ export default function Quota(props) {
                         onChange={handlechange}
                         size="small"
                         type="number"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       />
                       %
                     </div>
@@ -298,7 +299,7 @@ export default function Quota(props) {
                         onChange={handlechange}
                         size="small"
                         type="number"
-                        style={{ width: "50%" }}
+                        style={{ width: '50%' }}
                       />
                       %
                     </div>

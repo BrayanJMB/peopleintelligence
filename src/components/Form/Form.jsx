@@ -1,8 +1,9 @@
-import styles from "./Form.module.css";
-import TextField from "@mui/material/TextField";
-import TextareaAutosize from "@mui/material/TextareaAutosize";
-import Button from "@mui/material/Button";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import Button from '@mui/material/Button';
+import TextareaAutosize from '@mui/material/TextareaAutosize';
+import TextField from '@mui/material/TextField';
+
+import styles from './Form.module.css';
 
 // likert options
 const options = [
@@ -16,7 +17,7 @@ const options = [
 export default function Form(props) {
   const renderForm = (type) => {
     switch (type) {
-      case "Texto corto":
+      case 'Texto corto':
         return (
           <div className={styles.top}>
             <div className={styles.question}>
@@ -46,14 +47,14 @@ export default function Form(props) {
                   inputComponent: TextareaAutosize,
                   inputProps: {
                     style: {
-                      height: "80px",
+                      height: '80px',
                     },
                   },
                 }}
                 value={props.information.description}
                 style={{
-                  width: "100%",
-                  marginTop: "0.5rem",
+                  width: '100%',
+                  marginTop: '0.5rem',
                 }}
                 name="description"
                 onChange={props.handleInformation}
@@ -61,7 +62,7 @@ export default function Form(props) {
             </div>
           </div>
         );
-      case "Escala Likert":
+      case 'Escala Likert':
         return (
           <div className={styles.top}>
             <div className={styles.question}>
@@ -91,14 +92,14 @@ export default function Form(props) {
                   inputComponent: TextareaAutosize,
                   inputProps: {
                     style: {
-                      height: "80px",
+                      height: '80px',
                     },
                   },
                 }}
                 value={props.information.description}
                 style={{
-                  width: "100%",
-                  marginTop: "0.5rem",
+                  width: '100%',
+                  marginTop: '0.5rem',
                 }}
                 name="description"
                 onChange={props.handleInformation}
@@ -110,13 +111,13 @@ export default function Form(props) {
                   <div className={styles.option} key={key}>
                     <div
                       style={{
-                        padding: "3px 9px",
-                        backgroundColor: "#fce4e4",
-                        borderRadius: "4px",
-                        textAlign: "center",
-                        marginRight: "15px",
-                        fontSize: "12px",
-                        color: "#808080",
+                        padding: '3px 9px',
+                        backgroundColor: '#fce4e4',
+                        borderRadius: '4px',
+                        textAlign: 'center',
+                        marginRight: '15px',
+                        fontSize: '12px',
+                        color: '#808080',
                       }}
                     >
                       {key + 1}
@@ -158,14 +159,14 @@ export default function Form(props) {
                   inputComponent: TextareaAutosize,
                   inputProps: {
                     style: {
-                      height: "80px",
+                      height: '80px',
                     },
                   },
                 }}
                 value={props.information.description}
                 style={{
-                  width: "100%",
-                  marginTop: "0.5rem",
+                  width: '100%',
+                  marginTop: '0.5rem',
                 }}
                 name="description"
                 onChange={props.handleInformation}
@@ -177,13 +178,13 @@ export default function Form(props) {
                   <div className={styles.option} key={key}>
                     <div
                       style={{
-                        padding: "3px 9px",
-                        backgroundColor: "#F0F2F5",
-                        borderRadius: "4px",
-                        textAlign: "center",
-                        marginRight: "15px",
-                        fontSize: "14px",
-                        color: "rgb(134, 140, 204)",
+                        padding: '3px 9px',
+                        backgroundColor: '#F0F2F5',
+                        borderRadius: '4px',
+                        textAlign: 'center',
+                        marginRight: '15px',
+                        fontSize: '14px',
+                        color: 'rgb(134, 140, 204)',
                       }}
                     >
                       {key + 1}
@@ -208,7 +209,7 @@ export default function Form(props) {
                   variant="text"
                   startIcon={<AddCircleOutlineIcon />}
                   onClick={props.handleaddoption}
-                  style={{ backgroundColor: "#F7F7F7", width: "255px" }}
+                  style={{ backgroundColor: '#F7F7F7', width: '255px' }}
                 >
                   Añadir opción
                 </Button>
@@ -246,14 +247,14 @@ export default function Form(props) {
                     inputComponent: TextareaAutosize,
                     inputProps: {
                       style: {
-                        height: "80px",
+                        height: '80px',
                       },
                     },
                   }}
                   value={props.information.description}
                   style={{
-                    width: "100%",
-                    marginTop: "0.5rem",
+                    width: '100%',
+                    marginTop: '0.5rem',
                   }}
                   name="description"
                   onChange={props.handleInformation}
@@ -268,13 +269,13 @@ export default function Form(props) {
                     >
                       <div
                         style={{
-                          padding: "3px 9px",
-                          backgroundColor: "#F0F2F5",
-                          borderRadius: "4px",
-                          textAlign: "center",
-                          marginRight: "15px",
-                          fontSize: "14px",
-                          color: "rgb(134, 140, 204)",
+                          padding: '3px 9px',
+                          backgroundColor: '#F0F2F5',
+                          borderRadius: '4px',
+                          textAlign: 'center',
+                          marginRight: '15px',
+                          fontSize: '14px',
+                          color: 'rgb(134, 140, 204)',
                         }}
                       >
                         {key + 1}
@@ -310,7 +311,7 @@ export default function Form(props) {
               </div>
             </div>
           );
-      case "Calificaciones":
+      case 'Calificaciones':
         return (
           <div className={styles.top}>
             <div className={styles.question}>
@@ -340,14 +341,14 @@ export default function Form(props) {
                   inputComponent: TextareaAutosize,
                   inputProps: {
                     style: {
-                      height: "80px",
+                      height: '80px',
                     },
                   },
                 }}
                 value={props.information.description}
                 style={{
-                  width: "100%",
-                  marginTop: "0.5rem",
+                  width: '100%',
+                  marginTop: '0.5rem',
                 }}
                 name="description"
                 onChange={props.handleInformation}
@@ -358,19 +359,19 @@ export default function Form(props) {
                 variant="text"
                 onClick={props.handledeletestars}
                 style={{
-                  backgroundColor: "#F7F7F7",
-                  color: "black",
-                  fontSize: "1.8rem",
-                  padding: "0",
+                  backgroundColor: '#F7F7F7',
+                  color: 'black',
+                  fontSize: '1.8rem',
+                  padding: '0',
                 }}
               >
                 -
               </Button>
               <div
                 style={{
-                  border: "1px solid #ddd",
-                  padding: "18px 20px",
-                  borderRadius: "4px",
+                  border: '1px solid #ddd',
+                  padding: '18px 20px',
+                  borderRadius: '4px',
                 }}
               >
                 {props.information.stars.length}
@@ -379,19 +380,19 @@ export default function Form(props) {
                 variant="text"
                 onClick={props.handleaddstars}
                 style={{
-                  backgroundColor: "#F7F7F7",
-                  color: "black",
-                  fontSize: "1.8rem",
-                  padding: "0",
+                  backgroundColor: '#F7F7F7',
+                  color: 'black',
+                  fontSize: '1.8rem',
+                  padding: '0',
                 }}
               >
                 +
               </Button>
               <div
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginTop: "0.3em",
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginTop: '0.3em',
                 }}
               >
                 {props.information.stars.map((val, index) => {
@@ -422,7 +423,7 @@ export default function Form(props) {
   };
   return (
     <div className={styles.form}>
-      {props.type === "" || props.type === null ? null : renderForm(props.type)}
+      {props.type === '' || props.type === null ? null : renderForm(props.type)}
     </div>
   );
 }

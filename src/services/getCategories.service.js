@@ -1,4 +1,4 @@
-import client from "../utils/axiosInstance";
+import client from '../utils/axiosInstance';
 
 /**
  * Fetch categories from API.

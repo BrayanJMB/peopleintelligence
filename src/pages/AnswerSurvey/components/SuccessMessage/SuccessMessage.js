@@ -1,7 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import styles from './SuccessMessage.module.css';
 import Typography from '@mui/material/Typography';
+import PropTypes from 'prop-types';
+
+import styles from './SuccessMessage.module.css';
 
 /**
  * SuccessMessage component for AnswerSurvey page.
