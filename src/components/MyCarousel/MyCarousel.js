@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import styles from './MyCarousel.module.css';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import IconButton from '@mui/material/IconButton';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
+
+import styles from './MyCarousel.module.css';
 
 /**
  * 3d Carousel component.
@@ -45,7 +46,7 @@ const MyCarousel = ({ slides, onSelected }) => {
   const handleSelect = (index, slide) => {
     setCurrentSlide(index * -1);
     onSelected(slide);
-  }
+  };
 
   /**
    * Update slide position.
@@ -55,7 +56,7 @@ const MyCarousel = ({ slides, onSelected }) => {
 
     setSlideInlineStyle({
       transform: `translateZ( -380px ) rotateY(${theta}deg)`,
-    })
+    });
   };
 
   // listen for changes in the current slide

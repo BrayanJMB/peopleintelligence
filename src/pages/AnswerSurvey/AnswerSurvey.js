@@ -1,28 +1,31 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import styles from './AnswerSurvey.module.css';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import PollIcon from '@mui/icons-material/Poll';
-import Divider from '@mui/material/Divider';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
+import { FormControl } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import { useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Divider from '@mui/material/Divider';
+import FormLabel from '@mui/material/FormLabel';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Stepper from '@mui/material/Stepper';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+
+import MyLoader from '../../components/MyLoader/MyLoader';
 import {
   fetchSurveyForAnswer,
   selectCurrentSurveyForAnswer,
-  selectSurveysStatus, storeSurvey
+  selectSurveysStatus, storeSurvey,
 } from '../../features/surveys/surveysSlice';
-import MyLoader from '../../components/MyLoader/MyLoader';
-import SurveyForm from './components/SurveyForm/SurveyForm';
+
 import SuccessMessage from './components/SuccessMessage/SuccessMessage';
-import { FormControl } from '@mui/material';
-import FormLabel from '@mui/material/FormLabel';
-import TextField from '@mui/material/TextField';
+import SurveyForm from './components/SurveyForm/SurveyForm';
+
+import styles from './AnswerSurvey.module.css';
 
 /**
  * Answer survey page.
@@ -67,7 +70,7 @@ const AnswerSurvey = () => {
     event.preventDefault();
 
     setEmailSubmitted(true);
-  }
+  };
 
   /**
    * Returns true if the step is optional.
@@ -97,7 +100,7 @@ const AnswerSurvey = () => {
    */
   const isDemographicStep = () => {
     return activeStep === 0 && steps.length === 3;
-  }
+  };
 
   /**
    * Returns true if is the survey step.
@@ -107,7 +110,7 @@ const AnswerSurvey = () => {
   const isSurveyStep = () => {
       return ((steps.length === 3 && activeStep === 1) ||
         (steps.length === 2 && activeStep === 0));
-  }
+  };
 
   /**
    * Returns true if the step is the last one.
@@ -116,7 +119,7 @@ const AnswerSurvey = () => {
    */
   const isFinalStep = () => {
     return activeStep === steps.length - 1;
-  }
+  };
 
   /**
    * Handle next step.
@@ -165,7 +168,7 @@ const AnswerSurvey = () => {
     if (!isStepOptional(activeStep)) {
       // You probably want to guard against something like this,
       // it should never occur unless someone's actively trying to break something.
-      throw new Error("You can't skip a step that isn't optional.");
+      throw new Error('You can\'t skip a step that isn\'t optional.');
     }
 
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -382,7 +385,7 @@ const AnswerSurvey = () => {
                                 options: options.map(({ id, value }) => ({
                                   numberOption: id,
                                   optionName: value,
-                                }))
+                                })),
                               }))}
                               onAnswered={(answers) => handleAnswered(answers, activeStep)}
                             />

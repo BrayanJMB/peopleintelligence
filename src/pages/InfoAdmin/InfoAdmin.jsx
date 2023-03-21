@@ -1,30 +1,32 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-import styles from "./InfoAdmin.module.css";
-import { useParams } from "react-router-dom";
-import Navbar from "../../Layout/Navbar/Navbar";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Building from "../../assets/Building.svg";
-import Modal from "@mui/material/Modal";
-import ClearIcon from "@mui/icons-material/Clear";
-import IconButton from "@mui/material/IconButton";
-import NewCompany from "../../components/NewCompany/NewCompany";
-import NewOffice from "../../components/NewOffice/NewOffice";
-import NewDepartment from "../../components/NewDepartment/NewDepartment";
-import Sidebar from "../../Layout/Sidebar/Sidebar";
-import Table from "../../components/Table";
-import * as uuid from "uuid";
-import axios from "../../utils/axiosInstance";
-import { useSelector, useDispatch } from "react-redux";
-import { getCompaniesAPI } from "../../services/getCompanies.service";
-import { getOfficesAPI } from "../../services/getOffices.service";
-import { getDepartmentsAPI } from "../../services/getDepartments.service";
-import { addItem, storeItems, updateItem } from "../../features/adminSlice";
-import { useNavigate } from "react-router-dom";
-import { postCompanyAPI } from "../../services/postCompany.service";
-import { getEmployeesAPI } from "../../services/getEmployees.service";
-import { CSVLink } from "react-csv";
-import Notification from "../../components/Notification";
+import { useCallback, useEffect, useRef,useState } from 'react';
+import { CSVLink } from 'react-csv';
+import { useDispatch,useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import ClearIcon from '@mui/icons-material/Clear';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Modal from '@mui/material/Modal';
+import * as uuid from 'uuid';
+
+import Building from '../../assets/Building.svg';
+import NewCompany from '../../components/NewCompany/NewCompany';
+import NewDepartment from '../../components/NewDepartment/NewDepartment';
+import NewOffice from '../../components/NewOffice/NewOffice';
+import Notification from '../../components/Notification';
+import Table from '../../components/Table';
+import { addItem, storeItems, updateItem } from '../../features/adminSlice';
+import Navbar from '../../Layout/Navbar/Navbar';
+import Sidebar from '../../Layout/Sidebar/Sidebar';
+import { getCompaniesAPI } from '../../services/getCompanies.service';
+import { getDepartmentsAPI } from '../../services/getDepartments.service';
+import { getEmployeesAPI } from '../../services/getEmployees.service';
+import { getOfficesAPI } from '../../services/getOffices.service';
+import { postCompanyAPI } from '../../services/postCompany.service';
+import axios from '../../utils/axiosInstance';
+
+import styles from './InfoAdmin.module.css';
 
 const search = (value, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -38,27 +40,27 @@ export default function InfoAdmin() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const admin = useSelector((state) => state.admin);
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const { type } = useParams();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
   const [compania, setCompania] = useState({
-    nombreCompania: "",
-    IdPais: "",
-    Sede: "",
-    direccion: "",
-    IdTamanoCompania: "",
-    SectorId: "",
+    nombreCompania: '',
+    IdPais: '',
+    Sede: '',
+    direccion: '',
+    IdTamanoCompania: '',
+    SectorId: '',
     Logotipo: null,
   });
   const [oficina, setOficina] = useState({
-    sede: "",
-    IdCompania: "",
+    sede: '',
+    IdCompania: '',
   });
   const [department, setDepartement] = useState({
-    IdPais: "",
-    codigoDepartamento: "",
-    departamento: "",
+    IdPais: '',
+    codigoDepartamento: '',
+    departamento: '',
   });
   const tableData = admin[type];
 
@@ -72,17 +74,17 @@ export default function InfoAdmin() {
 
   const [values, setValues] = useState({
     isOpen: false,
-    message: "",
-    severity: "",
+    message: '',
+    severity: '',
   });
 
-  const [employecsv, setEmployecsv] = useState("");
+  const [employecsv, setEmployecsv] = useState('');
 
   // get ids data
 
   const sectorConsume = async () => {
     try {
-      await axios.get("Sector/").then((res) => {
+      await axios.get('Sector/').then((res) => {
         let fetch = [];
         let id = [];
         res.data.forEach((val) => {
@@ -102,7 +104,7 @@ export default function InfoAdmin() {
   };
   const sizeCompanyConsume = async () => {
     try {
-      await axios.get("TamanoCompania/").then((res) => {
+      await axios.get('TamanoCompania/').then((res) => {
         let fetch = [];
         let id = [];
         res.data.forEach((val) => {
@@ -118,12 +120,12 @@ export default function InfoAdmin() {
       });
     } catch (error) {
       console.log(error);
-      console.log("eror");
+      console.log('eror');
     }
   };
   const countryConsume = async () => {
     try {
-      await axios.get("paises/").then((res) => {
+      await axios.get('paises/').then((res) => {
         let fetch = [];
         let id = [];
         res.data.forEach((val) => {
@@ -143,7 +145,7 @@ export default function InfoAdmin() {
   };
   const companyConsume = async () => {
     try {
-      await axios.get("companias/").then((res) => {
+      await axios.get('companias/').then((res) => {
         let fetch = [];
         let id = [];
         res.data.forEach((val) => {
@@ -197,9 +199,9 @@ export default function InfoAdmin() {
       setValues({
         ...values,
         message:
-          "El tamaño de la imagen para el logotipo no puede ser mayor a 500kB",
+          'El tamaño de la imagen para el logotipo no puede ser mayor a 500kB',
         isOpen: true,
-        severity: "error",
+        severity: 'error',
       });
     }
   };
@@ -214,24 +216,24 @@ export default function InfoAdmin() {
       let holder = compania;
       holder._id = id;
       dispatch(addItem({ data: holder, type: type }));
-      let idpais = search(compania.IdPais, data.ids.country, "id", "pais");
-      let sectorid = search(compania.SectorId, data.ids.sector, "id", "Sector");
+      let idpais = search(compania.IdPais, data.ids.country, 'id', 'pais');
+      let sectorid = search(compania.SectorId, data.ids.sector, 'id', 'Sector');
       let sizeid = search(
         compania.IdTamanoCompania,
         data.ids.sizeCompany,
-        "id",
-        "quantityOfEmployees"
+        'id',
+        'quantityOfEmployees'
       );
       let logoTipo = null;
 
       if (compania.Logotipo !== null) {
         let bodyFormData = new FormData();
-        bodyFormData.append("logoTipo", compania.Logotipo);
+        bodyFormData.append('logoTipo', compania.Logotipo);
 
         await fetch(
           `https://peopleintelligenceapi.azurewebsites.net/api/Autenticacion/LogoCompany?BussinesName=${compania.nombreCompania}`,
           {
-            method: "POST",
+            method: 'POST',
             body: bodyFormData,
           }
         )
@@ -252,12 +254,12 @@ export default function InfoAdmin() {
     }
 
     setCompania({
-      nombreCompania: "",
-      IdPais: "",
-      Sede: "",
-      direccion: "",
-      IdTamanoCompania: "",
-      SectorId: "",
+      nombreCompania: '',
+      IdPais: '',
+      Sede: '',
+      direccion: '',
+      IdTamanoCompania: '',
+      SectorId: '',
       Logotipo: null,
     });
     handleCloseModal();
@@ -272,8 +274,8 @@ export default function InfoAdmin() {
       dispatch(addItem({ data: holder, type: type }));
     }
     setOficina({
-      sede: "",
-      IdCompania: "",
+      sede: '',
+      IdCompania: '',
     });
     handleCloseModal();
   };
@@ -289,9 +291,9 @@ export default function InfoAdmin() {
       dispatch(addItem({ data: holder, type: type }));
     }
     setDepartement({
-      IdPais: "",
-      codigoDepartamento: "",
-      departamento: "",
+      IdPais: '',
+      codigoDepartamento: '',
+      departamento: '',
     });
     handleCloseModal();
   };
@@ -322,7 +324,7 @@ export default function InfoAdmin() {
 
   const handleDownload = () => {
     axios
-      .get("Employee/DownloadCsvEmployee")
+      .get('Employee/DownloadCsvEmployee')
       .then((res) => setEmployecsv(res.data));
   };
 
@@ -330,7 +332,7 @@ export default function InfoAdmin() {
 
   const renderModal = () => {
     switch (type) {
-      case "Empresas":
+      case 'Empresas':
         return (
           <NewCompany
             info={compania}
@@ -343,7 +345,7 @@ export default function InfoAdmin() {
             handlePhoto={handlephoto}
           />
         );
-      case "Oficinas":
+      case 'Oficinas':
         return (
           <NewOffice
             info={oficina}
@@ -354,7 +356,7 @@ export default function InfoAdmin() {
             handleOffice={handleOficina}
           />
         );
-      case "Departamentos":
+      case 'Departamentos':
         return (
           <NewDepartment
             info={department}
@@ -374,15 +376,15 @@ export default function InfoAdmin() {
   const handleEditItem = (row) => {
     console.log(row);
     switch (type) {
-      case "Empresas":
+      case 'Empresas':
         setCompania({
           ...row,
         });
         break;
-      case "Oficinas":
+      case 'Oficinas':
         setOficina({ ...row });
         break;
-      case "Departamentos":
+      case 'Departamentos':
         setDepartement({ ...row });
         break;
       default:
@@ -395,7 +397,7 @@ export default function InfoAdmin() {
 
   const getTableData = () => {
     switch (type) {
-      case "Empresas":
+      case 'Empresas':
         countryConsume();
         sizeCompanyConsume();
         sectorConsume();
@@ -414,7 +416,7 @@ export default function InfoAdmin() {
           })
           .catch((e) => console.log(e));
         break;
-      case "Empleados":
+      case 'Empleados':
         countryConsume();
         sizeCompanyConsume();
         sectorConsume();
@@ -434,7 +436,7 @@ export default function InfoAdmin() {
           })
           .catch((e) => console.log(e));
         break;
-      case "Oficinas":
+      case 'Oficinas':
         companyConsume();
         getOfficesAPI()
           .then((res) => {
@@ -451,7 +453,7 @@ export default function InfoAdmin() {
           })
           .catch((e) => console.log(e));
         break;
-      case "Departamentos":
+      case 'Departamentos':
         countryConsume();
         getDepartmentsAPI()
           .then((res) => {
@@ -479,12 +481,12 @@ export default function InfoAdmin() {
 
   const handleFile = async (event) => {
     let bodyFormData = new FormData();
-    bodyFormData.append("data", event.target.files[0]);
+    bodyFormData.append('data', event.target.files[0]);
 
     await fetch(
       `https://peopleintelligenceapi.azurewebsites.net/api/Employee/EmployeesCsv/${userInfo.Company}`,
       {
-        method: "POST",
+        method: 'POST',
         body: bodyFormData,
       }
     )
@@ -494,7 +496,7 @@ export default function InfoAdmin() {
           ...values,
           message: res.message,
           isOpen: true,
-          severity: "success",
+          severity: 'success',
         });
       })
       .catch((err) => console.log(err));
@@ -508,17 +510,17 @@ export default function InfoAdmin() {
 
   useEffect(() => {
     if (
-      userInfo?.role.findIndex((p) => p === "Management") < 0 &&
-      userInfo?.role.findIndex((p) => p === "Administrador") < 0
+      userInfo?.role.findIndex((p) => p === 'Management') < 0 &&
+      userInfo?.role.findIndex((p) => p === 'Administrador') < 0
     ) {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+      alert('No tiene permiso para acceder a esta funcionalidad');
+      navigate('/dashboard');
     }
     getTableData();
   }, [type]);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Navbar />
       <Sidebar />
       <Modal
@@ -530,22 +532,22 @@ export default function InfoAdmin() {
         <Box className={styles.modal}>
           <div className={styles.modaltop}>
             <h2>
-              {open ? "Nueva" : "Editar"} {type}
+              {open ? 'Nueva' : 'Editar'} {type}
             </h2>
             <div>
               <IconButton onClick={handleCloseModal}>
-                <ClearIcon sx={{ fontSize: "40px" }} />
+                <ClearIcon sx={{ fontSize: '40px' }} />
               </IconButton>
             </div>
           </div>
           <div className={styles.modalbuttom}>{renderModal()}</div>
         </Box>
       </Modal>
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: 'white' }}>
         <CSVLink
           data={employecsv}
-          filename={"Employees.csv"}
-          style={{ display: "none" }}
+          filename={'Employees.csv'}
+          style={{ display: 'none' }}
           ref={csvLink}
           target="_blank"
         />
@@ -568,14 +570,14 @@ export default function InfoAdmin() {
                 <h1>{type}</h1>
               </div>
               <div className={styles.new}>
-                {type === "Empleados" ? (
+                {type === 'Empleados' ? (
                   <div>
                     <Button
                       variant="contained"
                       style={{
-                        whiteSpace: "nowrap",
-                        padding: "1rem 1rem",
-                        color: "white",
+                        whiteSpace: 'nowrap',
+                        padding: '1rem 1rem',
+                        color: 'white',
                       }}
                       color="primary"
                       onClick={handleDownload}
@@ -585,10 +587,10 @@ export default function InfoAdmin() {
                     <Button
                       variant="contained"
                       style={{
-                        whiteSpace: "nowrap",
-                        padding: "1rem 1rem",
-                        color: "white",
-                        marginLeft: "1rem",
+                        whiteSpace: 'nowrap',
+                        padding: '1rem 1rem',
+                        color: 'white',
+                        marginLeft: '1rem',
                       }}
                       color="primary"
                       onClick={() => {
@@ -602,15 +604,15 @@ export default function InfoAdmin() {
                 <Button
                   variant="contained"
                   style={{
-                    whiteSpace: "nowrap",
-                    padding: "1rem 1rem",
-                    color: "white",
-                    marginLeft: "1rem",
+                    whiteSpace: 'nowrap',
+                    padding: '1rem 1rem',
+                    color: 'white',
+                    marginLeft: '1rem',
                   }}
                   color="primary"
                   onClick={handleOpenModal}
                 >
-                  {type === "Empleados" ? "nuevo " : "nueva "}
+                  {type === 'Empleados' ? 'nuevo ' : 'nueva '}
                   {type}
                 </Button>
                 <input

@@ -1,27 +1,28 @@
-import styles from "./Basic.module.css";
-import IconButton from "@mui/material/IconButton";
-import NotesIcon from "@mui/icons-material/Notes";
-import TextField from "@mui/material/TextField";
-import InterestsOutlinedIcon from "@mui/icons-material/InterestsOutlined";
-import Button from "@mui/material/Button";
-import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-import TextareaAutosize from "@mui/material/TextareaAutosize";
-import TagFacesIcon from "@mui/icons-material/TagFaces";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
-import Alert from "@mui/material/Alert";
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
+import InterestsOutlinedIcon from '@mui/icons-material/InterestsOutlined';
+import NotesIcon from '@mui/icons-material/Notes';
+import TagFacesIcon from '@mui/icons-material/TagFaces';
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import TextareaAutosize from '@mui/material/TextareaAutosize';
+import TextField from '@mui/material/TextField';
+
+import styles from './Basic.module.css';
 
 export default function Basic(props) {
   return (
     <div className={styles.basic}>
       <span
         style={{
-          marginLeft: "2rem",
-          fontWeight: "bold",
-          fontSize: "1.2rem",
+          marginLeft: '2rem',
+          fontWeight: 'bold',
+          fontSize: '1.2rem',
         }}
       >
         Basic Details
@@ -29,7 +30,7 @@ export default function Basic(props) {
       <div className={styles.info}>
         <div className={styles.left}>
           <div className={styles.general}>
-            <NotesIcon color="blue" style={{ marginRight: "1rem" }} />
+            <NotesIcon color="blue" style={{ marginRight: '1rem' }} />
             <p>General Information (Required)</p>
           </div>
           <div className={styles.required}>
@@ -41,7 +42,7 @@ export default function Basic(props) {
                 name="title"
                 onChange={props.handleChange}
                 size="small"
-                style={{ width: "100%" }}
+                style={{ width: '100%' }}
               />
             </div>
             <div className={styles.input}>
@@ -55,9 +56,9 @@ export default function Basic(props) {
                   onChange={props.handleChange}
                   name="language"
                 >
-                  <MenuItem value={""}>None</MenuItem>
-                  <MenuItem value={"english"}>English</MenuItem>
-                  <MenuItem value={"spanish"}>Spanish</MenuItem>
+                  <MenuItem value={''}>None</MenuItem>
+                  <MenuItem value={'english'}>English</MenuItem>
+                  <MenuItem value={'spanish'}>Spanish</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -69,14 +70,14 @@ export default function Basic(props) {
                 name="name"
                 onChange={props.handleChange}
                 size="small"
-                style={{ width: "100%" }}
+                style={{ width: '100%' }}
               />
             </div>
           </div>
           <div className={styles.optional}>
             <InterestsOutlinedIcon
               color="blue"
-              style={{ marginRight: "1rem" }}
+              style={{ marginRight: '1rem' }}
             />
 
             <p>Personalize (Optional)</p>
@@ -87,7 +88,7 @@ export default function Basic(props) {
               {props.info.avatar ? (
                 <Button
                   variant="text"
-                  onClick={() => props.handleReset("avatar")}
+                  onClick={() => props.handleReset('avatar')}
                   color="blue"
                 >
                   reset
@@ -108,13 +109,13 @@ export default function Basic(props) {
                     startIcon={
                       <FileUploadOutlinedIcon
                         sx={{
-                          position: "absolute",
+                          position: 'absolute',
                           left: 15,
                           top: 6,
                         }}
                       />
                     }
-                    style={{ marginTop: "0.5rem" }}
+                    style={{ marginTop: '0.5rem' }}
                     color="blue"
                   >
                     Upload Image
@@ -134,7 +135,7 @@ export default function Basic(props) {
               {props.info.cover ? (
                 <Button
                   variant="text"
-                  onClick={() => props.handleReset("cover")}
+                  onClick={() => props.handleReset('cover')}
                   color="blue"
                 >
                   reset
@@ -155,13 +156,13 @@ export default function Basic(props) {
                     startIcon={
                       <FileUploadOutlinedIcon
                         sx={{
-                          position: "absolute",
+                          position: 'absolute',
                           left: 15,
                           top: 6,
                         }}
                       />
                     }
-                    style={{ marginTop: "0.5rem" }}
+                    style={{ marginTop: '0.5rem' }}
                     color="blue"
                   >
                     Upload Image
@@ -178,12 +179,12 @@ export default function Basic(props) {
             </div>
             <div className={styles.intro}>
               <span>Introduction</span>
-              <div style={{ marginTop: "0.2rem" }}>
+              <div style={{ marginTop: '0.2rem' }}>
                 <span
                   style={{
-                    color: "grey",
-                    fontSize: "0.8rem",
-                    fontWeight: "500",
+                    color: 'grey',
+                    fontSize: '0.8rem',
+                    fontWeight: '500',
                   }}
                 >
                   Participant see this message before the onboarding polls
@@ -192,9 +193,9 @@ export default function Basic(props) {
                   aria-label="empty textarea"
                   placeholder="Type your welcome message..."
                   style={{
-                    width: "100%",
-                    height: "100px",
-                    marginTop: "0.5rem",
+                    width: '100%',
+                    height: '100px',
+                    marginTop: '0.5rem',
                   }}
                   name="introduction"
                   value={props.info.introduction}
@@ -206,22 +207,22 @@ export default function Basic(props) {
                   <Alert sx={{ mb: 2 }}>Details saved successfully</Alert>
                 ) : null}
               </div>
-              <div style={{ marginTop: "1rem" }}>
+              <div style={{ marginTop: '1rem' }}>
                 <Button
                   fullWidth
                   variant="contained"
                   onClick={props.handleSave}
-                  style={{ color: "white" }}
+                  style={{ color: 'white' }}
                   color="blue"
                 >
                   Save
                 </Button>
               </div>
-              <div style={{ marginTop: "1rem", marginBottom: "0.5rem" }}>
+              <div style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>
                 <Button
                   fullWidth
                   variant="text"
-                  onClick={() => props.handleMove("schedule")}
+                  onClick={() => props.handleMove('schedule')}
                   color="blue"
                 >
                   Next: Schedule
@@ -234,9 +235,9 @@ export default function Basic(props) {
           <div className={styles.phone}>
             <p
               style={{
-                fontSize: "0.8rem",
-                fontWeight: "500",
-                color: "rgb(0, 0, 150)",
+                fontSize: '0.8rem',
+                fontWeight: '500',
+                color: 'rgb(0, 0, 150)',
               }}
             >
               PARTICIPANTS PREVIEW
@@ -245,32 +246,32 @@ export default function Basic(props) {
               <div className={styles.inside}>
                 <div
                   style={{
-                    backgroundColor: "grey",
-                    width: "24%",
-                    height: "4px",
-                    borderRadius: "1rem",
-                    marginTop: "0.5rem",
+                    backgroundColor: 'grey',
+                    width: '24%',
+                    height: '4px',
+                    borderRadius: '1rem',
+                    marginTop: '0.5rem',
                   }}
                 ></div>
                 <div
                   style={{
-                    backgroundColor: "grey",
-                    width: "90%",
-                    height: "2px",
-                    borderRadius: "1rem",
-                    marginTop: "1rem",
-                    marginBottom: "1rem",
+                    backgroundColor: 'grey',
+                    width: '90%',
+                    height: '2px',
+                    borderRadius: '1rem',
+                    marginTop: '1rem',
+                    marginBottom: '1rem',
                   }}
                 ></div>
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "flex-start",
-                    width: "100%",
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                    width: '100%',
                   }}
                 >
-                  <div style={{ marginBottom: "0.2rem", marginLeft: "0.5rem" }}>
+                  <div style={{ marginBottom: '0.2rem', marginLeft: '0.5rem' }}>
                     <img
                       src="https://media.glassdoor.com/sqll/2135917/remesh-squarelogo-1547826220454.png"
                       alt="profile"
@@ -280,9 +281,9 @@ export default function Basic(props) {
                   <div>
                     <span
                       style={{
-                        color: "grey",
-                        fontSize: "0.7rem",
-                        marginLeft: "0.8rem",
+                        color: 'grey',
+                        fontSize: '0.7rem',
+                        marginLeft: '0.8rem',
                       }}
                     >
                       remesh Conversation
@@ -293,13 +294,13 @@ export default function Basic(props) {
                       src={
                         props.info.cover
                           ? props.info.cover
-                          : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlNXd9tJhoyJMieolHXk9y6MmWuT7Y2bBv7ftTIS0U7Q&s"
+                          : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlNXd9tJhoyJMieolHXk9y6MmWuT7Y2bBv7ftTIS0U7Q&s'
                       }
                       alt="profile"
                       className={styles.coverright}
                     />
                   </div>
-                  <h2 style={{ marginLeft: "0.8rem" }}>{props.info.title}</h2>
+                  <h2 style={{ marginLeft: '0.8rem' }}>{props.info.title}</h2>
                   <div className={styles.bottom}>
                     <div className={styles.avatarright}>
                       <div>
@@ -316,7 +317,7 @@ export default function Basic(props) {
                         )}
                       </div>
                       <div>
-                        {props.info.name ? props.info.name : "Moderator"}
+                        {props.info.name ? props.info.name : 'Moderator'}
                       </div>
                     </div>
                     <div className={styles.avatarright}>

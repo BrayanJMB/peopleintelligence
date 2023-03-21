@@ -1,50 +1,52 @@
-import { useState } from "react";
-import styles from "./Sidebar.module.css";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Toolbar from "@mui/material/Toolbar";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import Iletter from "../../assets/icons/Iletter.png";
-import Aletter from "../../assets/icons/Aletter.png";
-import Oletter from "../../assets/icons/Oletter.png";
-import Dletter from "../../assets/icons/Dletter.png";
-import Jletter from "../../assets/icons/Jletter.png";
-import Sletter from "../../assets/icons/Sletter.png";
-import { useNavigate } from "react-router-dom";
-import Drawer from "@mui/material/Drawer";
-import Box from "@mui/material/Box";
-import multicompani from "../../assets/multicompani.jpeg";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar from '@mui/material/Toolbar';
+
+import Aletter from '../../assets/icons/Aletter.png';
+import Dletter from '../../assets/icons/Dletter.png';
+import Iletter from '../../assets/icons/Iletter.png';
+import Jletter from '../../assets/icons/Jletter.png';
+import Oletter from '../../assets/icons/Oletter.png';
+import Sletter from '../../assets/icons/Sletter.png';
+import multicompani from '../../assets/multicompani.jpeg';
+
+import styles from './Sidebar.module.css';
 
 const names = [
-  "Information Management",
-  "Advanced Analytics & Dashboards",
-  "Organizational Network Analysis",
-  "Dynamic Live Conversations",
-  "Employee Journey",
+  'Information Management',
+  'Advanced Analytics & Dashboards',
+  'Organizational Network Analysis',
+  'Dynamic Live Conversations',
+  'Employee Journey',
 ];
 
 const list = [Iletter, Aletter, Oletter, Dletter, Jletter, Sletter];
 
 const drop = [
-  ["Empresas", "Empleados", "Oficinas", "Departamentos", "Otros campos"],
-  ["powerbi"],
-  ["Crear encuesta", "Ver encuestas"],
-  ["Build", "Live", "Analysis"],
-  ["journey"],
-  ["Empresas", "Empleados", "Oficinas", "Departamentos"],
+  ['Empresas', 'Empleados', 'Oficinas', 'Departamentos', 'Otros campos'],
+  ['powerbi'],
+  ['Crear encuesta', 'Ver encuestas'],
+  ['Build', 'Live', 'Analysis'],
+  ['journey'],
+  ['Empresas', 'Empleados', 'Oficinas', 'Departamentos'],
 ];
 
 const project = [
-  "infoadmin",
-  "powerbi",
-  "onas",
-  "conversation",
-  "journey",
-  "analysis",
+  'infoadmin',
+  'powerbi',
+  'onas',
+  'conversation',
+  'journey',
+  'analysis',
 ];
 
 const drawerWidth = 240;
@@ -52,21 +54,21 @@ const drawerWidth = 240;
 export default function Sidebar() {
   const [anchorEl, setAnchorEl] = useState(Array(6).fill(null));
   const navigate = useNavigate();
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
   const handleRedirect = (index, key) => {
     if (index === 1) {
-      navigate("/" + project[index]);
+      navigate('/' + project[index]);
     } else if (index === 2) {
       if (key === 1) {
-        navigate("/onas/ver-encuestas");
+        navigate('/onas/ver-encuestas');
       } else {
-        navigate("/onas");
+        navigate('/onas');
       }
     } else if (index === 4) {
-      navigate("/journey");
+      navigate('/journey');
     } else {
-      navigate("/" + project[index] + "/" + drop[index][key]);
+      navigate('/' + project[index] + '/' + drop[index][key]);
     }
 
     handleClose(index);
@@ -75,29 +77,29 @@ export default function Sidebar() {
   const handleItemClick = (index) => (event) => {
     if (
       index === 0 &&
-      userInfo?.role.findIndex((p) => p === "Administrador") < 0 &&
-      userInfo?.role.findIndex((p) => p === "Management") < 0 &&
-      userInfo?.role.findIndex((p) => p === "MultiCompania") < 0
+      userInfo?.role.findIndex((p) => p === 'Administrador') < 0 &&
+      userInfo?.role.findIndex((p) => p === 'Management') < 0 &&
+      userInfo?.role.findIndex((p) => p === 'MultiCompania') < 0
     ) {
       event.preventDefault();
     } else if (
       index === 1 &&
-      userInfo?.role.findIndex((p) => p === "PowerBiDashboard") < 0
+      userInfo?.role.findIndex((p) => p === 'PowerBiDashboard') < 0
     ) {
       event.preventDefault();
     } else if (
       index === 2 &&
-      userInfo?.role.findIndex((p) => p === "Onas") < 0
+      userInfo?.role.findIndex((p) => p === 'Onas') < 0
     ) {
       event.preventDefault();
     } else if (
       index === 3 &&
-      userInfo?.role.findIndex((p) => p === "Dinamyc") < 0
+      userInfo?.role.findIndex((p) => p === 'Dinamyc') < 0
     ) {
       event.preventDefault();
     } else if (
       index === 4 &&
-      userInfo?.role.findIndex((p) => p === "Journey") < 0
+      userInfo?.role.findIndex((p) => p === 'Journey') < 0
     ) {
       event.preventDefault();
     } else {
@@ -134,20 +136,20 @@ export default function Sidebar() {
       <Drawer
         variant="permanent"
         sx={{
-          display: { sm: "block" },
-          "& .MuiDrawer-paper": {
+          display: { sm: 'block' },
+          '& .MuiDrawer-paper': {
             width: { md: 220, lg: drawerWidth, sm: 180 },
-            overflow: "hidden",
-            border: "none",
+            overflow: 'hidden',
+            border: 'none',
           },
         }}
         open
       >
-        <Toolbar style={{ marginTop: "1.5em" }}>
+        <Toolbar style={{ marginTop: '1.5em' }}>
           <img
             src={
-              userInfo?.role.findIndex((p) => p === "MultiCompania") < 0
-                ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+              userInfo?.role.findIndex((p) => p === 'MultiCompania') < 0
+                ? 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
                 : multicompani
             }
             alt="profile"
@@ -156,24 +158,24 @@ export default function Sidebar() {
         </Toolbar>
         <List
           style={{
-            marginTop: "0.5rem",
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.5em",
+            marginTop: '0.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.5em',
           }}
         >
           {names.map((text, index) => (
             <ListItem key={index} disablePadding>
               <ListItemButton
                 onClick={handleItemClick(index)}
-                id={"demo-positioned-button" + index}
+                id={'demo-positioned-button' + index}
                 aria-controls={
-                  Boolean(anchorEl[index]) ? "demo-positioned-menu" : undefined
+                  Boolean(anchorEl[index]) ? 'demo-positioned-menu' : undefined
                 }
                 aria-haspopup="true"
-                aria-expanded={Boolean(anchorEl[index]) ? "true" : undefined}
+                aria-expanded={Boolean(anchorEl[index]) ? 'true' : undefined}
               >
-                <ListItemIcon style={{ position: "relative" }}>
+                <ListItemIcon style={{ position: 'relative' }}>
                   <img
                     src={list[index]}
                     alt="oletter"
@@ -183,10 +185,10 @@ export default function Sidebar() {
                 <ListItemText
                   primary={text}
                   style={{
-                    color: "grey",
+                    color: 'grey',
                   }}
                   primaryTypographyProps={{
-                    fontSize: { md: "0.7rem", lg: "1rem", sm: "0.5rem" },
+                    fontSize: { md: '0.7rem', lg: '1rem', sm: '0.5rem' },
                   }}
                 />
               </ListItemButton>
@@ -196,19 +198,19 @@ export default function Sidebar() {
                 anchorEl={anchorEl[index]}
                 open={Boolean(anchorEl[index])}
                 anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
+                  vertical: 'top',
+                  horizontal: 'right',
                 }}
                 transformOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
+                  vertical: 'top',
+                  horizontal: 'left',
                 }}
                 onClose={() => handleClose(index)}
               >
                 {drop[index].map((val, key) => {
                   if (
-                    val === "Empresas" &&
-                    userInfo?.role.findIndex((p) => p === "MultiCompania") < 0
+                    val === 'Empresas' &&
+                    userInfo?.role.findIndex((p) => p === 'MultiCompania') < 0
                   ) {
                     return null;
                   } else {

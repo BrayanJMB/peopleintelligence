@@ -1,17 +1,19 @@
-import Navbar from "../../Layout/Navbar/Navbar";
-import Box from "@mui/material/Box";
-import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
-import styles from "./PowerBiDashboard.module.css";
-import { useEffect, useState } from "react";
-import { getCompanyDashboardsAPI } from "../../services/getCompanyDashboard.service";
-import { useSelector, useDispatch } from "react-redux";
-import { storeDash } from "../../features/powerBiSlice";
-import Button from "@mui/material/Button";
-import Pagination from "@mui/material/Pagination";
-import Stack from "@mui/material/Stack";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { useDispatch,useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 
-const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+import { storeDash } from '../../features/powerBiSlice';
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../Layout/Navbar/Navbar';
+import { getCompanyDashboardsAPI } from '../../services/getCompanyDashboard.service';
+
+import styles from './PowerBiDashboard.module.css';
+
+const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
 export default function PowerBiDashboard() {
   const navigate = useNavigate();
@@ -23,11 +25,11 @@ export default function PowerBiDashboard() {
   };
 
   const handleReport = (id) => {
-    navigate("/powerbi/" + id);
+    navigate('/powerbi/' + id);
   };
 
   useEffect(() => {
-    if (userInfo.role.findIndex((p) => p === "PowerBiDashboard") > -1) {
+    if (userInfo.role.findIndex((p) => p === 'PowerBiDashboard') > -1) {
       getCompanyDashboardsAPI(userInfo.Company).then((res) => {
         let data = [];
         res.data.forEach((val) => {
@@ -38,27 +40,27 @@ export default function PowerBiDashboard() {
         dispatch(storeDash(data));
       });
     } else {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+      alert('No tiene permiso para acceder a esta funcionalidad');
+      navigate('/dashboard');
     }
   }, []);
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Navbar />
       <IconSidebar />
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: 'white' }}>
         <Stack spacing={2}>
           <div className={styles.content}>
             <div className={styles.dashboards}>
               {powerBi.companyDashboards.map((val, index) => {
                 return (
                   <div className={styles.dashboard} key={index}>
-                    <p style={{ textAlign: "center" }}>{val.reportName}</p>
+                    <p style={{ textAlign: 'center' }}>{val.reportName}</p>
                     <p
                       style={{
-                        marginTop: "0.2em",
+                        marginTop: '0.2em',
                         fontWeight: 300,
-                        textAlign: "center",
+                        textAlign: 'center',
                       }}
                     >
                       {val.descriptionReport}
@@ -66,10 +68,10 @@ export default function PowerBiDashboard() {
                     <Button
                       variant="text"
                       style={{
-                        whiteSpace: "nowrap",
-                        padding: "0 0.8em",
-                        color: "#00b0f0",
-                        alignSelf: "flex-start",
+                        whiteSpace: 'nowrap',
+                        padding: '0 0.8em',
+                        color: '#00b0f0',
+                        alignSelf: 'flex-start',
                       }}
                       size="small"
                       onClick={() => handleReport(val.id)}

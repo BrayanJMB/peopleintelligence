@@ -1,33 +1,35 @@
-import styles from "./Multiple.module.css";
-import Box from "@mui/material/Box";
-import Logo from "../../assets/Logo.svg";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import Checkbox from "@mui/material/Checkbox";
-import ReCAPTCHA from "react-google-recaptcha";
-import Notification from "../../components/Notification";
-import axios from "axios";
-import Typography from "@mui/material/Typography";
-import MuiPhoneNumber from "material-ui-phone-number-2";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import { useState, useRef, useEffect } from "react";
+import { useEffect,useRef, useState } from 'react';
+import ReCAPTCHA from 'react-google-recaptcha';
+import Autocomplete from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import axios from 'axios';
+import MuiPhoneNumber from 'material-ui-phone-number-2';
+
+import Logo from '../../assets/Logo.svg';
+import Notification from '../../components/Notification';
+
+import styles from './Multiple.module.css';
 
 const validEmail = new RegExp(
-  "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
+  '^[a-zA-Z0-9.!#$%&\'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$'
 );
 const validBusinessEmail = new RegExp(
-  "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@(?!gmail.com)(?!yahoo.com)(?!hotmail.com)(?!yahoo.co.in)(?!aol.com)(?!live.com)(?!outlook.com)+[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$"
+  '^[a-zA-Z0-9.!#$%&\'+/=?^_`{|}~-]+@(?!gmail.com)(?!yahoo.com)(?!hotmail.com)(?!yahoo.co.in)(?!aol.com)(?!live.com)(?!outlook.com)+[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$'
 );
 
-const validphone = new RegExp("^[+][0-9]{12,15}$");
+const validphone = new RegExp('^[+][0-9]{12,15}$');
 
 const config = {
-  headers: { "Content-type": "application/json" },
+  headers: { 'Content-type': 'application/json' },
 };
 
 export default function Multiple(props) {
@@ -36,13 +38,13 @@ export default function Multiple(props) {
   const [checktext1, setChecktext1] = useState(false);
   const [checktext2, setChecktext2] = useState(false);
   const [captcha, setCaptcha] = useState(false);
-  const [scroll, setScroll] = useState("paper");
+  const [scroll, setScroll] = useState('paper');
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
   const [values, setValues] = useState({
     isOpen: false,
-    message: "",
-    severity: "",
+    message: '',
+    severity: '',
   });
   const [open, setOpen] = useState(false);
   const handlemodalOpen = () => setOpen(true);
@@ -101,38 +103,38 @@ export default function Multiple(props) {
       correoElectronico: props.info.Usuario.correoElectronico,
       phoneNumber: props.info.Usuario.phoneNumber,
     })) {
-      if (props.info.Usuario[key] === "") {
-        helperText[key] = "El campo no puede ir vacio";
+      if (props.info.Usuario[key] === '') {
+        helperText[key] = 'El campo no puede ir vacio';
         error[key] = true;
         bad = true;
       } else {
-        helperText[key] = "";
+        helperText[key] = '';
         error[key] = false;
       }
     }
     if (!validEmail.test(props.info.Usuario.correoElectronico)) {
-      helperText.correoElectronico = "El correo ingresado no es válido";
+      helperText.correoElectronico = 'El correo ingresado no es válido';
       error.correoElectronico = true;
       bad = true;
     } else if (!validBusinessEmail.test(props.info.Usuario.correoElectronico)) {
-      helperText.correoElectronico = "El correo ingresado debe ser corporativo";
+      helperText.correoElectronico = 'El correo ingresado debe ser corporativo';
       error.correoElectronico = true;
       bad = true;
     } else {
-      helperText["correoElectronico"] = "";
-      error["correoElectronico"] = false;
+      helperText['correoElectronico'] = '';
+      error['correoElectronico'] = false;
     }
     if (!validphone.test(props.info.Usuario.phoneNumber)) {
-      helperText["phoneNumber"] = "Escriba un numero telefonico válido";
-      error["phoneNumber"] = true;
+      helperText['phoneNumber'] = 'Escriba un numero telefonico válido';
+      error['phoneNumber'] = true;
       bad = true;
     } else {
-      helperText["phoneNumber"] = "";
-      error["phoneNumber"] = false;
+      helperText['phoneNumber'] = '';
+      error['phoneNumber'] = false;
     }
     if (props.info.Usuario.numeroDocumento.length < 8) {
-      helperText["numeroDocumento"] = "El tamaño minimo del campo es 8 digitos";
-      error["numeroDocumento"] = true;
+      helperText['numeroDocumento'] = 'El tamaño minimo del campo es 8 digitos';
+      error['numeroDocumento'] = true;
       bad = true;
     }
 
@@ -142,7 +144,7 @@ export default function Multiple(props) {
     } else if (check1 && check2 && captcha) {
       let test = false;
       for (const [index, content] of Object.entries(props.info.Usuario)) {
-        if (content === "" || content === null) {
+        if (content === '' || content === null) {
           test = true;
         }
       }
@@ -156,10 +158,10 @@ export default function Multiple(props) {
         try {
           const response = await axios
             .create({
-              baseURL: "https://peopleintelligenceapi.azurewebsites.net/api",
+              baseURL: 'https://peopleintelligenceapi.azurewebsites.net/api',
             })
             .post(
-              "/Autenticacion",
+              '/Autenticacion',
               {
                 Usuario: {
                   IdTipoDocumento: field,
@@ -174,12 +176,12 @@ export default function Multiple(props) {
             );
           props.handleRegister(response.data.message);
         } catch (error) {
-          if (typeof error.response.data === "string") {
+          if (typeof error.response.data === 'string') {
             setValues({
               ...values,
               message: error.response.data,
               isOpen: true,
-              severity: "error",
+              severity: 'error',
             });
           }
           console.log(error);
@@ -208,7 +210,7 @@ export default function Multiple(props) {
         <DialogTitle id="scroll-dialog-title">
           Políticas de proteccion de datos
         </DialogTitle>
-        <DialogContent dividers={scroll === "paper"}>
+        <DialogContent dividers={scroll === 'paper'}>
           <DialogContentText
             id="scroll-dialog-description"
             ref={descriptionElementRef}
@@ -488,12 +490,12 @@ export default function Multiple(props) {
           <Box
             component="img"
             sx={{
-              backgroundColor: "white",
+              backgroundColor: 'white',
             }}
             alt="Your logo."
             src={Logo}
           />
-          <h3 style={{ color: "#03aae4", textAlign: "center" }}>
+          <h3 style={{ color: '#03aae4', textAlign: 'center' }}>
             DATOS DEL USUARIO
           </h3>
         </div>
@@ -501,15 +503,15 @@ export default function Multiple(props) {
           <div className={styles.input}>
             <Autocomplete
               id="combo-box-demo"
-              style={{ flexBasis: "40%" }}
+              style={{ flexBasis: '40%' }}
               options={props.content.documentType}
               clearOnEscape
               value={props.info.Usuario.IdTipoDocumento}
               onChange={(e, value) => {
-                props.handleAutocomplete("Usuario", "IdTipoDocumento", value);
+                props.handleAutocomplete('Usuario', 'IdTipoDocumento', value);
               }}
               getOptionLabel={(option) => option}
-              noOptionsText={"No se ha encontrado ningún IdTipoDocumento"}
+              noOptionsText={'No se ha encontrado ningún IdTipoDocumento'}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -525,8 +527,8 @@ export default function Multiple(props) {
               label="Documento de identidad"
               value={props.info.Usuario.numeroDocumento}
               name="numeroDocumento"
-              onChange={props.handleChange("Usuario")}
-              style={{ flexBasis: "40%" }}
+              onChange={props.handleChange('Usuario')}
+              style={{ flexBasis: '40%' }}
               error={errorMessage.numeroDocumento}
               helperText={helperText.numeroDocumento}
               size="small"
@@ -534,23 +536,23 @@ export default function Multiple(props) {
           </div>
           <div className={styles.input}>
             <TextField
-              style={{ flexBasis: "40%" }}
+              style={{ flexBasis: '40%' }}
               id="outlined-name"
               label="Nombre Completo"
               value={props.info.Usuario.NombreCompleto}
               name="NombreCompleto"
-              onChange={props.handleChange("Usuario")}
+              onChange={props.handleChange('Usuario')}
               error={errorMessage.NombreCompleto}
               helperText={helperText.NombreCompleto}
               size="small"
             />
             <TextField
-              style={{ flexBasis: "40%" }}
+              style={{ flexBasis: '40%' }}
               id="outlined-name"
               label="Cargo"
               value={props.info.Usuario.Cargo}
               name="Cargo"
-              onChange={props.handleChange("Usuario")}
+              onChange={props.handleChange('Usuario')}
               error={errorMessage.Cargo}
               helperText={helperText.Cargo}
               size="small"
@@ -558,32 +560,32 @@ export default function Multiple(props) {
           </div>
           <div className={styles.input}>
             <TextField
-              style={{ flexBasis: "40%" }}
+              style={{ flexBasis: '40%' }}
               id="outlined-name"
               label="Correo electrónico"
               value={props.info.Usuario.correoElectronico}
               name="correoElectronico"
-              onChange={props.handleChange("Usuario")}
+              onChange={props.handleChange('Usuario')}
               error={errorMessage.correoElectronico}
               helperText={helperText.correoElectronico}
               size="small"
               disabled={props.disable}
             />
             <MuiPhoneNumber
-              defaultCountry={"co"}
+              defaultCountry={'co'}
               onChange={props.handlePhone}
-              regions={["north-america", "south-america", "european-union"]}
-              style={{ flexBasis: "40%" }}
+              regions={['north-america', 'south-america', 'european-union']}
+              style={{ flexBasis: '40%' }}
             />
           </div>
         </div>
         <div className={styles.check}>
           <Checkbox onChange={handlecheck1} />
-          <p style={{ color: checktext1 ? "red" : "grey" }}>
-            Acepto los{" "}
+          <p style={{ color: checktext1 ? 'red' : 'grey' }}>
+            Acepto los{' '}
             <span
               className={styles.spanhover}
-              style={{ color: "blue" }}
+              style={{ color: 'blue' }}
               onClick={handlemodalOpen}
             >
               términos y condiciones
@@ -592,11 +594,11 @@ export default function Multiple(props) {
         </div>
         <div className={styles.check}>
           <Checkbox onChange={handlecheck2} />
-          <p style={{ color: checktext2 ? "red" : "grey" }}>
-            Acepto las{" "}
+          <p style={{ color: checktext2 ? 'red' : 'grey' }}>
+            Acepto las{' '}
             <span
               className={styles.spanhover}
-              style={{ color: "blue" }}
+              style={{ color: 'blue' }}
               onClick={handlemodalOpen}
             >
               políticas de protección de datos
@@ -612,7 +614,7 @@ export default function Multiple(props) {
         <div className={styles.navigation}>
           <Button
             variant="text"
-            style={{ marginRight: "1.5rem" }}
+            style={{ marginRight: '1.5rem' }}
             onClick={props.handleCancel}
             color="blue"
           >
@@ -621,7 +623,7 @@ export default function Multiple(props) {
           <Button
             variant="contained"
             color="blue"
-            sx={{ color: "white" }}
+            sx={{ color: 'white' }}
             type="submit"
           >
             SIGUIENTE

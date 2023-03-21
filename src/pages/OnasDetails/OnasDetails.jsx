@@ -1,51 +1,53 @@
-import { useState, useEffect, useMemo } from "react";
-import styles from "./OnasDetails.module.css";
-import { DataGrid, gridClasses } from "@mui/x-data-grid";
-import Navbar from "../../Layout/Navbar/Navbar";
-import Box from "@mui/material/Box";
-import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
-import * as uuid from "uuid";
-import { grey } from "@mui/material/colors";
-import { useNavigate, useLocation } from "react-router-dom";
-import { getOnasDetailsAPI } from "../../services/getOnasDetails.service";
-import IconButton from "@mui/material/IconButton";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { useEffect, useMemo,useState } from 'react';
+import { useLocation,useNavigate } from 'react-router-dom';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import Box from '@mui/material/Box';
+import { grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
+import * as uuid from 'uuid';
+
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../Layout/Navbar/Navbar';
+import { getOnasDetailsAPI } from '../../services/getOnasDetails.service';
+
+import styles from './OnasDetails.module.css';
 
 export default function OnasDetails() {
   const navigate = useNavigate();
   const { state } = useLocation();
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [rows, setRows] = useState([]);
   const [pageSize, setpageSize] = useState(5);
 
   const onasColumn = [
     {
-      field: "persona",
+      field: 'persona',
       flex: 1,
-      headerName: "Nombre Empleado",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Nombre Empleado',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "fechaLimite",
+      field: 'fechaLimite',
       flex: 1,
-      headerName: "Fecha máxima de respuesta",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Fecha máxima de respuesta',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "respondio",
+      field: 'respondio',
       flex: 1,
-      headerName: "Respondió?",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Respondió?',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "actions",
-      type: "actions",
-      headerName: "Link Encuesta",
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Link Encuesta',
       width: 250,
-      cellClassName: "actions",
+      cellClassName: 'actions',
       getActions: (params) => {
         return [
           <IconButton
@@ -80,21 +82,21 @@ export default function OnasDetails() {
 
   useEffect(() => {
     if (
-      userInfo?.role.findIndex((p) => p === "Onas") < 0 &&
-      userInfo?.role.findIndex((p) => p === "Administrador") < 0
+      userInfo?.role.findIndex((p) => p === 'Onas') < 0 &&
+      userInfo?.role.findIndex((p) => p === 'Administrador') < 0
     ) {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+      alert('No tiene permiso para acceder a esta funcionalidad');
+      navigate('/dashboard');
     }
 
     getTableData();
   }, []);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Navbar />
       <IconSidebar />
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: 'white' }}>
         <div className={styles.content}>
           <div className={styles.crud}>
             <div className={styles.buttom}>

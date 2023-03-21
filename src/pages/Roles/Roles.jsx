@@ -1,25 +1,27 @@
-import { useState, useEffect, useMemo } from "react";
-import styles from "./Roles.module.css";
-import { DataGrid, gridClasses } from "@mui/x-data-grid";
-import Navbar from "../../Layout/Navbar/Navbar";
-import Box from "@mui/material/Box";
-import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
-import * as uuid from "uuid";
-import { grey } from "@mui/material/colors";
-import IconButton from "@mui/material/IconButton";
-import { useNavigate } from "react-router-dom";
-import { getRolesAPI } from "../../services/getRoles.service";
-import RemoveCircleOutlinedIcon from "@mui/icons-material/RemoveCircleOutlined";
-import axios from "../../utils/axiosInstance";
-import Modal from "@mui/material/Modal";
-import ClearIcon from "@mui/icons-material/Clear";
-import NewRole from "../../components/NewRole/NewRole";
-import { postRoleAPI } from "../../services/postRole.service";
-import { deleteRolesAPI } from "../../services/deleteRoles.service";
-import { getCompaniesAPI } from "../../services/getCompanies.service";
-import Button from "@mui/material/Button";
-import NewMulti from "../../components/NewMulti/NewMulti";
-import { postMultiRoleAPI } from "../../services/postMultiRole.service";
+import { useEffect, useMemo,useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ClearIcon from '@mui/icons-material/Clear';
+import RemoveCircleOutlinedIcon from '@mui/icons-material/RemoveCircleOutlined';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
+import Modal from '@mui/material/Modal';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
+import * as uuid from 'uuid';
+
+import NewMulti from '../../components/NewMulti/NewMulti';
+import NewRole from '../../components/NewRole/NewRole';
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../Layout/Navbar/Navbar';
+import { deleteRolesAPI } from '../../services/deleteRoles.service';
+import { getCompaniesAPI } from '../../services/getCompanies.service';
+import { getRolesAPI } from '../../services/getRoles.service';
+import { postMultiRoleAPI } from '../../services/postMultiRole.service';
+import { postRoleAPI } from '../../services/postRole.service';
+import axios from '../../utils/axiosInstance';
+
+import styles from './Roles.module.css';
 
 const search = (id, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -36,16 +38,16 @@ export default function Roles() {
   const [multi, setMulti] = useState(false);
   const [noCompany, setNoCompany] = useState(false);
   const [role, setRole] = useState({
-    companyId: "",
-    roleId: "",
+    companyId: '',
+    roleId: '',
   });
   const [multirole, setMultirole] = useState({
-    companyId: "",
-    roleId: "",
-    userId: "",
+    companyId: '',
+    roleId: '',
+    userId: '',
   });
   const [pageSize, setpageSize] = useState(5);
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [data, setData] = useState({
     content: {
       company: [],
@@ -62,7 +64,7 @@ export default function Roles() {
       usuariorole: [],
     },
   });
-  const [userId, setuserId] = useState("");
+  const [userId, setuserId] = useState('');
 
   getCompaniesAPI(userInfo?.user).then((res) => {
     if (res.data.length === 0) {
@@ -72,7 +74,7 @@ export default function Roles() {
 
   const companyConsume = async () => {
     try {
-      await axios.get("companias/").then((res) => {
+      await axios.get('companias/').then((res) => {
         let fetch = [];
         let id = [];
         res.data.forEach((val) => {
@@ -92,7 +94,7 @@ export default function Roles() {
   };
   const companyRolesConsume = async () => {
     try {
-      await axios.get("roles/GetUserMultyCompani/").then((res) => {
+      await axios.get('roles/GetUserMultyCompani/').then((res) => {
         let fetchcompany = [];
         let fetchrole = [];
         let fetchusuario = [];
@@ -150,35 +152,35 @@ export default function Roles() {
 
   const rolesColumn = [
     {
-      field: "companyName",
+      field: 'companyName',
       flex: 1,
-      headerName: "Nombre compañia",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Nombre compañia',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "userName",
+      field: 'userName',
       flex: 1,
-      headerName: "Usuario",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Usuario',
+      headerAlign: 'center',
+      align: 'center',
     },
     {
-      field: "roles",
+      field: 'roles',
       flex: 1,
-      headerName: "Roles",
-      headerAlign: "center",
-      align: "center",
+      headerName: 'Roles',
+      headerAlign: 'center',
+      align: 'center',
       valueGetter: (params) => {
         return params.row.roles.rolname;
       },
     },
     {
-      field: "actions",
-      type: "actions",
-      headerName: "Acciones",
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Acciones',
       flex: 1,
-      cellClassName: "actions",
+      cellClassName: 'actions',
       getActions: (params) => {
         return [
           <IconButton
@@ -203,7 +205,7 @@ export default function Roles() {
   };
   const handledelete = (value, userid) => {
     deleteRolesAPI(userid, value).then((res) => {
-      alert("Rol eliminado Satisfactoriamente");
+      alert('Rol eliminado Satisfactoriamente');
       getTableData();
     });
   };
@@ -215,7 +217,7 @@ export default function Roles() {
   };
 
   const handleAddRole = () => {
-    let roleId = search(role.roleId, data.ids.roles, "id", "name");
+    let roleId = search(role.roleId, data.ids.roles, 'id', 'name');
     postRoleAPI({ userId: userId, roleId: roleId }).then((res) => {
       getTableData();
       setOpen(false);
@@ -225,16 +227,16 @@ export default function Roles() {
     let companyId = search(
       multirole.companyId,
       data.ids.companyroles,
-      "id",
-      "businessName"
+      'id',
+      'businessName'
     );
 
-    let roleId = search(multirole.roleId, data.ids.roleroles, "id", "name");
+    let roleId = search(multirole.roleId, data.ids.roleroles, 'id', 'name');
     let userId = search(
       multirole.userId,
       data.ids.usuariorole,
-      "id",
-      "userName"
+      'id',
+      'userName'
     );
     postMultiRoleAPI({
       idUser: userId,
@@ -263,12 +265,12 @@ export default function Roles() {
   };
 
   const handleAutoCompleteCompany = async (name, value) => {
-    if (name === "companyId" && value !== "") {
-      if (userId !== "") {
+    if (name === 'companyId' && value !== '') {
+      if (userId !== '') {
         rolesConsume(userId);
       }
-      let user = "";
-      await axios.get("companias/CompaniasAdmin/").then((res) => {
+      let user = '';
+      await axios.get('companias/CompaniasAdmin/').then((res) => {
         let index = res.data.findIndex((p) => p.company === value);
         if (index > -1) {
           user = res.data[index].user;
@@ -284,11 +286,11 @@ export default function Roles() {
   };
 
   useEffect(() => {
-    if (userInfo?.role.findIndex((p) => p === "Administrador") < 0) {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+    if (userInfo?.role.findIndex((p) => p === 'Administrador') < 0) {
+      alert('No tiene permiso para acceder a esta funcionalidad');
+      navigate('/dashboard');
     }
-    if (userId !== "") {
+    if (userId !== '') {
       rolesConsume(userId);
     }
     companyConsume();
@@ -297,7 +299,7 @@ export default function Roles() {
   }, [userId]);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Navbar />
       <IconSidebar />
       <Modal
@@ -311,7 +313,7 @@ export default function Roles() {
             <h2>Nueva Role</h2>
             <div>
               <IconButton onClick={handleCloseModal}>
-                <ClearIcon sx={{ fontSize: "40px" }} />
+                <ClearIcon sx={{ fontSize: '40px' }} />
               </IconButton>
             </div>
           </div>
@@ -340,7 +342,7 @@ export default function Roles() {
             <h2>Nueva Role Multicompania</h2>
             <div>
               <IconButton onClick={handleCloseMultiModal}>
-                <ClearIcon sx={{ fontSize: "40px" }} />
+                <ClearIcon sx={{ fontSize: '40px' }} />
               </IconButton>
             </div>
           </div>
@@ -358,7 +360,7 @@ export default function Roles() {
           </div>
         </Box>
       </Modal>
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: 'white' }}>
         <div className={styles.content}>
           <div className={styles.crud}>
             <div className={styles.top}>
@@ -369,10 +371,10 @@ export default function Roles() {
                 <Button
                   variant="contained"
                   style={{
-                    whiteSpace: "nowrap",
-                    padding: "1rem 1rem",
-                    color: "white",
-                    marginRight: "2em",
+                    whiteSpace: 'nowrap',
+                    padding: '1rem 1rem',
+                    color: 'white',
+                    marginRight: '2em',
                   }}
                   color="primary"
                   onClick={handleOpenMultiModal}
@@ -382,9 +384,9 @@ export default function Roles() {
                 <Button
                   variant="contained"
                   style={{
-                    whiteSpace: "nowrap",
-                    padding: "1rem 1rem",
-                    color: "white",
+                    whiteSpace: 'nowrap',
+                    padding: '1rem 1rem',
+                    color: 'white',
                   }}
                   color="primary"
                   onClick={handleOpenModal}

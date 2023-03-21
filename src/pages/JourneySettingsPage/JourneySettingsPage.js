@@ -1,34 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import Box from "@mui/material/Box";
-import { useNavigate } from "react-router-dom";
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
+import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import { useSnackbar } from 'notistack';
+
+import MyCard from '../../components/MyCard/MyCard';
+import MyCreateDialog from '../../components/MyCreateDialog/MyCreateDialog';
+import MyEditDialog from '../../components/MyEditDialog/MyEditDialog';
+import MyLoader from '../../components/MyLoader/MyLoader';
+import MyPageHeader from '../../components/MyPageHeader/MyPageHeader';
+import MyTable from '../../components/MyTable/MyTable';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
-import styles from "./JourneySettingsPage.module.css";
-import {
-  fetchJourneyMapAPI,
-  deleteJourneyMapAPI,
-  updateJourneyMapAPI,
-  storeJourneyMapAPI
-} from "../../services/getJourneyMap.service";
 import {
   deleteCategoryAPI,
   fetchCategoriesAPI,
   storeCategoryAPI,
-  updateCategoryAPI
-} from "../../services/getCategories.service";
-import MyLoader from '../../components/MyLoader/MyLoader';
-import MyPageHeader from '../../components/MyPageHeader/MyPageHeader';
-import MyCard from '../../components/MyCard/MyCard';
-import MyTable from '../../components/MyTable/MyTable';
+  updateCategoryAPI,
+} from '../../services/getCategories.service';
+import {
+  deleteJourneyMapAPI,
+  fetchJourneyMapAPI,
+  storeJourneyMapAPI,
+  updateJourneyMapAPI} from '../../services/getJourneyMap.service';
 import { isAdmin, isJourney } from '../../utils/helpers';
-import MyEditDialog from '../../components/MyEditDialog/MyEditDialog';
-import MyCreateDialog from '../../components/MyCreateDialog/MyCreateDialog';
+
+import styles from './JourneySettingsPage.module.css';
 
 // category columns
 const categoryColumns = [
@@ -119,7 +120,7 @@ const JourneySettingsPage = () => {
 
     setCategories(data);
     setLoading(false);
-  }
+  };
 
   /**
    * Fetch journey map.
@@ -214,7 +215,7 @@ const JourneySettingsPage = () => {
         variant: 'success',
       },
     );
-  }
+  };
 
   /**
    * Handle delete journey map.
@@ -251,11 +252,11 @@ const JourneySettingsPage = () => {
           name: 'icon',
           type: 'text',
           value: map.iconUrl,
-        }
+        },
       ],
     });
     setOpenEditDialog(true);
-  }
+  };
 
   /**
    * Handle create journey map.
@@ -308,7 +309,7 @@ const JourneySettingsPage = () => {
         variant: 'success',
       },
     );
-  }
+  };
 
   /**
    * Handle close edit dialog.
@@ -377,7 +378,7 @@ const JourneySettingsPage = () => {
 
     setCurrentEdit(null);
     setOpenEditDialog(false);
-  }
+  };
 
   /**
    * Handle submitted create dialog.
@@ -499,11 +500,11 @@ const JourneySettingsPage = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Navbar />
       <IconSidebar />
 
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: 'white' }}>
         <div className={styles.JourneySettingsPage}>
           <div className={styles.JourneySettingsPage__content}>
             <MyPageHeader
@@ -520,7 +521,7 @@ const JourneySettingsPage = () => {
                   <Box
                     sx={{
                       borderBottom: 1,
-                      borderColor: 'divider'
+                      borderColor: 'divider',
                     }}>
                     <Tabs
                       value={currentTab}
@@ -632,6 +633,6 @@ const JourneySettingsPage = () => {
       )}
     </Box>
   );
-}
+};
 
 export default JourneySettingsPage;

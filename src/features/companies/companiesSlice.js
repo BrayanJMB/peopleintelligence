@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   companies: [],
@@ -13,7 +13,7 @@ const companiesSlice = createSlice({
       state.companies = [
         ...new Set([
           ...state.companies,
-          ...action.payload])
+          ...action.payload]),
       ];
 
       if (state.companies.length > 0 && !state.currentCompany) {
@@ -34,12 +34,12 @@ const companiesSlice = createSlice({
       }
     },
   },
-})
+});
 
-export const { companiesAdded, currentCompanySelected } = companiesSlice.actions
+export const { companiesAdded, currentCompanySelected } = companiesSlice.actions;
 
-export const selectAllCompanies = (state) => state.companies.companies
+export const selectAllCompanies = (state) => state.companies.companies;
 
-export const selectCompanyById = (state, companyId) => state.companies.companies.find((company) => company.id === companyId)
+export const selectCompanyById = (state, companyId) => state.companies.companies.find((company) => company.id === companyId);
 
-export default companiesSlice.reducer
+export default companiesSlice.reducer;

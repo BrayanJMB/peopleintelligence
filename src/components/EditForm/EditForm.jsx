@@ -1,9 +1,10 @@
 import React, { Fragment } from 'react';
-import PropTypes from 'prop-types';
-import TextField from '@mui/material/TextField';
-import TextareaAutosize from '@mui/material/TextareaAutosize';
-import Button from '@mui/material/Button';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import Button from '@mui/material/Button';
+import TextareaAutosize from '@mui/material/TextareaAutosize';
+import TextField from '@mui/material/TextField';
+import PropTypes from 'prop-types';
+
 import styles from './EditForm.module.css';
 
 /**
@@ -93,7 +94,7 @@ const EditForm = ({
             >
               <div
                 style={{
-                  backgroundColor: "#fce4e4",
+                  backgroundColor: '#fce4e4',
                   borderRadius: '4px',
                   color: '#808080',
                   fontSize: '12px',
@@ -133,7 +134,7 @@ const EditForm = ({
               </div>
               <TextField
                 fullWidth
-                id={`option-{key}`}
+                id={'option-{key}'}
                 InputProps={{
                   disableUnderline: true,
                 }}
@@ -240,11 +241,11 @@ EditForm.propTypes = {
   handleAddStars: PropTypes.func.isRequired,
   starMessage: PropTypes.string.isRequired,
   questionNumber: PropTypes.number.isRequired,
-}
+};
 
 EditForm.defaultProps = {
   question: {},
   questionNumber: 1,
-}
+};
 
 export default EditForm;

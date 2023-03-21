@@ -1,11 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Dialog from '@mui/material/Dialog';
-import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Typography from '@mui/material/Typography';
+import PropTypes from 'prop-types';
+
 import styles from './MyConfirmation.module.css';
 
 /**
@@ -35,8 +36,8 @@ const MyConfirmation = ({ open, onClose, title, message, other }) => {
         sx={{
           '& .MuiDialog-paper': {
             width: '80%',
-            maxHeight: 435
-          }
+            maxHeight: 435,
+          },
       }}
         maxWidth="xs"
         open={open}

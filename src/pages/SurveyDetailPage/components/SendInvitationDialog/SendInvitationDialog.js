@@ -1,27 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import Button from '@mui/material/Button';
+import CancelIcon from '@mui/icons-material/Cancel';
+import LinkIcon from '@mui/icons-material/Link';
 import SendIcon from '@mui/icons-material/Send';
-import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import Stack from '@mui/material/Stack';
+import FormControl from '@mui/material/FormControl';
+import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import CancelIcon from '@mui/icons-material/Cancel';
-import styles from './SendInvitationDialog.module.css';
-import client from '../../../../utils/axiosInstance';
-import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 import { useSnackbar } from 'notistack';
-import LinkIcon from '@mui/icons-material/Link';
-import IconButton from '@mui/material/IconButton';
+import PropTypes from 'prop-types';
 
-const defaultMessage = `Hola @usuario, te invito a participar en la encuesta: @enlace`;
+import client from '../../../../utils/axiosInstance';
+
+import styles from './SendInvitationDialog.module.css';
+
+const defaultMessage = 'Hola @usuario, te invito a participar en la encuesta: @enlace';
 
 /**
  * Send invitation dialog component.
@@ -158,7 +160,7 @@ const SendInvitationDialog = ({ isPersonal, copyUrl }) => {
         setGroups(groupsCopy);
       }
     }
-  }
+  };
 
   /**
    * Send invitation.
@@ -238,7 +240,7 @@ const SendInvitationDialog = ({ isPersonal, copyUrl }) => {
 
     setIsLoading(false);
     handleClose();
-  }
+  };
 
   // component did mount
   useEffect(() => {
@@ -269,7 +271,7 @@ const SendInvitationDialog = ({ isPersonal, copyUrl }) => {
             {groups.map(({ nameApi, options, urlParam, value }, index) => (
               <FormControl
                 style={{
-                  width: 150
+                  width: 150,
                 }}
                 key={nameApi}
               >

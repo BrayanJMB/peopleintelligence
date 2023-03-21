@@ -1,34 +1,36 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import styles from './SurveyForm.module.css';
-import Divider from '@mui/material/Divider';
-import Typography from '@mui/material/Typography';
-import FormGroup from '@mui/material/FormGroup';
-import IconButton from '@mui/material/IconButton';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
-import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import FormLabel from '@mui/material/FormLabel';
+import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 import MobileStepper from '@mui/material/MobileStepper';
-import Button from '@mui/material/Button';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import axios from 'axios';
+import PropTypes from 'prop-types';
+
 import Deacuerdo from '../../../../assets/icons/deacuerdo.svg';
 import EnDesacuerdo from '../../../../assets/icons/en desacuerdo.svg';
 import NiDeacuerdoNiEnDesacuerdo from '../../../../assets/icons/ni deacuerdo ni en desacuerdo.svg';
 import TotalmenteDeAcuerdo from '../../../../assets/icons/totalmente de acuerdo.svg';
 import TotalmenteEnDesacuerdo from '../../../../assets/icons/totalmente en desacuerdo.svg';
+
+import styles from './SurveyForm.module.css';
 
 const SurveyForm = ({ questions, onAnswered }) => {
   const [formValues, setFormValues] = useState(questions.map((question) => ({
@@ -75,7 +77,7 @@ const SurveyForm = ({ questions, onAnswered }) => {
       default:
         return false;
     }
-  }
+  };
 
   /**
    * Returns true if the type of question is checkbox.
@@ -137,7 +139,7 @@ const SurveyForm = ({ questions, onAnswered }) => {
       default:
         return false;
     }
-  }
+  };
 
   /**
    * Handles the change of the radio button.
@@ -169,7 +171,7 @@ const SurveyForm = ({ questions, onAnswered }) => {
 
       return newFormValues;
     });
-  }
+  };
 
   /**
    * Handles the change of the range.
@@ -208,7 +210,7 @@ const SurveyForm = ({ questions, onAnswered }) => {
       default:
         return '';
     }
-  }
+  };
 
   /**
    * Get normal options or options from api.
@@ -261,7 +263,7 @@ const SurveyForm = ({ questions, onAnswered }) => {
     const totalOfQuestions = questions.length;
 
     return Math.ceil(totalOfQuestions / 5);
-  }
+  };
 
   // component did mount
   useEffect(() => {

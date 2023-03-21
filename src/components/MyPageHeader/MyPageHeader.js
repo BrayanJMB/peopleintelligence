@@ -1,11 +1,13 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import styles from './MyPageHeader.module.css';
-import IconButton from '@mui/material/IconButton';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import PropTypes from 'prop-types';
+
 import MyCard from '../MyCard/MyCard';
+
+import styles from './MyPageHeader.module.css';
 
 /**
  * Page header component.
@@ -14,7 +16,7 @@ import MyCard from '../MyCard/MyCard';
  * @constructor
  */
 const MyPageHeader = ({ title, Icon }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   /**
    * Handle click back page.

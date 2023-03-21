@@ -1,9 +1,10 @@
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import styles from "./NewMulti.module.css";
-import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
-import { useState } from "react";
+import { useState } from 'react';
+import Autocomplete from '@mui/material/Autocomplete';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import TextField from '@mui/material/TextField';
+
+import styles from './NewMulti.module.css';
 
 const search = (value, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -11,7 +12,7 @@ const search = (value, inputArray, field, proprety) => {
       if (inputArray[i][field]) {
         return inputArray[i][field];
       } else {
-        return "";
+        return '';
       }
     }
   }
@@ -27,20 +28,20 @@ export default function NewMutli(props) {
       <div className={styles.input}>
         <Autocomplete
           id="combo-box-demo"
-          style={{ width: "50%" }}
+          style={{ width: '50%' }}
           options={props.content.companyroles}
           clearOnEscape
           value={search(
             props.info.companyId,
             props.ids.companyroles,
-            "businessName",
-            "id"
+            'businessName',
+            'id'
           )}
           onChange={(e, value) => {
-            props.handleAutocomplete("companyId", value);
+            props.handleAutocomplete('companyId', value);
           }}
           getOptionLabel={(option) => option}
-          noOptionsText={"No se ha encontrado ningún País"}
+          noOptionsText={'No se ha encontrado ningún País'}
           renderInput={(params) => (
             <TextField {...params} label="company Name" />
           )}
@@ -50,34 +51,34 @@ export default function NewMutli(props) {
 
         <Autocomplete
           id="combo-box-demo"
-          style={{ width: "50%" }}
+          style={{ width: '50%' }}
           options={props.content.usuariorole}
           clearOnEscape
-          value={search(props.info.userId, props.ids.usuariorole, "name", "id")}
+          value={search(props.info.userId, props.ids.usuariorole, 'name', 'id')}
           onChange={(e, value) => {
-            props.handleAutocomplete("userId", value);
+            props.handleAutocomplete('userId', value);
           }}
           getOptionLabel={(option) => option}
-          noOptionsText={"No roles"}
+          noOptionsText={'No roles'}
           renderInput={(params) => <TextField {...params} label="Users" />}
           size="small"
         />
         <Autocomplete
           id="combo-box-demo"
-          style={{ width: "50%" }}
+          style={{ width: '50%' }}
           options={props.content.roleroles}
           clearOnEscape
           value={search(
             props.info.roleId,
             props.ids.roleroles,
-            "userName",
-            "id"
+            'userName',
+            'id'
           )}
           onChange={(e, value) => {
-            props.handleAutocomplete("roleId", value);
+            props.handleAutocomplete('roleId', value);
           }}
           getOptionLabel={(option) => option}
-          noOptionsText={"No roles"}
+          noOptionsText={'No roles'}
           renderInput={(params) => <TextField {...params} label="Roles" />}
           size="small"
         />

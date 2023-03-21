@@ -1,8 +1,8 @@
-import axios from "../utils/axiosInstance";
+import axios from '../utils/axiosInstance';
 
 export const postDashboardAPI = async (data) => {
-  console.log("postDashboardAPI");
+  console.log('postDashboardAPI');
 
-  const response = await axios.post("PowerBy/CreateDashboard/", { ...data });
+  const response = await axios.post('PowerBy/CreateDashboard/', { ...data });
   return response;
 };

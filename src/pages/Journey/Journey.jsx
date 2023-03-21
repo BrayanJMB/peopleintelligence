@@ -1,29 +1,31 @@
+import { useEffect, useState } from 'react';
+import {useSelector} from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
-import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
-import Navbar from "../../Layout/Navbar/Navbar";
-import styles from "./Journey.module.css";
-import Box from "@mui/material/Box";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import Button from "@mui/material/Button";
-import starIcon from "../../assets/icons/star_icon.png";
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+import empleados from '../../assets/empleados.svg';
+import enps from '../../assets/enps.svg';
+import encuesta from '../../assets/icons/encuesta.png';
+import starIcon from '../../assets/icons/star_icon.png';
+import last from '../../assets/last.svg';
+import pulso from '../../assets/pulso.svg';
 import MyCarousel from '../../components/MyCarousel/MyCarousel';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { fetchJourneyMapAPI, getJourneysCompanyAPI } from "../../services/getJourneyMap.service";
-import enps from "../../assets/enps.svg";
-import empleados from "../../assets/empleados.svg";
-import last from "../../assets/last.svg";
-import pulso from "../../assets/pulso.svg";
-import encuesta from "../../assets/icons/encuesta.png";
-import {isAdmin} from "../../utils/helpers";
-import {useSelector} from "react-redux";
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../Layout/Navbar/Navbar';
+import { fetchJourneyMapAPI, getJourneysCompanyAPI } from '../../services/getJourneyMap.service';
+import {isAdmin} from '../../utils/helpers';
+
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import styles from './Journey.module.css';
 
 const theme = createTheme({
   palette: {
     blue: {
-      main: "#03aae4",
+      main: '#03aae4',
     },
   },
 });
@@ -38,18 +40,18 @@ const DEFAULT_SURVEY_IMAGES = [
 export default function Journey() {
   const DEFAULT_ICON= 'https://peopleintelligenceapi.azurewebsites.net/StaticFiles/Images/JourneyImages/onboarding.svg';
   const navigate = useNavigate();
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [currentMapId, setCurrentMapId] = useState(null);
   const [slides, setSlides] = useState([]);
   const [journeys, setJourneys] = useState([]);
 
   const handleExplorar = () => {
-    navigate("/journey/survey-template");
+    navigate('/journey/survey-template');
   };
 
   const handleSettings = () => {
-    navigate("/journeysettings");
+    navigate('/journeysettings');
   };
 
   /**
@@ -66,7 +68,7 @@ export default function Journey() {
     const randomIndex = Math.floor(Math.random() * DEFAULT_SURVEY_IMAGES.length);
 
     return DEFAULT_SURVEY_IMAGES[randomIndex];
-  }
+  };
 
   /**
    * Fetch journeys by map and company.
@@ -87,7 +89,7 @@ export default function Journey() {
       isCurrent: slide.id === currentMapId,
     })));
     setJourneys(data);
-  }
+  };
 
   /**
    * Handle click select map id.
@@ -96,7 +98,7 @@ export default function Journey() {
    */
   const handleSelectedMapId = ({ id }) => {
     setCurrentMapId(id);
-  }
+  };
 
   /**
    * Component did mount.
@@ -157,10 +159,10 @@ export default function Journey() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: 'flex' }}>
         <Navbar />
         <IconSidebar />
-        <div style={{ backgroundColor: "white" }}>
+        <div style={{ backgroundColor: 'white' }}>
           <div className={styles.content}>
             <div className={styles.journey}>
 
@@ -176,15 +178,15 @@ export default function Journey() {
               />
 
               <div className={styles.heading}>
-                <div style={{ paddingRight: "16px" }}>
+                <div style={{ paddingRight: '16px' }}>
                   <img src={currentCompany?.Logotipo ?? starIcon} alt="" className={styles.icon} />
                 </div>
-                <div style={{ paddingRight: "1em" }} className={styles.text}>
+                <div style={{ paddingRight: '1em' }} className={styles.text}>
                   <h1
                     style={{
-                      fontSize: "24px",
+                      fontSize: '24px',
                       letterSpacing: 0,
-                      fontWeight: "500",
+                      fontWeight: '500',
                       margin: 0,
                     }}
                   >
@@ -197,8 +199,8 @@ export default function Journey() {
                     variant="contained"
                     className={styles.explorar}
                     style={{
-                      color: "white",
-                      marginRight: "1.5em",
+                      color: 'white',
+                      marginRight: '1.5em',
                     }}
                     color="blue"
                     onClick={handleSettings}
@@ -211,7 +213,7 @@ export default function Journey() {
                   variant="contained"
                   className={styles.explorar}
                   style={{
-                    color: "white",
+                    color: 'white',
                   }}
                   color="blue"
                   onClick={handleExplorar}
@@ -229,22 +231,22 @@ export default function Journey() {
                         alt=""
                         width="146"
                         height="81"
-                        style={{ maxWidth: "100%", height: "auto" }}
+                        style={{ maxWidth: '100%', height: 'auto' }}
                       />
                       <p
                         style={{
-                          fontSize: "18px",
-                          letterSpacing: "0.5px",
-                          fontWeight: "500",
+                          fontSize: '18px',
+                          letterSpacing: '0.5px',
+                          fontWeight: '500',
                         }}
                       >
                         {journey.nameSurvey}
                       </p>
                       <p
                         style={{
-                          fontSize: "14px",
-                          letterSpacing: "0.25px",
-                          fontWeight: "300",
+                          fontSize: '14px',
+                          letterSpacing: '0.25px',
+                          fontWeight: '300',
                         }}
                       >
                         {journey.descriptionSurvey}
@@ -252,9 +254,9 @@ export default function Journey() {
                       <Button
                         variant="outlined"
                         style={{
-                          color: "#03aae4",
-                          width: "30%",
-                          alignSelf: "flex-end",
+                          color: '#03aae4',
+                          width: '30%',
+                          alignSelf: 'flex-end',
                         }}
                         color="blue"
                         onClick={() => navigate(`/journey/survey/${journey.id}/detail`)}
@@ -269,62 +271,62 @@ export default function Journey() {
                     <div key={journey.id} className={styles.encuestacard} onClick={() => navigate(`/journey/survey/${journey.id}/detail`)}>
                       <div
                         style={{
-                          display: "flex",
-                          alignItems: "center",
+                          display: 'flex',
+                          alignItems: 'center',
                         }}
                       >
                         <div
                           style={{
-                            backgroundColor: "#EAF8FF",
-                            width: "35px",
-                            height: "35px",
-                            padding: "12px",
-                            borderRadius: "8px",
-                            margin: "0.5em",
+                            backgroundColor: '#EAF8FF',
+                            width: '35px',
+                            height: '35px',
+                            padding: '12px',
+                            borderRadius: '8px',
+                            margin: '0.5em',
                           }}
                         >
                           <img
                             src={encuesta}
                             alt=""
                             style={{
-                              width: "100%",
-                              height: "auto",
-                              maxWidth: "100%",
-                              verticalAlign: "middle",
+                              width: '100%',
+                              height: 'auto',
+                              maxWidth: '100%',
+                              verticalAlign: 'middle',
                             }}
                           />
                         </div>
                         <div
                           style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "1em",
-                            paddingLeft: "12px",
-                            width: "80%",
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '1em',
+                            paddingLeft: '12px',
+                            width: '80%',
                           }}
                         >
                           <p
                             style={{
-                              fontSize: "18px",
-                              letterSpacing: "0.5px",
-                              fontWeight: "500",
+                              fontSize: '18px',
+                              letterSpacing: '0.5px',
+                              fontWeight: '500',
                             }}
                           >
                             {journey.nameSurvey}
                           </p>
                           <div
                             style={{
-                              overflow: "hidden",
-                              wordBreak: "break-word",
+                              overflow: 'hidden',
+                              wordBreak: 'break-word',
                             }}
                           >
                             <p
                               style={{
-                                fontSize: "14px",
-                                letterSpacing: "0.25px",
-                                fontWeight: "300",
-                                overflow: "hidden",
-                                wordBreak: "break-word",
+                                fontSize: '14px',
+                                letterSpacing: '0.25px',
+                                fontWeight: '300',
+                                overflow: 'hidden',
+                                wordBreak: 'break-word',
                               }}
                             >
                               {journey.descriptionSurvey}

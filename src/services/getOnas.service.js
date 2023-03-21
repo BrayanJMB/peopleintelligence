@@ -1,8 +1,8 @@
-import axios from "../utils/axiosInstance";
+import axios from '../utils/axiosInstance';
 
 export const getOnasAPI = async (id) => {
-  console.log("getOnasAPI");
+  console.log('getOnasAPI');
 
-  const response = await axios.get("OnasSurvey/ListaEncuestaS/" + id);
+  const response = await axios.get('OnasSurvey/ListaEncuestaS/' + id);
   return response;
 };

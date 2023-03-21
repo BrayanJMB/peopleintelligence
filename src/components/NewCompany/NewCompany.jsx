@@ -1,31 +1,33 @@
-import { useState, useEffect } from "react";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import styles from "./NewCompany.module.css";
-import Button from "@mui/material/Button";
-import axios from "../../utils/axiosInstance";
-import image from "../../assets/default.png";
+import { useEffect,useState } from 'react';
+import Autocomplete from '@mui/material/Autocomplete';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 
-const validphone = new RegExp("^[0-9]{12,15}$");
+import image from '../../assets/default.png';
+import axios from '../../utils/axiosInstance';
+
+import styles from './NewCompany.module.css';
+
+const validphone = new RegExp('^[0-9]{12,15}$');
 
 export default function NewCompany(props) {
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState('');
 
   const handleBlur = (event) => {
     let helperText = {};
     let error = {};
-    if (event.target.value === "") {
-      helperText[event.target.name] = "El campo no puede ir vacio";
+    if (event.target.value === '') {
+      helperText[event.target.name] = 'El campo no puede ir vacio';
       error[event.target.name] = true;
     } else {
-      helperText[event.target.name] = "";
+      helperText[event.target.name] = '';
       error[event.target.name] = false;
     }
-    if (event.target.name === "phoneNumber") {
+    if (event.target.name === 'phoneNumber') {
       if (!validphone.test(event.target.value)) {
-        helperText[event.target.name] = "Solo puede escirbir números";
+        helperText[event.target.name] = 'Solo puede escirbir números';
         error[event.target.name] = true;
       }
     }
@@ -34,7 +36,7 @@ export default function NewCompany(props) {
   };
 
   const getImage = async () => {
-    await axios.get(`companias/GetLogo/2?Id=1`);
+    await axios.get('companias/GetLogo/2?Id=1');
   };
 
   useEffect(() => {
@@ -69,7 +71,7 @@ export default function NewCompany(props) {
           value={props.info.nombreCompania}
           name="nombreCompania"
           onChange={props.handleChangeCompania}
-          style={{ flexBasis: "40%" }}
+          style={{ flexBasis: '40%' }}
           error={errorMessage.nombreCompania}
           helperText={helperText.nombreCompania}
           size="small"
@@ -77,15 +79,15 @@ export default function NewCompany(props) {
         />
         <Autocomplete
           id="combo-box-demo"
-          style={{ flexBasis: "40%" }}
+          style={{ flexBasis: '40%' }}
           options={props.content.sector}
           clearOnEscape
           value={props.info.SectorId}
           onChange={(e, value) => {
-            props.handleAutocomplete("SectorId", value);
+            props.handleAutocomplete('SectorId', value);
           }}
           getOptionLabel={(option) => option}
-          noOptionsText={"No se ha encontrado ningún Sector"}
+          noOptionsText={'No se ha encontrado ningún Sector'}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -100,15 +102,15 @@ export default function NewCompany(props) {
       <div className={styles.input}>
         <Autocomplete
           id="combo-box-demo"
-          style={{ flexBasis: "40%" }}
+          style={{ flexBasis: '40%' }}
           options={props.content.country}
           clearOnEscape
           value={props.info.IdPais}
           onChange={(e, value) => {
-            props.handleAutocomplete("IdPais", value);
+            props.handleAutocomplete('IdPais', value);
           }}
           getOptionLabel={(option) => option}
-          noOptionsText={"No se ha encontrado ningún País"}
+          noOptionsText={'No se ha encontrado ningún País'}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -120,7 +122,7 @@ export default function NewCompany(props) {
           size="small"
         />
         <TextField
-          style={{ flexBasis: "40%" }}
+          style={{ flexBasis: '40%' }}
           id="outlined-name"
           label="Sede"
           value={props.info.Sede}
@@ -134,7 +136,7 @@ export default function NewCompany(props) {
       </div>
       <div className={styles.input}>
         <TextField
-          style={{ flexBasis: "40%" }}
+          style={{ flexBasis: '40%' }}
           id="outlined-name"
           label="Dirección"
           value={props.info.direccion}
@@ -147,15 +149,15 @@ export default function NewCompany(props) {
         />
         <Autocomplete
           id="combo-box-demo"
-          style={{ flexBasis: "40%" }}
+          style={{ flexBasis: '40%' }}
           options={props.content.sizeCompany}
           clearOnEscape
           value={props.info.IdTamanoCompania}
           onChange={(e, value) => {
-            props.handleAutocomplete("IdTamanoCompania", value);
+            props.handleAutocomplete('IdTamanoCompania', value);
           }}
           getOptionLabel={(option) => option}
-          noOptionsText={"No se ha encontrado ningún País"}
+          noOptionsText={'No se ha encontrado ningún País'}
           renderInput={(params) => (
             <TextField
               {...params}

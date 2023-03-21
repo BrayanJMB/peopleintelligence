@@ -1,21 +1,23 @@
-import { useState, useCallback, useEffect } from "react";
-import styles from "./Home.module.css";
-import Box from "@mui/material/Box";
-import Logo from "../../assets/Logo.svg";
-import Building from "../../assets/Building.svg";
-import Button from "@mui/material/Button";
-import One from "../../components/One/One";
-import Multiple from "../../components/Multiple/Multiple";
-import axios from "../../utils/axiosInstance";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useDispatch } from "react-redux";
-import { setCredentials } from "../../features/authSlice";
-import { useLocation, useNavigate } from "react-router-dom";
-import Notification from "../../components/Notification";
+import { useCallback, useEffect,useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+import Building from '../../assets/Building.svg';
+import Logo from '../../assets/Logo.svg';
+import Multiple from '../../components/Multiple/Multiple';
+import Notification from '../../components/Notification';
+import One from '../../components/One/One';
+import { setCredentials } from '../../features/authSlice';
+import axios from '../../utils/axiosInstance';
+
+import styles from './Home.module.css';
 
 const config = {
   headers: {
-    "Content-type": "application/json",
+    'Content-type': 'application/json',
   },
 };
 
@@ -28,7 +30,7 @@ export default function Home() {
   for (const entry of urlParams.entries()) {
     result[entry[0]] = entry[1];
   }
-  const access_token = result["#access_token"];
+  const access_token = result['#access_token'];
   const [begin, setBegin] = useState(true);
   const [one, setOne] = useState(false);
   const [disable, setDisable] = useState(false);
@@ -38,36 +40,36 @@ export default function Home() {
     content: { documentType: [], country: [], sizeCompany: [], sector: [] },
     ids: { documentType: [], country: [], sizeCompany: [], sector: [] },
   });
-  const [response, setResponse] = useState("");
+  const [response, setResponse] = useState('');
   const [info, setInfo] = useState({
     Usuario: {
-      IdTipoDocumento: "",
-      numeroDocumento: "",
-      NombreCompleto: "",
-      Cargo: "",
-      correoElectronico: "",
-      phoneNumber: "",
+      IdTipoDocumento: '',
+      numeroDocumento: '',
+      NombreCompleto: '',
+      Cargo: '',
+      correoElectronico: '',
+      phoneNumber: '',
     },
     Compania: {
-      nombreCompania: "",
+      nombreCompania: '',
       Logotipo: null,
-      IdPais: "",
-      Sede: "",
-      direccion: "",
-      IdTamanoCompania: "",
-      SectorId: "",
+      IdPais: '',
+      Sede: '',
+      direccion: '',
+      IdTamanoCompania: '',
+      SectorId: '',
     },
   });
   const [values, setValues] = useState({
     isOpen: false,
-    message: "",
-    severity: "",
+    message: '',
+    severity: '',
   });
 
   const theme = createTheme({
     palette: {
       blue: {
-        main: "#03aae4",
+        main: '#03aae4',
       },
     },
   });
@@ -78,7 +80,7 @@ export default function Home() {
 
   const sectorConsume = async () => {
     try {
-      await axios.get("Sector/", config).then((res) => {
+      await axios.get('Sector/', config).then((res) => {
         let fetch = [];
         let id = [];
         res.data.forEach((val) => {
@@ -99,7 +101,7 @@ export default function Home() {
 
   const sizeCompanyConsume = async () => {
     try {
-      await axios.get("TamanoCompania/", config).then((res) => {
+      await axios.get('TamanoCompania/', config).then((res) => {
         let fetch = [];
         let id = [];
         res.data.forEach((val) => {
@@ -115,13 +117,13 @@ export default function Home() {
       });
     } catch (error) {
       console.log(error);
-      console.log("eror");
+      console.log('eror');
     }
   };
 
   const countryConsume = async () => {
     try {
-      await axios.get("paises/", config).then((res) => {
+      await axios.get('paises/', config).then((res) => {
         let fetch = [];
         let id = [];
         res.data.forEach((val) => {
@@ -142,7 +144,7 @@ export default function Home() {
 
   const documentTypeConsume = async () => {
     try {
-      await axios.get("tipo-documentos/", config).then((res) => {
+      await axios.get('tipo-documentos/', config).then((res) => {
         let fetch = [];
         let id = [];
         res.data.forEach((val) => {
@@ -162,25 +164,25 @@ export default function Home() {
   };
 
   const decodeToken = (token) => {
-    var base64Url = token.split(".")[1];
+    var base64Url = token.split('.')[1];
     var base64 = decodeURIComponent(
       atob(base64Url)
-        .split("")
+        .split('')
         .map((c) => {
-          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         })
-        .join("")
+        .join('')
     );
     return JSON.parse(base64);
   };
 
   const tokenConsume = async () => {
     const config = {
-      headers: { "Content-type": "application/json" },
+      headers: { 'Content-type': 'application/json' },
     };
     try {
       await axios
-        .post("Aut/", { bearer: `Bearer ${access_token}` }, config)
+        .post('Aut/', { bearer: `Bearer ${access_token}` }, config)
         .then((res) => {
           let token = res.data.token;
           let decodedToken = decodeToken(token);
@@ -199,7 +201,7 @@ export default function Home() {
           );
 
           localStorage.setItem(
-            "userInfo",
+            'userInfo',
             JSON.stringify({
               user: decodedToken.user,
               Company: decodedToken.Company,
@@ -208,11 +210,11 @@ export default function Home() {
             })
           );
 
-          const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-          if (userInfo.role.findIndex((p) => p === "Registrado") > -1) {
-            navigate("/noaccess");
+          const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+          if (userInfo.role.findIndex((p) => p === 'Registrado') > -1) {
+            navigate('/noaccess');
           } else if (userInfo.role.length > 0) {
-            navigate("/dashboard");
+            navigate('/dashboard');
           }
           countryConsume();
           sizeCompanyConsume();
@@ -222,14 +224,14 @@ export default function Home() {
     } catch (error) {
       if (error.response.status === 401) {
         window.location.replace(
-          "https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fsuite.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login"
+          'https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fsuite.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login'
 
         );
       }
       if (error.response.status === 400) {
-        alert("El correo ingresado no es un correo corporativo");
+        alert('El correo ingresado no es un correo corporativo');
         window.location.replace(
-          "https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fsuite.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login"
+          'https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fsuite.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login'
         );
       }
       if (error.response.status === 403) {
@@ -273,9 +275,9 @@ export default function Home() {
       setValues({
         ...values,
         message:
-          "El tamaño de la imagen para el logotipo no puede ser mayor a 500kB",
+          'El tamaño de la imagen para el logotipo no puede ser mayor a 500kB',
         isOpen: true,
-        severity: "error",
+        severity: 'error',
       });
     }
   };
@@ -309,7 +311,7 @@ export default function Home() {
   useEffect(() => {
     if (!access_token) {
       window.location.replace(
-        "https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fsuite.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login"
+        'https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fsuite.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login'
       );
     } else {
       tokenConsume();
@@ -331,7 +333,7 @@ export default function Home() {
                 <Box
                   component="img"
                   sx={{
-                    backgroundColor: "white",
+                    backgroundColor: 'white',
                   }}
                   alt="Your logo."
                   src={Logo}
@@ -345,7 +347,7 @@ export default function Home() {
               <div className={styles.cuenta}>
                 <div className={styles.box}>
                   <Box component="img" alt="Your logo." src={Building} />
-                  <h4 style={{ margin: 0, textAlign: "center" }}>
+                  <h4 style={{ margin: 0, textAlign: 'center' }}>
                     CUENTA ÚNICA EMPRESA
                   </h4>
                   <p className={styles.description}>
@@ -357,7 +359,7 @@ export default function Home() {
                     onClick={handleoneCompany}
                     color="blue"
                     sx={{
-                      color: "white",
+                      color: 'white',
                     }}
                   >
                     Seleccionar
@@ -365,7 +367,7 @@ export default function Home() {
                 </div>
                 <div className={styles.box}>
                   <Box component="img" alt="Your logo." src={Building} />
-                  <h4 style={{ margin: 0, textAlign: "center" }}>
+                  <h4 style={{ margin: 0, textAlign: 'center' }}>
                     CUENTA MULTI EMPRESAS
                   </h4>
                   <p className={styles.description}>
@@ -377,7 +379,7 @@ export default function Home() {
                     onClick={handlemultipleCompany}
                     color="blue"
                     sx={{
-                      color: "white",
+                      color: 'white',
                     }}
                   >
                     Seleccionar
@@ -428,7 +430,7 @@ export default function Home() {
                 <Box
                   component="img"
                   sx={{
-                    backgroundColor: "white",
+                    backgroundColor: 'white',
                   }}
                   alt="Your logo."
                   src={Logo}
@@ -437,7 +439,7 @@ export default function Home() {
               <div className={styles.register}>
                 <h2
                   className={styles.succesfully}
-                  style={{ color: "#03aae4", marginBottom: "3.5rem" }}
+                  style={{ color: '#03aae4', marginBottom: '3.5rem' }}
                 >
                   ¡Tu registro ha sido exitoso!
                 </h2>
@@ -446,10 +448,10 @@ export default function Home() {
               <div className={styles.end}>
                 <Button
                   variant="contained"
-                  sx={{ backgroundColor: "#03aae4" }}
+                  sx={{ backgroundColor: '#03aae4' }}
                   onClick={() => {
                     window.location.replace(
-                      "https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fsuite.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login"
+                      'https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fsuite.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login'
                     );
                   }}
                 >
