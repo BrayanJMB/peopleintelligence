@@ -27,6 +27,14 @@ import {
   fetchJourneyMapAPI,
   storeJourneyMapAPI,
   updateJourneyMapAPI} from '../../services/getJourneyMap.service';
+import {
+  deleteJourneyMapAPI as deleteJourneyMapsAPI,
+  fetchJourneyMapsAPI,
+} from '../../services/journeys.service';
+import {
+  deleteTemplateAPI,
+  fetchTemplatesAPI,
+} from '../../services/templates.service';
 import { isAdmin, isJourney } from '../../utils/helpers';
 
 import styles from './JourneySettingsPage.module.css';
@@ -79,6 +87,54 @@ const journeyMapColumns = [
   },
 ];
 
+// template columns
+const templateColumns = [
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Nombre',
+    numeric: false,
+  },
+  {
+    id: 'description',
+    label: 'Descripción',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+];
+
+// map survey columns
+const mapSurveyColumns = [
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Nombre',
+    numeric: false,
+  },
+  {
+    id: 'description',
+    label: 'Descripción',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+];
+
 /**
  * Journey settings page component.
  *
@@ -88,9 +144,11 @@ const journeyMapColumns = [
 const JourneySettingsPage = () => {
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [journeyMap, setJourneyMap] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [templates, setTemplates] = useState([]);
+  const [mapSurveys, setMapSurveys] = useState([]);
   const [currentTab, setCurrentTab] = useState(0);
   const [currentEdit, setCurrentEdit] = useState(null);
   const [currentCreate, setCurrentCreate] = useState(null);
@@ -137,6 +195,33 @@ const JourneySettingsPage = () => {
   };
 
   /**
+   * Fetch templates.
+   * 
+   * @returns {Promise<void>}
+   */
+  const fetchTemplates = async () => {
+    setLoading(true);
+
+    const { data } = await fetchTemplatesAPI();
+
+    setTemplates(data);
+  };
+
+  /**
+   * Fetch map surveys.
+   * 
+   * @returns {Promise<void>}
+   */
+  const fetchMapSurveys = async () => {
+    setLoading(true);
+
+    const { data } = await fetchJourneyMapsAPI();
+
+    setMapSurveys(data);
+    setLoading(false);
+  };
+
+  /**
    * Handle edit category.
    *
    * @param id
@@ -169,52 +254,6 @@ const JourneySettingsPage = () => {
       ],
     });
     setOpenEditDialog(true);
-  };
-
-  /**
-   * Handle create category.
-   */
-  const handleCreateCategory = () => {
-    setCurrentCreate({
-      type: 'category',
-      title: 'Crear categoría',
-      fields: [
-        {
-          label: 'Nombre',
-          name: 'name',
-          type: 'text',
-          isRequired: true,
-        },
-        {
-          label: 'Descripción',
-          name: 'description',
-          type: 'text',
-          isRequired: true,
-        },
-      ],
-    });
-    setOpenCreateDialog(true);
-  };
-
-  /**
-   * Handle delete category.
-   *
-   * @param id
-   */
-  const handleDeleteCategory = async (id) => {
-    const category = categories.find((category) => category.id === id);
-
-    if (category === undefined) {
-      return;
-    }
-
-    await deleteCategoryAPI(id);
-    enqueueSnackbar(
-      'Categoría eliminada con éxito',
-      {
-        variant: 'success',
-      },
-    );
   };
 
   /**
@@ -259,6 +298,31 @@ const JourneySettingsPage = () => {
   };
 
   /**
+   * Handle create category.
+   */
+  const handleCreateCategory = () => {
+    setCurrentCreate({
+      type: 'category',
+      title: 'Crear categoría',
+      fields: [
+        {
+          label: 'Nombre',
+          name: 'name',
+          type: 'text',
+          isRequired: true,
+        },
+        {
+          label: 'Descripción',
+          name: 'description',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
+
+  /**
    * Handle create journey map.
    */
   const handleCreateJourneyMap = () => {
@@ -290,6 +354,45 @@ const JourneySettingsPage = () => {
   };
 
   /**
+   * Handle create template.
+   */
+  const handleCreateTemplate = () => {
+    // redirect to create template page
+    navigate('/journey/create-survey?isTemplate=true&isSurvey=true');
+  };
+
+  /**
+   * Handle create map survey.
+   */
+  const handleCreateMapSurvey = () => {
+    // redirect to create template page
+    navigate('/journey/create-survey?isTemplate=true&isMap=true');
+  };
+
+  /**
+   * Handle delete category.
+   *
+   * @param id
+   */
+  const handleDeleteCategory = async (id) => {
+    const category = categories.find((category) => category.id === id);
+
+    if (category === undefined) {
+      return;
+    }
+
+    try {
+      await deleteCategoryAPI(id);
+    } catch (e) {}
+    enqueueSnackbar(
+      'Categoría eliminada con éxito',
+      {
+        variant: 'success',
+      },
+    );
+  };
+
+  /**
    * Handle delete journey map.
    *
    * @param id
@@ -302,9 +405,59 @@ const JourneySettingsPage = () => {
       return;
     }
 
-    await deleteJourneyMapAPI(id);
+    try {
+      await deleteJourneyMapAPI(id);
+    } catch (e) {} 
     enqueueSnackbar(
       'Mapa de viaje eliminado con éxito',
+      {
+        variant: 'success',
+      },
+    );
+  };
+
+  /**
+   * Handle delete template.
+   * 
+   * @param {number} id The template id.
+   */
+  const handleDeleteTemplate = async (id) => {
+    // find template
+    const template = templates.find((template) => template.id === id);
+
+    if (template === undefined) {
+      return;
+    }
+
+    try {
+      await deleteTemplateAPI(id);
+    } catch (e) {}
+    enqueueSnackbar(
+      'Plantilla eliminada con éxito',
+      {
+        variant: 'success',
+      },
+    );
+  };
+
+  /**
+   * Handle delete map survey.
+   * 
+   * @param {number} id The map survey id.
+   */
+  const handleDeleteMapSurvey = async (id) => {
+    // find map survey
+    const mapSurvey = mapSurveys.find((mapSurvey) => mapSurvey.id === id);
+
+    if (mapSurvey === undefined) {
+      return;
+    }
+
+    try {
+      await deleteJourneyMapsAPI(id);
+    } catch (e) {}
+    enqueueSnackbar(
+      'Encuesta de mapa eliminada con éxito',
       {
         variant: 'success',
       },
@@ -481,6 +634,64 @@ const JourneySettingsPage = () => {
     },
   ]);
 
+  /**
+   * Map templates response to use in table.
+   * 
+   * @param {array} templates The templates array.
+   * @returns 
+   */
+  const mapTemplates = (templates) => templates.map((template) => [
+    {
+      column: 'id',
+      value: template.id.toString(),
+    },
+    {
+      column: 'name',
+      value: template.nameSurvey,
+    },
+    {
+      column: 'description',
+      value: template.descriptionSurvey,
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteTemplate,
+        id: template.id,
+      },
+    },
+  ]);
+
+  /**
+   * Map map surveys response to use in table.
+   * 
+   * @param {array} mapSurveys The map surveys array.
+   * @returns 
+   */
+  const mapMapSurveys = (mapSurveys) => mapSurveys.map((mapSurvey) => [
+    {
+      column: 'id',
+      value: mapSurvey.id.toString(),
+    },
+    {
+      column: 'name',
+      value: mapSurvey.nameSurvey,
+    },
+    {
+      column: 'description',
+      value: mapSurvey.descriptionSurvey,
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteMapSurvey,
+        id: mapSurvey.id,
+      },
+    },
+  ]);
+
   // component did mount
   useEffect(() => {
     if (!isAdmin(userInfo) && !isJourney(userInfo)) {
@@ -497,6 +708,8 @@ const JourneySettingsPage = () => {
 
     fetchCategories();
     fetchJourneyMap();
+    fetchMapSurveys();
+    fetchTemplates();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -534,6 +747,14 @@ const JourneySettingsPage = () => {
                       <Tab
                         label="Mapas"
                         id="settings-tab-1"
+                      />
+                      <Tab
+                        label="Plantillas"
+                        id="settings-tab-2"
+                      />
+                      <Tab
+                        label="Encuestas de mapas"
+                        id="settings-tab-3"
                       />
                     </Tabs>
                     {/* categories */}
@@ -598,6 +819,70 @@ const JourneySettingsPage = () => {
                             title={'Listado de mapas'}
                             columns={journeyMapColumns}
                             rows={mapJourneyMap(journeyMap)}
+                          />
+                        </Box>
+                      )}
+                    </div>
+                    {/* templates */}
+                    <div
+                      hidden={currentTab !== 2}
+                      id="settings-tabpanel-2"
+                    >
+                      {currentTab === 2 && (
+                        <Box
+                          sx={{ p: 3 }}
+                        >
+                          <Stack
+                            spacing={2}
+                            direction="row-reverse"
+                            sx={{
+                              mb: 2,
+                            }}
+                          >
+                            <Button
+                              variant="outlined"
+                              startIcon={<AddIcon />}
+                              onClick={handleCreateTemplate}
+                            >
+                              Crear plantilla
+                            </Button>
+                          </Stack>
+                          <MyTable
+                            title={'Listado de plantillas'}
+                            columns={templateColumns}
+                            rows={mapTemplates(templates)}
+                          />
+                        </Box>
+                      )}
+                    </div>
+                    {/* map surveys */}
+                    <div
+                      hidden={currentTab !== 3}
+                      id="settings-tabpanel-3"
+                    >
+                      {currentTab === 3 && (
+                        <Box
+                          sx={{ p: 3 }}
+                        >
+                          <Stack
+                            spacing={2}
+                            direction="row-reverse"
+                            sx={{
+                              mb: 2,
+                            }}
+                          >
+                            <Button
+                              variant="outlined"
+                              startIcon={<AddIcon />}
+                              onClick={handleCreateMapSurvey}
+                            >
+                              Crear encuesta de mapa
+                            </Button>
+                          </Stack>
+                          <MyTable
+                            title={'Listado de encuestas de mapas'}
+                            columns={mapSurveyColumns}
+                            rows={mapMapSurveys(mapSurveys)}
                           />
                         </Box>
                       )}

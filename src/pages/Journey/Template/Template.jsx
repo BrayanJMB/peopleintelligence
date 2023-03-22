@@ -5,7 +5,6 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
 import { useSnackbar } from 'notistack';
@@ -14,18 +13,10 @@ import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
 import useNavigateSearch from '../../../hooks/useNavigateSearch';
 import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../../Layout/Navbar/Navbar';
-import { fetchTemplatesAPI } from '../../../services/getTemplates.service';
+import { fetchTemplatesAPI } from '../../../services/templates.service';
 import { isAdmin, isJourney } from '../../../utils/helpers';
 
 import styles from './Template.module.css';
-
-const theme = createTheme({
-  palette: {
-    blue: { 
-      main: '#03aae4',
-    },
-  },
-});
 
 /**
  * Survey index page.
