@@ -24,7 +24,6 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
   const [maps, setMaps] = useState([]);
   const [map, setMap] = useState(null);
   const [isValidMap, setIsValidMap] = useState('');
-  const [surveyOrMap, setSurveyOrMap] = useState('survey');
   const [title, setTitle] = useState('');
   const [isValidTitle, setIsValidTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -33,6 +32,8 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
   const [isValidMailingMessage, setIsValidMailingMessage] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [searchParams] = useSearchParams();
+  const isMap = searchParams.get('isMap') === 'true';
+  const [surveyOrMap, setSurveyOrMap] = useState(isMap ? 'map' : 'survey');
 
   /**
    * Handel change.
