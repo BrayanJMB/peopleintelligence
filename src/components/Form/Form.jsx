@@ -1,11 +1,18 @@
+import { Fragment, useState } from 'react';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 import TextField from '@mui/material/TextField';
 
 import styles from './Form.module.css';
 
-// likert options
+// Likert options
 const options = [
   'Discrepar',
   'Estar de acuerdo',
@@ -15,6 +22,18 @@ const options = [
 ];
 
 export default function Form(props) {
+  const [categoryId, setCategoryId] = useState('');
+
+  /**
+   * Handle category id change.
+   * 
+   * @param {object} event
+   */
+  const handleCategoryIdChange = ({ target }) => {
+    props.handleCategoryIdChange(target.value);
+    setCategoryId(target.value);
+  };
+
   const renderForm = (type) => {
     switch (type) {
       case 'Texto corto':
@@ -422,8 +441,54 @@ export default function Form(props) {
     }
   };
   return (
-    <div className={styles.form}>
-      {props.type === '' || props.type === null ? null : renderForm(props.type)}
-    </div>
+    <Fragment>
+      <div className={styles.form}>
+        {props.type === '' || props.type === null ? null : renderForm(props.type)}
+      </div>
+      <Box 
+        sx={{
+          mt: 2,
+        }}
+      >
+        <FormControl
+          fullWidth
+          error={props.categoryError.length > 0}
+        >
+          <InputLabel
+            id="category-id-label"
+            sx={{
+              backgroundColor: 'white',
+              paddingRight: '0 6px',
+            }}
+          >
+            Seleccionar categoría
+          </InputLabel>
+          <Select
+            labelId="category-id-label"
+            id="category-id"
+            label="Categoría"
+            value={categoryId}
+            onChange={handleCategoryIdChange}
+          >
+            <MenuItem value={props.categoryId}>
+              <em>Ninguno</em>
+            </MenuItem>
+            {props.categories.map((category) => (
+              <MenuItem
+                key={category.id}
+                value={category.id}
+              >
+                {category.nameCatogory}
+              </MenuItem>
+            ))}
+          </Select>
+          {props.categoryError.length > 0 && (
+            <FormHelperText>
+              {props.categoryError}
+            </FormHelperText>
+          )}
+        </FormControl>
+      </Box>
+    </Fragment>
   );
 }

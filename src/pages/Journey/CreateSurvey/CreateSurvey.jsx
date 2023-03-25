@@ -23,6 +23,7 @@ import Form from '../../../components/Form/Form';
 import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
 import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../../Layout/Navbar/Navbar';
+import { fetchCategoriesAPI } from '../../../services/getCategories.service';
 import client from '../../../utils/axiosInstance';
 
 import Cuestionario from './Cuestionario/Cuestionario';
@@ -72,6 +73,9 @@ export default function CreateSurvey() {
     customOptions: Array(2).fill(''),
     stars: Array(3).fill(''),
   });
+  const [categories, setCategories] = useState([]);
+  const [categoryId, setCategoryId] = useState(null);
+  const [categoryError, setCategoryError] = useState('');
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [question, setQuestion] = useState();
   const [anonymous, setAnonymous] = useState(true);
@@ -138,6 +142,7 @@ export default function CreateSurvey() {
       },
       questions: questions.map((question) => ({
         question: {
+          categoryId: question.categoryId,
           nameQuestion: question.name,
           typeQuestionId: question.type,
           questionId: 0,
@@ -178,6 +183,7 @@ export default function CreateSurvey() {
         demograficos: getDemographics(),
       },
       seccionQuestion: questions.map((question) => ({
+        templateCategoryId: question.categoryId,
         templateQuestion: {
           nameQuestion: question.name,
           typeQuestionId: question.type,
@@ -233,9 +239,27 @@ export default function CreateSurvey() {
     }
   };
 
-  const handleinformation = (event) => {
-    setInformation({ ...information, [event.target.name]: event.target.value });
+  /**
+   * Handle change for current question.
+   * 
+   * @param {object} event 
+   */
+  const handleInformation = (event) => {
+    setInformation({
+      ...information,
+      [event.target.name]: event.target.value,
+    });
   };
+
+  /**
+   * Handle change for category id.
+   * 
+   * @param {number} categoryId The category id.
+   */
+  const handleCategoryIdChange = (categoryId) => {
+    setCategoryId(categoryId);
+  };
+
   const handleQuestion = (event) => {
     setQuestion({ ...question, [event.target.name]: event.target.value });
   };
@@ -326,7 +350,10 @@ export default function CreateSurvey() {
   const handleActualizar = () => {
     let holder = questions.map((val, index) => {
       if (index === target) {
-        return question;
+        return {
+          ...question,
+          categoryId,
+        };
       } else {
         return val;
       }
@@ -416,64 +443,79 @@ export default function CreateSurvey() {
   const handleAutocomplete = (val) => {
     setType(val);
   };
+
+
   const handleAgregar = () => {
-    let helperText = {};
-    let error = {};
+    setCategoryError('');
+
     if (edit) {
       handleActualizar();
-    } else {
-      let bad = false;
-      if (information.name.length < 5) {
-        helperText.name = 'Se requiere un mínimo de 5 caracteres.';
-        error.name = true;
-        bad = true;
-      } else {
-        helperText.name = '';
-        error.name = false;
-      }
-      if (bad) {
-        setErrorMessage(error);
-        setHelperText(helperText);
-      } else {
-        setErrorMessage({});
-        setHelperText({});
-        if (type === 'Texto corto') {
-          handleAddQuestion({
-            type: 'Texto corto',
-            name: information.name,
-            description: information.description,
-          });
-        } else if (type === 'Escala Likert') {
-          handleAddQuestion({
-            type: 'Escala Likert',
-            name: information.name,
-            description: information.description,
-            options: information.options,
-          });
-        } else if (type === 'Opción múltiple') {
-          handleAddQuestion({
-            type: 'Opción múltiple',
-            name: information.name,
-            description: information.description,
-            customOptions: information.customOptions,
-          });
-        } else if (type === 'Opción única') {
-          handleAddQuestion({
-            type: 'Opción única',
-            name: information.name,
-            description: information.description,
-            customOptions: information.customOptions,
-          });
-        } else if (type === 'Calificaciones') {
-          handleAddQuestion({
-            type: 'Calificaciones',
-            name: information.name,
-            description: information.description,
-            stars: information.stars,
-          });
-        }
-      }
+      handleCloseModal();
+
+      return;
     }
+
+    // validate question name
+    if (information.name.length < 5) {
+      setErrorMessage({
+        ...errorMessage,
+        name: true,
+      });
+      setHelperText({
+        ...helperText,
+        name: 'Se requiere un mínimo de 5 caracteres.',
+      });
+      
+      return;
+    }
+    
+    // validate category id
+    if (categoryId === '' || categoryId === null) {
+      setCategoryError('Seleccione una categoría');
+
+      return;
+    } 
+
+    setErrorMessage({});
+    setHelperText({});
+
+    // validate questions
+    if (type === 'Texto corto') {
+      handleAddQuestion({
+        type: 'Texto corto',
+        name: information.name,
+        description: information.description,
+      });
+    } else if (type === 'Escala Likert') {
+      handleAddQuestion({
+        type: 'Escala Likert',
+        name: information.name,
+        description: information.description,
+        options: information.options,
+      });
+    } else if (type === 'Opción múltiple') {
+      handleAddQuestion({
+        type: 'Opción múltiple',
+        name: information.name,
+        description: information.description,
+        customOptions: information.customOptions,
+      });
+    } else if (type === 'Opción única') {
+      handleAddQuestion({
+        type: 'Opción única',
+        name: information.name,
+        description: information.description,
+        customOptions: information.customOptions,
+      });
+    } else if (type === 'Calificaciones') {
+      handleAddQuestion({
+        type: 'Calificaciones',
+        name: information.name,
+        description: information.description,
+        stars: information.stars,
+      });
+    }
+
     setInformation({
       name: '',
       description: '',
@@ -489,14 +531,24 @@ export default function CreateSurvey() {
     });
     setQuestion('');
     setType('');
+    setCategoryId(null);
     handleCloseModal();
   };
+
+  /**
+   * Add new question.
+   * 
+   * @param {object} question 
+   */
   const handleAddQuestion = (question) => {
-    let tmp = [...questions];
-    let holder = question;
-    holder.id = uuid.v4();
-    tmp.push(question);
-    setQuestions(tmp);
+    setQuestions((previousQuestions) => [
+      ...previousQuestions,
+      {
+        id: uuid.v4(),
+        categoryId,
+        ...question,
+      },
+    ]);
   };
 
   const handledelete = (key) => {
@@ -518,6 +570,17 @@ export default function CreateSurvey() {
     return 'Crear encuesta';
   };
 
+  /**
+   * Fetch categories.
+   * 
+   * @returns {Promise<void>}
+   */
+  const fetchCategories = async () => {
+    const { data } = await fetchCategoriesAPI();
+
+    setCategories(data);
+  };
+
   useEffect(() => {
     if (
       userInfo?.role.findIndex((p) => p === 'Journey') < 0 &&
@@ -527,7 +590,12 @@ export default function CreateSurvey() {
       navigate('/dashboard');
     }
     setQuestions(questions);
-  }, [questions]);
+  }, [questions]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // component did mount
+  useEffect(() => {
+    fetchCategories();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -563,12 +631,13 @@ export default function CreateSurvey() {
                       />
                     )}
                     size="small"
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                   />
                 </div>
                 <Form
                   type={type}
                   information={information}
-                  handleInformation={handleinformation}
+                  handleInformation={handleInformation}
                   errorMessage={errorMessage}
                   helperText={helperText}
                   handleinformationoptions={handleinformationoptions}
@@ -576,6 +645,9 @@ export default function CreateSurvey() {
                   handleaddstars={handleaddstars}
                   handledeletestars={handledeletestars}
                   starmsg={starmsg}
+                  handleCategoryIdChange={handleCategoryIdChange}
+                  categories={categories}
+                  categoryError={categoryError}
                 />
               </div>
             </div>
@@ -619,6 +691,9 @@ export default function CreateSurvey() {
                   handleDeleteStars={handleeditdeletestars}
                   starMessage={starmsg}
                   questionNumber={Number(target + 1)}
+                  handleCategoryIdChange={handleCategoryIdChange}
+                  categories={categories}
+                  categoryError={categoryError}
                 />
               </div>
             </div>
