@@ -32,7 +32,12 @@ import styles from './DemographicDataForm.module.css';
  * @returns {JSX.Element}
  * @constructor
  */
-const DemographicDataForm = ({ surveyId, onChange, onChangeNewDemographics }) => {
+const DemographicDataForm = ({
+  surveyId,
+  onChange,
+  onChangeNewDemographics,
+  templateDemographicData,
+}) => {
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [demographicData, setDemographicData] = useState(null);
   const [demographicChecked, setDemographicChecked] = useState([]);
@@ -174,7 +179,7 @@ const DemographicDataForm = ({ surveyId, onChange, onChangeNewDemographics }) =>
     } else {
       updatedDemographicChecked = demographicChecked.filter((item) => item !== value);
     }
-
+    
     setDemographicChecked(updatedDemographicChecked);
     // emit change event (callback prop) for new survey or template
     onChange(updatedDemographicChecked);
@@ -242,6 +247,21 @@ const DemographicDataForm = ({ surveyId, onChange, onChangeNewDemographics }) =>
 
     onChangeNewDemographics(newDemographics);
   }, [newDemographics]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // watch for prev demographic data
+  useEffect(() => {
+    if (!templateDemographicData.length) {
+      return;
+    }
+    
+    const updatedDemographicChecked = [
+      ...demographicChecked, 
+      ...templateDemographicData,
+    ];
+
+    setDemographicChecked(updatedDemographicChecked);
+    onChange(updatedDemographicChecked);
+  }, [templateDemographicData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div
@@ -434,12 +454,14 @@ DemographicDataForm.propTypes = {
   surveyId: PropTypes.number,
   onChange: PropTypes.func,
   onChangeNewDemographics: PropTypes.func,
+  templateDemographicData: PropTypes.arrayOf(PropTypes.string),
 };
 
 DemographicDataForm.defaultProps = {
   surveyId: null,
   onChange: () => {},
   onChangeNewDemographics: () => {},
+  templateDemographicData: [],
 };  
  
 export default DemographicDataForm;

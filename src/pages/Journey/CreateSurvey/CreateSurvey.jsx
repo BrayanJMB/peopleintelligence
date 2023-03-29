@@ -24,6 +24,7 @@ import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
 import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../../Layout/Navbar/Navbar';
 import { fetchCategoriesAPI } from '../../../services/getCategories.service';
+import { showTemplateAPI } from '../../../services/templates.service';
 import client from '../../../utils/axiosInstance';
 
 import Cuestionario from './Cuestionario/Cuestionario';
@@ -82,8 +83,10 @@ export default function CreateSurvey() {
   const [checkForm, setCheckForm] = useState(false);
   const [newDemographics, setNewDemographics] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [templateDemographics, setTemplateDemographics] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
   const isTemplate = searchParams.get('isTemplate') === 'true';
+  const templateId = searchParams.get('templateId');
   
   /**
    * Handle introduction change.
@@ -397,6 +400,7 @@ export default function CreateSurvey() {
             <DemographicDataForm
               onChange={handleCheckedDemographic}
               onChangeNewDemographics={handleNewDemographicChange}
+              templateDemographicData={templateDemographics}
             />
             <Divider />
             <Cuestionario
@@ -581,6 +585,65 @@ export default function CreateSurvey() {
     setCategories(data);
   };
 
+  /**
+   * Fetch template and fill form data.
+   * 
+   * @param {number} templateId 
+   */
+  const fetchTemplate = async (templateId) => {
+    const { data: template } = await showTemplateAPI(templateId);
+
+    if (!template) {
+      return;
+    }
+
+    let dataCopy = {
+      ...data,
+    };
+    
+    // fill journey map
+    if (template.template?.journeyMap) {
+      dataCopy = {
+        ...dataCopy,
+        map: template.template.journeyMap,
+      };
+    }
+    // fill name
+    if (template.template?.nameSurvey) {
+      dataCopy = {
+        ...dataCopy,
+        title: template.template.nameSurvey,
+      };
+    }
+    // fill description
+    if (template.template?.descriptionSurvey) {
+      dataCopy = {
+        ...dataCopy,
+        description: template.template.descriptionSurvey,
+      };
+    }
+
+    setData(dataCopy);
+
+    let questionsCopy = [
+      ...questions,
+    ];
+
+    // fill questions
+    template.templatesQuestions.map((question) => questionsCopy.push({
+      id: uuid.v4(),
+      categoryId: question.categoryId,
+      type: question.type, // falta
+      name: question.question.nameQuestion,
+      description: question.description, // falta
+      customOptions: question.options.map((option) => option.templateOptionsName),
+      stars: question.question.score,
+    }));
+
+    setQuestions(questionsCopy);
+    setTemplateDemographics(template.templateDemographics.map((demographic) => demographic.name));
+  };
+
   useEffect(() => {
     if (
       userInfo?.role.findIndex((p) => p === 'Journey') < 0 &&
@@ -591,6 +654,16 @@ export default function CreateSurvey() {
     }
     setQuestions(questions);
   }, [questions]); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+  // watch for changes in template id
+  useEffect(() => {
+    if (!templateId) {
+      return;
+    }
+
+    fetchTemplate(templateId);
+  }, [templateId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // component did mount
   useEffect(() => {
