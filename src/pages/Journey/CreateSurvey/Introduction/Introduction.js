@@ -145,14 +145,40 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
   // component did mount
   useEffect(() => {
     fetchMaps();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    if (previousData) {
-      setMap(previousData.map);
+  // watch for changes in previous data
+  useEffect(() => {
+    if (!previousData) {
+      return;
+    }
+    
+    if (previousData.map) {
+      // if map is not number then find the map by name
+      if (typeof previousData.map !== 'number') {
+        const map = maps.find((item) => item.mapJourney === previousData.map);
+        
+        if (map !== undefined) {
+          setMap(map);
+        }
+      } else {
+        setMap(previousData.map);
+      }
+    }
+    if (previousData.title) {
       setTitle(previousData.title);
+    }
+    if (previousData.description) {
       setDescription(previousData.description);
+    }
+    if (previousData.mailingMessage) {
       setMailingMessage(previousData.mailingMessage);
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    if (previousData.surveyOrMap) {
+      setSurveyOrMap(previousData.surveyOrMap);
+    }
+  }, [previousData]); // eslint-disable-line react-hooks/exhaustive-deps
+
 
   // listen changes in touched form
   useEffect(() => {

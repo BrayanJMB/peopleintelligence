@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
@@ -59,13 +60,14 @@ const Template = () => {
    *
    * @param isTemplate
    */
-  const handleCreateSurvey = (isTemplate = false) => {
+  const handleCreateSurvey = (isTemplate = false, templateId = null) => {
     if (!isAdmin(userInfo)) {
       return;
     }
 
     const querySearch = {
       isTemplate,
+      ...(templateId && { templateId }),
     };
 
     navigateSearch('/journey/create-survey', querySearch);
@@ -183,7 +185,7 @@ const Template = () => {
                 container
                 spacing={2}
               >
-                {templates.slice((page + 1 - 1) * perPage, (page + 1) * perPage).map((val, key) => (
+                {templates.slice((page + 1 - 1) * perPage, (page + 1) * perPage).map((template, key) => (
                   <Grid
                     item 
                     key={key}
@@ -193,14 +195,19 @@ const Template = () => {
                       className={styles.template}
                     >
                       <div className={styles.title}>
-                          {val.nameSurvey}
+                          {template.nameSurvey}
                       </div>
                       <div className={styles.description}>
-                        {val.descriptionSurvey}
+                        {template.descriptionSurvey}
                       </div>
                       <div className={styles.bottom}>
-                        <p>Usa esta plantilla</p>
-                        <KeyboardArrowRightIcon />
+                        <Button
+                          variant="text"
+                          onClick={() => handleCreateSurvey(false, template.id)}
+                        >
+                          <p>Usa esta plantilla</p>
+                          <KeyboardArrowRightIcon />
+                        </Button>
                       </div>
                     </div>
                   </Grid>
