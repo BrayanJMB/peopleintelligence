@@ -170,7 +170,7 @@ export default function OnasTable() {
                 rows={rows}
                 columns={columns}
                 getRowId={(row) => row._id}
-                rowsPerPageOptions={[10, 15, 20]}
+                rowsPerPageOptions={[5, 10, 20]}
                 pageSize={pageSize}
                 onPageSizeChange={(newPageSize) => setpageSize(newPageSize)}
                 getRowSpacing={(params) => ({
