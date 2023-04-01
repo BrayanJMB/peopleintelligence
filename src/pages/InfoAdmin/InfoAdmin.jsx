@@ -356,6 +356,17 @@ export default function InfoAdmin() {
             handleOffice={handleOficina}
           />
         );
+        case 'Otros campos':
+        return (
+          <NewOffice
+            info={oficina}
+            content={data.content}
+            handleAutocomplete={handleAutoCompleteOficina}
+            handleChangeOficina={handleChangeOficina}
+            handleCloseModal={handleCloseModal}
+            handleOffice={handleOficina}
+          />
+        );
       case 'Departamentos':
         return (
           <NewDepartment
@@ -384,6 +395,9 @@ export default function InfoAdmin() {
       case 'Oficinas':
         setOficina({ ...row });
         break;
+        case 'Otros campos':
+          setOficina({ ...row });
+          break;
       case 'Departamentos':
         setDepartement({ ...row });
         break;
@@ -453,6 +467,23 @@ export default function InfoAdmin() {
           })
           .catch((e) => console.log(e));
         break;
+        case 'Otros campos':
+          companyConsume();
+          getOfficesAPI()
+            .then((res) => {
+              let data = [];
+              res.data.forEach((val) => {
+                let id = uuid.v4();
+                if (!data.includes(val)) {
+                  let holder = val;
+                  holder._id = id;
+                  data.push(val);
+                }
+              });
+              dispatch(storeItems({ data, type: type }));
+            })
+            .catch((e) => console.log(e));
+          break;
       case 'Departamentos':
         countryConsume();
         getDepartmentsAPI()

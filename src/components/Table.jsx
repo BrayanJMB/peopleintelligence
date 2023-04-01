@@ -381,6 +381,8 @@ export default function Table(props) {
         return company;
       case 'Oficinas':
         return office;
+      case 'Otros campos':
+        return office;
       case 'Empleados':
         return employee;
       case 'dashboard':
