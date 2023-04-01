@@ -17,12 +17,12 @@ import NewOffice from '../../components/NewOffice/NewOffice';
 import Notification from '../../components/Notification';
 import Table from '../../components/Table';
 import { addItem, storeItems, updateItem } from '../../features/adminSlice';
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
-import Sidebar from '../../Layout/Sidebar/Sidebar';
 import { getCompaniesAPI } from '../../services/getCompanies.service';
 import { getDepartmentsAPI } from '../../services/getDepartments.service';
 import { getEmployeesAPI } from '../../services/getEmployees.service';
-import { getOfficesAPI } from '../../services/getOffices.service';
+import { getOfficesAPI, postOfficeAPI } from '../../services/getOffices.service';
 import { postCompanyAPI } from '../../services/postCompany.service';
 import axios from '../../utils/axiosInstance';
 
@@ -116,6 +116,7 @@ export default function InfoAdmin() {
         let holder = data;
         holder.content.sizeCompany = fetch;
         holder.ids.sizeCompany = id;
+        console.log(holder.content.sizeCompany);
         setData(holder);
       });
     } catch (error) {
@@ -146,7 +147,9 @@ export default function InfoAdmin() {
   const companyConsume = async () => {
     try {
       await axios.get('companias/').then((res) => {
+        
         let fetch = [];
+
         let id = [];
         res.data.forEach((val) => {
           if (!fetch.includes(val.nombreCompania)) {
@@ -157,6 +160,8 @@ export default function InfoAdmin() {
         let holder = data;
         holder.content.company = fetch;
         holder.ids.company = id;
+        console.log('hola' + holder.content.company);
+
         setData(holder);
       });
     } catch (error) {
@@ -244,7 +249,7 @@ export default function InfoAdmin() {
           .catch((err) => console.log(err));
       }
       postCompanyAPI(
-        compania,
+        oficina,
         idpais,
         sectorid,
         sizeid,
@@ -264,14 +269,20 @@ export default function InfoAdmin() {
     });
     handleCloseModal();
   };
+  
   const handleOficina = () => {
     if (edit) {
       dispatch(updateItem({ data: oficina, type: type, id: oficina._id }));
     } else {
-      const id = uuid.v4();
+      const id = '';
       let holder = oficina;
       holder._id = id;
       dispatch(addItem({ data: holder, type: type }));
+
+      postOfficeAPI(
+        oficina,
+        userInfo.Company
+      );
     }
     setOficina({
       sede: '',
@@ -279,6 +290,7 @@ export default function InfoAdmin() {
     });
     handleCloseModal();
   };
+
   const handleDepartment = () => {
     if (edit) {
       dispatch(
@@ -440,6 +452,7 @@ export default function InfoAdmin() {
         companyConsume();
         getOfficesAPI()
           .then((res) => {
+            console.log(res);
             let data = [];
             res.data.forEach((val) => {
               let id = uuid.v4();
@@ -470,7 +483,23 @@ export default function InfoAdmin() {
           })
           .catch((e) => console.log(e));
         break;
+      
       default:
+        countryConsume();
+        getDepartmentsAPI()
+          .then((res) => {
+            let data = [];
+            res.data.forEach((val) => {
+              let id = uuid.v4();
+              if (!data.includes(val)) {
+                let holder = val;
+                holder._id = id;
+                data.push(val);
+              }
+            });
+            dispatch(storeItems({ data, type: type }));
+          })
+          .catch((e) => console.log(e));
         break;
     }
   };
@@ -522,7 +551,7 @@ export default function InfoAdmin() {
   return (
     <Box sx={{ display: 'flex' }}>
       <Navbar />
-      <Sidebar />
+      <IconSidebar />
       <Modal
         open={open || edit}
         onClose={handleCloseModal}
