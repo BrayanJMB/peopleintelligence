@@ -22,7 +22,7 @@ export const updateDocumentTypeAPI = async ({...data}) => axios.put('tipo-docume
  * @param id
  * @returns {Promise<any>}
  */
-export const deleteDocumentTypePI = async (id) => axios.delete(`tipo-documentos/${id}`);
+export const deleteDocumentTypeAPI = async (id) => axios.delete(`tipo-documentos/${id}`);
 
 /**
  * Store Contract Type.

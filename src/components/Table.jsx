@@ -109,7 +109,7 @@ export default function Table(props) {
   const dispatch = useDispatch();
   const [contractTypes, setcontractType] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [documentsTypes, setDocumentos] = useState([]);
+  const [DocumentsTypes, setDocumentos] = useState([]);
   const [EnglishLevels, setNivelIngles] = useState([]);
   const [EducationLevels, setEducationLevels] = useState([]);
   const [disabilitieS, setDiscapacidades] = useState([]);
@@ -117,7 +117,7 @@ export default function Table(props) {
   const [SalaryTypes, setSalario] = useState([]);
   const [Professions, setProfessions] = useState([]);
   const [Genders, setGenero] = useState([]);
-  const [collectiveWorkGrouptoWhichitBelongsss, setGrupoTrabajo] = useState([]);
+  const [collectiveWorkGrouptoWhichitBelongss, setGrupoTrabajo] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [currentEdit, setCurrentEdit] = useState(null);
@@ -182,17 +182,17 @@ export default function Table(props) {
     },
   ]);
  const handleDeleteDocumentType = async (id) => {
-    const documentType = documentsTypes.find((documentType) => documentType.id === id);
+    const DocumentType = DocumentsTypes.find((DocumentType) => DocumentType.id === id);
 
-    if (documentType === undefined) {
+    if (DocumentType === undefined) {
       return;
     }
 
     try {
-      await deleteContractTypeAPI(id);
+      await deleteDocumentTypeAPI(id);
     } catch (e) {}
     enqueueSnackbar(
-      'Tipo contrato eliminado con éxito',
+      'Tipo de documento eliminado con éxito',
       {
         variant: 'success',
       },
@@ -200,22 +200,22 @@ export default function Table(props) {
   };
   const handleEditDocumentType = (id) => {
     // find category
-    const documentType = documentsTypes.find((documentType) => documentType.id === id);
+    const DocumentType = DocumentsTypes.find((DocumentType) => DocumentType.id === id);
 
-    if (documentType === undefined) {
+    if (DocumentType === undefined) {
       return;
     }
 
     setCurrentEdit({
       type: 'documentType',
-      id: documentType.id,
+      id: DocumentType.id,
       title: 'Editar tipo de documento',
       fields: [
         {
           label: 'Tipo documento',
           name: 'name',
           type: 'text',
-          value: documentType.tipoDocumento,
+          value: DocumentType.tipoDocumento,
         },
       ],
     });
@@ -574,12 +574,12 @@ const HiringTypeColumns = [
 ];
 const handleCreateHiringType = () => {
   setCurrentCreate({
-    type: 'hiringType',
+    type: 'HiringType',
     title: 'Crear tipo de contratacion',
     fields: [
       {
         label: 'Tipo de contratacion',
-        name: 'hiringType',
+        name: 'tipoContrato',
         type: 'text',
         isRequired: true,
       },
@@ -632,7 +632,7 @@ const handleEditHiringType = (id) => {
   }
 
   setCurrentEdit({
-    type: 'hiringType',
+    type: 'HiringType',
     id: HiringType.id,
     title: 'Editar tipo de contratacion',
     fields: [
@@ -640,7 +640,7 @@ const handleEditHiringType = (id) => {
         label: 'Tipo contratacion',
         name: 'name',
         type: 'text',
-        value: HiringTypes.tipoContratacion,
+        value: HiringTypes.tipoContrato,
       },
     ],
   });
@@ -889,12 +889,12 @@ const CollectiveWorkGrouptoWhichitBelongsColumns = [
 ];
 const handleCreateCollectiveWorkGrouptoWhichitBelongs = () => {
   setCurrentCreate({
-    type: 'collectiveworkgrouptoWhichitBelongs',
+    type: 'CollectiveWorkGrouptoWhichitBelongs',
     title: 'Crear tipo de grupo colectivo',
     fields: [
       {
         label: 'Grupo de Trabajo Colectivo al que Pertenece',
-        name: 'collectiveworkgrouptoWhichitBelongs',
+        name: 'grupoColectivoDeTrabajo',
         type: 'text',
         isRequired: true,
       },
@@ -922,7 +922,7 @@ const mapCollectiveWorkGrouptoWhichitBelongs= (CollectiveWorkGrouptoWhichitBelon
   },
 ]);
 const handleDeleteCollectiveWorkGrouptoWhichitBelongs = async (id) => {
-  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongsss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === id);
+  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === id);
 
   if (CollectiveWorkGrouptoWhichitBelongs === undefined) {
     return;
@@ -940,14 +940,14 @@ const handleDeleteCollectiveWorkGrouptoWhichitBelongs = async (id) => {
 };
 const handleEditCollectiveWorkGrouptoWhichitBelongs = (id) => {
   // find category
-  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongsss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === id);
+  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === id);
 
   if (CollectiveWorkGrouptoWhichitBelongs === undefined) {
     return;
   }
 
   setCurrentEdit({
-    type: 'collectiveworkgrouptoWhichitBelongs',
+    type: 'CollectiveWorkGrouptoWhichitBelongs',
     id: CollectiveWorkGrouptoWhichitBelongs.id,
     title: 'Editar tipo de contratacion',
     fields: [
@@ -955,7 +955,7 @@ const handleEditCollectiveWorkGrouptoWhichitBelongs = (id) => {
         label: 'Tipo contratacion',
         name: 'name',
         type: 'text',
-        value: collectiveWorkGrouptoWhichitBelongsss.tipoGrupoTrabajo,
+        value: collectiveWorkGrouptoWhichitBelongss.grupoColectivoDeTrabajo,
       },
     ],
   });
@@ -994,11 +994,11 @@ const ProfessionColumns = [
 
 const handleCreateProfession = () => {
   setCurrentCreate({
-    type: 'Profession',
-    title: 'Crear nivel de profesion',
+    type: 'Profesion',
+    title: 'Crear Profesion',
     fields: [
       {
-        label: 'Nivel de educacion',
+        label: 'Profesion',
         name: 'profesion',
         type: 'text',
         isRequired: true,
@@ -1052,7 +1052,7 @@ const handleEditProfession = (id) => {
   }
 
   setCurrentEdit({
-    type: 'profesion',
+    type: 'Profesion',
     id: Profession.id,
     title: 'Editar nivel de educacion',
     fields: [
@@ -1060,7 +1060,7 @@ const handleEditProfession = (id) => {
         label: 'Nivel de profesion',
         name: 'name',
         type: 'text',
-        value: Profession.tipoProfession,
+        value: Profession.profesion,
       },
     ],
   });
@@ -1229,17 +1229,16 @@ const fetchProfession = async () => {
     }
     if (currentEdit.type === 'documentType') {
       // find category
-      const documentType = documentsTypes.find((documentType) => documentType.id === currentEdit.id);
+      const DocumentType = DocumentsTypes.find((DocumentType) => DocumentType.id === currentEdit.id);
 
-      if (documentType === undefined) {
+      if (DocumentType === undefined) {
         return;
       }
 
-      documentType.nameCatogory = formValues.name || documentType.nameCatogory;
-      documentType.descriptionCategory = formValues.description || documentType.descriptionCategory;
+      DocumentType.tipoDocumento = formValues.name || DocumentType.tipoDocumento;
 
       try {
-        await updateContractTypeAPI(documentType);
+        await updateDocumentTypeAPI(DocumentType);
       } catch (e) {}
       enqueueSnackbar(
         'Documento actualizada con éxito',
@@ -1308,7 +1307,7 @@ const fetchProfession = async () => {
         },
       );
     }
-    if (currentEdit.type === 'hiringType') {
+    if (currentEdit.type === 'HiringType') {
       // find category
       const HiringType = HiringTypes.find((HiringType) => HiringType.id === currentEdit.id);
 
@@ -1316,8 +1315,7 @@ const fetchProfession = async () => {
         return;
       }
 
-      HiringType.nameCatogory = formValues.name || HiringType.nameCatogory;
-      HiringType.descriptionCategory = formValues.description || HiringType.descriptionCategory;
+      HiringType.tipoContrato = formValues.name || HiringType.tipoContrato;
 
       try {
         await updateHiringTypeAPI(HiringType);
@@ -1338,8 +1336,7 @@ if (currentEdit.type === 'gender') {
     return;
   }
 
-  Gender.nameCatogory = formValues.name || Gender.nameCatogory;
-  Gender.descriptionCategory = formValues.description || Gender.descriptionCategory;
+  Gender.genero = formValues.name || Gender.genero;
 
   try {
     await updateGenderAPI(Gender);
@@ -1359,8 +1356,7 @@ if (currentEdit.type === 'salaryType') {
     return;
   }
 
-  SalaryType.nameCatogory = formValues.name || SalaryType.nameCatogory;
-  SalaryType.descriptionCategory = formValues.description || SalaryType.descriptionCategory;
+  SalaryType.tipoDeSalario = formValues.name || SalaryType.tipoDeSalario;
 
   try {
     await updateSalaryTypeAPI(SalaryType);
@@ -1372,7 +1368,7 @@ if (currentEdit.type === 'salaryType') {
     },
   );
 }
-if (currentEdit.type === 'profesion') {
+if (currentEdit.type === 'Profesion') {
   // find category
   const Profession = Professions.find((Profession) => Profession.id === currentEdit.id);
 
@@ -1380,8 +1376,7 @@ if (currentEdit.type === 'profesion') {
     return;
   }
 
-  Profession.nameCatogory = formValues.name || Profession.nameCatogory;
-  Profession.descriptionCategory = formValues.description || Profession.descriptionCategory;
+  Profession.profesion = formValues.name || Profession.profesion;
 
   try {
     await updateProfessionAPI(Profession);
@@ -1393,16 +1388,15 @@ if (currentEdit.type === 'profesion') {
     },
   );
 }
-if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
+if (currentEdit.type === 'CollectiveWorkGrouptoWhichitBelongs') {
   // find category
-  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongsss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === currentEdit.id);
+  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === currentEdit.id);
 
   if (CollectiveWorkGrouptoWhichitBelongs === undefined) {
     return;
   }
 
-  CollectiveWorkGrouptoWhichitBelongs.nameCatogory = formValues.name || CollectiveWorkGrouptoWhichitBelongs.nameCatogory;
-  CollectiveWorkGrouptoWhichitBelongs.descriptionCategory = formValues.description || CollectiveWorkGrouptoWhichitBelongs.descriptionCategory;
+  CollectiveWorkGrouptoWhichitBelongs.grupoColectivoDeTrabajo = formValues.name || CollectiveWorkGrouptoWhichitBelongs.grupoColectivoDeTrabajo;
 
   try {
     await updateCollectiveWorkGrouptoWhichitBelongsAPI(CollectiveWorkGrouptoWhichitBelongs);
@@ -1481,7 +1475,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
     if (currentCreate.type === 'disabilities') {
       try {
         await storeDisabilitiesAPI({
-          tipoDisabilities: formValues.tipoDisabilities,
+          discapacIdades: formValues.discapacIdades,
         });
       } catch (e) {}
       enqueueSnackbar(
@@ -1494,7 +1488,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
     if (currentCreate.type === 'HiringType') {
       try {
         await storeHiringTypeAPI({
-          tipoContratacion: formValues.tipoContratacion,
+          tipoContrato: formValues.tipoContrato,
         });
       } catch (e) {}
       enqueueSnackbar(
@@ -1507,7 +1501,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
     if (currentCreate.type === 'Gender') {
       try {
         await storeGenderAPI({
-          tipoGenero: formValues.tipoGenero,
+          genero: formValues.genero,
         });
       } catch (e) {}
       enqueueSnackbar(
@@ -1520,7 +1514,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
     if (currentCreate.type === 'SalaryType') {
       try {
         await storeSalaryTypeAPI({
-          tipoSalario: formValues.tipoSalario,
+          tipoDeSalario: formValues.tipoDeSalario,
         });
       } catch (e) {}
       enqueueSnackbar(
@@ -1531,10 +1525,10 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
       );
     }
 
-    if (currentCreate.type === 'profesion') {
+    if (currentCreate.type === 'Profesion') {
       try {
         await storeProfessionAPI({
-          tipoProfession: formValues.tipoProfession,
+          profesion: formValues.profesion,
         });
       } catch (e) {}
       enqueueSnackbar(
@@ -1547,7 +1541,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
     if (currentCreate.type === 'CollectiveWorkGrouptoWhichitBelongs') {
       try {
         await storeCollectiveWorkGrouptoWhichitBelongsAPI({
-          tipoGrupoTrabajo: formValues.tipoGrupoTrabajo,
+          grupoColectivoDeTrabajo: formValues.grupoColectivoDeTrabajo,
         });
       } catch (e) {}
       enqueueSnackbar(
@@ -2161,7 +2155,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                             <MyTable
                               title={'Tipo Documento'}
                               columns={documentTypeColumns}
-                              rows={mapDocumentType(documentsTypes)}
+                              rows={mapDocumentType(DocumentsTypes)}
                             />
                           </Box>
                         )}
@@ -2436,7 +2430,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                             <MyTable
                               title={'Grupo de Trabajo Colectivo al que Pertenece'}
                               columns={CollectiveWorkGrouptoWhichitBelongsColumns}
-                              rows={mapCollectiveWorkGrouptoWhichitBelongs(collectiveWorkGrouptoWhichitBelongsss)}
+                              rows={mapCollectiveWorkGrouptoWhichitBelongs(collectiveWorkGrouptoWhichitBelongss)}
                             />
                           </Box>
                         )}

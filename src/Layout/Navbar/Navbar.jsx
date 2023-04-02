@@ -86,6 +86,9 @@ export default function Navbar() {
   const handleRoles = () => {
     navigate('/rolescompany');
   };
+  const handleUserAdministrator = () => {
+    navigate('/UserAministrator');
+  };
   const handleLogOut = () => {
     localStorage.removeItem('userInfo');
     window.location.replace(
@@ -281,6 +284,14 @@ export default function Navbar() {
                 onClick={() => handleRoles()}
               >
                 Administrar compañías
+              </MenuItem>
+              <MenuItem
+                disabled={
+                  userInfo?.role.findIndex((p) => p === 'Administrador') < 0
+                }
+                onClick={() => handleUserAdministrator()}
+              >
+                Administrar usuarios
               </MenuItem>
             </Menu>
           </Box>
