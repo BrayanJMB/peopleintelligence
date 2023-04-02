@@ -298,6 +298,15 @@ const JourneySettingsPage = () => {
   };
 
   /**
+   * Go to edit template page.
+   * 
+   * @param {number} id The template id.
+   */
+  const handleEditTemplate = (id) => {
+    navigate(`/journey/update-template/${id}`);
+  };
+
+  /**
    * Handle create category.
    */
   const handleCreateCategory = () => {
@@ -375,15 +384,14 @@ const JourneySettingsPage = () => {
    * @param id
    */
   const handleDeleteCategory = async (id) => {
-    const category = categories.find((category) => category.id === id);
+    const index = categories.findIndex((category) => category.id === id);
 
-    if (category === undefined) {
+    if (index === -1) {
       return;
     }
 
-    try {
-      await deleteCategoryAPI(id);
-    } catch (e) {}
+    await deleteCategoryAPI(id);
+    setCategories((categories) => categories.filter((category) => category.id !== id));
     enqueueSnackbar(
       'Categoría eliminada con éxito',
       {
@@ -399,15 +407,14 @@ const JourneySettingsPage = () => {
    */
   const handleDeleteJourneyMap = async (id) => {
     // find category
-    const map = journeyMap.find((map) => map.id === id);
+    const index = journeyMap.findIndex((map) => map.id === id);
 
-    if (map === undefined) {
+    if (index === -1) {
       return;
     }
 
-    try {
-      await deleteJourneyMapAPI(id);
-    } catch (e) {} 
+    await deleteJourneyMapAPI(id);
+    setJourneyMap((journeyMap) => journeyMap.filter((map) => map.id !== id));
     enqueueSnackbar(
       'Mapa de viaje eliminado con éxito',
       {
@@ -496,9 +503,15 @@ const JourneySettingsPage = () => {
       category.nameCatogory = formValues.name || category.nameCatogory;
       category.descriptionCategory = formValues.description || category.descriptionCategory;
 
-      try {
-        await updateCategoryAPI(category);
-      } catch (e) {}
+      const { data } = await updateCategoryAPI(category);
+
+      setCategories((categories) => categories.map((category) => {
+        if (category.id === data.id) {
+          return data;
+        }
+
+        return category;
+      }));
       enqueueSnackbar(
         'Categoría actualizada con éxito',
         {
@@ -518,9 +531,15 @@ const JourneySettingsPage = () => {
       map.description = formValues.description || map.description;
       map.iconUrl = formValues.iconUrl || map.iconUrl;
 
-      try {
-        await updateJourneyMapAPI(map);
-      } catch (e) {}
+      const { data } = await updateJourneyMapAPI(map);
+
+      setJourneyMap((journeyMap) => journeyMap.map((map) => {
+        if (map.id === data.id) {
+          return data;
+        }
+
+        return map;
+      }));
       enqueueSnackbar(
         'Mapa de viaje actualizado con éxito',
         {
@@ -541,12 +560,12 @@ const JourneySettingsPage = () => {
    */
   const handleSubmittedCreateDialog = async (formValues) => {
     if (currentCreate.type === 'category') {
-      try {
-        await storeCategoryAPI({
-          nameCatogory: formValues.name,
-          descriptionCategory: formValues.description,
-        });
-      } catch (e) {}
+      const { data } = await storeCategoryAPI({
+        nameCatogory: formValues.name,
+        descriptionCategory: formValues.description,
+      });
+
+      setCategories((categories) => [...categories, data]);
       enqueueSnackbar(
         'Categoría creada con éxito',
         {
@@ -555,13 +574,13 @@ const JourneySettingsPage = () => {
       );
     }
     if (currentCreate.type === 'journeyMap') {
-      try {
-        await storeJourneyMapAPI({
-          mapJourney: formValues.name,
-          description: formValues.description,
-          iconUrl: formValues.icon,
-        });
-      } catch (e) {}
+      const { data } = await storeJourneyMapAPI({
+        mapJourney: formValues.name,
+        description: formValues.description,
+        iconUrl: formValues.icon,
+      });
+
+      setJourneyMap((journeyMap) => [...journeyMap, data]);
       enqueueSnackbar(
         'Mapa de viaje creado con éxito',
         {
@@ -658,6 +677,7 @@ const JourneySettingsPage = () => {
       value: '',
       payload: {
         handleDelete: handleDeleteTemplate,
+        handleEdit: handleEditTemplate,
         id: template.id,
       },
     },

@@ -109,7 +109,7 @@ const EditForm = ({
           </div>
   
           {/* likert scale */}
-          {question.type === 'Escala Likert' && (
+          {question.typeId === 2 && (
             <div className={styles.options}>
               {question.options.map((val, key) => (
                 <div
