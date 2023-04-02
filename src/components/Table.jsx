@@ -81,6 +81,12 @@ import {
   updateMaritalStatusAPI,
 } from '../services/getMaritalStatus.service';
 import {
+  deleteOrganizationalLevelAPI,
+  fetchOrganizationalLevelAPI,
+  storeOrganizationalLevelAPI,
+  updateOrganizationalLevelAPI,
+} from '../services/getOrganizationalLevel.service';
+import {
   deleteProfessionAPI,
   fetchProfessionAPI,
   storeProfessionAPI,
@@ -133,6 +139,7 @@ export default function Table(props) {
   const [Genders, setGenero] = useState([]);
   const [collectiveWorkGrouptoWhichitBelongss, setGrupoTrabajo] = useState([]);
   const [sexualPreferences, setPreferenciaSexual] = useState([]);
+  const [OrganizationalLevels, setOrganizationalLevels] = useState([]);
   const [maritalStatuses, setEstadoCivil] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
@@ -1091,6 +1098,112 @@ const fetchSexualPreference = async () => {
   setLoading(false);
 };
 //fin  SexualPreference
+//Nivel de organizacion
+const OrganizationalLevelColumns = [
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Nivel de organizacion',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+];
+
+const handleCreateOrganizationalLevel = () => {
+  setCurrentCreate({
+    type: 'OrganizationalLevel',
+    title: 'Crear nivel de organizacion',
+    fields: [
+      {
+        label: 'Nivel de organizacion',
+        name: 'nivelOrganizacional',
+        type: 'text',
+        isRequired: true,
+      },
+    ],
+  });
+  setOpenCreateDialog(true);
+};
+const mapOrganizationalLevel = (OrganizationalLevel) =>
+  OrganizationalLevel.map((OrganizationalLevel) => [
+    {
+      column: 'id',
+      value: OrganizationalLevel.id.toString(), //swagger
+    },
+    {
+      column: 'name',
+      value: OrganizationalLevel.nivelOrganizacional, //swagger
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteOrganizationalLevel,
+        handleEdit: handleEditOrganizationalLevel,
+        id: OrganizationalLevel.id,
+      },
+    },
+  ]);
+const handleDeleteOrganizationalLevel = async (id) => {
+  const OrganizationalLevel = OrganizationalLevels.find(
+    (OrganizationalLevel) => OrganizationalLevel.id === id
+  );
+
+  if (OrganizationalLevel === undefined) {
+    return;
+  }
+
+  try {
+    await deleteOrganizationalLevelAPI(id);
+  } catch (e) {}
+  enqueueSnackbar('Nivel de organizacion eliminado con exito', {
+    variant: 'success',
+  });
+};
+const handleEditOrganizationalLevel = (id) => {
+  // find category
+  const OrganizationalLevel = OrganizationalLevels.find(
+    (OrganizationalLevel) => OrganizationalLevel.id === id
+  );
+
+  if (OrganizationalLevel === undefined) {
+    return;
+  }
+
+  setCurrentEdit({
+    type: 'OrganizationalLevel',
+    id: OrganizationalLevel.id,
+    title: 'Editar nivel de organizacion',
+    fields: [
+      {
+        label: 'Nivel de organizacion',
+        name: 'name',
+        type: 'text',
+        value: OrganizationalLevel.nivelOrganizacional,
+      },
+    ],
+  });
+  setOpenEditDialog(true);
+};
+
+const fetchOrganizationalLevel = async () => {
+  setLoading(true);
+
+  const { data } = await fetchOrganizationalLevelAPI();
+  console.log(data);
+  setOrganizationalLevels(data);
+  setLoading(false);
+};
+
+//fin orgaizacion
 //MaritalStatus
 const MaritalStatusColumns = [
 
@@ -1661,6 +1774,26 @@ if (currentEdit.type === 'preferenciaSexual') {
     },
   );
 }
+if (currentEdit.type === 'OrganizationalLevel') {
+  // find organizacion
+  const OrganizationalLevel = OrganizationalLevels.find(
+    (OrganizationalLevel) => OrganizationalLevel.id === currentEdit.id
+  );
+
+  if (OrganizationalLevel === undefined) {
+    return;
+  }
+
+  OrganizationalLevel.nivelOrganizacional =
+    formValues.name || OrganizationalLevel.nivelOrganizacional;
+
+  try {
+    await updateOrganizationalLevelAPI(OrganizationalLevel);
+  } catch (e) {}
+  enqueueSnackbar('nivel de organizacion actualizado con exito', {
+    variant: 'success',
+  });
+}
 if (currentEdit.type === 'estados-civiles') {
   // find category
   const MaritalStatus = maritalStatuses.find((MaritalStatus) => MaritalStatus.id === currentEdit.id);
@@ -1836,6 +1969,16 @@ if (currentEdit.type === 'estados-civiles') {
         },
       );
     }
+    if (currentCreate.type === 'OrganizationalLevel') {
+      try {
+        await storeOrganizationalLevelAPI({
+          nivelOrganizacional: formValues.nivelOrganizacional,
+        });
+      } catch (e) {}
+      enqueueSnackbar('organizacion creada con exito', {
+        variant: 'success',
+      });
+    }
     if (currentCreate.type === 'estados-civiles') {
       try {
         await storeMaritalStatusAPI({
@@ -1881,6 +2024,7 @@ if (currentEdit.type === 'estados-civiles') {
       fetchProfession();
       fetchCollectiveWorkGrouptoWhichitBelongs();
       fetchSexualPreference();
+      fetchOrganizationalLevel();
       fetchMaritalStatus();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -2290,6 +2434,7 @@ const tabLabels = [
   'Tipo generos',
   'Tipo salarios',
   'Profesion',
+  'Nivel Organizacional',
   'Grupo de Trabajo Colectivo al que Pertenece',
   'Preferencia sexual',
   'Estado civil',
@@ -2343,8 +2488,8 @@ const tabLabels = [
                       }}>
                      <Box sx={{ display: 'flex', justifyContent: 'between' }} >
                      <IconButton onClick={handleLeftButtonClick}>
-          <ArrowLeftIcon />
-        </IconButton>
+                        <ArrowLeftIcon />
+                        </IconButton>
                       <Tabs sx={{ width: '90%', justifyContent: 'center' }}
                     
                         value={currentTab}
@@ -2353,67 +2498,71 @@ const tabLabels = [
                       >
                         
                         <Tab
-                          label="Tipo Contrato"
-                          id="settings-tab-0"
+                          label='Tipo Contrato'
+                          id='settings-tab-0'
                         />
                         <Tab
-                          label="Tipos de documentos"
-                          id="settings-tab-1"
+                          label='Tipos de documentos'
+                          id='settings-tab-1'
                         />
                         <Tab
-                          label="Nivel de ingles"
-                          id="settings-tab-2"
+                          label='Nivel de ingles'
+                          id='settings-tab-2'
                         />
                         <Tab
-                          label="Nivel de educacion"
-                          id="settings-tab-3"
+                          label='Nivel de educacion'
+                          id='settings-tab-3'
                         />
                         <Tab
-                          label="Discapacidades"
-                          id="settings-tab-4"
+                          label='Discapacidades'
+                          id='settings-tab-4'
                         />
                          <Tab
-                          label="Tipo de contrataciones"
-                          id="settings-tab-5"
+                          label='Tipo de contrataciones'
+                          id='settings-tab-5'
                         />
                        <Tab
-                          label="Tipo generos"
-                          id="settings-tab-6"
+                          label='Tipo generos'
+                          id='settings-tab-6'
                         />
 						
                        <Tab
-                          label="Tipo salarios"
-                          id="settings-tab-7"
+                          label='Tipo salarios'
+                          id='settings-tab-7'
                         />
                         <Tab
-                          label="Profesion"
-                          id="settings-tab-8"
+                          label='Profesion'
+                          id='settings-tab-8'
                         />
                          <Tab
-                          label="Grupo de Trabajo Colectivo al que Pertenece"
-                          id="settings-tab-9"
+                          label='Grupo de Trabajo Colectivo al que Pertenece'
+                          id='settings-tab-9'
                         />
                         <Tab
-                          label="Preferencia sexual"
-                          id="settings-tab-10"
+                          label='Preferencia sexual'
+                          id='settings-tab-10'
                         />
                         <Tab
-                          label="Estado civil"
-                          id="settings-tab-11"
+                          label='Estado civil'
+                          id='settings-tab-11'
+                        />
+                         <Tab
+                          label='Nivel Organizacional'
+                          id='settings-tab-12'
                         />
                         
                         
                         
                       </Tabs>
                       <IconButton onClick={handleRightButtonClick}>
-          <ArrowRightIcon />
-        </IconButton>
+                      <ArrowRightIcon />
+                       </IconButton>
                       </Box>
                       
                       {/* categories */}
                       <div
                         hidden={currentTab !== 0}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 0 && (
                           <Box
@@ -2423,13 +2572,13 @@ const tabLabels = [
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateCategory}
                               >
@@ -2450,7 +2599,7 @@ const tabLabels = [
                       {/* Documento*/}
                       <div
                         hidden={currentTab !== 1}
-                        id="settings-tabpanel-1"
+                        id='settings-tabpanel-1'
                       >
                         {currentTab === 1 && (
                           <Box
@@ -2460,13 +2609,13 @@ const tabLabels = [
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateDocumentType}
                               >
@@ -2484,7 +2633,7 @@ const tabLabels = [
                       {/* Nivel de ingles*/}
                       <div
                         hidden={currentTab !== 2}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 2 && (
                           <Box
@@ -2494,13 +2643,13 @@ const tabLabels = [
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateEnglishLevel}
                               >
@@ -2519,7 +2668,7 @@ const tabLabels = [
                        {/* Nivel de educacion*/}
                        <div
                         hidden={currentTab !== 3}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 3 && (
                           <Box
@@ -2529,13 +2678,13 @@ const tabLabels = [
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateEducationLevel}
                               >
@@ -2553,7 +2702,7 @@ const tabLabels = [
                       {/* Discapacidades*/}
                       <div
                         hidden={currentTab !== 4}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 4 && (
                           <Box
@@ -2563,13 +2712,13 @@ const tabLabels = [
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateDisabilities}
                               >
@@ -2588,7 +2737,7 @@ const tabLabels = [
                       {/* Tipo de contratacion*/}
                       <div
                         hidden={currentTab !== 5}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 5 && (
                           <Box
@@ -2598,13 +2747,13 @@ const tabLabels = [
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateHiringType}
                               >
@@ -2622,7 +2771,7 @@ const tabLabels = [
                       {/* Genero*/}
                       <div
                         hidden={currentTab !== 6}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 6 && (
                           <Box
@@ -2632,13 +2781,13 @@ const tabLabels = [
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateGender}
                               >
@@ -2656,7 +2805,7 @@ const tabLabels = [
                       {/* Tipo salario*/}
                       <div
                         hidden={currentTab !== 7}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 7 && (
                           <Box
@@ -2666,13 +2815,13 @@ const tabLabels = [
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateSalaryType}
                               >
@@ -2691,7 +2840,7 @@ const tabLabels = [
                        {/* Nivel de profesion*/}
                        <div
                         hidden={currentTab !== 8}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 8 && (
                           <Box
@@ -2701,13 +2850,13 @@ const tabLabels = [
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateProfession}
                               >
@@ -2725,7 +2874,7 @@ const tabLabels = [
                       {/* Grupo de Trabajo Colectivo al que Pertenece*/}
                       <div
                         hidden={currentTab !== 9}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 9 && (
                           <Box
@@ -2735,13 +2884,13 @@ const tabLabels = [
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateCollectiveWorkGrouptoWhichitBelongs}
                               >
@@ -2759,7 +2908,7 @@ const tabLabels = [
                       {/* Prferencia sexual*/}
                       <div
                         hidden={currentTab !== 10}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 10 && (
                           <Box
@@ -2769,13 +2918,13 @@ const tabLabels = [
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateSexualPreference}
                               >
@@ -2793,7 +2942,7 @@ const tabLabels = [
                       {/* Prferencia sexual*/}
                       <div
                         hidden={currentTab !== 11}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 11 && (
                           <Box
@@ -2803,13 +2952,13 @@ const tabLabels = [
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateMaritalStatus}
                               >
@@ -2820,6 +2969,37 @@ const tabLabels = [
                               title={'Estado civil'}
                               columns={MaritalStatusColumns}
                               rows={mapMaritalStatus(maritalStatuses)}
+                            />
+                          </Box>
+                        )}
+                      </div>
+                       {/* Nivel de Organizacion*/}
+                       <div hidden={currentTab !== 12} id='settings-tabpanel-0'>
+                        {currentTab === 12 && (
+                          <Box
+                            sx={{
+                              p: 3,
+                            }}
+                          >
+                            <Stack
+                              spacing={2}
+                              direction='row-reverse'
+                              sx={{
+                                mb: 2,
+                              }}
+                            >
+                              <Button
+                                variant='outlined'
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateOrganizationalLevel}
+                              >
+                                Crear Organizacion
+                              </Button>
+                            </Stack>
+                            <MyTable
+                              title={'Organizacion'}
+                              columns={OrganizationalLevelColumns}
+                              rows={mapOrganizationalLevel(OrganizationalLevels)}
                             />
                           </Box>
                         )}
