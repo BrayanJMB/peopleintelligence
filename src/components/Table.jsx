@@ -25,6 +25,12 @@ import Navbar from '../Layout/Navbar/Navbar';
 import { deleteDashboardAPI } from '../services/deleteDashboard.service';
 import { deleteReportAPI } from '../services/deleteReport.service';
 import {
+  deleteCollectiveWorkGrouptoWhichitBelongsAPI,
+  fetchCollectiveWorkGrouptoWhichitBelongsAPI,
+  storeCollectiveWorkGrouptoWhichitBelongsAPI,
+  updateCollectiveWorkGrouptoWhichitBelongsAPI,
+} from '../services/getCollectiveWorkGrouptoWhichitBelongs.service';
+import {
   deleteContractTypeAPI,
   fetchContractTypeAPI,
   storeContractTypeAPI,
@@ -111,6 +117,7 @@ export default function Table(props) {
   const [SalaryTypes, setSalario] = useState([]);
   const [Professions, setProfessions] = useState([]);
   const [Genders, setGenero] = useState([]);
+  const [collectiveWorkGrouptoWhichitBelongsss, setGrupoTrabajo] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [currentEdit, setCurrentEdit] = useState(null);
@@ -664,7 +671,7 @@ const fetchHiringType = async () => {
 const handleCreateGender = () => {
   setCurrentCreate({
     type: 'gender',
-    title: 'Crear tipo de contratacion',
+    title: 'Crear genero',
     fields: [
       {
         label: 'Genero',
@@ -768,7 +775,7 @@ const SalaryTypeColumns = [
 const handleCreateSalaryType = () => {
   setCurrentCreate({
     type: 'salaryType',
-    title: 'Crear tipo de contratacion',
+    title: 'Crear tipo de salario',
     fields: [
       {
         label: 'Tipo salario',
@@ -849,6 +856,110 @@ const fetchSalaryType = async () => {
   setLoading(false);
 };
 //fin  SalaryType
+//CollectiveWorkGrouptoWhichitBelongs
+const CollectiveWorkGrouptoWhichitBelongsColumns = [
+
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Grupo de Trabajo Colectivo al que Pertenece',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+
+];
+const handleCreateCollectiveWorkGrouptoWhichitBelongs = () => {
+  setCurrentCreate({
+    type: 'collectiveworkgrouptoWhichitBelongs',
+    title: 'Crear tipo de grupo colectivo',
+    fields: [
+      {
+        label: 'Grupo de Trabajo Colectivo al que Pertenece',
+        name: 'collectiveworkgrouptoWhichitBelongs',
+        type: 'text',
+        isRequired: true,
+      },
+    ],
+  });
+  setOpenCreateDialog(true);
+};
+const mapCollectiveWorkGrouptoWhichitBelongs= (CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.map((CollectiveWorkGrouptoWhichitBelongs) => [
+  {
+    column: 'id',
+    value: CollectiveWorkGrouptoWhichitBelongs.id.toString(), //swagger
+  },
+  {
+    column: 'name',
+    value: CollectiveWorkGrouptoWhichitBelongs.grupoColectivoDeTrabajo, //swagger
+  },
+  {
+    column: 'options',
+    value: '',
+    payload: {
+      handleDelete: handleDeleteCollectiveWorkGrouptoWhichitBelongs,
+      handleEdit: handleEditCollectiveWorkGrouptoWhichitBelongs,
+      id: CollectiveWorkGrouptoWhichitBelongs.id,
+    },
+  },
+]);
+const handleDeleteCollectiveWorkGrouptoWhichitBelongs = async (id) => {
+  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongsss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === id);
+
+  if (CollectiveWorkGrouptoWhichitBelongs === undefined) {
+    return;
+  }
+
+  try {
+    await deleteCollectiveWorkGrouptoWhichitBelongsAPI(id);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Grupo de Trabajo Colectivo al que Pertenece eliminado con exito',
+    {
+      variant: 'success',
+    },
+  );
+};
+const handleEditCollectiveWorkGrouptoWhichitBelongs = (id) => {
+  // find category
+  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongsss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === id);
+
+  if (CollectiveWorkGrouptoWhichitBelongs === undefined) {
+    return;
+  }
+
+  setCurrentEdit({
+    type: 'collectiveworkgrouptoWhichitBelongs',
+    id: CollectiveWorkGrouptoWhichitBelongs.id,
+    title: 'Editar tipo de contratacion',
+    fields: [
+      {
+        label: 'Tipo contratacion',
+        name: 'name',
+        type: 'text',
+        value: collectiveWorkGrouptoWhichitBelongsss.tipoGrupoTrabajo,
+      },
+    ],
+  });
+  setOpenEditDialog(true);
+};
+
+const fetchCollectiveWorkGrouptoWhichitBelongs = async () => {
+  setLoading(true);
+
+  const { data } = await fetchCollectiveWorkGrouptoWhichitBelongsAPI();
+  console.log(data);
+  setGrupoTrabajo(data);
+  setLoading(false);
+};
+//fin  CollectiveWorkGrouptoWhichitBelongs
 //Nivel de profession
 const ProfessionColumns = [
 
@@ -1276,6 +1387,27 @@ if (currentEdit.type === 'profesion') {
     },
   );
 }
+if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
+  // find category
+  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongsss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === currentEdit.id);
+
+  if (CollectiveWorkGrouptoWhichitBelongs === undefined) {
+    return;
+  }
+
+  CollectiveWorkGrouptoWhichitBelongs.nameCatogory = formValues.name || CollectiveWorkGrouptoWhichitBelongs.nameCatogory;
+  CollectiveWorkGrouptoWhichitBelongs.descriptionCategory = formValues.description || CollectiveWorkGrouptoWhichitBelongs.descriptionCategory;
+
+  try {
+    await updateCollectiveWorkGrouptoWhichitBelongsAPI(CollectiveWorkGrouptoWhichitBelongs);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Grupo de Trabajo Colectivo al que Pertenece actualizado con exito',
+    {
+      variant: 'success',
+    },
+  );
+}
 
     setCurrentEdit(null);
     setOpenEditDialog(false);
@@ -1406,6 +1538,19 @@ if (currentEdit.type === 'profesion') {
         },
       );
     }
+    if (currentCreate.type === 'CollectiveWorkGrouptoWhichitBelongs') {
+      try {
+        await storeCollectiveWorkGrouptoWhichitBelongsAPI({
+          tipoGrupoTrabajo: formValues.tipoGrupoTrabajo,
+        });
+      } catch (e) {}
+      enqueueSnackbar(
+        'Grupo de Trabajo Colectivo al que Pertenece creado con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
     setCurrentCreate(null);
     setOpenCreateDialog(false);
   };
@@ -1436,6 +1581,7 @@ if (currentEdit.type === 'profesion') {
       fetchGender();
       fetchSalaryType();
       fetchProfession();
+      fetchCollectiveWorkGrouptoWhichitBelongs();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDeleteItem = async (id, trueid) => {
@@ -1924,8 +2070,8 @@ if (currentEdit.type === 'profesion') {
                           id="settings-tab-8"
                         />
                          <Tab
-                          label="Mapas"
-                          id="settings-tab-1"
+                          label="Grupo de Trabajo Colectivo al que Pertenece"
+                          id="settings-tab-9"
                         />
                         <Tab
                           label="Plantillas"
@@ -2104,7 +2250,7 @@ if (currentEdit.type === 'profesion') {
                               <Button
                                 variant="outlined"
                                 startIcon={<AddIcon />}
-                                onClick={handleCreateEnglishLevel}
+                                onClick={handleCreateDisabilities}
                               >
                                 Crear discapacidades
                               </Button>
@@ -2251,6 +2397,40 @@ if (currentEdit.type === 'profesion') {
                               title={'Profesion'}
                               columns={ProfessionColumns}
                               rows={mapProfession(Professions)}
+                            />
+                          </Box>
+                        )}
+                      </div>
+                      {/* Grupo de Trabajo Colectivo al que Pertenece*/}
+                      <div
+                        hidden={currentTab !== 9}
+                        id="settings-tabpanel-0"
+                      >
+                        {currentTab === 9 && (
+                          <Box
+                            sx={{
+                              p: 3,
+                          }}
+                          >
+                            <Stack
+                              spacing={2}
+                              direction="row-reverse"
+                              sx={{
+                                mb: 2,
+                              }}
+                            >
+                              <Button
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateCollectiveWorkGrouptoWhichitBelongs}
+                              >
+                                Crear Grupo de Trabajo Colectivo al que Pertenece
+                              </Button>
+                            </Stack>
+                            <MyTable
+                              title={'Grupo de Trabajo Colectivo al que Pertenece'}
+                              columns={CollectiveWorkGrouptoWhichitBelongsColumns}
+                              rows={mapCollectiveWorkGrouptoWhichitBelongs(collectiveWorkGrouptoWhichitBelongsss)}
                             />
                           </Box>
                         )}
