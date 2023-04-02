@@ -66,6 +66,12 @@ import {
   storeHiringTypeAPI,
   updateHiringTypeAPI,
 } from '../services/getHiringType.service';
+import {
+  deleteSalaryTypeAPI,
+  fetchSalaryTypeAPI,
+  storeSalaryTypeAPI,
+  updateSalaryTypeAPI,
+} from '../services/getSalaryType.service';
 import axios from '../utils/axiosInstance';
 
 import MyCard from './MyCard/MyCard';
@@ -96,6 +102,7 @@ export default function Table(props) {
   const [EducationLevels, setEducationLevels] = useState([]);
   const [disabilitieS, setDiscapacidades] = useState([]);
   const [HiringTypes, setTipoContratacion] = useState([]);
+  const [SalaryTypes, setSalario] = useState([]);
   const [Genders, setGenero] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
@@ -731,6 +738,110 @@ const fetchGender = async () => {
   setLoading(false);
 };
 //fin  Gender
+//SalaryType
+const SalaryTypeColumns = [
+
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Tipo salario',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+
+];
+const handleCreateSalaryType = () => {
+  setCurrentCreate({
+    type: 'salaryType',
+    title: 'Crear tipo de contratacion',
+    fields: [
+      {
+        label: 'Tipo salario',
+        name: 'salaryType',
+        type: 'text',
+        isRequired: true,
+      },
+    ],
+  });
+  setOpenCreateDialog(true);
+};
+const mapSalaryType= (SalaryType) => SalaryType.map((SalaryType) => [
+  {
+    column: 'id',
+    value: SalaryType.id.toString(), //swagger
+  },
+  {
+    column: 'name',
+    value: SalaryType.tipoDeSalario, //swagger
+  },
+  {
+    column: 'options',
+    value: '',
+    payload: {
+      handleDelete: handleDeleteSalaryType,
+      handleEdit: handleEditSalaryType,
+      id: SalaryType.id,
+    },
+  },
+]);
+const handleDeleteSalaryType = async (id) => {
+  const SalaryType = SalaryTypes.find((SalaryType) => SalaryType.id === id);
+
+  if (SalaryType === undefined) {
+    return;
+  }
+
+  try {
+    await deleteSalaryTypeAPI(id);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Tipo salario eliminado con exito',
+    {
+      variant: 'success',
+    },
+  );
+};
+const handleEditSalaryType = (id) => {
+  // find category
+  const SalaryType = SalaryTypes.find((SalaryType) => SalaryType.id === id);
+
+  if (SalaryType === undefined) {
+    return;
+  }
+
+  setCurrentEdit({
+    type: 'salaryType',
+    id: SalaryType.id,
+    title: 'Editar tipo de contratacion',
+    fields: [
+      {
+        label: 'Tipo contratacion',
+        name: 'name',
+        type: 'text',
+        value: SalaryTypes.tipoSalario,
+      },
+    ],
+  });
+  setOpenEditDialog(true);
+};
+
+const fetchSalaryType = async () => {
+  setLoading(true);
+
+  const { data } = await fetchSalaryTypeAPI();
+  console.log(data);
+  setSalario(data);
+  setLoading(false);
+};
+//fin  SalaryType
     /**
    * Handle tab change.
    *
@@ -1012,6 +1123,27 @@ if (currentEdit.type === 'gender') {
     },
   );
 }
+if (currentEdit.type === 'salaryType') {
+  // find category
+  const SalaryType = SalaryTypes.find((SalaryType) => SalaryType.id === currentEdit.id);
+
+  if (SalaryType === undefined) {
+    return;
+  }
+
+  SalaryType.nameCatogory = formValues.name || SalaryType.nameCatogory;
+  SalaryType.descriptionCategory = formValues.description || SalaryType.descriptionCategory;
+
+  try {
+    await updateSalaryTypeAPI(SalaryType);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Tipo salario actualizado con exito',
+    {
+      variant: 'success',
+    },
+  );
+}
 
     setCurrentEdit(null);
     setOpenEditDialog(false);
@@ -1115,6 +1247,19 @@ if (currentEdit.type === 'gender') {
         },
       );
     }
+    if (currentCreate.type === 'SalaryType') {
+      try {
+        await storeSalaryTypeAPI({
+          tipoSalario: formValues.tipoSalario,
+        });
+      } catch (e) {}
+      enqueueSnackbar(
+        'Tipo salario creado con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
     setCurrentCreate(null);
     setOpenCreateDialog(false);
   };
@@ -1143,6 +1288,7 @@ if (currentEdit.type === 'gender') {
       fetchDisabilities();
       fetchHiringType();
       fetchGender();
+      fetchSalaryType();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDeleteItem = async (id, trueid) => {
@@ -1622,9 +1768,9 @@ if (currentEdit.type === 'gender') {
                           id="settings-tab-6"
                         />
 						
-                        <Tab
-                          label="Encuestas de mapas"
-                          id="settings-tab-3"
+                       <Tab
+                          label="Tipo salarios"
+                          id="settings-tab-7"
                         />
                         <Tab
                           label="Hola mundo"
@@ -1792,10 +1938,10 @@ if (currentEdit.type === 'gender') {
                       </div>
                       {/* Discapacidades*/}
                       <div
-                        hidden={currentTab !== 3}
+                        hidden={currentTab !== 4}
                         id="settings-tabpanel-0"
                       >
-                        {currentTab === 3 && (
+                        {currentTab === 4 && (
                           <Box
                             sx={{
                               p: 3,
@@ -1827,10 +1973,10 @@ if (currentEdit.type === 'gender') {
 
                       {/* Tipo de contratacion*/}
                       <div
-                        hidden={currentTab !== 4}
+                        hidden={currentTab !== 5}
                         id="settings-tabpanel-0"
                       >
-                        {currentTab === 4 && (
+                        {currentTab === 5 && (
                           <Box
                             sx={{
                               p: 3,
@@ -1861,10 +2007,10 @@ if (currentEdit.type === 'gender') {
                       </div>
                       {/* Genero*/}
                       <div
-                        hidden={currentTab !== 5}
+                        hidden={currentTab !== 6}
                         id="settings-tabpanel-0"
                       >
-                        {currentTab === 5 && (
+                        {currentTab === 6 && (
                           <Box
                             sx={{
                               p: 3,
@@ -1889,6 +2035,40 @@ if (currentEdit.type === 'gender') {
                               title={'Genero'}
                               columns={GenderColumns}
                               rows={mapGender(Genders)}
+                            />
+                          </Box>
+                        )}
+                      </div>
+                      {/* Tipo salario*/}
+                      <div
+                        hidden={currentTab !== 7}
+                        id="settings-tabpanel-0"
+                      >
+                        {currentTab === 7 && (
+                          <Box
+                            sx={{
+                              p: 3,
+                          }}
+                          >
+                            <Stack
+                              spacing={2}
+                              direction="row-reverse"
+                              sx={{
+                                mb: 2,
+                              }}
+                            >
+                              <Button
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateSalaryType}
+                              >
+                                Crear Tipo salario
+                              </Button>
+                            </Stack>
+                            <MyTable
+                              title={'Tipo salario'}
+                              columns={SalaryTypeColumns}
+                              rows={mapSalaryType(SalaryTypes)}
                             />
                           </Box>
                         )}
