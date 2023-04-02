@@ -67,6 +67,12 @@ import {
   updateHiringTypeAPI,
 } from '../services/getHiringType.service';
 import {
+  deleteProfessionAPI,
+  fetchProfessionAPI,
+  storeProfessionAPI,
+  updateProfessionAPI,
+} from '../services/getProfession.service';
+import {
   deleteSalaryTypeAPI,
   fetchSalaryTypeAPI,
   storeSalaryTypeAPI,
@@ -103,6 +109,7 @@ export default function Table(props) {
   const [disabilitieS, setDiscapacidades] = useState([]);
   const [HiringTypes, setTipoContratacion] = useState([]);
   const [SalaryTypes, setSalario] = useState([]);
+  const [Professions, setProfessions] = useState([]);
   const [Genders, setGenero] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
@@ -331,7 +338,7 @@ const EducationLevelColumns = [
   },
   {
     id: 'name',
-    label: 'Nivel de educaion',
+    label: 'Nivel de educacion',
     numeric: false,
   },
   {
@@ -842,6 +849,110 @@ const fetchSalaryType = async () => {
   setLoading(false);
 };
 //fin  SalaryType
+//Nivel de profession
+const ProfessionColumns = [
+
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Profesion',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+
+];
+
+const handleCreateProfession = () => {
+  setCurrentCreate({
+    type: 'Profession',
+    title: 'Crear nivel de profesion',
+    fields: [
+      {
+        label: 'Nivel de educacion',
+        name: 'profesion',
+        type: 'text',
+        isRequired: true,
+      },
+    ],
+  });
+  setOpenCreateDialog(true);
+};
+const mapProfession = (Profession) => Profession.map((Profession) => [
+  {
+    column: 'id',
+    value: Profession.id.toString(), //swagger
+  },
+  {
+    column: 'name',
+    value: Profession.profesion, //swagger
+  },
+  {
+    column: 'options',
+    value: '',
+    payload: {
+      handleDelete: handleDeleteProfession,
+      handleEdit: handleEditProfession,
+      id: Profession.id,
+    },
+  },
+]);
+const handleDeleteProfession = async (id) => {
+  const Profession = Professions.find((Profession) => Profession.id === id);
+
+  if (Profession === undefined) {
+    return;
+  }
+
+  try {
+    await deleteProfessionAPI(id);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Nivel de educacion eliminado con exito',
+    {
+      variant: 'success',
+    },
+  );
+};
+const handleEditProfession = (id) => {
+  // find category
+  const Profession = Professions.find((Profession) => Profession.id === id);
+
+  if (Profession === undefined) {
+    return;
+  }
+
+  setCurrentEdit({
+    type: 'profesion',
+    id: Profession.id,
+    title: 'Editar nivel de educacion',
+    fields: [
+      {
+        label: 'Nivel de profesion',
+        name: 'name',
+        type: 'text',
+        value: Profession.tipoProfession,
+      },
+    ],
+  });
+  setOpenEditDialog(true);
+};
+
+const fetchProfession = async () => {
+  setLoading(true);
+
+  const { data } = await fetchProfessionAPI();
+  console.log(data);
+  setProfessions(data);
+  setLoading(false);
+};
     /**
    * Handle tab change.
    *
@@ -1144,6 +1255,27 @@ if (currentEdit.type === 'salaryType') {
     },
   );
 }
+if (currentEdit.type === 'profesion') {
+  // find category
+  const Profession = Professions.find((Profession) => Profession.id === currentEdit.id);
+
+  if (Profession === undefined) {
+    return;
+  }
+
+  Profession.nameCatogory = formValues.name || Profession.nameCatogory;
+  Profession.descriptionCategory = formValues.description || Profession.descriptionCategory;
+
+  try {
+    await updateProfessionAPI(Profession);
+  } catch (e) {}
+  enqueueSnackbar(
+    'nivel de educacion actualizado con exito',
+    {
+      variant: 'success',
+    },
+  );
+}
 
     setCurrentEdit(null);
     setOpenEditDialog(false);
@@ -1260,6 +1392,20 @@ if (currentEdit.type === 'salaryType') {
         },
       );
     }
+
+    if (currentCreate.type === 'profesion') {
+      try {
+        await storeProfessionAPI({
+          tipoProfession: formValues.tipoProfession,
+        });
+      } catch (e) {}
+      enqueueSnackbar(
+        'profesion creada con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
     setCurrentCreate(null);
     setOpenCreateDialog(false);
   };
@@ -1289,6 +1435,7 @@ if (currentEdit.type === 'salaryType') {
       fetchHiringType();
       fetchGender();
       fetchSalaryType();
+      fetchProfession();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDeleteItem = async (id, trueid) => {
@@ -1773,8 +1920,8 @@ if (currentEdit.type === 'salaryType') {
                           id="settings-tab-7"
                         />
                         <Tab
-                          label="Hola mundo"
-                          id="settings-tab-3"
+                          label="Profesion"
+                          id="settings-tab-8"
                         />
                          <Tab
                           label="Mapas"
@@ -2069,6 +2216,41 @@ if (currentEdit.type === 'salaryType') {
                               title={'Tipo salario'}
                               columns={SalaryTypeColumns}
                               rows={mapSalaryType(SalaryTypes)}
+                            />
+                          </Box>
+                        )}
+                      </div>
+
+                       {/* Nivel de profesion*/}
+                       <div
+                        hidden={currentTab !== 8}
+                        id="settings-tabpanel-0"
+                      >
+                        {currentTab === 8 && (
+                          <Box
+                            sx={{
+                              p: 3,
+                          }}
+                          >
+                            <Stack
+                              spacing={2}
+                              direction="row-reverse"
+                              sx={{
+                                mb: 2,
+                              }}
+                            >
+                              <Button
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateProfession}
+                              >
+                                Crear nivel de profesion
+                              </Button>
+                            </Stack>
+                            <MyTable
+                              title={'Profesion'}
+                              columns={ProfessionColumns}
+                              rows={mapProfession(Professions)}
                             />
                           </Box>
                         )}
