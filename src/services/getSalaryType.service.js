@@ -5,7 +5,7 @@ import axios from '../utils/axiosInstance';
  *
  * @returns {Promise<any>}
  */
-export const fetchGenderAPI = async () => axios.get('generos/');
+export const fetchSalaryTypeAPI = async () => axios.get('TipoSalario/');
 
 /**
  * Update Contract Type.
@@ -14,7 +14,7 @@ export const fetchGenderAPI = async () => axios.get('generos/');
  * @param data
  * @returns {Promise<any>}
  */
-export const updateGenderAPI = async ({...data}) => axios.put('generos/', data);
+export const updateSalaryTypeAPI = async ({...data}) => axios.put('TipoSalario/', data);
 
 /**
  * Delete Contract Type.
@@ -22,7 +22,7 @@ export const updateGenderAPI = async ({...data}) => axios.put('generos/', data);
  * @param id
  * @returns {Promise<any>}
  */
-export const deleteGenderAPI = async (id) => axios.delete(`generos/${id}`);
+export const deleteSalaryTypeAPI = async (id) => axios.delete(`TipoSalario/${id}`);
 
 /**
  * Store Contract Type.
@@ -30,4 +30,4 @@ export const deleteGenderAPI = async (id) => axios.delete(`generos/${id}`);
  * @param data
  * @returns {Promise<any>}
  */
-export const storeGenderAPI = async (data) => axios.post('generos/', data);
+export const storeSalaryTypeAPI = async (data) => axios.post('TipoSalario/', data);
