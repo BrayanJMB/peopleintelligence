@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
@@ -1307,6 +1309,15 @@ const fetchProfession = async () => {
     const handleTabChange = (event, newValue) => {
       setCurrentTab(newValue);
     };
+    const handleLeftButtonClick = () => {
+      const newTab = currentTab === 0 ? tabLabels.length - 1 : currentTab - 1;
+      setCurrentTab(newTab);
+    };
+  
+    const handleRightButtonClick = () => {
+      const newTab = currentTab === tabLabels.length - 1 ? 0 : currentTab + 1;
+      setCurrentTab(newTab);
+    };
 //fin Profesiones
 
     /**
@@ -2273,6 +2284,22 @@ if (currentEdit.type === 'estados-civiles') {
         return null;
     }
   };
+  
+  
+const tabLabels = [
+  'Tipo Contrato',
+  'Tipos de documentos',
+  'Nivel de ingles',
+  'Nivel de educacion',
+  'Discapacidades',
+  'Tipo de contrataciones',
+  'Tipo generos',
+  'Tipo salarios',
+  'Profesion',
+  'Grupo de Trabajo Colectivo al que Pertenece',
+  'Preferencia sexual',
+  'Estado civil',
+];
 
   const columns = useMemo(() => renderColumn(), [props.type]);
 
@@ -2314,19 +2341,23 @@ if (currentEdit.type === 'estados-civiles') {
               {loading === false && (
                 <MyCard sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <Box sx={{ width: '100%' }}>
+                 
                     <Box
                       sx={{
                         borderBottom: 1,
                         borderColor: 'divider',
                       }}>
-                        
-                      <Tabs
-                        
+                     <Box sx={{ display: 'flex', justifyContent: 'between' }} >
+                     <IconButton onClick={handleLeftButtonClick}>
+          <ArrowLeftIcon />
+        </IconButton>
+                      <Tabs sx={{ width: '90%', justifyContent: 'center' }}
+                    
                         value={currentTab}
                         onChange={(event, newValue) => handleTabChange(event, newValue)}
                         
                       >
-                       
+                        
                         <Tab
                           label="Tipo Contrato"
                           id="settings-tab-0"
@@ -2376,13 +2407,14 @@ if (currentEdit.type === 'estados-civiles') {
                           label="Estado civil"
                           id="settings-tab-11"
                         />
-                        <Tab
-                          label="Hola mundo"
-                          id="settings-tab-3"
-                        />
+                        
                         
                         
                       </Tabs>
+                      <IconButton onClick={handleRightButtonClick}>
+          <ArrowRightIcon />
+        </IconButton>
+                      </Box>
                       
                       {/* categories */}
                       <div
