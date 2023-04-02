@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -28,6 +30,12 @@ import {
   storeContractTypeAPI,
   updateContractTypeAPI,
 } from '../services/getContractType.service';
+import {
+  deleteDocumentTypeAPI,
+  fetchDocumentTypeAPI,
+  storeDocumentTypeAPI,
+  updateDocumentTypeAPI,
+} from '../services/getDocumentType.service';
 import axios from '../utils/axiosInstance';
 
 import MyCard from './MyCard/MyCard';
@@ -53,6 +61,7 @@ export default function Table(props) {
   const dispatch = useDispatch();
   const [contractTypes, setcontractType] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [documentsTypes, setDocumentos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [currentEdit, setCurrentEdit] = useState(null);
@@ -62,14 +71,123 @@ export default function Table(props) {
   const [pageSize, setpageSize] = useState(5);
   const [rows, setRows] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
+ //Tipo de documento
+ const documentTypeColumns = [
 
+    {
+      id: 'id',
+      label: 'ID',
+      numeric: true,
+    },
+    {
+      id: 'name',
+      label: 'Tipo Documento',
+      numeric: false,
+    },
+    {
+      id: 'options',
+      label: 'Opciones',
+      numeric: false,
+    },
+
+  ];
+  const handleCreateDocumentType = () => {
+    setCurrentCreate({
+      type: 'documentType',
+      title: 'Crear tipo documento',
+      fields: [
+        {
+          label: 'Tipo documento',
+          name: 'tipoDocumento',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
+  const mapDocumentType = (documentType) => documentType.map((documentType) => [
+    {
+      column: 'id',
+      value: documentType.documentTypeId.toString(),
+    },
+    {
+      column: 'name',
+      value: documentType.tipoDocumento,
+    },
+    {
+      column: 'options',
+      value: '',
+      /*payload: {
+        handleDelete: handleDeleteDocumentType,
+        handleEdit: handleEditDocumentType,
+        id: documentType.id,
+      },*/
+    },
+  ]);
+ /* const handleDeleteDocumentType = async (id) => {
+    const documentType = documentsTypes.find((documentType) => documentType.id === id);
+
+    if (documentType === undefined) {
+      return;
+    }
+
+    try {
+      await deleteContractTypeAPI(id);
+    } catch (e) {}
+    enqueueSnackbar(
+      'Tipo contrato eliminado con éxito',
+      {
+        variant: 'success',
+      },
+    );
+  };
+  const handleEditDocumentType = (id) => {
+    // find category
+    const documentType = documentsTypes.find((documentType) => documentType.id === id);
+
+    if (documentType === undefined) {
+      return;
+    }
+
+    setCurrentEdit({
+      type: 'documentType',
+      id: documentType.id,
+      title: 'Editar tipo de documento',
+      fields: [
+        {
+          label: 'Tipo documento',
+          name: 'name',
+          type: 'text',
+          value: documentType.tipoDocumento,
+        },
+      ],
+    });
+    setOpenEditDialog(true);
+  };
+*/
+  const fetchDocumentType = async () => {
+    setLoading(true);
+
+    const { data } = await fetchDocumentTypeAPI();
+    console.log(data);
+    setDocumentos(data);
+    setLoading(false);
+  };
     /**
    * Handle tab change.
    *
    * @param event
    * @param newValue
    */
+
     const handleTabChange = (event, newValue) => {
+      setCurrentTab(newValue);
+      if (newValue < 1) {
+        newValue = 15; // Regresar al último Tab
+      } else if (newValue >= 15) {
+        newValue = 1; // Regresar al primer Tab
+      }
       setCurrentTab(newValue);
     };
 
@@ -93,28 +211,7 @@ export default function Table(props) {
   };
 
   // category columns
-const categoryColumns = [
-  {
-    id: 'id',
-    label: 'ID',
-    numeric: true,
-  },
-  {
-    id: 'name',
-    label: 'Nombre',
-    numeric: false,
-  },
-  {
-    id: 'description',
-    label: 'Descripción',
-    numeric: false,
-  },
-  {
-    id: 'options',
-    label: 'Opciones',
-    numeric: false,
-  },
-];
+
 
   /**
    * Map categories response to use in table.
@@ -237,6 +334,27 @@ const categoryColumns = [
         },
       );
     }
+    if (currentEdit.type === 'documentType') {
+      // find category
+      const documentType = documentsTypes.find((documentType) => documentType.id === currentEdit.id);
+
+      if (documentType === undefined) {
+        return;
+      }
+
+      documentType.nameCatogory = formValues.name || documentType.nameCatogory;
+      documentType.descriptionCategory = formValues.description || documentType.descriptionCategory;
+
+      try {
+        await updateContractTypeAPI(documentType);
+      } catch (e) {}
+      enqueueSnackbar(
+        'Categoría actualizada con éxito',
+        {
+          variant: 'success',
+        },
+      );
+    }
 
     setCurrentEdit(null);
     setOpenEditDialog(false);
@@ -257,6 +375,19 @@ const categoryColumns = [
       } catch (e) {}
       enqueueSnackbar(
         'Tipo Contrato creado con éxito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+    if (currentCreate.type === 'documentType') {
+      try {
+        await storeContractTypeAPI({
+          tipoDocumento: formValues.tipoDocumento,
+        });
+      } catch (e) {}
+      enqueueSnackbar(
+        'Tipo de documento creado con éxito',
         {
           variant: 'success',
         },
@@ -284,6 +415,7 @@ const categoryColumns = [
     // component did mount
     useEffect(() => { 
       fetchContractType();
+      fetchDocumentType();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDeleteItem = async (id, trueid) => {
@@ -710,7 +842,7 @@ const categoryColumns = [
       );
   }else{
     return (
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex' }} >
         <div style={{ backgroundColor: 'white' }}>
           <div className={styles.JourneySettingsPage}>
             <div className={styles.JourneySettingsPage__content}>  
@@ -719,22 +851,42 @@ const categoryColumns = [
               )}
   
               {loading === false && (
-                <MyCard>
+                <MyCard sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <Box sx={{ width: '100%' }}>
                     <Box
                       sx={{
                         borderBottom: 1,
                         borderColor: 'divider',
                       }}>
+                        
                       <Tabs
+                        
                         value={currentTab}
                         onChange={(event, newValue) => handleTabChange(event, newValue)}
+                        
                       >
+                       
                         <Tab
                           label="Tipo Contrato"
                           id="settings-tab-0"
                         />
                         <Tab
+                          label="Tipos de docmuentos"
+                          id="settings-tab-1"
+                        />
+                        <Tab
+                          label="Plantillas"
+                          id="settings-tab-2"
+                        />
+                        <Tab
+                          label="Encuestas de mapas"
+                          id="settings-tab-3"
+                        />
+                        <Tab
+                          label="Hola mundo"
+                          id="settings-tab-3"
+                        />
+                         <Tab
                           label="Mapas"
                           id="settings-tab-1"
                         />
@@ -750,7 +902,42 @@ const categoryColumns = [
                           label="Hola mundo"
                           id="settings-tab-3"
                         />
+                         <Tab
+                          label="Mapas"
+                          id="settings-tab-1"
+                        />
+                        <Tab
+                          label="Plantillas"
+                          id="settings-tab-2"
+                        />
+                        <Tab
+                          label="Encuestas de mapas"
+                          id="settings-tab-3"
+                        />
+                        <Tab
+                          label="Hola mundo"
+                          id="settings-tab-3"
+                        />
+                         <Tab
+                          label="Mapas"
+                          id="settings-tab-1"
+                        />
+                        <Tab
+                          label="Plantillas"
+                          id="settings-tab-2"
+                        />
+                        <Tab
+                          label="Encuestas de mapas"
+                          id="settings-tab-3"
+                        />
+                        <Tab
+                          label="Hola mundo"
+                          id="settings-tab-3"
+                        />
+                        
+                        
                       </Tabs>
+                      
                       {/* categories */}
                       <div
                         hidden={currentTab !== 0}
@@ -809,15 +996,15 @@ const categoryColumns = [
                               <Button
                                 variant="outlined"
                                 startIcon={<AddIcon />}
-                                onClick={handleCreateCategory}
+                                onClick={handleCreateDocumentType}
                               >
-                                Crear Genero
+                                Crear tipo de documento
                               </Button>
                             </Stack>
                             <MyTable
-                              title={'Tipo Contrato'}
-                              columns={contractTypeColumns}
-                              rows={mapContractType(contractTypes)}
+                              title={'Tipo Documento'}
+                              columns={documentTypeColumns}
+                              rows={mapDocumentType(documentsTypes)}
                             />
                           </Box>
                         )}
