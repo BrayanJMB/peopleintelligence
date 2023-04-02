@@ -48,6 +48,12 @@ import {
   storeEnglishLevelAPI,
   updateEnglishLevelAPI,
 } from '../services/getEnglishLevel.service';
+import {
+  deleteHiringTypeAPI,
+  fetchHiringTypeAPI,
+  storeHiringTypeAPI,
+  updateHiringTypeAPI,
+} from '../services/getHiringType.service';
 import axios from '../utils/axiosInstance';
 
 import MyCard from './MyCard/MyCard';
@@ -76,6 +82,7 @@ export default function Table(props) {
   const [documentsTypes, setDocumentos] = useState([]);
   const [EnglishLevels, setNivelIngles] = useState([]);
   const [disabilitieS, setDiscapacidades] = useState([]);
+  const [HiringTypes, setTipoContratacion] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [currentEdit, setCurrentEdit] = useState(null);
@@ -396,6 +403,110 @@ const fetchDisabilities = async () => {
   setLoading(false);
 };
 //fin discapacidades
+//Disabilities
+const HiringTypeColumns = [
+
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Tipo de contratacion',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+
+];
+const handleCreateHiringType = () => {
+  setCurrentCreate({
+    type: 'hiringType',
+    title: 'Crear tipo de contratacion',
+    fields: [
+      {
+        label: 'Tipo de contratacion',
+        name: 'hiringType',
+        type: 'text',
+        isRequired: true,
+      },
+    ],
+  });
+  setOpenCreateDialog(true);
+};
+const mapHiringType= (HiringType) => HiringType.map((HiringType) => [
+  {
+    column: 'id',
+    value: HiringType.id.toString(), //swagger
+  },
+  {
+    column: 'name',
+    value: HiringType.tipoContrato, //swagger
+  },
+  {
+    column: 'options',
+    value: '',
+    payload: {
+      handleDelete: handleDeleteHiringType,
+      handleEdit: handleEditHiringType,
+      id: HiringType.id,
+    },
+  },
+]);
+const handleDeleteHiringType = async (id) => {
+  const HiringType = HiringTypes.find((HiringType) => HiringType.id === id);
+
+  if (HiringType === undefined) {
+    return;
+  }
+
+  try {
+    await deleteHiringTypeAPI(id);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Tipo de contratacion eliminado con exito',
+    {
+      variant: 'success',
+    },
+  );
+};
+const handleEditHiringType = (id) => {
+  // find category
+  const HiringType = HiringTypes.find((HiringType) => HiringType.id === id);
+
+  if (HiringType === undefined) {
+    return;
+  }
+
+  setCurrentEdit({
+    type: 'hiringType',
+    id: HiringType.id,
+    title: 'Editar tipo de contratacion',
+    fields: [
+      {
+        label: 'Tipo contratacion',
+        name: 'name',
+        type: 'text',
+        value: HiringTypes.tipoContratacion,
+      },
+    ],
+  });
+  setOpenEditDialog(true);
+};
+
+const fetchHiringType = async () => {
+  setLoading(true);
+
+  const { data } = await fetchHiringTypeAPI();
+  console.log(data);
+  setTipoContratacion(data);
+  setLoading(false);
+};
+//fin discapacidades HiringType
     /**
    * Handle tab change.
    *
@@ -613,6 +724,27 @@ const fetchDisabilities = async () => {
         },
       );
     }
+    if (currentEdit.type === 'hiringType') {
+      // find category
+      const HiringType = HiringTypes.find((HiringType) => HiringType.id === currentEdit.id);
+
+      if (HiringType === undefined) {
+        return;
+      }
+
+      HiringType.nameCatogory = formValues.name || HiringType.nameCatogory;
+      HiringType.descriptionCategory = formValues.description || HiringType.descriptionCategory;
+
+      try {
+        await updateHiringTypeAPI(HiringType);
+      } catch (e) {}
+      enqueueSnackbar(
+        'Tipo de contratacion actualizada con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
 
     setCurrentEdit(null);
     setOpenEditDialog(false);
@@ -677,6 +809,19 @@ const fetchDisabilities = async () => {
         },
       );
     }
+    if (currentCreate.type === 'HiringType') {
+      try {
+        await storeHiringTypeAPI({
+          tipoContratacion: formValues.tipoContratacion,
+        });
+      } catch (e) {}
+      enqueueSnackbar(
+        'Tipo de contratacion creada con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
     setCurrentCreate(null);
     setOpenCreateDialog(false);
   };
@@ -702,6 +847,7 @@ const fetchDisabilities = async () => {
       fetchDocumentType();
       fetchEnglishLevel();
       fetchDisabilities();
+      fetchHiringType();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDeleteItem = async (id, trueid) => {
@@ -1168,13 +1314,9 @@ const fetchDisabilities = async () => {
                           label="Discapacidades"
                           id="settings-tab-3"
                         />
-                        <Tab
-                          label="Hola mundo"
-                          id="settings-tab-4"
-                        />
                          <Tab
-                          label="Mapas"
-                          id="settings-tab-5"
+                          label="Tipo de contrataciones"
+                          id="settings-tab-4"
                         />
                         <Tab
                           label="Plantillas"
@@ -1336,13 +1478,48 @@ const fetchDisabilities = async () => {
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateEnglishLevel}
                               >
-                                Crear nivel de ingles
+                                Crear discapacidades
                               </Button>
                             </Stack>
                             <MyTable
                               title={'Discapacidades'}
                               columns={DisabilitiesColumns}
                               rows={mapDisabilities(disabilitieS)}
+                            />
+                          </Box>
+                        )}
+                      </div>
+
+                      {/* Tipo de contratacion*/}
+                      <div
+                        hidden={currentTab !== 4}
+                        id="settings-tabpanel-0"
+                      >
+                        {currentTab === 4 && (
+                          <Box
+                            sx={{
+                              p: 3,
+                          }}
+                          >
+                            <Stack
+                              spacing={2}
+                              direction="row-reverse"
+                              sx={{
+                                mb: 2,
+                              }}
+                            >
+                              <Button
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateHiringType}
+                              >
+                                Crear tipo de contratacion
+                              </Button>
+                            </Stack>
+                            <MyTable
+                              title={'Tipo de contratacion'}
+                              columns={HiringTypeColumns}
+                              rows={mapHiringType(HiringTypes)}
                             />
                           </Box>
                         )}
