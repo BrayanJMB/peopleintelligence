@@ -49,6 +49,12 @@ import {
   updateEnglishLevelAPI,
 } from '../services/getEnglishLevel.service';
 import {
+  deleteGenderAPI,
+  fetchGenderAPI,
+  storeGenderAPI,
+  updateGenderAPI,
+} from '../services/getGender.service';
+import {
   deleteHiringTypeAPI,
   fetchHiringTypeAPI,
   storeHiringTypeAPI,
@@ -83,6 +89,7 @@ export default function Table(props) {
   const [EnglishLevels, setNivelIngles] = useState([]);
   const [disabilitieS, setDiscapacidades] = useState([]);
   const [HiringTypes, setTipoContratacion] = useState([]);
+  const [Genders, setGenero] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [currentEdit, setCurrentEdit] = useState(null);
@@ -403,7 +410,7 @@ const fetchDisabilities = async () => {
   setLoading(false);
 };
 //fin discapacidades
-//Disabilities
+//Tipo de cotratacion
 const HiringTypeColumns = [
 
   {
@@ -475,7 +482,7 @@ const handleDeleteHiringType = async (id) => {
   );
 };
 const handleEditHiringType = (id) => {
-  // find category
+  // find tipo de contartacion
   const HiringType = HiringTypes.find((HiringType) => HiringType.id === id);
 
   if (HiringType === undefined) {
@@ -507,6 +514,110 @@ const fetchHiringType = async () => {
   setLoading(false);
 };
 //fin discapacidades HiringType
+ //Gender
+ const GenderColumns = [
+
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Genero',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+
+];
+const handleCreateGender = () => {
+  setCurrentCreate({
+    type: 'gender',
+    title: 'Crear tipo de contratacion',
+    fields: [
+      {
+        label: 'Genero',
+        name: 'gender',
+        type: 'text',
+        isRequired: true,
+      },
+    ],
+  });
+  setOpenCreateDialog(true);
+};
+const mapGender= (Gender) => Gender.map((Gender) => [
+  {
+    column: 'id',
+    value: Gender.id.toString(), //swagger
+  },
+  {
+    column: 'name',
+    value: Gender.genero, //swagger
+  },
+  {
+    column: 'options',
+    value: '',
+    payload: {
+      handleDelete: handleDeleteGender,
+      handleEdit: handleEditGender,
+      id: Gender.id,
+    },
+  },
+]);
+const handleDeleteGender = async (id) => {
+  const Gender = Genders.find((Gender) => Gender.id === id);
+
+  if (Gender === undefined) {
+    return;
+  }
+
+  try {
+    await deleteGenderAPI(id);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Genero eliminado con exito',
+    {
+      variant: 'success',
+    },
+  );
+};
+const handleEditGender = (id) => {
+  // find category
+  const Gender = Genders.find((Gender) => Gender.id === id);
+
+  if (Gender === undefined) {
+    return;
+  }
+
+  setCurrentEdit({
+    type: 'gender',
+    id: Gender.id,
+    title: 'Editar tipo de contratacion',
+    fields: [
+      {
+        label: 'Tipo contratacion',
+        name: 'name',
+        type: 'text',
+        value: Genders.tipoGenero,
+      },
+    ],
+  });
+  setOpenEditDialog(true);
+};
+
+const fetchGender = async () => {
+  setLoading(true);
+
+  const { data } = await fetchGenderAPI();
+  console.log(data);
+  setGenero(data);
+  setLoading(false);
+};
+//fin  Gender
     /**
    * Handle tab change.
    *
@@ -745,6 +856,28 @@ const fetchHiringType = async () => {
         },
       );
     }
+    
+if (currentEdit.type === 'gender') {
+  // find category
+  const Gender = Genders.find((Gender) => Gender.id === currentEdit.id);
+
+  if (Gender === undefined) {
+    return;
+  }
+
+  Gender.nameCatogory = formValues.name || Gender.nameCatogory;
+  Gender.descriptionCategory = formValues.description || Gender.descriptionCategory;
+
+  try {
+    await updateGenderAPI(Gender);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Genero actualizado con exito',
+    {
+      variant: 'success',
+    },
+  );
+}
 
     setCurrentEdit(null);
     setOpenEditDialog(false);
@@ -822,6 +955,19 @@ const fetchHiringType = async () => {
         },
       );
     }
+    if (currentCreate.type === 'Gender') {
+      try {
+        await storeGenderAPI({
+          tipoGenero: formValues.tipoGenero,
+        });
+      } catch (e) {}
+      enqueueSnackbar(
+        'Genero creado con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
     setCurrentCreate(null);
     setOpenCreateDialog(false);
   };
@@ -848,6 +994,7 @@ const fetchHiringType = async () => {
       fetchEnglishLevel();
       fetchDisabilities();
       fetchHiringType();
+      fetchGender();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDeleteItem = async (id, trueid) => {
@@ -1318,10 +1465,11 @@ const fetchHiringType = async () => {
                           label="Tipo de contrataciones"
                           id="settings-tab-4"
                         />
-                        <Tab
-                          label="Plantillas"
-                          id="settings-tab-2"
+                       <Tab
+                          label="Tipo generos"
+                          id="settings-tab-5"
                         />
+						
                         <Tab
                           label="Encuestas de mapas"
                           id="settings-tab-3"
@@ -1520,6 +1668,40 @@ const fetchHiringType = async () => {
                               title={'Tipo de contratacion'}
                               columns={HiringTypeColumns}
                               rows={mapHiringType(HiringTypes)}
+                            />
+                          </Box>
+                        )}
+                      </div>
+                      {/* Genero*/}
+                      <div
+                        hidden={currentTab !== 5}
+                        id="settings-tabpanel-0"
+                      >
+                        {currentTab === 5 && (
+                          <Box
+                            sx={{
+                              p: 3,
+                          }}
+                          >
+                            <Stack
+                              spacing={2}
+                              direction="row-reverse"
+                              sx={{
+                                mb: 2,
+                              }}
+                            >
+                              <Button
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateGender}
+                              >
+                                Crear genero
+                              </Button>
+                            </Stack>
+                            <MyTable
+                              title={'Genero'}
+                              columns={GenderColumns}
+                              rows={mapGender(Genders)}
                             />
                           </Box>
                         )}
