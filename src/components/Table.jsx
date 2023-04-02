@@ -36,6 +36,12 @@ import {
   storeDocumentTypeAPI,
   updateDocumentTypeAPI,
 } from '../services/getDocumentType.service';
+import {
+  deleteEnglishLevelAPI,
+  fetchEnglishLevelAPI,
+  storeEnglishLevelAPI,
+  updateEnglishLevelAPI,
+} from '../services/getEnglishLevel.service';
 import axios from '../utils/axiosInstance';
 
 import MyCard from './MyCard/MyCard';
@@ -62,6 +68,7 @@ export default function Table(props) {
   const [contractTypes, setcontractType] = useState([]);
   const [categories, setCategories] = useState([]);
   const [documentsTypes, setDocumentos] = useState([]);
+  const [EnglishLevels, setNivelIngles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [currentEdit, setCurrentEdit] = useState(null);
@@ -118,14 +125,14 @@ export default function Table(props) {
     {
       column: 'options',
       value: '',
-      /*payload: {
+      payload: {
         handleDelete: handleDeleteDocumentType,
         handleEdit: handleEditDocumentType,
         id: documentType.id,
-      },*/
+      },
     },
   ]);
- /* const handleDeleteDocumentType = async (id) => {
+ const handleDeleteDocumentType = async (id) => {
     const documentType = documentsTypes.find((documentType) => documentType.id === id);
 
     if (documentType === undefined) {
@@ -165,7 +172,7 @@ export default function Table(props) {
     });
     setOpenEditDialog(true);
   };
-*/
+
   const fetchDocumentType = async () => {
     setLoading(true);
 
@@ -174,6 +181,109 @@ export default function Table(props) {
     setDocumentos(data);
     setLoading(false);
   };
+  //Nivel de ingles
+ const EnglishLevelColumns = [
+
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Nivel de ingles',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+
+];
+const handleCreateEnglishLevel = () => {
+  setCurrentCreate({
+    type: 'englishLevel',
+    title: 'Crear nivel de ingles',
+    fields: [
+      {
+        label: 'Nivel de ingles',
+        name: 'nivelIngles',
+        type: 'text',
+        isRequired: true,
+      },
+    ],
+  });
+  setOpenCreateDialog(true);
+};
+const mapEnglishLevel = (EnglishLevel) => EnglishLevel.map((EnglishLevel) => [
+  {
+    column: 'id',
+    value: EnglishLevel.id.toString(), //swagger
+  },
+  {
+    column: 'name',
+    value: EnglishLevel.nivelIngles, //swagger
+  },
+  {
+    column: 'options',
+    value: '',
+    payload: {
+      handleDelete: handleDeleteEnglishLevel,
+      handleEdit: handleEditEnglishLevel,
+      id: EnglishLevel.id,
+    },
+  },
+]);
+const handleDeleteEnglishLevel = async (id) => {
+  const EnglishLevel = EnglishLevels.find((EnglishLevel) => EnglishLevel.id === id);
+
+  if (EnglishLevel === undefined) {
+    return;
+  }
+
+  try {
+    await deleteEnglishLevelAPI(id);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Nivel de ingles eliminado con exito',
+    {
+      variant: 'success',
+    },
+  );
+};
+const handleEditEnglishLevel = (id) => {
+  // find category
+  const EnglishLevel = EnglishLevels.find((EnglishLevel) => EnglishLevel.id === id);
+
+  if (EnglishLevel === undefined) {
+    return;
+  }
+
+  setCurrentEdit({
+    type: 'englishLevel',
+    id: EnglishLevel.id,
+    title: 'Editar nivel de ingles',
+    fields: [
+      {
+        label: 'Nivel de ingles',
+        name: 'name',
+        type: 'text',
+        value: EnglishLevel.tipoEnglishLevel,
+      },
+    ],
+  });
+  setOpenEditDialog(true);
+};
+
+const fetchEnglishLevel = async () => {
+  setLoading(true);
+
+  const { data } = await fetchEnglishLevelAPI();
+  console.log(data);
+  setNivelIngles(data);
+  setLoading(false);
+};
     /**
    * Handle tab change.
    *
@@ -182,12 +292,6 @@ export default function Table(props) {
    */
 
     const handleTabChange = (event, newValue) => {
-      setCurrentTab(newValue);
-      if (newValue < 1) {
-        newValue = 15; // Regresar al último Tab
-      } else if (newValue >= 15) {
-        newValue = 1; // Regresar al primer Tab
-      }
       setCurrentTab(newValue);
     };
 
@@ -349,7 +453,28 @@ export default function Table(props) {
         await updateContractTypeAPI(documentType);
       } catch (e) {}
       enqueueSnackbar(
-        'Categoría actualizada con éxito',
+        'Documento actualizada con éxito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+    if (currentEdit.type === 'englishLevel') {
+      // find category
+      const EnglishLevel = EnglishLevels.find((EnglishLevel) => EnglishLevel.id === currentEdit.id);
+
+      if (EnglishLevel === undefined) {
+        return;
+      }
+
+      EnglishLevel.nameCatogory = formValues.name || EnglishLevel.nameCatogory;
+      EnglishLevel.descriptionCategory = formValues.description || EnglishLevel.descriptionCategory;
+
+      try {
+        await updateEnglishLevelAPI(EnglishLevel);
+      } catch (e) {}
+      enqueueSnackbar(
+        'nivel de ingles actualizado con exito',
         {
           variant: 'success',
         },
@@ -382,7 +507,7 @@ export default function Table(props) {
     }
     if (currentCreate.type === 'documentType') {
       try {
-        await storeContractTypeAPI({
+        await storeDocumentTypeAPI({
           tipoDocumento: formValues.tipoDocumento,
         });
       } catch (e) {}
@@ -393,10 +518,23 @@ export default function Table(props) {
         },
       );
     }
+    if (currentCreate.type === 'englishLevel') {
+      try {
+        await storeEnglishLevelAPI({
+          tipoEnglishLevel: formValues.tipoEnglishLevel,
+        });
+      } catch (e) {}
+      enqueueSnackbar(
+        'Nivel de ingles creado con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
     setCurrentCreate(null);
     setOpenCreateDialog(false);
   };
-
+  
     /**
    * Fetch categories.
    *
@@ -416,6 +554,7 @@ export default function Table(props) {
     useEffect(() => { 
       fetchContractType();
       fetchDocumentType();
+      fetchEnglishLevel();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDeleteItem = async (id, trueid) => {
@@ -871,11 +1010,11 @@ export default function Table(props) {
                           id="settings-tab-0"
                         />
                         <Tab
-                          label="Tipos de docmuentos"
+                          label="Tipos de documentos"
                           id="settings-tab-1"
                         />
                         <Tab
-                          label="Plantillas"
+                          label="Nivel de ingles"
                           id="settings-tab-2"
                         />
                         <Tab
@@ -884,27 +1023,11 @@ export default function Table(props) {
                         />
                         <Tab
                           label="Hola mundo"
-                          id="settings-tab-3"
+                          id="settings-tab-4"
                         />
                          <Tab
                           label="Mapas"
-                          id="settings-tab-1"
-                        />
-                        <Tab
-                          label="Plantillas"
-                          id="settings-tab-2"
-                        />
-                        <Tab
-                          label="Encuestas de mapas"
-                          id="settings-tab-3"
-                        />
-                        <Tab
-                          label="Hola mundo"
-                          id="settings-tab-3"
-                        />
-                         <Tab
-                          label="Mapas"
-                          id="settings-tab-1"
+                          id="settings-tab-5"
                         />
                         <Tab
                           label="Plantillas"
@@ -975,10 +1098,10 @@ export default function Table(props) {
 
 
 
-                      {/* categories */}
+                      {/* Documento*/}
                       <div
                         hidden={currentTab !== 1}
-                        id="settings-tabpanel-0"
+                        id="settings-tabpanel-1"
                       >
                         {currentTab === 1 && (
                           <Box
@@ -1005,6 +1128,40 @@ export default function Table(props) {
                               title={'Tipo Documento'}
                               columns={documentTypeColumns}
                               rows={mapDocumentType(documentsTypes)}
+                            />
+                          </Box>
+                        )}
+                      </div>
+                      {/* Nivel de ingles*/}
+                      <div
+                        hidden={currentTab !== 2}
+                        id="settings-tabpanel-0"
+                      >
+                        {currentTab === 2 && (
+                          <Box
+                            sx={{
+                              p: 3,
+                          }}
+                          >
+                            <Stack
+                              spacing={2}
+                              direction="row-reverse"
+                              sx={{
+                                mb: 2,
+                              }}
+                            >
+                              <Button
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateEnglishLevel}
+                              >
+                                Crear nivel de ingles
+                              </Button>
+                            </Stack>
+                            <MyTable
+                              title={'Nivel de ingles'}
+                              columns={EnglishLevelColumns}
+                              rows={mapEnglishLevel(EnglishLevels)}
                             />
                           </Box>
                         )}
