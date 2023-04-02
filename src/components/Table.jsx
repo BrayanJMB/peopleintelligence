@@ -73,6 +73,12 @@ import {
   updateHiringTypeAPI,
 } from '../services/getHiringType.service';
 import {
+  deleteMaritalStatusAPI,
+  fetchMaritalStatusAPI,
+  storeMaritalStatusAPI,
+  updateMaritalStatusAPI,
+} from '../services/getMaritalStatus.service';
+import {
   deleteProfessionAPI,
   fetchProfessionAPI,
   storeProfessionAPI,
@@ -84,6 +90,12 @@ import {
   storeSalaryTypeAPI,
   updateSalaryTypeAPI,
 } from '../services/getSalaryType.service';
+import {
+  deleteSexualPreferenceAPI,
+  fetchSexualPreferenceAPI,
+  storeSexualPreferenceAPI,
+  updateSexualPreferenceAPI,
+} from '../services/getSexualPreference.service';
 import axios from '../utils/axiosInstance';
 
 import MyCard from './MyCard/MyCard';
@@ -118,6 +130,8 @@ export default function Table(props) {
   const [Professions, setProfessions] = useState([]);
   const [Genders, setGenero] = useState([]);
   const [collectiveWorkGrouptoWhichitBelongsss, setGrupoTrabajo] = useState([]);
+  const [sexualPreferences, setPreferenciaSexual] = useState([]);
+  const [maritalStatuses, setEstadoCivil] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [currentEdit, setCurrentEdit] = useState(null);
@@ -189,7 +203,7 @@ export default function Table(props) {
     }
 
     try {
-      await deleteContractTypeAPI(id);
+      await deleteDocumentTypeAPI(id);
     } catch (e) {}
     enqueueSnackbar(
       'Tipo contrato eliminado con éxito',
@@ -971,6 +985,214 @@ const fetchCollectiveWorkGrouptoWhichitBelongs = async () => {
   setLoading(false);
 };
 //fin  CollectiveWorkGrouptoWhichitBelongs
+//SexualPreference
+const SexualPreferenceColumns = [
+
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Preferncias sexuales',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+
+];
+const handleCreateSexualPreference = () => {
+  setCurrentCreate({
+    type: 'preferenciaSexual',
+    title: 'Crear tipo de contratacion',
+    fields: [
+      {
+        label: 'Preferencia Sexual',
+        name: 'preferenciaSexual',
+        type: 'text',
+        isRequired: true,
+      },
+    ],
+  });
+  setOpenCreateDialog(true);
+};
+const mapSexualPreference= (SexualPreference) => SexualPreference.map((SexualPreference) => [
+  {
+    column: 'id',
+    value: SexualPreference.id.toString(), //swagger
+  },
+  {
+    column: 'name',
+    value: SexualPreference.preferenciaSexual, //swagger
+  },
+  {
+    column: 'options',
+    value: '',
+    payload: {
+      handleDelete: handleDeleteSexualPreference,
+      handleEdit: handleEditSexualPreference,
+      id: SexualPreference.id,
+    },
+  },
+]);
+const handleDeleteSexualPreference = async (id) => {
+  const SexualPreference = sexualPreferences.find((SexualPreference) => SexualPreference.id === id);
+
+  if (SexualPreference === undefined) {
+    return;
+  }
+
+  try {
+    await deleteSexualPreferenceAPI(id);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Preferencia sexual eliminado con exito',
+    {
+      variant: 'success',
+    },
+  );
+};
+const handleEditSexualPreference = (id) => {
+  // find category
+  const SexualPreference = sexualPreferences.find((SexualPreference) => SexualPreference.id === id);
+
+  if (SexualPreference === undefined) {
+    return;
+  }
+
+  setCurrentEdit({
+    type: 'preferenciaSexual',
+    id: SexualPreference.id,
+    title: 'Editar Preferencia sexual',
+    fields: [
+      {
+        label: 'Preferencia sexual',
+        name: 'name',
+        type: 'text',
+        value: SexualPreference.preferenciaSexual,
+      },
+    ],
+  });
+  setOpenEditDialog(true);
+};
+
+const fetchSexualPreference = async () => {
+  setLoading(true);
+
+  const { data } = await fetchSexualPreferenceAPI();
+  console.log(data);
+  setPreferenciaSexual(data);
+  setLoading(false);
+};
+//fin  SexualPreference
+//MaritalStatus
+const MaritalStatusColumns = [
+
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Preferncias sexuales',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+
+];
+const handleCreateMaritalStatus = () => {
+  setCurrentCreate({
+    type: 'estadoCivil',
+    title: 'Crear tipo de contratacion',
+    fields: [
+      {
+        label: 'Preferencia Sexual',
+        name: 'estadoCivil',
+        type: 'text',
+        isRequired: true,
+      },
+    ],
+  });
+  setOpenCreateDialog(true);
+};
+const mapMaritalStatus= (MaritalStatus) => MaritalStatus.map((MaritalStatus) => [
+  {
+    column: 'id',
+    value: MaritalStatus.id.toString(), //swagger
+  },
+  {
+    column: 'name',
+    value: MaritalStatus.estadoCivil, //swagger
+  },
+  {
+    column: 'options',
+    value: '',
+    payload: {
+      handleDelete: handleDeleteMaritalStatus,
+      handleEdit: handleEditMaritalStatus,
+      id: MaritalStatus.id,
+    },
+  },
+]);
+const handleDeleteMaritalStatus = async (id) => {
+  const MaritalStatus = maritalStatuses.find((MaritalStatus) => MaritalStatus.id === id);
+
+  if (MaritalStatus === undefined) {
+    return;
+  }
+
+  try {
+    await deleteMaritalStatusAPI(id);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Estado civil eliminado con exito',
+    {
+      variant: 'success',
+    },
+  );
+};
+const handleEditMaritalStatus = (id) => {
+  // find category
+  const MaritalStatus = maritalStatuses.find((MaritalStatus) => MaritalStatus.id === id);
+
+  if (MaritalStatus === undefined) {
+    return;
+  }
+
+  setCurrentEdit({
+    type: 'estados-civiles',
+    id: MaritalStatus.id,
+    title: 'Editar Estado civil',
+    fields: [
+      {
+        label: 'Estado civil',
+        name: 'name',
+        type: 'text',
+        value: MaritalStatus.estadoCivil,
+      },
+    ],
+  });
+  setOpenEditDialog(true);
+};
+
+const fetchMaritalStatus = async () => {
+  setLoading(true);
+
+  const { data } = await fetchMaritalStatusAPI();
+  console.log(data);
+  setEstadoCivil(data);
+  setLoading(false);
+};
+//fin  MaritalStatus
 //Nivel de profession
 const ProfessionColumns = [
 
@@ -1085,6 +1307,7 @@ const fetchProfession = async () => {
     const handleTabChange = (event, newValue) => {
       setCurrentTab(newValue);
     };
+//fin Profesiones
 
     /**
    * Handle create category.
@@ -1239,7 +1462,7 @@ const fetchProfession = async () => {
       documentType.descriptionCategory = formValues.description || documentType.descriptionCategory;
 
       try {
-        await updateContractTypeAPI(documentType);
+        await updateDocumentTypeAPI(documentType);
       } catch (e) {}
       enqueueSnackbar(
         'Documento actualizada con éxito',
@@ -1414,6 +1637,44 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
     },
   );
 }
+if (currentEdit.type === 'preferenciaSexual') {
+  // find category
+  const SexualPreference = sexualPreferences.find((SexualPreference) => SexualPreference.id === currentEdit.id);
+
+  if (SexualPreference === undefined) {
+    return;
+  }
+
+  SexualPreference.preferenciaSexual = formValues.name || SexualPreference.nameCatogory;
+  try {
+    await updateSexualPreferenceAPI(SexualPreference);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Preferencia sexual con exito',
+    {
+      variant: 'success',
+    },
+  );
+}
+if (currentEdit.type === 'estados-civiles') {
+  // find category
+  const MaritalStatus = maritalStatuses.find((MaritalStatus) => MaritalStatus.id === currentEdit.id);
+
+  if (MaritalStatus === undefined) {
+    return;
+  }
+
+  MaritalStatus.estadoCivil = formValues.name || MaritalStatus.nameCatogory;
+  try {
+    await updateMaritalStatusAPI(MaritalStatus);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Estado civil con exito',
+    {
+      variant: 'success',
+    },
+  );
+}
 
     setCurrentEdit(null);
     setOpenEditDialog(false);
@@ -1557,6 +1818,32 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
         },
       );
     }
+    if (currentCreate.type === 'preferenciaSexual') {
+      try {
+        await storeSexualPreferenceAPI({
+          preferenciaSexual: formValues.preferenciaSexual,
+        });
+      } catch (e) {}
+      enqueueSnackbar(
+        'Preferencia sexual creado con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+    if (currentCreate.type === 'estados-civiles') {
+      try {
+        await storeMaritalStatusAPI({
+          estadoCivil: formValues.estadoCivil,
+        });
+      } catch (e) {}
+      enqueueSnackbar(
+        'Estado civil creado con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
     setCurrentCreate(null);
     setOpenCreateDialog(false);
   };
@@ -1588,6 +1875,8 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
       fetchSalaryType();
       fetchProfession();
       fetchCollectiveWorkGrouptoWhichitBelongs();
+      fetchSexualPreference();
+      fetchMaritalStatus();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDeleteItem = async (id, trueid) => {
@@ -2080,12 +2369,12 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                           id="settings-tab-9"
                         />
                         <Tab
-                          label="Plantillas"
-                          id="settings-tab-2"
+                          label="Preferencia sexual"
+                          id="settings-tab-10"
                         />
                         <Tab
-                          label="Encuestas de mapas"
-                          id="settings-tab-3"
+                          label="Estado civil"
+                          id="settings-tab-11"
                         />
                         <Tab
                           label="Hola mundo"
@@ -2437,6 +2726,74 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                               title={'Grupo de Trabajo Colectivo al que Pertenece'}
                               columns={CollectiveWorkGrouptoWhichitBelongsColumns}
                               rows={mapCollectiveWorkGrouptoWhichitBelongs(collectiveWorkGrouptoWhichitBelongsss)}
+                            />
+                          </Box>
+                        )}
+                      </div>
+                      {/* Prferencia sexual*/}
+                      <div
+                        hidden={currentTab !== 10}
+                        id="settings-tabpanel-0"
+                      >
+                        {currentTab === 10 && (
+                          <Box
+                            sx={{
+                              p: 3,
+                          }}
+                          >
+                            <Stack
+                              spacing={2}
+                              direction="row-reverse"
+                              sx={{
+                                mb: 2,
+                              }}
+                            >
+                              <Button
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateSexualPreference}
+                              >
+                                Crear Grupo Preferencia sexual
+                              </Button>
+                            </Stack>
+                            <MyTable
+                              title={'Preferencia sexual'}
+                              columns={SexualPreferenceColumns}
+                              rows={mapSexualPreference(sexualPreferences)}
+                            />
+                          </Box>
+                        )}
+                      </div>
+                      {/* Prferencia sexual*/}
+                      <div
+                        hidden={currentTab !== 11}
+                        id="settings-tabpanel-0"
+                      >
+                        {currentTab === 11 && (
+                          <Box
+                            sx={{
+                              p: 3,
+                          }}
+                          >
+                            <Stack
+                              spacing={2}
+                              direction="row-reverse"
+                              sx={{
+                                mb: 2,
+                              }}
+                            >
+                              <Button
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateMaritalStatus}
+                              >
+                                Crear Grupo Estado civil
+                              </Button>
+                            </Stack>
+                            <MyTable
+                              title={'Estado civil'}
+                              columns={MaritalStatusColumns}
+                              rows={mapMaritalStatus(maritalStatuses)}
                             />
                           </Box>
                         )}
