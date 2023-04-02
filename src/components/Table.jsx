@@ -43,6 +43,12 @@ import {
   updateDocumentTypeAPI,
 } from '../services/getDocumentType.service';
 import {
+  deleteEducationLevelAPI,
+  fetchEducationLevelAPI,
+  storeEducationLevelAPI,
+  updateEducationLevelAPI,
+} from '../services/getEducationLevel.service';
+import {
   deleteEnglishLevelAPI,
   fetchEnglishLevelAPI,
   storeEnglishLevelAPI,
@@ -87,6 +93,7 @@ export default function Table(props) {
   const [categories, setCategories] = useState([]);
   const [documentsTypes, setDocumentos] = useState([]);
   const [EnglishLevels, setNivelIngles] = useState([]);
+  const [EducationLevels, setEducationLevels] = useState([]);
   const [disabilitieS, setDiscapacidades] = useState([]);
   const [HiringTypes, setTipoContratacion] = useState([]);
   const [Genders, setGenero] = useState([]);
@@ -305,7 +312,113 @@ const fetchEnglishLevel = async () => {
   setNivelIngles(data);
   setLoading(false);
 };
+
 //fin ingles
+//Nivel de educacion
+const EducationLevelColumns = [
+
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Nivel de educaion',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+
+];
+
+const handleCreateEducationLevel = () => {
+  setCurrentCreate({
+    type: 'EducationLevel',
+    title: 'Crear nivel de educacion',
+    fields: [
+      {
+        label: 'Nivel de educacion',
+        name: 'nivelEducacion',
+        type: 'text',
+        isRequired: true,
+      },
+    ],
+  });
+  setOpenCreateDialog(true);
+};
+const mapEducationLevel = (EducationLevel) => EducationLevel.map((EducationLevel) => [
+  {
+    column: 'id',
+    value: EducationLevel.id.toString(), //swagger
+  },
+  {
+    column: 'name',
+    value: EducationLevel.nivelEducacion, //swagger
+  },
+  {
+    column: 'options',
+    value: '',
+    payload: {
+      handleDelete: handleDeleteEducationLevel,
+      handleEdit: handleEditEducationLevel,
+      id: EducationLevel.id,
+    },
+  },
+]);
+const handleDeleteEducationLevel = async (id) => {
+  const EducationLevel = EducationLevels.find((EducationLevel) => EducationLevel.id === id);
+
+  if (EducationLevel === undefined) {
+    return;
+  }
+
+  try {
+    await deleteEducationLevelAPI(id);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Nivel de educacion eliminado con exito',
+    {
+      variant: 'success',
+    },
+  );
+};
+const handleEditEducationLevel = (id) => {
+  // find category
+  const EducationLevel = EducationLevels.find((EducationLevel) => EducationLevel.id === id);
+
+  if (EducationLevel === undefined) {
+    return;
+  }
+
+  setCurrentEdit({
+    type: 'nivelEducacion',
+    id: EducationLevel.id,
+    title: 'Editar nivel de educacion',
+    fields: [
+      {
+        label: 'Nivel de educacion',
+        name: 'name',
+        type: 'text',
+        value: EducationLevel.tipoEducationLevel,
+      },
+    ],
+  });
+  setOpenEditDialog(true);
+};
+
+const fetchEducationLevel = async () => {
+  setLoading(true);
+
+  const { data } = await fetchEducationLevelAPI();
+  console.log(data);
+  setEducationLevels(data);
+  setLoading(false);
+};
+//fin de educacion
 //Disabilities
 const DisabilitiesColumns = [
 
@@ -794,7 +907,7 @@ const fetchGender = async () => {
       );
     }
     if (currentEdit.type === 'englishLevel') {
-      // find category
+      // find educacion
       const EnglishLevel = EnglishLevels.find((EnglishLevel) => EnglishLevel.id === currentEdit.id);
 
       if (EnglishLevel === undefined) {
@@ -809,6 +922,27 @@ const fetchGender = async () => {
       } catch (e) {}
       enqueueSnackbar(
         'nivel de ingles actualizado con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+    if (currentEdit.type === 'nivelEducacion') {
+      // find educacion
+      const EducationLevel = EducationLevels.find((EducationLevel) => EducationLevel.id === currentEdit.id);
+
+      if (EducationLevel === undefined) {
+        return;
+      }
+
+      EducationLevel.nameCatogory = formValues.name || EducationLevel.nameCatogory;
+      EducationLevel.descriptionCategory = formValues.description || EducationLevel.descriptionCategory;
+
+      try {
+        await updateEducationLevelAPI(EducationLevel);
+      } catch (e) {}
+      enqueueSnackbar(
+        'nivel de educacion actualizado con exito',
         {
           variant: 'success',
         },
@@ -929,6 +1063,19 @@ if (currentEdit.type === 'gender') {
         },
       );
     }
+    if (currentCreate.type === 'nivelEducacion') {
+      try {
+        await storeEducationLevelAPI({
+          tipoEducationLevel: formValues.tipoEducationLevel,
+        });
+      } catch (e) {}
+      enqueueSnackbar(
+        'Nivel de educacion creado con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
     if (currentCreate.type === 'disabilities') {
       try {
         await storeDisabilitiesAPI({
@@ -992,6 +1139,7 @@ if (currentEdit.type === 'gender') {
       fetchContractType();
       fetchDocumentType();
       fetchEnglishLevel();
+      fetchEducationLevel();
       fetchDisabilities();
       fetchHiringType();
       fetchGender();
@@ -1458,16 +1606,20 @@ if (currentEdit.type === 'gender') {
                           id="settings-tab-2"
                         />
                         <Tab
-                          label="Discapacidades"
+                          label="Nivel de educacion"
                           id="settings-tab-3"
+                        />
+                        <Tab
+                          label="Discapacidades"
+                          id="settings-tab-4"
                         />
                          <Tab
                           label="Tipo de contrataciones"
-                          id="settings-tab-4"
+                          id="settings-tab-5"
                         />
                        <Tab
                           label="Tipo generos"
-                          id="settings-tab-5"
+                          id="settings-tab-6"
                         />
 						
                         <Tab
@@ -1599,6 +1751,41 @@ if (currentEdit.type === 'gender') {
                               title={'Nivel de ingles'}
                               columns={EnglishLevelColumns}
                               rows={mapEnglishLevel(EnglishLevels)}
+                            />
+                          </Box>
+                        )}
+                      </div>
+
+                       {/* Nivel de educacion*/}
+                       <div
+                        hidden={currentTab !== 3}
+                        id="settings-tabpanel-0"
+                      >
+                        {currentTab === 3 && (
+                          <Box
+                            sx={{
+                              p: 3,
+                          }}
+                          >
+                            <Stack
+                              spacing={2}
+                              direction="row-reverse"
+                              sx={{
+                                mb: 2,
+                              }}
+                            >
+                              <Button
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateEducationLevel}
+                              >
+                                Crear nivel de educacion
+                              </Button>
+                            </Stack>
+                            <MyTable
+                              title={'Nivel de educacion'}
+                              columns={EducationLevelColumns}
+                              rows={mapEducationLevel(EducationLevels)}
                             />
                           </Box>
                         )}
