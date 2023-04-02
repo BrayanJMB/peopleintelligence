@@ -284,6 +284,7 @@ const mapEnglishLevel = (EnglishLevel) => EnglishLevel.map((EnglishLevel) => [
     },
   },
 ]);
+
 const handleDeleteEnglishLevel = async (id) => {
   const EnglishLevel = EnglishLevels.find((EnglishLevel) => EnglishLevel.id === id);
 
@@ -318,7 +319,7 @@ const handleEditEnglishLevel = (id) => {
         label: 'Nivel de ingles',
         name: 'name',
         type: 'text',
-        value: EnglishLevel.tipoEnglishLevel,
+        value: EnglishLevel.nivelIngles,
       },
     ],
   });
@@ -335,6 +336,8 @@ const fetchEnglishLevel = async () => {
 };
 
 //fin ingles
+
+
 //Nivel de educacion
 const EducationLevelColumns = [
 
@@ -345,7 +348,7 @@ const EducationLevelColumns = [
   },
   {
     id: 'name',
-    label: 'Nivel de educacion',
+    label: 'Nivel de educación',
     numeric: false,
   },
   {
@@ -355,10 +358,12 @@ const EducationLevelColumns = [
   },
 
 ];
+// camel Case ---> JS holaMundo, comoEstasYoMuyBien
+// Clases --> PascalCase HolaMundo, CómoEstasYoMuyBien
 
 const handleCreateEducationLevel = () => {
   setCurrentCreate({
-    type: 'EducationLevel',
+    type: 'educationLevel',
     title: 'Crear nivel de educacion',
     fields: [
       {
@@ -390,6 +395,7 @@ const mapEducationLevel = (EducationLevel) => EducationLevel.map((EducationLevel
     },
   },
 ]);
+
 const handleDeleteEducationLevel = async (id) => {
   const EducationLevel = EducationLevels.find((EducationLevel) => EducationLevel.id === id);
 
@@ -407,6 +413,7 @@ const handleDeleteEducationLevel = async (id) => {
     },
   );
 };
+
 const handleEditEducationLevel = (id) => {
   // find category
   const EducationLevel = EducationLevels.find((EducationLevel) => EducationLevel.id === id);
@@ -421,10 +428,10 @@ const handleEditEducationLevel = (id) => {
     title: 'Editar nivel de educacion',
     fields: [
       {
-        label: 'Nivel de educacion',
+        label: 'Nivel de educación',
         name: 'name',
         type: 'text',
-        value: EducationLevel.tipoEducationLevel,
+        value: EducationLevel.nivelEducacion,
       },
     ],
   });
@@ -433,13 +440,13 @@ const handleEditEducationLevel = (id) => {
 
 const fetchEducationLevel = async () => {
   setLoading(true);
-
   const { data } = await fetchEducationLevelAPI();
-  console.log(data);
   setEducationLevels(data);
   setLoading(false);
 };
 //fin de educacion
+
+
 //Disabilities
 const DisabilitiesColumns = [
 
@@ -528,7 +535,7 @@ const handleEditDisabilities = (id) => {
         label: 'Discapacidad',
         name: 'name',
         type: 'text',
-        value: Disabilities.tipoDisabilities,
+        value: Disabilities.discapacIdades,
       },
     ],
   });
@@ -544,6 +551,7 @@ const fetchDisabilities = async () => {
   setLoading(false);
 };
 //fin discapacidades
+
 //Tipo de cotratacion
 const HiringTypeColumns = [
 
@@ -648,6 +656,7 @@ const fetchHiringType = async () => {
   setLoading(false);
 };
 //fin discapacidades HiringType
+
  //Gender
  const GenderColumns = [
 
@@ -752,6 +761,7 @@ const fetchGender = async () => {
   setLoading(false);
 };
 //fin  Gender
+
 //SalaryType
 const SalaryTypeColumns = [
 
@@ -856,6 +866,7 @@ const fetchSalaryType = async () => {
   setLoading(false);
 };
 //fin  SalaryType
+
 //CollectiveWorkGrouptoWhichitBelongs
 const CollectiveWorkGrouptoWhichitBelongsColumns = [
 
@@ -1095,8 +1106,6 @@ const fetchProfession = async () => {
   };
 
   // category columns
-
-
   /**
    * Map categories response to use in table.
    *
@@ -1124,7 +1133,7 @@ const fetchProfession = async () => {
   ]);
 
 
-    /**
+  /**
    * Handle delete category.
    *
    * @param id
@@ -1247,14 +1256,13 @@ const fetchProfession = async () => {
         return;
       }
 
-      EnglishLevel.nameCatogory = formValues.name || EnglishLevel.nameCatogory;
-      EnglishLevel.descriptionCategory = formValues.description || EnglishLevel.descriptionCategory;
+      EnglishLevel.nivelIngles = formValues.name || EnglishLevel.nivelIngles;
 
       try {
         await updateEnglishLevelAPI(EnglishLevel);
       } catch (e) {}
       enqueueSnackbar(
-        'nivel de ingles actualizado con exito',
+        'Nivel de ingles actualizado con exito',
         {
           variant: 'success',
         },
@@ -1268,8 +1276,7 @@ const fetchProfession = async () => {
         return;
       }
 
-      EducationLevel.nameCatogory = formValues.name || EducationLevel.nameCatogory;
-      EducationLevel.descriptionCategory = formValues.description || EducationLevel.descriptionCategory;
+      EducationLevel.nivelEducacion = formValues.name || EducationLevel.nivelEducacion;
 
       try {
         await updateEducationLevelAPI(EducationLevel);
@@ -1289,8 +1296,7 @@ const fetchProfession = async () => {
         return;
       }
 
-      Disabilities.nameCatogory = formValues.name || Disabilities.nameCatogory;
-      Disabilities.descriptionCategory = formValues.description || Disabilities.descriptionCategory;
+      Disabilities.discapacIdades = formValues.name || Disabilities.discapacIdades;
 
       try {
         await updateDisabilitiesAPI(Disabilities);
@@ -1449,7 +1455,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
     if (currentCreate.type === 'englishLevel') {
       try {
         await storeEnglishLevelAPI({
-          tipoEnglishLevel: formValues.tipoEnglishLevel,
+          nivelIngles: formValues.nivelIngles,
         });
       } catch (e) {}
       enqueueSnackbar(
@@ -1459,10 +1465,10 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
         },
       );
     }
-    if (currentCreate.type === 'nivelEducacion') {
+    if (currentCreate.type === 'educationLevel') {
       try {
         await storeEducationLevelAPI({
-          tipoEducationLevel: formValues.tipoEducationLevel,
+          nivelEducacion: formValues.nivelEducacion,
         });
       } catch (e) {}
       enqueueSnackbar(
