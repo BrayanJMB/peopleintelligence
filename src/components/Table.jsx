@@ -31,6 +31,12 @@ import {
   updateContractTypeAPI,
 } from '../services/getContractType.service';
 import {
+  deleteDisabilitiesAPI,
+  fetchDisabilitiesAPI,
+  storeDisabilitiesAPI,
+  updateDisabilitiesAPI,
+} from '../services/getDisabilities.service';
+import {
   deleteDocumentTypeAPI,
   fetchDocumentTypeAPI,
   storeDocumentTypeAPI,
@@ -69,6 +75,7 @@ export default function Table(props) {
   const [categories, setCategories] = useState([]);
   const [documentsTypes, setDocumentos] = useState([]);
   const [EnglishLevels, setNivelIngles] = useState([]);
+  const [disabilitieS, setDiscapacidades] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [currentEdit, setCurrentEdit] = useState(null);
@@ -284,6 +291,111 @@ const fetchEnglishLevel = async () => {
   setNivelIngles(data);
   setLoading(false);
 };
+//fin ingles
+//Disabilities
+const DisabilitiesColumns = [
+
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Discapacidades',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+
+];
+const handleCreateDisabilities = () => {
+  setCurrentCreate({
+    type: 'disabilities',
+    title: 'Crear discapacidad',
+    fields: [
+      {
+        label: 'Discapacidad',
+        name: 'disabilities',
+        type: 'text',
+        isRequired: true,
+      },
+    ],
+  });
+  setOpenCreateDialog(true);
+};
+const mapDisabilities = (Disabilities) => Disabilities.map((Disabilities) => [
+  {
+    column: 'id',
+    value: Disabilities.id.toString(), //swagger
+  },
+  {
+    column: 'name',
+    value: Disabilities.discapacIdades, //swagger
+  },
+  {
+    column: 'options',
+    value: '',
+    payload: {
+      handleDelete: handleDeleteDisabilities,
+      handleEdit: handleEditDisabilities,
+      id: Disabilities.id,
+    },
+  },
+]);
+const handleDeleteDisabilities = async (id) => {
+  const Disabilities = disabilitieS.find((Disabilities) => Disabilities.id === id);
+
+  if (Disabilities === undefined) {
+    return;
+  }
+
+  try {
+    await deleteDisabilitiesAPI(id);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Discapacidad eliminado con exito',
+    {
+      variant: 'success',
+    },
+  );
+};
+const handleEditDisabilities = (id) => {
+  // find category
+  const Disabilities = disabilitieS.find((Disabilities) => Disabilities.id === id);
+
+  if (Disabilities === undefined) {
+    return;
+  }
+
+  setCurrentEdit({
+    type: 'disabilities',
+    id: Disabilities.id,
+    title: 'Editar discapacidad',
+    fields: [
+      {
+        label: 'Discapacidad',
+        name: 'name',
+        type: 'text',
+        value: Disabilities.tipoDisabilities,
+      },
+    ],
+  });
+  setOpenEditDialog(true);
+};
+
+const fetchDisabilities = async () => {
+  setLoading(true);
+
+  const { data } = await fetchDisabilitiesAPI();
+  console.log(data);
+  setDiscapacidades(data);
+  setLoading(false);
+};
+//fin discapacidades
     /**
    * Handle tab change.
    *
@@ -480,6 +592,27 @@ const fetchEnglishLevel = async () => {
         },
       );
     }
+    if (currentEdit.type === 'disabilities') {
+      // find category
+      const Disabilities = disabilitieS.find((Disabilities) => Disabilities.id === currentEdit.id);
+
+      if (Disabilities === undefined) {
+        return;
+      }
+
+      Disabilities.nameCatogory = formValues.name || Disabilities.nameCatogory;
+      Disabilities.descriptionCategory = formValues.description || Disabilities.descriptionCategory;
+
+      try {
+        await updateDisabilitiesAPI(Disabilities);
+      } catch (e) {}
+      enqueueSnackbar(
+        'Discapacidad actualizada con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
 
     setCurrentEdit(null);
     setOpenEditDialog(false);
@@ -531,6 +664,19 @@ const fetchEnglishLevel = async () => {
         },
       );
     }
+    if (currentCreate.type === 'disabilities') {
+      try {
+        await storeDisabilitiesAPI({
+          tipoDisabilities: formValues.tipoDisabilities,
+        });
+      } catch (e) {}
+      enqueueSnackbar(
+        'Discapacidad creada con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
     setCurrentCreate(null);
     setOpenCreateDialog(false);
   };
@@ -555,6 +701,7 @@ const fetchEnglishLevel = async () => {
       fetchContractType();
       fetchDocumentType();
       fetchEnglishLevel();
+      fetchDisabilities();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDeleteItem = async (id, trueid) => {
@@ -1018,7 +1165,7 @@ const fetchEnglishLevel = async () => {
                           id="settings-tab-2"
                         />
                         <Tab
-                          label="Encuestas de mapas"
+                          label="Discapacidades"
                           id="settings-tab-3"
                         />
                         <Tab
@@ -1166,7 +1313,40 @@ const fetchEnglishLevel = async () => {
                           </Box>
                         )}
                       </div>
-                      
+                      {/* Discapacidades*/}
+                      <div
+                        hidden={currentTab !== 3}
+                        id="settings-tabpanel-0"
+                      >
+                        {currentTab === 3 && (
+                          <Box
+                            sx={{
+                              p: 3,
+                          }}
+                          >
+                            <Stack
+                              spacing={2}
+                              direction="row-reverse"
+                              sx={{
+                                mb: 2,
+                              }}
+                            >
+                              <Button
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateEnglishLevel}
+                              >
+                                Crear nivel de ingles
+                              </Button>
+                            </Stack>
+                            <MyTable
+                              title={'Discapacidades'}
+                              columns={DisabilitiesColumns}
+                              rows={mapDisabilities(disabilitieS)}
+                            />
+                          </Box>
+                        )}
+                      </div>
                     </Box>
                   </Box>
                 </MyCard>
