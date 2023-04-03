@@ -21,7 +21,7 @@ export const fetchAreaAPI = async () => axios.get(`Area/getAreaByCompany/${userI
  * @returns {Promise<any>}
  */
 export const updateAreaAPI = async () => axios.put('Area/');
-
+ 
 /**
  * Delete Contract Type.
  *
