@@ -28,6 +28,7 @@ import axios from '../../utils/axiosInstance';
 
 import styles from './InfoAdmin.module.css';
 
+
 const search = (value, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
     if (inputArray[i][proprety] === value) {
