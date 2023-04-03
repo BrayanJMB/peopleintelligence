@@ -31,12 +31,14 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  height: 60vh;
   transform: translate(-50%, -50%);
   width: 65vw;
   background-color: white;
   box-shadow: 24px;
   padding: 1rem;
+  max-height: calc(100vh - 50px);
+  overflow-y: auto;
+  padding-right: 16px;
 }
 .modaltop {
   display: flex;

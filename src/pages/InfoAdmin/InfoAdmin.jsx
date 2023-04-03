@@ -13,6 +13,7 @@ import * as uuid from 'uuid';
 import Building from '../../assets/Building.svg';
 import NewCompany from '../../components/NewCompany/NewCompany';
 import NewDepartment from '../../components/NewDepartment/NewDepartment';
+import NewEmployee from '../../components/NewEmployee/NewEmployee';
 import NewOffice from '../../components/NewOffice/NewOffice';
 import Notification from '../../components/Notification';
 import Table from '../../components/Table';
@@ -24,6 +25,7 @@ import { getDepartmentsAPI } from '../../services/getDepartments.service';
 import { getEmployeesAPI } from '../../services/getEmployees.service';
 import { getOfficesAPI, postOfficeAPI } from '../../services/getOffices.service';
 import { postCompanyAPI } from '../../services/postCompany.service';
+import { postEmployeeAPI } from '../../services/postEmployee.service';
 import axios from '../../utils/axiosInstance';
 
 import styles from './InfoAdmin.module.css';
@@ -62,12 +64,68 @@ export default function InfoAdmin() {
     codigoDepartamento: '',
     departamento: '',
   });
+
+  const [employee, setEmployee] = useState(
+    {
+      person: {
+        numeroDocumento: '',
+        nombres: '',
+        apellIdos: '',
+        edad: '',
+        numeroTelefonico: '',
+        direccion: '',
+        correoElectronico: '',
+        fechaNacimiento: '',
+        IdTipoDocumento: '',
+        IdGenero: '',
+        IdCiudad: '',
+      },
+      employee: {
+        FechaAdmision: '',
+        supervisor: '',
+        IdCompania: '',
+        rollCompania: '',
+        areaId: '',
+      },
+      segments: {
+        antiguedadEnElTrabajo: '',
+        estadoParental: '',
+        resultadoUltimaEvaluacionDesempeno: '',
+        numerodeHijos: '',
+        IdAreaFuncional: '',
+        IdNivelOrganizacional: '',
+        IdTipodeContrato: '',
+        IdTipodeContratacion: '',
+        IdDisabilities: '',
+        IdSexualPreference: '',
+        IdCampus: '',
+        IdEnglishLevel: '',
+        IdEducationLevel: '',
+        IdProfession: '',
+        IdGrupoCiolectivo: '',
+        IdJornada: '',
+        IdSalaryType: '',
+        IdEstadoCivil: '',
+      },
+    }
+  );
+
+
   const tableData = admin[type];
 
   // state for ids
   const [data, setData] = useState({
-    content: { country: [], sizeCompany: [], sector: [], company: [] },
-    ids: { country: [], sizeCompany: [], sector: [], company: [] },
+    content: { country: [], sizeCompany: [], sector: [], company: [], 
+      documentType: [], gender: [], AreaFuncional:[],NivelOrganizacional:[],
+      TipoContrato:[] , TipoContratacion:[], Disabilities:[], SexualPreference:[],
+      Campus:[], EnglishLevel:[],EducationLevel:[], GrupoCiolectivo:[], Jornada:[], 
+      SalaryType:[], EstadoCivil:[] },
+
+    ids: { country: [], sizeCompany: [], sector: [], company: [], 
+      documentType:[ ], gender: [], AreaFuncional:[], NivelOrganizacional:[], 
+      TipoContrato:[], TipoContratacion:[], Disabilities:[], SexualPreference:[],
+      Campus:[], EnglishLevel:[],EducationLevel:[], GrupoCiolectivo:[], Jornada:[], 
+      SalaryType:[], EstadoCivil:[] },
   });
   const csvLink = useRef();
   const importcsv = useRef();
@@ -102,6 +160,7 @@ export default function InfoAdmin() {
       console.log(error);
     }
   };
+
   const sizeCompanyConsume = async () => {
     try {
       await axios.get('TamanoCompania/').then((res) => {
@@ -116,14 +175,13 @@ export default function InfoAdmin() {
         let holder = data;
         holder.content.sizeCompany = fetch;
         holder.ids.sizeCompany = id;
-        console.log(holder.content.sizeCompany);
         setData(holder);
       });
     } catch (error) {
       console.log(error);
-      console.log('eror');
     }
   };
+
   const countryConsume = async () => {
     try {
       await axios.get('paises/').then((res) => {
@@ -144,6 +202,7 @@ export default function InfoAdmin() {
       console.log(error);
     }
   };
+
   const companyConsume = async () => {
     try {
       await axios.get('companias/').then((res) => {
@@ -160,8 +219,334 @@ export default function InfoAdmin() {
         let holder = data;
         holder.content.company = fetch;
         holder.ids.company = id;
-        console.log('hola' + holder.content.company);
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  const documentTypeConsume = async () => {
+    try {
+      await axios.get('tipo-documentos/').then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.tipoDocumento)) {
+            fetch.push(val.tipoDocumento);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.documentType = fetch;
+        holder.ids.documentType = id;
+        setData(holder);
+
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const genderConsume = async () => {
+    try {
+      await axios.get('generos/').then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.genero)) {
+            fetch.push(val.genero);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.gender = fetch;
+        holder.ids.gender = id;
+        setData(holder);
+
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const cityConsume = async () => {
+    try {
+      await axios.get('ciudades/').then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.genero)) {
+            fetch.push(val.genero);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.gender = fetch;
+        holder.ids.gender = id;
+        setData(holder);
+
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const areaConsume = async () => {
+    try {
+      await axios.get('Area/').then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.NombreArea)) {
+            fetch.push(val.NombreArea);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.AreaFuncional = fetch;
+        holder.ids.AreaFuncional = id;
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  const organizationalLevelConsume = async () => {
+    try {
+      await axios.get('OrganizationalLevel/').then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.nivelOrganizacional)) {
+            fetch.push(val.nivelOrganizacional);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.NivelOrganizacional = fetch;
+        holder.ids.NivelOrganizacional = id;
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const contractTypeConsume = async () => {
+    try {
+      await axios.get('ContractType/').then((res) => {
+        let fetch = [];
+        let id = [];
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.tipoContrato)) {
+            fetch.push(val.tipoContrato);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.TipoContrato = fetch;
+        holder.ids.TipoContrato = id;
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const hiringTypeConsume = async () => {
+    try {
+      await axios.get('HiringType/').then((res) => {
+        let fetch = [];
+        let id = [];
+        console.log(res);
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.tipoContrato)) {
+            fetch.push(val.tipoContrato);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.TipoContratacion= fetch;
+        holder.ids.TipoContratacion = id;
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const sexualPreferenceConsume = async () => {
+    try {
+      await axios.get('PreferenciSexual/').then((res) => {
+        let fetch = [];
+        let id = [];
+        console.log(res);
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.preferenciaSexual)) {
+            fetch.push(val.preferenciaSexual);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.SexualPreference = fetch;
+        holder.ids.SexualPreference = id;
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const campusConsume = async () => {
+    try {
+      await axios.get('Campus/').then((res) => {
+        let fetch = [];
+        let id = [];
+        console.log(res);
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.sede)) {
+            fetch.push(val.sede);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.Campus = fetch;
+        holder.ids.Campus = id;
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const englishLevelConsume = async () => {
+    try {
+      await axios.get('EnglishLevel/').then((res) => {
+        let fetch = [];
+        let id = [];
+        console.log(res);
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.nivelIngles)) {
+            fetch.push(val.nivelIngles);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.EnglishLevel = fetch;
+        holder.ids.EnglishLevel = id;
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const JornadaConsume = async () => {
+    try {
+      await axios.get('EducationLevel/').then((res) => {
+        let fetch = [];
+        let id = [];
+        console.log(res);
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.nivelEducativo)) {
+            fetch.push(val.nivelEducativo);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.EducationLevel = fetch;
+        holder.ids.EducationLevel = id;
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const EstadoCivilConsume = async () => {
+    try {
+      await axios.get('MaritalStatus/').then((res) => {
+        let fetch = [];
+        let id = [];
+        console.log(res);
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.estadoCivil)) {
+            fetch.push(val.estadoCivil);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.EstadoCivil = fetch;
+        holder.ids.EstadoCivil = id;
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const GrupoCiolectivoConsume = async () => {
+    try {
+      await axios.get('EducationLevel/').then((res) => {
+        let fetch = [];
+        let id = [];
+        console.log(res);
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.nivelEducativo)) {
+            fetch.push(val.nivelEducativo);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.EducationLevel = fetch;
+        holder.ids.EducationLevel = id;
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const SalaryTypeConsume = async () => {
+    try {
+      await axios.get('TipoSalario/').then((res) => {
+        let fetch = [];
+        let id = [];
+        console.log(res);
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.tipoDeSalario)) {
+            fetch.push(val.tipoDeSalario);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.SalaryType = fetch;
+        holder.ids.SalaryType = id;
+        setData(holder);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const educationLevelConsume = async () => {
+    try {
+      await axios.get('EducationLevel/').then((res) => {
+        let fetch = [];
+        let id = [];
+        console.log(res);
+        res.data.forEach((val) => {
+          if (!fetch.includes(val.nivelEducativo)) {
+            fetch.push(val.nivelEducativo);
+            id.push(val);
+          }
+        });
+        let holder = data;
+        holder.content.EducationLevel = fetch;
+        holder.ids.EducationLevel = id;
         setData(holder);
       });
     } catch (error) {
@@ -184,18 +569,32 @@ export default function InfoAdmin() {
     },
     [compania]
   );
+
   const handleAutoCompleteOficina = useCallback(
     (name, value) => {
       setOficina({ ...oficina, [name]: value });
     },
     [oficina]
   );
+
   const handleAutoCompleteDepartment = useCallback(
     (name, value) => {
       setDepartement({ ...department, [name]: value });
     },
     [department]
   );
+
+  const handleAutoCompleteEmployee = useCallback((name, value) => {
+    const fieldNames = name.split('.'); // Separamos el nombre del campo en base al punto (.)
+  
+    setEmployee((prevState) => ({
+      ...prevState,
+      [fieldNames[0]]: {
+        ...prevState[fieldNames[0]],
+        [fieldNames[1]]: value,
+      },
+    }));
+  }, []);
 
   const handlephoto = (event) => {
     if (event.target.files[0].size < 500000) {
@@ -310,6 +709,93 @@ export default function InfoAdmin() {
     handleCloseModal();
   };
 
+
+  const handleEmployee = async () => {
+    if (edit) {
+      dispatch(updateItem({ data: employee, type: type, id: employee._id }));
+    } else {
+      const id = uuid.v4();
+      let holder = JSON.parse(JSON.stringify(employee));
+      holder._id = id;
+      dispatch(addItem({ data: holder, type: type }));
+
+      let idTipoDocumento = search(employee.person.IdTipoDocumento, data.ids.documentType, 'documentTypeId', 'tipoDocumento');
+      let IdGenero = search(employee.person.IdGenero, data.ids.gender, 'id', 'genero');
+      let IdCompany = search(employee.employee.IdCompania, data.ids.company, 'id', 'nombreCompania');
+
+
+      let updatedPerson = {
+        ...holder.person,
+        IdTipoDocumento: idTipoDocumento,
+        IdGenero: IdGenero,
+        IdCiudad: '1',
+      };
+
+      let updatedEmployee= {
+        ...holder.employee,
+        IdCompania: IdCompany ,
+      };
+
+      holder = { ...holder, person: updatedPerson, employee: updatedEmployee };  
+
+      console.log(holder);
+      /*
+      postEmployeeAPI(
+        oficina,
+        idpais,
+        sectorid,
+        sizeid,
+        userInfo.user,
+      );*/
+    }
+
+
+    setEmployee({
+      person: {
+        numeroDocumento: '',
+        nombres: '',
+        apellIdos: '',
+        edad: '',
+        numeroTelefonico: '',
+        direccion: '',
+        correoElectronico: '',
+        fechaNacimiento: '',
+        IdTipoDocumento: '',
+        IdGenero: '',
+        IdCiudad: '',
+      },
+      employee: {
+        FechaAdmision: '',
+        supervisor: '',
+        IdCompania: '',
+        rollCompania: '',
+        areaId: '',
+      },
+      segments: {
+        antiguedadEnElTrabajo: '',
+        estadoParental: '',
+        resultadoUltimaEvaluacionDesempeno: '',
+        numerodeHijos: '',
+        IdAreaFuncional: '',
+        IdNivelOrganizacional: '',
+        IdTipodeContrato: '',
+        IdTipodeContratacion: '',
+        IdDisabilities: '',
+        IdSexualPreference: '',
+        IdCampus: '',
+        IdEnglishLevel: '',
+        IdEducationLevel: '',
+        IdProfession: '',
+        IdGrupoCiolectivo: '',
+        IdJornada: '',
+        IdSalaryType: '',
+        IdEstadoCivil: '',
+      },
+    });
+    handleCloseModal();
+  };
+
+  
   // handle change input
 
   const handleChangeCompania = useCallback(
@@ -333,6 +819,29 @@ export default function InfoAdmin() {
     },
     [department]
   );
+    /*
+  const handleChangeEmployee = useCallback(
+    (event) => {
+      setEmployee({
+        ...employee,
+        [event.target.name]: event.target.value,
+      });
+    },
+    [employee]
+  );*/
+
+  const handleChangeEmployee = useCallback((event) => {
+    const { name, value } = event.target;
+    const fieldNames = name.split('.'); // Separamos el nombre del campo en base al punto (.)
+  
+    setEmployee((prevState) => ({
+      ...prevState,
+      [fieldNames[0]]: {
+        ...prevState[fieldNames[0]],
+        [fieldNames[1]]: value,
+      },
+    }));
+  }, []);
 
   const handleDownload = () => {
     axios
@@ -368,15 +877,15 @@ export default function InfoAdmin() {
             handleOffice={handleOficina}
           />
         );
-        case 'Otros campos':
+      case 'Empleados':
         return (
-          <NewOffice
-            info={oficina}
+          <NewEmployee
+            info={employee}
             content={data.content}
-            handleAutocomplete={handleAutoCompleteOficina}
-            handleChangeOficina={handleChangeOficina}
+            handleAutocomplete={handleAutoCompleteEmployee}
+            handleChangeEmployee={handleChangeEmployee}
             handleCloseModal={handleCloseModal}
-            handleOffice={handleOficina}
+            handleEmployee={handleEmployee}
           />
         );
       case 'Departamentos':
@@ -397,7 +906,6 @@ export default function InfoAdmin() {
 
   //edit item
   const handleEditItem = (row) => {
-    console.log(row);
     switch (type) {
       case 'Empresas':
         setCompania({
@@ -407,8 +915,8 @@ export default function InfoAdmin() {
       case 'Oficinas':
         setOficina({ ...row });
         break;
-        case 'Otros campos':
-          setOficina({ ...row });
+        case 'Empleados':
+          setEmployee({ ...row });
           break;
       case 'Departamentos':
         setDepartement({ ...row });
@@ -446,9 +954,23 @@ export default function InfoAdmin() {
         countryConsume();
         sizeCompanyConsume();
         sectorConsume();
+        documentTypeConsume();
+        genderConsume();
+        companyConsume();
+        areaConsume();
+        organizationalLevelConsume();
+        contractTypeConsume();
+        hiringTypeConsume();
+        sexualPreferenceConsume();
+        campusConsume();
+        englishLevelConsume();
+        educationLevelConsume();
+        SalaryTypeConsume();
+        GrupoCiolectivoConsume();
+        EstadoCivilConsume();
+        JornadaConsume();
         getEmployeesAPI(userInfo.Company)
           .then((res) => {
-            console.log(res.data);
             let data = [];
             res.data.forEach((val) => {
               let id = uuid.v4();
@@ -466,7 +988,6 @@ export default function InfoAdmin() {
         companyConsume();
         getOfficesAPI()
           .then((res) => {
-            console.log(res);
             let data = [];
             res.data.forEach((val) => {
               let id = uuid.v4();
@@ -480,25 +1001,9 @@ export default function InfoAdmin() {
           })
           .catch((e) => console.log(e));
         break;
-        case 'Otros campos':
-          companyConsume();
-          getOfficesAPI()
-            .then((res) => {
-              let data = [];
-              res.data.forEach((val) => {
-                let id = uuid.v4();
-                if (!data.includes(val)) {
-                  let holder = val;
-                  holder._id = id;
-                  data.push(val);
-                }
-              });
-              dispatch(storeItems({ data, type: type }));
-            })
-            .catch((e) => console.log(e));
-          break;
       case 'Departamentos':
         countryConsume();
+        documentTypeConsume();
         getDepartmentsAPI()
           .then((res) => {
             let data = [];
@@ -516,22 +1021,6 @@ export default function InfoAdmin() {
         break;
       
       default:
-        countryConsume();
-        getDepartmentsAPI()
-          .then((res) => {
-            let data = [];
-            res.data.forEach((val) => {
-              let id = uuid.v4();
-              if (!data.includes(val)) {
-                let holder = val;
-                holder._id = id;
-                data.push(val);
-              }
-            });
-            dispatch(storeItems({ data, type: type }));
-          })
-          .catch((e) => console.log(e));
-        break;
     }
   };
 
@@ -672,7 +1161,7 @@ export default function InfoAdmin() {
                   color="primary"
                   onClick={handleOpenModal}
                 >
-                  {type === 'Empleados' ? 'nuevo ' : 'nueva '}
+                  {type === 'Empleados' ? 'nuevo' : 'nueva '}
                   {type}
                 </Button>
                 <input
