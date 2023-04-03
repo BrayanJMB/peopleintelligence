@@ -144,8 +144,8 @@ const AnswerSurvey = () => {
     }
 
     if ((activeStep + 1) === steps.length) {
-      // redirect to home
-      window.location.href = '/';
+      // close window
+      window.close();
 
       return;
     }
