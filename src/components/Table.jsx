@@ -113,16 +113,16 @@ import MyLoader from './MyLoader/MyLoader';
 import MyPageHeader from './MyPageHeader/MyPageHeader';
 import MyTable from './MyTable/MyTable';
 
-import styles from '../pages/JourneySettingsPage/JourneySettingsPage.module.css';
+//import styles from '../pages/JourneySettingsPage/JourneySettingsPage.module.css';
+import styles from '../components/Estilos Table/StyleaForOtherCamps.module.css';
 
-
-const search = (id, inputArray, field, proprety) => {
+function search(id, inputArray, field, proprety) {
   for (let i = 0; i < inputArray.length; i++) {
     if (inputArray[i][proprety] === id) {
       return inputArray[i][field];
     }
   }
-};
+}
 
 export default function Table(props) {
   const navigate = useNavigate();
@@ -2467,12 +2467,13 @@ const tabLabels = [
           }}
         />
       );
+      
   }else{
     return (
       <Box sx={{ display: 'flex' }} >
         <div style={{ backgroundColor: 'white' }}>
-          <div className={styles.JourneySettingsPage}>
-            <div className={styles.JourneySettingsPage__content}>  
+          <div className={styles.StyleOtherCamps}>
+            <div className={styles.StyleOthercamps__content}>  
               {loading === true && (
                 <MyLoader />
               )}

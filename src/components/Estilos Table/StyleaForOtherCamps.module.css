@@ -1,0 +1,12 @@
+.StyleOtherCamps {
+    width: 86.5vw;
+    height: 90vh;
+    margin-top: -1rem;
+    border-top-left-radius: 0px;
+    background-color: rgb(255, 255, 255);
+    overflow-y: scroll;
+}
+.StyleOthercamps__content {
+    justify-content: left;
+    margin: 0em 5rem;
+}
