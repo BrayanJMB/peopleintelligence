@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -155,6 +155,8 @@ const JourneySettingsPage = () => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const [searchParams] = useSearchParams();
+  const tabQuery = searchParams.get('tab');
 
   /**
    * Handle tab change.
@@ -712,6 +714,19 @@ const JourneySettingsPage = () => {
     },
   ]);
 
+  /**
+   * Update current tab if query param is present.
+   */
+  const updateCurrentTab = () => {
+    if (tabQuery === 'survey') {
+      setCurrentTab(2);
+    }
+
+    if (tabQuery === 'map') {
+      setCurrentTab(3);
+    }
+  };
+
   // component did mount
   useEffect(() => {
     if (!isAdmin(userInfo) && !isJourney(userInfo)) {
@@ -730,7 +745,13 @@ const JourneySettingsPage = () => {
     fetchJourneyMap();
     fetchMapSurveys();
     fetchTemplates();
+    updateCurrentTab();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // watch tab query param
+  useEffect(() => {
+    updateCurrentTab();
+  }, [tabQuery]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Box sx={{ display: 'flex' }}>

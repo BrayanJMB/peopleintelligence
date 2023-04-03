@@ -156,7 +156,7 @@ export default function Navbar() {
     if (userInfo?.role.findIndex((p) => p === 'MultiCompania') > -1) {
       companyConsume(userInfo.user);
     }
-  }, [userInfo]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <AppBar

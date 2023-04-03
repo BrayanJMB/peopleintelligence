@@ -12,14 +12,6 @@ import TextField from '@mui/material/TextField';
 
 import styles from './Form.module.css';
 
-// Likert options
-const options = [
-  'Discrepar',
-  'Estar de acuerdo',
-  'Muy en desacuerdo',
-  'Neutral',
-  'Totalmente de acuerdo',
-];
 
 export default function Form(props) {
   const [categoryId, setCategoryId] = useState('');
@@ -125,7 +117,7 @@ export default function Form(props) {
               />
             </div>
             <div className={styles.options}>
-              {options.map((val, key) => {
+              {props.information.options.map((val, key) => {
                 return (
                   <div className={styles.option} key={key}>
                     <div
@@ -141,7 +133,18 @@ export default function Form(props) {
                     >
                       {key + 1}
                     </div>
-                    <p> {val}</p>
+                    <TextField
+                      id={`option-${key}`}
+                      variant="standard"
+                      placeholder="Añadir opción..."
+                      value={props.information.options[key]}
+                      onChange={(event) => props.handleChangeOptions(event, key)}
+                      InputProps={{
+                        disableUnderline: true,
+                      }}
+                      fullWidth
+                      size="small"
+                    />
                   </div>
                 );
               })}
