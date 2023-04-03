@@ -103,6 +103,11 @@ export default function App() {
                   element={<CreateSurvey />}
                   exact
                 />
+                <Route
+                  path="/journey/update-template/:id"
+                  element={<CreateSurvey />}
+                  exact
+                />
               </Route>
               <Route path="/questions" element={<Questions />} exact />
               <Route path="/noaccess" element={<NoAccess />} />

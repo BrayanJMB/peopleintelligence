@@ -43,6 +43,7 @@ const EditForm = ({
   questionNumber,
   categoryError,
   categories,
+  handleChangeOptions,
   ...props
 }) => {
   const [categoryId, setCategoryId] = useState('');
@@ -109,7 +110,7 @@ const EditForm = ({
           </div>
   
           {/* likert scale */}
-          {question.type === 'Escala Likert' && (
+          {question.typeId === 2 && (
             <div className={styles.options}>
               {question.options.map((val, key) => (
                 <div
@@ -129,14 +130,25 @@ const EditForm = ({
                   >
                     {key + 1}
                   </div>
-                  <p> {val}</p>
+                  <TextField
+                    id={`option-${key}`}
+                    variant="standard"
+                    placeholder="Añadir opción..."
+                    value={question.options[key]}
+                    onChange={(event) => handleChangeOptions(event, key, true)}
+                    InputProps={{
+                      disableUnderline: true,
+                    }}
+                    fullWidth
+                    size="small"
+                  />
                 </div>
               ))}
             </div>
           )}
   
           {/* multiple option */}
-          {(question.type === 'Opción múltiple' || question.type === 'Opción única') && (
+          {(question.typeId === 3) && (
             <div className={styles.options}>
               {question.customOptions.map((val, key) => (
                 <div
@@ -311,11 +323,13 @@ EditForm.propTypes = {
   handleAddStars: PropTypes.func.isRequired,
   starMessage: PropTypes.string.isRequired,
   questionNumber: PropTypes.number.isRequired,
+  handleChangeOptions: PropTypes.func,
 };
 
 EditForm.defaultProps = {
   question: {},
   questionNumber: 1,
+  handleInformation: () => {},
 };
 
 export default EditForm;

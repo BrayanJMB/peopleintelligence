@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { DragDropContext, Draggable,Droppable } from 'react-beautiful-dnd';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
@@ -7,9 +8,41 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 
+import MyConfirmation from '../../../../components/MyConfirmation/MyConfirmation';
+
 import styles from './Cuestionario.module.css';
 
 export default function Cuestionario(props) {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [currentQuestionId, setCurrentQuestionId] = useState(null);
+
+  /**
+   * Handle on close delete dialog.
+   * 
+   * @param {boolean} isConfirmed Is true if the user confirmed the action.
+   * @returns 
+   */
+  const onCloseDeleteDialog = (isConfirmed) => {
+    if (!isConfirmed) {
+      setDeleteDialogOpen(false);
+
+      return;
+    }
+
+    props.handleDelete(currentQuestionId);
+    setDeleteDialogOpen(false);
+  };
+
+  /**
+   * Open delete dialog.
+   * 
+   * @param {number} id The id of the question to delete.
+   */
+  const openDeleteDialog = (id) => {
+    setCurrentQuestionId(id);
+    setDeleteDialogOpen(true);
+  };
+
   return (
     <div className={styles.title}>
       <div className={styles.questions}>
@@ -108,7 +141,7 @@ export default function Cuestionario(props) {
                                           {/* delete */}
                                           <IconButton
                                             onClick={() => {
-                                              props.handleDelete(index);
+                                              openDeleteDialog(val.questionId);
                                             }}
                                           >
                                             <DeleteForeverOutlinedIcon
@@ -138,6 +171,13 @@ export default function Cuestionario(props) {
           </div>
         )}
       </div>
+
+      <MyConfirmation 
+        open={deleteDialogOpen}
+        onClose={onCloseDeleteDialog}
+        title="¿Estás seguro de eliminar esta pregunta?"
+        message="Esta acción no se puede deshacer."
+      />
     </div>
   );
 }

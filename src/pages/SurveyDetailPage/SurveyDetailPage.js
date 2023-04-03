@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -101,6 +101,8 @@ const SurveyDetailPage = () => {
   const [linkCopied, setLinkCopied] = useState(false);
   const [reminderSent, setReminderSent] = useState(false);
   const [showDemographicData, setShowDemographicData] = useState(false);
+  const [searchParams] = useSearchParams();
+  const isOpenSendMail = searchParams.get('sendMail') === 'true';
 
   /**
    * Handle click menu for open survey options.
@@ -319,6 +321,7 @@ const SurveyDetailPage = () => {
                           <SendInvitationDialog
                             isPersonal={currentSurvey.ispersonal}
                             copyUrl={handleClickCopyUrl}
+                            isOpen={isOpenSendMail}
                           />
                         </Stack>
                       </div>

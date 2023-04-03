@@ -208,6 +208,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
       {isTemplate() === true && (
         <FormControl
           className={styles.Introduction__formControl}
+          disabled={true}
         >
           <FormLabel
             id="survey-or-map"
