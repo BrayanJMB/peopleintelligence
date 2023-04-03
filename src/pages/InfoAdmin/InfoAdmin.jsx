@@ -20,7 +20,12 @@ import { addItem, storeItems, updateItem } from '../../features/adminSlice';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import { getCompaniesAPI } from '../../services/getCompanies.service';
-import { getDepartmentsAPI } from '../../services/getDepartments.service';
+import {   deleteAreaAPI,
+  fetchAreaAPI,
+  getDepartmentsAPI,
+  storeAreaAPI,
+  updateAreaAPI,
+ } from '../../services/getDepartments.service';
 import { getEmployeesAPI } from '../../services/getEmployees.service';
 import { getOfficesAPI, postOfficeAPI } from '../../services/getOffices.service';
 import { postCompanyAPI } from '../../services/postCompany.service';
