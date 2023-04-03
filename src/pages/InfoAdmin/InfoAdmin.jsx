@@ -368,17 +368,7 @@ export default function InfoAdmin() {
             handleOffice={handleOficina}
           />
         );
-        case 'Otros campos':
-        return (
-          <NewOffice
-            info={oficina}
-            content={data.content}
-            handleAutocomplete={handleAutoCompleteOficina}
-            handleChangeOficina={handleChangeOficina}
-            handleCloseModal={handleCloseModal}
-            handleOffice={handleOficina}
-          />
-        );
+        
       case 'Departamentos':
         return (
           <NewDepartment
@@ -661,20 +651,22 @@ export default function InfoAdmin() {
                     </Button>
                   </div>
                 ) : null}
-                <Button
-                  variant="contained"
-                  style={{
-                    whiteSpace: 'nowrap',
-                    padding: '1rem 1rem',
-                    color: 'white',
-                    marginLeft: '1rem',
-                  }}
-                  color="primary"
-                  onClick={handleOpenModal}
-                >
-                  {type === 'Empleados' ? 'nuevo ' : 'nueva '}
-                  {type}
-                </Button>
+                 {type !== 'Otros campos' && (
+    <Button
+      variant="contained"
+      style={{
+        whiteSpace: 'nowrap',
+        padding: '1rem 1rem',
+        color: 'white',
+        marginLeft: '1rem',
+      }}
+      color="primary"
+      onClick={handleOpenModal}
+    >
+      {type === 'Empleados' ? 'nuevo ' : 'nueva '}
+      {type}
+    </Button>
+  )}
                 <input
                   type="file"
                   onChange={handleFile}
