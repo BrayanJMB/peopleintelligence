@@ -15,6 +15,7 @@ import * as uuid from 'uuid';
 import Building from '../../assets/Building.svg';
 import MyCard from '../../components/MyCard/MyCard';
 import MyTable from '../../components/MyTable/MyTable';
+import NewRoleUserAdministrator from '../../components/NewRolUserAdministrator/NewRoleUserAdministrator';
 import Notification from '../../components/Notification';
 import Table from '../../components/Table';
 import { addItem, storeItems, updateItem } from '../../features/adminSlice';
@@ -46,7 +47,31 @@ export default function UserAdministrator() {
   const { type } = useParams();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
-  
+  const [currentCreate, setCurrentCreate] = useState(null);
+  const [RolUserAdministrators, setRolUserAdministrators] = useState([]);
+
+   //rol Usuario
+ const RolUsserAdministratorColumns = [
+
+  {
+    id: 'emailUserAdministrator',
+    label: 'Correo Usuario',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Rol Usuario',
+    numeric: false,
+  },
+  {
+    id: 'ActionUsuario',
+    label: 'Aciones',
+    numeric: false,
+  },
+
+];
+
+
   const csvLink = useRef();
   const importcsv = useRef();
 
@@ -58,66 +83,50 @@ export default function UserAdministrator() {
 
   const [employecsv, setEmployecsv] = useState('');
 
-  // get ids data
-
-
-
   // handle modal
   const handleOpenModal = () => setOpen(true);
   const handleCloseModal = () => {
     setOpen(false);
     setEdit(false);
   };
-
-  const handleDownload = () => {
-    axios
-      .get('Employee/DownloadCsvEmployee')
-      .then((res) => setEmployecsv(res.data));
-  };
-
   const handleClose = () => {
     setValues({ ...values, isOpen: false });
   };
 
-  const handleFile = async (event) => {
-    let bodyFormData = new FormData();
-    bodyFormData.append('data', event.target.files[0]);
-
-    await fetch(
-      `https://peopleintelligenceapi.azurewebsites.net/api/Employee/EmployeesCsv/${userInfo.Company}`,
-      {
-        method: 'POST',
-        body: bodyFormData,
-      }
-    )
-      .then((response) => response.json())
-      .then((res) => {
-        setValues({
-          ...values,
-          message: res.message,
-          isOpen: true,
-          severity: 'success',
-        });
-      })
-      .catch((err) => console.log(err));
+  
+  const handleCreateRolUserAdministrator = () => {
+    setCurrentCreate({
+      type: 'UserAdministrator',
+      title: 'Crear Rol Usuario',
+      fields: [
+        {
+          label: 'Usuario',
+          name: 'administradorUsuario',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    handleOpenModal();
   };
 
-  useEffect(() => {
-    if (employecsv) {
-      csvLink.current.link.click();
-    }
-  }, [employecsv]);
-
-  useEffect(() => {
-    if (
-      userInfo?.role.findIndex((p) => p === 'Management') < 0 &&
-      userInfo?.role.findIndex((p) => p === 'Administrador') < 0
-    ) {
-      alert('No tiene permiso para acceder a esta funcionalidad');
-      navigate('/dashboard');
-    }
-  }, [type]);
-
+  const handleAddUserAdministrator = ({ user, role }) => {
+    axios.post('/api/user-administrator', { user, role })
+    .then(response => {
+      setValues({
+        ...values,
+        message:
+          'El usuario y el rol se guardaron correctamente',
+        isOpen: true,
+        severity: 'success',
+      });
+    })
+    .catch(error => {
+      console.error('Ocurrió un error al guardar el usuario y el rol', error);
+    });
+    setOpen(false);
+  };
+  
   return (
     <Box sx={{ display: 'flex' }}>
       <Navbar />
@@ -139,7 +148,14 @@ export default function UserAdministrator() {
               </IconButton>
             </div>
           </div>
-          <div className={styles.modalbuttom}>{}</div>
+          <div className={styles.modalbuttom}>
+          {
+              <NewRoleUserAdministrator
+                handleCloseModal={handleCloseModal}
+                handleAddUserAdministrator={handleAddUserAdministrator}
+              />
+            }
+          </div>
         </Box>
       </Modal>
       <div style={{ backgroundColor: 'white' }}>
@@ -183,15 +199,15 @@ export default function UserAdministrator() {
                         <Button
                           variant='outlined'
                           startIcon={<AddIcon />}
-                          onClick={handleOpenModal}
+                          onClick={handleCreateRolUserAdministrator}
                         >
                           Crear Rol Usuario
                         </Button>
                       </Stack>
                       <MyTable
-                        title={'Organizacion'}
-                        columns={[]}
-                        rows={[]}
+                        title={'Rol Usuarios'}
+                        columns={RolUsserAdministratorColumns}
+                        rows={RolUserAdministrators}
                       />
                   </MyCard>
                 </div>
