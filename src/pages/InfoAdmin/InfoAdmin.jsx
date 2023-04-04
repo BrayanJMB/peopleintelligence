@@ -21,7 +21,12 @@ import { addItem, storeItems, updateItem } from '../../features/adminSlice';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import { getCompaniesAPI } from '../../services/getCompanies.service';
-import { getDepartmentsAPI } from '../../services/getDepartments.service';
+import {   deleteAreaAPI,
+  fetchAreaAPI,
+  getDepartmentsAPI,
+  storeAreaAPI,
+  updateAreaAPI,
+ } from '../../services/getDepartments.service';
 import { getEmployeesAPI } from '../../services/getEmployees.service';
 import { getOfficesAPI, postOfficeAPI } from '../../services/getOffices.service';
 import { postCompanyAPI } from '../../services/postCompany.service';
@@ -29,6 +34,7 @@ import { postEmployeeAPI } from '../../services/postEmployee.service';
 import axios from '../../utils/axiosInstance';
 
 import styles from './InfoAdmin.module.css';
+
 
 const search = (value, inputArray, field, proprety) => {
   for (let i = 0; i < inputArray.length; i++) {
@@ -1150,20 +1156,22 @@ export default function InfoAdmin() {
                     </Button>
                   </div>
                 ) : null}
-                <Button
-                  variant="contained"
-                  style={{
-                    whiteSpace: 'nowrap',
-                    padding: '1rem 1rem',
-                    color: 'white',
-                    marginLeft: '1rem',
-                  }}
-                  color="primary"
-                  onClick={handleOpenModal}
-                >
-                  {type === 'Empleados' ? 'nuevo' : 'nueva '}
-                  {type}
-                </Button>
+                 {type !== 'Otros campos' && (
+                  <Button
+                    variant="contained"
+                    style={{
+                      whiteSpace: 'nowrap',
+                      padding: '1rem 1rem',
+                      color: 'white',
+                      marginLeft: '1rem',
+                    }}
+                    color="primary"
+                    onClick={handleOpenModal}
+                  >
+                    {type === 'Empleados' ? 'nuevo ' : 'nueva '}
+                    {type}
+                  </Button>
+                )}
                 <input
                   type="file"
                   onChange={handleFile}

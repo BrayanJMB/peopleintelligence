@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
@@ -73,6 +75,18 @@ import {
   updateHiringTypeAPI,
 } from '../services/getHiringType.service';
 import {
+  deleteMaritalStatusAPI,
+  fetchMaritalStatusAPI,
+  storeMaritalStatusAPI,
+  updateMaritalStatusAPI,
+} from '../services/getMaritalStatus.service';
+import {
+  deleteOrganizationalLevelAPI,
+  fetchOrganizationalLevelAPI,
+  storeOrganizationalLevelAPI,
+  updateOrganizationalLevelAPI,
+} from '../services/getOrganizationalLevel.service';
+import {
   deleteProfessionAPI,
   fetchProfessionAPI,
   storeProfessionAPI,
@@ -84,6 +98,12 @@ import {
   storeSalaryTypeAPI,
   updateSalaryTypeAPI,
 } from '../services/getSalaryType.service';
+import {
+  deleteSexualPreferenceAPI,
+  fetchSexualPreferenceAPI,
+  storeSexualPreferenceAPI,
+  updateSexualPreferenceAPI,
+} from '../services/getSexualPreference.service';
 import axios from '../utils/axiosInstance';
 
 import MyCard from './MyCard/MyCard';
@@ -93,23 +113,23 @@ import MyLoader from './MyLoader/MyLoader';
 import MyPageHeader from './MyPageHeader/MyPageHeader';
 import MyTable from './MyTable/MyTable';
 
-import styles from '../pages/JourneySettingsPage/JourneySettingsPage.module.css';
+//import styles from '../pages/JourneySettingsPage/JourneySettingsPage.module.css';
+import styles from '../components/Estilos Table/StyleaForOtherCamps.module.css';
 
-
-const search = (id, inputArray, field, proprety) => {
+function search(id, inputArray, field, proprety) {
   for (let i = 0; i < inputArray.length; i++) {
     if (inputArray[i][proprety] === id) {
       return inputArray[i][field];
     }
   }
-};
+}
 
 export default function Table(props) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [contractTypes, setcontractType] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [documentsTypes, setDocumentos] = useState([]);
+  const [DocumentsTypes, setDocumentos] = useState([]);
   const [EnglishLevels, setNivelIngles] = useState([]);
   const [EducationLevels, setEducationLevels] = useState([]);
   const [disabilitieS, setDiscapacidades] = useState([]);
@@ -117,7 +137,10 @@ export default function Table(props) {
   const [SalaryTypes, setSalario] = useState([]);
   const [Professions, setProfessions] = useState([]);
   const [Genders, setGenero] = useState([]);
-  const [collectiveWorkGrouptoWhichitBelongsss, setGrupoTrabajo] = useState([]);
+  const [collectiveWorkGrouptoWhichitBelongss, setGrupoTrabajo] = useState([]);
+  const [sexualPreferences, setPreferenciaSexual] = useState([]);
+  const [OrganizationalLevels, setOrganizationalLevels] = useState([]);
+  const [maritalStatuses, setEstadoCivil] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [currentEdit, setCurrentEdit] = useState(null);
@@ -182,17 +205,17 @@ export default function Table(props) {
     },
   ]);
  const handleDeleteDocumentType = async (id) => {
-    const documentType = documentsTypes.find((documentType) => documentType.id === id);
+    const DocumentType = DocumentsTypes.find((DocumentType) => DocumentType.id === id);
 
-    if (documentType === undefined) {
+    if (DocumentType === undefined) {
       return;
     }
 
     try {
-      await deleteContractTypeAPI(id);
+      await deleteDocumentTypeAPI(id);
     } catch (e) {}
     enqueueSnackbar(
-      'Tipo contrato eliminado con éxito',
+      'Tipo de documento eliminado con éxito',
       {
         variant: 'success',
       },
@@ -200,22 +223,22 @@ export default function Table(props) {
   };
   const handleEditDocumentType = (id) => {
     // find category
-    const documentType = documentsTypes.find((documentType) => documentType.id === id);
+    const DocumentType = DocumentsTypes.find((DocumentType) => DocumentType.id === id);
 
-    if (documentType === undefined) {
+    if (DocumentType === undefined) {
       return;
     }
 
     setCurrentEdit({
       type: 'documentType',
-      id: documentType.id,
+      id: DocumentType.id,
       title: 'Editar tipo de documento',
       fields: [
         {
           label: 'Tipo documento',
           name: 'name',
           type: 'text',
-          value: documentType.tipoDocumento,
+          value: DocumentType.tipoDocumento,
         },
       ],
     });
@@ -574,12 +597,12 @@ const HiringTypeColumns = [
 ];
 const handleCreateHiringType = () => {
   setCurrentCreate({
-    type: 'hiringType',
+    type: 'HiringType',
     title: 'Crear tipo de contratacion',
     fields: [
       {
         label: 'Tipo de contratacion',
-        name: 'hiringType',
+        name: 'tipoContrato',
         type: 'text',
         isRequired: true,
       },
@@ -632,7 +655,7 @@ const handleEditHiringType = (id) => {
   }
 
   setCurrentEdit({
-    type: 'hiringType',
+    type: 'HiringType',
     id: HiringType.id,
     title: 'Editar tipo de contratacion',
     fields: [
@@ -640,7 +663,7 @@ const handleEditHiringType = (id) => {
         label: 'Tipo contratacion',
         name: 'name',
         type: 'text',
-        value: HiringTypes.tipoContratacion,
+        value: HiringTypes.tipoContrato,
       },
     ],
   });
@@ -890,12 +913,12 @@ const CollectiveWorkGrouptoWhichitBelongsColumns = [
 ];
 const handleCreateCollectiveWorkGrouptoWhichitBelongs = () => {
   setCurrentCreate({
-    type: 'collectiveworkgrouptoWhichitBelongs',
+    type: 'CollectiveWorkGrouptoWhichitBelongs',
     title: 'Crear tipo de grupo colectivo',
     fields: [
       {
         label: 'Grupo de Trabajo Colectivo al que Pertenece',
-        name: 'collectiveworkgrouptoWhichitBelongs',
+        name: 'grupoColectivoDeTrabajo',
         type: 'text',
         isRequired: true,
       },
@@ -923,7 +946,7 @@ const mapCollectiveWorkGrouptoWhichitBelongs= (CollectiveWorkGrouptoWhichitBelon
   },
 ]);
 const handleDeleteCollectiveWorkGrouptoWhichitBelongs = async (id) => {
-  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongsss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === id);
+  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === id);
 
   if (CollectiveWorkGrouptoWhichitBelongs === undefined) {
     return;
@@ -941,14 +964,14 @@ const handleDeleteCollectiveWorkGrouptoWhichitBelongs = async (id) => {
 };
 const handleEditCollectiveWorkGrouptoWhichitBelongs = (id) => {
   // find category
-  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongsss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === id);
+  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === id);
 
   if (CollectiveWorkGrouptoWhichitBelongs === undefined) {
     return;
   }
 
   setCurrentEdit({
-    type: 'collectiveworkgrouptoWhichitBelongs',
+    type: 'CollectiveWorkGrouptoWhichitBelongs',
     id: CollectiveWorkGrouptoWhichitBelongs.id,
     title: 'Editar tipo de contratacion',
     fields: [
@@ -956,7 +979,7 @@ const handleEditCollectiveWorkGrouptoWhichitBelongs = (id) => {
         label: 'Tipo contratacion',
         name: 'name',
         type: 'text',
-        value: collectiveWorkGrouptoWhichitBelongsss.tipoGrupoTrabajo,
+        value: collectiveWorkGrouptoWhichitBelongss.grupoColectivoDeTrabajo,
       },
     ],
   });
@@ -972,6 +995,320 @@ const fetchCollectiveWorkGrouptoWhichitBelongs = async () => {
   setLoading(false);
 };
 //fin  CollectiveWorkGrouptoWhichitBelongs
+//SexualPreference
+const SexualPreferenceColumns = [
+
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Preferncias sexuales',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+
+];
+const handleCreateSexualPreference = () => {
+  setCurrentCreate({
+    type: 'preferenciaSexual',
+    title: 'Crear tipo de contratacion',
+    fields: [
+      {
+        label: 'Preferencia Sexual',
+        name: 'preferenciaSexual',
+        type: 'text',
+        isRequired: true,
+      },
+    ],
+  });
+  setOpenCreateDialog(true);
+};
+const mapSexualPreference= (SexualPreference) => SexualPreference.map((SexualPreference) => [
+  {
+    column: 'id',
+    value: SexualPreference.id.toString(), //swagger
+  },
+  {
+    column: 'name',
+    value: SexualPreference.preferenciaSexual, //swagger
+  },
+  {
+    column: 'options',
+    value: '',
+    payload: {
+      handleDelete: handleDeleteSexualPreference,
+      handleEdit: handleEditSexualPreference,
+      id: SexualPreference.id,
+    },
+  },
+]);
+const handleDeleteSexualPreference = async (id) => {
+  const SexualPreference = sexualPreferences.find((SexualPreference) => SexualPreference.id === id);
+
+  if (SexualPreference === undefined) {
+    return;
+  }
+
+  try {
+    await deleteSexualPreferenceAPI(id);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Preferencia sexual eliminado con exito',
+    {
+      variant: 'success',
+    },
+  );
+};
+const handleEditSexualPreference = (id) => {
+  // find category
+  const SexualPreference = sexualPreferences.find((SexualPreference) => SexualPreference.id === id);
+
+  if (SexualPreference === undefined) {
+    return;
+  }
+
+  setCurrentEdit({
+    type: 'preferenciaSexual',
+    id: SexualPreference.id,
+    title: 'Editar Preferencia sexual',
+    fields: [
+      {
+        label: 'Preferencia sexual',
+        name: 'name',
+        type: 'text',
+        value: SexualPreference.preferenciaSexual,
+      },
+    ],
+  });
+  setOpenEditDialog(true);
+};
+
+const fetchSexualPreference = async () => {
+  setLoading(true);
+
+  const { data } = await fetchSexualPreferenceAPI();
+  console.log(data);
+  setPreferenciaSexual(data);
+  setLoading(false);
+};
+//fin  SexualPreference
+//Nivel de organizacion
+const OrganizationalLevelColumns = [
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Nivel de organizacion',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+];
+
+const handleCreateOrganizationalLevel = () => {
+  setCurrentCreate({
+    type: 'OrganizationalLevel',
+    title: 'Crear nivel de organizacion',
+    fields: [
+      {
+        label: 'Nivel de organizacion',
+        name: 'nivelOrganizacional',
+        type: 'text',
+        isRequired: true,
+      },
+    ],
+  });
+  setOpenCreateDialog(true);
+};
+const mapOrganizationalLevel = (OrganizationalLevel) =>
+  OrganizationalLevel.map((OrganizationalLevel) => [
+    {
+      column: 'id',
+      value: OrganizationalLevel.id.toString(), //swagger
+    },
+    {
+      column: 'name',
+      value: OrganizationalLevel.nivelOrganizacional, //swagger
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteOrganizationalLevel,
+        handleEdit: handleEditOrganizationalLevel,
+        id: OrganizationalLevel.id,
+      },
+    },
+  ]);
+const handleDeleteOrganizationalLevel = async (id) => {
+  const OrganizationalLevel = OrganizationalLevels.find(
+    (OrganizationalLevel) => OrganizationalLevel.id === id
+  );
+
+  if (OrganizationalLevel === undefined) {
+    return;
+  }
+
+  try {
+    await deleteOrganizationalLevelAPI(id);
+  } catch (e) {}
+  enqueueSnackbar('Nivel de organizacion eliminado con exito', {
+    variant: 'success',
+  });
+};
+const handleEditOrganizationalLevel = (id) => {
+  // find category
+  const OrganizationalLevel = OrganizationalLevels.find(
+    (OrganizationalLevel) => OrganizationalLevel.id === id
+  );
+
+  if (OrganizationalLevel === undefined) {
+    return;
+  }
+
+  setCurrentEdit({
+    type: 'OrganizationalLevel',
+    id: OrganizationalLevel.id,
+    title: 'Editar nivel de organizacion',
+    fields: [
+      {
+        label: 'Nivel de organizacion',
+        name: 'name',
+        type: 'text',
+        value: OrganizationalLevel.nivelOrganizacional,
+      },
+    ],
+  });
+  setOpenEditDialog(true);
+};
+
+const fetchOrganizationalLevel = async () => {
+  setLoading(true);
+
+  const { data } = await fetchOrganizationalLevelAPI();
+  console.log(data);
+  setOrganizationalLevels(data);
+  setLoading(false);
+};
+
+//fin orgaizacion
+//MaritalStatus
+const MaritalStatusColumns = [
+
+  {
+    id: 'id',
+    label: 'ID',
+    numeric: true,
+  },
+  {
+    id: 'name',
+    label: 'Preferncias sexuales',
+    numeric: false,
+  },
+  {
+    id: 'options',
+    label: 'Opciones',
+    numeric: false,
+  },
+
+];
+const handleCreateMaritalStatus = () => {
+  setCurrentCreate({
+    type: 'estadoCivil',
+    title: 'Crear tipo de contratacion',
+    fields: [
+      {
+        label: 'Preferencia Sexual',
+        name: 'estadoCivil',
+        type: 'text',
+        isRequired: true,
+      },
+    ],
+  });
+  setOpenCreateDialog(true);
+};
+const mapMaritalStatus= (MaritalStatus) => MaritalStatus.map((MaritalStatus) => [
+  {
+    column: 'id',
+    value: MaritalStatus.id.toString(), //swagger
+  },
+  {
+    column: 'name',
+    value: MaritalStatus.estadoCivil, //swagger
+  },
+  {
+    column: 'options',
+    value: '',
+    payload: {
+      handleDelete: handleDeleteMaritalStatus,
+      handleEdit: handleEditMaritalStatus,
+      id: MaritalStatus.id,
+    },
+  },
+]);
+const handleDeleteMaritalStatus = async (id) => {
+  const MaritalStatus = maritalStatuses.find((MaritalStatus) => MaritalStatus.id === id);
+
+  if (MaritalStatus === undefined) {
+    return;
+  }
+
+  try {
+    await deleteMaritalStatusAPI(id);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Estado civil eliminado con exito',
+    {
+      variant: 'success',
+    },
+  );
+};
+const handleEditMaritalStatus = (id) => {
+  // find category
+  const MaritalStatus = maritalStatuses.find((MaritalStatus) => MaritalStatus.id === id);
+
+  if (MaritalStatus === undefined) {
+    return;
+  }
+
+  setCurrentEdit({
+    type: 'estados-civiles',
+    id: MaritalStatus.id,
+    title: 'Editar Estado civil',
+    fields: [
+      {
+        label: 'Estado civil',
+        name: 'name',
+        type: 'text',
+        value: MaritalStatus.estadoCivil,
+      },
+    ],
+  });
+  setOpenEditDialog(true);
+};
+
+const fetchMaritalStatus = async () => {
+  setLoading(true);
+
+  const { data } = await fetchMaritalStatusAPI();
+  console.log(data);
+  setEstadoCivil(data);
+  setLoading(false);
+};
+//fin  MaritalStatus
 //Nivel de profession
 const ProfessionColumns = [
 
@@ -995,11 +1332,11 @@ const ProfessionColumns = [
 
 const handleCreateProfession = () => {
   setCurrentCreate({
-    type: 'Profession',
-    title: 'Crear nivel de profesion',
+    type: 'Profesion',
+    title: 'Crear Profesion',
     fields: [
       {
-        label: 'Nivel de educacion',
+        label: 'Profesion',
         name: 'profesion',
         type: 'text',
         isRequired: true,
@@ -1053,7 +1390,7 @@ const handleEditProfession = (id) => {
   }
 
   setCurrentEdit({
-    type: 'profesion',
+    type: 'Profesion',
     id: Profession.id,
     title: 'Editar nivel de educacion',
     fields: [
@@ -1061,7 +1398,7 @@ const handleEditProfession = (id) => {
         label: 'Nivel de profesion',
         name: 'name',
         type: 'text',
-        value: Profession.tipoProfession,
+        value: Profession.profesion,
       },
     ],
   });
@@ -1086,6 +1423,16 @@ const fetchProfession = async () => {
     const handleTabChange = (event, newValue) => {
       setCurrentTab(newValue);
     };
+    const handleLeftButtonClick = () => {
+      const newTab = currentTab === 0 ? tabLabels.length - 1 : currentTab - 1;
+      setCurrentTab(newTab);
+    };
+  
+    const handleRightButtonClick = () => {
+      const newTab = currentTab === tabLabels.length - 1 ? 0 : currentTab + 1;
+      setCurrentTab(newTab);
+    };
+//fin Profesiones
 
     /**
    * Handle create category.
@@ -1230,17 +1577,16 @@ const fetchProfession = async () => {
     }
     if (currentEdit.type === 'documentType') {
       // find category
-      const documentType = documentsTypes.find((documentType) => documentType.id === currentEdit.id);
+      const DocumentType = DocumentsTypes.find((DocumentType) => DocumentType.id === currentEdit.id);
 
-      if (documentType === undefined) {
+      if (DocumentType === undefined) {
         return;
       }
 
-      documentType.nameCatogory = formValues.name || documentType.nameCatogory;
-      documentType.descriptionCategory = formValues.description || documentType.descriptionCategory;
+      DocumentType.tipoDocumento = formValues.name || DocumentType.tipoDocumento;
 
       try {
-        await updateContractTypeAPI(documentType);
+        await updateDocumentTypeAPI(DocumentType);
       } catch (e) {}
       enqueueSnackbar(
         'Documento actualizada con éxito',
@@ -1309,7 +1655,7 @@ const fetchProfession = async () => {
         },
       );
     }
-    if (currentEdit.type === 'hiringType') {
+    if (currentEdit.type === 'HiringType') {
       // find category
       const HiringType = HiringTypes.find((HiringType) => HiringType.id === currentEdit.id);
 
@@ -1317,8 +1663,7 @@ const fetchProfession = async () => {
         return;
       }
 
-      HiringType.nameCatogory = formValues.name || HiringType.nameCatogory;
-      HiringType.descriptionCategory = formValues.description || HiringType.descriptionCategory;
+      HiringType.tipoContrato = formValues.name || HiringType.tipoContrato;
 
       try {
         await updateHiringTypeAPI(HiringType);
@@ -1339,8 +1684,7 @@ if (currentEdit.type === 'gender') {
     return;
   }
 
-  Gender.nameCatogory = formValues.name || Gender.nameCatogory;
-  Gender.descriptionCategory = formValues.description || Gender.descriptionCategory;
+  Gender.genero = formValues.name || Gender.genero;
 
   try {
     await updateGenderAPI(Gender);
@@ -1361,8 +1705,7 @@ if (currentEdit.type === 'salaryType') {
     return;
   }
 
-  SalaryType.nameCatogory = formValues.name || SalaryType.nameCatogory;
-  SalaryType.descriptionCategory = formValues.description || SalaryType.descriptionCategory;
+  SalaryType.tipoDeSalario = formValues.name || SalaryType.tipoDeSalario;
 
   try {
     await updateSalaryTypeAPI(SalaryType);
@@ -1374,7 +1717,7 @@ if (currentEdit.type === 'salaryType') {
     },
   );
 }
-if (currentEdit.type === 'profesion') {
+if (currentEdit.type === 'Profesion') {
   // find category
   const Profession = Professions.find((Profession) => Profession.id === currentEdit.id);
 
@@ -1382,8 +1725,7 @@ if (currentEdit.type === 'profesion') {
     return;
   }
 
-  Profession.nameCatogory = formValues.name || Profession.nameCatogory;
-  Profession.descriptionCategory = formValues.description || Profession.descriptionCategory;
+  Profession.profesion = formValues.name || Profession.profesion;
 
   try {
     await updateProfessionAPI(Profession);
@@ -1395,22 +1737,79 @@ if (currentEdit.type === 'profesion') {
     },
   );
 }
-if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
+if (currentEdit.type === 'CollectiveWorkGrouptoWhichitBelongs') {
   // find category
-  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongsss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === currentEdit.id);
+  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === currentEdit.id);
 
   if (CollectiveWorkGrouptoWhichitBelongs === undefined) {
     return;
   }
 
-  CollectiveWorkGrouptoWhichitBelongs.nameCatogory = formValues.name || CollectiveWorkGrouptoWhichitBelongs.nameCatogory;
-  CollectiveWorkGrouptoWhichitBelongs.descriptionCategory = formValues.description || CollectiveWorkGrouptoWhichitBelongs.descriptionCategory;
+  CollectiveWorkGrouptoWhichitBelongs.grupoColectivoDeTrabajo = formValues.name || CollectiveWorkGrouptoWhichitBelongs.grupoColectivoDeTrabajo;
 
   try {
     await updateCollectiveWorkGrouptoWhichitBelongsAPI(CollectiveWorkGrouptoWhichitBelongs);
   } catch (e) {}
   enqueueSnackbar(
     'Grupo de Trabajo Colectivo al que Pertenece actualizado con exito',
+    {
+      variant: 'success',
+    },
+  );
+}
+if (currentEdit.type === 'preferenciaSexual') {
+  // find category
+  const SexualPreference = sexualPreferences.find((SexualPreference) => SexualPreference.id === currentEdit.id);
+
+  if (SexualPreference === undefined) {
+    return;
+  }
+
+  SexualPreference.preferenciaSexual = formValues.name || SexualPreference.nameCatogory;
+  try {
+    await updateSexualPreferenceAPI(SexualPreference);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Preferencia sexual con exito',
+    {
+      variant: 'success',
+    },
+  );
+}
+if (currentEdit.type === 'OrganizationalLevel') {
+  // find organizacion
+  const OrganizationalLevel = OrganizationalLevels.find(
+    (OrganizationalLevel) => OrganizationalLevel.id === currentEdit.id
+  );
+
+  if (OrganizationalLevel === undefined) {
+    return;
+  }
+
+  OrganizationalLevel.nivelOrganizacional =
+    formValues.name || OrganizationalLevel.nivelOrganizacional;
+
+  try {
+    await updateOrganizationalLevelAPI(OrganizationalLevel);
+  } catch (e) {}
+  enqueueSnackbar('nivel de organizacion actualizado con exito', {
+    variant: 'success',
+  });
+}
+if (currentEdit.type === 'estados-civiles') {
+  // find category
+  const MaritalStatus = maritalStatuses.find((MaritalStatus) => MaritalStatus.id === currentEdit.id);
+
+  if (MaritalStatus === undefined) {
+    return;
+  }
+
+  MaritalStatus.estadoCivil = formValues.name || MaritalStatus.nameCatogory;
+  try {
+    await updateMaritalStatusAPI(MaritalStatus);
+  } catch (e) {}
+  enqueueSnackbar(
+    'Estado civil con exito',
     {
       variant: 'success',
     },
@@ -1483,7 +1882,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
     if (currentCreate.type === 'disabilities') {
       try {
         await storeDisabilitiesAPI({
-          tipoDisabilities: formValues.tipoDisabilities,
+          discapacIdades: formValues.discapacIdades,
         });
       } catch (e) {}
       enqueueSnackbar(
@@ -1496,7 +1895,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
     if (currentCreate.type === 'HiringType') {
       try {
         await storeHiringTypeAPI({
-          tipoContratacion: formValues.tipoContratacion,
+          tipoContrato: formValues.tipoContrato,
         });
       } catch (e) {}
       enqueueSnackbar(
@@ -1509,7 +1908,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
     if (currentCreate.type === 'Gender') {
       try {
         await storeGenderAPI({
-          tipoGenero: formValues.tipoGenero,
+          genero: formValues.genero,
         });
       } catch (e) {}
       enqueueSnackbar(
@@ -1522,7 +1921,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
     if (currentCreate.type === 'SalaryType') {
       try {
         await storeSalaryTypeAPI({
-          tipoSalario: formValues.tipoSalario,
+          tipoDeSalario: formValues.tipoDeSalario,
         });
       } catch (e) {}
       enqueueSnackbar(
@@ -1533,10 +1932,10 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
       );
     }
 
-    if (currentCreate.type === 'profesion') {
+    if (currentCreate.type === 'Profesion') {
       try {
         await storeProfessionAPI({
-          tipoProfession: formValues.tipoProfession,
+          profesion: formValues.profesion,
         });
       } catch (e) {}
       enqueueSnackbar(
@@ -1549,11 +1948,47 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
     if (currentCreate.type === 'CollectiveWorkGrouptoWhichitBelongs') {
       try {
         await storeCollectiveWorkGrouptoWhichitBelongsAPI({
-          tipoGrupoTrabajo: formValues.tipoGrupoTrabajo,
+          grupoColectivoDeTrabajo: formValues.grupoColectivoDeTrabajo,
         });
       } catch (e) {}
       enqueueSnackbar(
         'Grupo de Trabajo Colectivo al que Pertenece creado con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+    if (currentCreate.type === 'preferenciaSexual') {
+      try {
+        await storeSexualPreferenceAPI({
+          preferenciaSexual: formValues.preferenciaSexual,
+        });
+      } catch (e) {}
+      enqueueSnackbar(
+        'Preferencia sexual creado con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+    if (currentCreate.type === 'OrganizationalLevel') {
+      try {
+        await storeOrganizationalLevelAPI({
+          nivelOrganizacional: formValues.nivelOrganizacional,
+        });
+      } catch (e) {}
+      enqueueSnackbar('organizacion creada con exito', {
+        variant: 'success',
+      });
+    }
+    if (currentCreate.type === 'estados-civiles') {
+      try {
+        await storeMaritalStatusAPI({
+          estadoCivil: formValues.estadoCivil,
+        });
+      } catch (e) {}
+      enqueueSnackbar(
+        'Estado civil creado con exito',
         {
           variant: 'success',
         },
@@ -1590,6 +2025,9 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
       fetchSalaryType();
       fetchProfession();
       fetchCollectiveWorkGrouptoWhichitBelongs();
+      fetchSexualPreference();
+      fetchOrganizationalLevel();
+      fetchMaritalStatus();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDeleteItem = async (id, trueid) => {
@@ -1986,6 +2424,23 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
         return null;
     }
   };
+  
+  
+const tabLabels = [
+  'Tipo Contrato',
+  'Tipos de documentos',
+  'Nivel de ingles',
+  'Nivel de educacion',
+  'Discapacidades',
+  'Tipo de contrataciones',
+  'Tipo generos',
+  'Tipo salarios',
+  'Profesion',
+  'Nivel Organizacional',
+  'Grupo de Trabajo Colectivo al que Pertenece',
+  'Preferencia sexual',
+  'Estado civil',
+];
 
   const columns = useMemo(() => renderColumn(), [props.type]);
 
@@ -2014,12 +2469,13 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
           }}
         />
       );
+      
   }else{
     return (
       <Box sx={{ display: 'flex' }} >
         <div style={{ backgroundColor: 'white' }}>
-          <div className={styles.JourneySettingsPage}>
-            <div className={styles.JourneySettingsPage__content}>  
+          <div className={styles.StyleOtherCamps}>
+            <div className={styles.StyleOthercamps__content}>  
               {loading === true && (
                 <MyLoader />
               )}
@@ -2027,80 +2483,89 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
               {loading === false && (
                 <MyCard sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <Box sx={{ width: '100%' }}>
+                 
                     <Box
                       sx={{
                         borderBottom: 1,
                         borderColor: 'divider',
                       }}>
-                        
-                      <Tabs
-                        
+                     <Box sx={{ display: 'flex', justifyContent: 'between' }} >
+                     <IconButton onClick={handleLeftButtonClick}>
+                        <ArrowLeftIcon />
+                        </IconButton>
+                      <Tabs sx={{ width: '90%', justifyContent: 'center' }}
+                    
                         value={currentTab}
                         onChange={(event, newValue) => handleTabChange(event, newValue)}
                         
                       >
-                       
+                        
                         <Tab
-                          label="Tipo Contrato"
-                          id="settings-tab-0"
+                          label='Tipo Contrato'
+                          id='settings-tab-0'
                         />
                         <Tab
-                          label="Tipos de documentos"
-                          id="settings-tab-1"
+                          label='Tipos de documentos'
+                          id='settings-tab-1'
                         />
                         <Tab
-                          label="Nivel de ingles"
-                          id="settings-tab-2"
+                          label='Nivel de ingles'
+                          id='settings-tab-2'
                         />
                         <Tab
-                          label="Nivel de educacion"
-                          id="settings-tab-3"
+                          label='Nivel de educacion'
+                          id='settings-tab-3'
                         />
                         <Tab
-                          label="Discapacidades"
-                          id="settings-tab-4"
+                          label='Discapacidades'
+                          id='settings-tab-4'
                         />
                          <Tab
-                          label="Tipo de contrataciones"
-                          id="settings-tab-5"
+                          label='Tipo de contrataciones'
+                          id='settings-tab-5'
                         />
                        <Tab
-                          label="Tipo generos"
-                          id="settings-tab-6"
+                          label='Tipo generos'
+                          id='settings-tab-6'
                         />
 						
                        <Tab
-                          label="Tipo salarios"
-                          id="settings-tab-7"
+                          label='Tipo salarios'
+                          id='settings-tab-7'
                         />
                         <Tab
-                          label="Profesion"
-                          id="settings-tab-8"
+                          label='Profesion'
+                          id='settings-tab-8'
                         />
                          <Tab
-                          label="Grupo de Trabajo Colectivo al que Pertenece"
-                          id="settings-tab-9"
+                          label='Grupo de Trabajo Colectivo al que Pertenece'
+                          id='settings-tab-9'
                         />
                         <Tab
-                          label="Plantillas"
-                          id="settings-tab-2"
+                          label='Preferencia sexual'
+                          id='settings-tab-10'
                         />
                         <Tab
-                          label="Encuestas de mapas"
-                          id="settings-tab-3"
+                          label='Estado civil'
+                          id='settings-tab-11'
                         />
-                        <Tab
-                          label="Hola mundo"
-                          id="settings-tab-3"
+                         <Tab
+                          label='Nivel Organizacional'
+                          id='settings-tab-12'
                         />
+                        
                         
                         
                       </Tabs>
+                      <IconButton onClick={handleRightButtonClick}>
+                      <ArrowRightIcon />
+                       </IconButton>
+                      </Box>
                       
                       {/* categories */}
                       <div
                         hidden={currentTab !== 0}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 0 && (
                           <Box
@@ -2110,13 +2575,13 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateCategory}
                               >
@@ -2137,7 +2602,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                       {/* Documento*/}
                       <div
                         hidden={currentTab !== 1}
-                        id="settings-tabpanel-1"
+                        id='settings-tabpanel-1'
                       >
                         {currentTab === 1 && (
                           <Box
@@ -2147,13 +2612,13 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateDocumentType}
                               >
@@ -2163,7 +2628,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                             <MyTable
                               title={'Tipo Documento'}
                               columns={documentTypeColumns}
-                              rows={mapDocumentType(documentsTypes)}
+                              rows={mapDocumentType(DocumentsTypes)}
                             />
                           </Box>
                         )}
@@ -2171,7 +2636,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                       {/* Nivel de ingles*/}
                       <div
                         hidden={currentTab !== 2}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 2 && (
                           <Box
@@ -2181,13 +2646,13 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateEnglishLevel}
                               >
@@ -2206,7 +2671,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                        {/* Nivel de educacion*/}
                        <div
                         hidden={currentTab !== 3}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 3 && (
                           <Box
@@ -2216,13 +2681,13 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateEducationLevel}
                               >
@@ -2240,7 +2705,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                       {/* Discapacidades*/}
                       <div
                         hidden={currentTab !== 4}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 4 && (
                           <Box
@@ -2250,13 +2715,13 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateDisabilities}
                               >
@@ -2275,7 +2740,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                       {/* Tipo de contratacion*/}
                       <div
                         hidden={currentTab !== 5}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 5 && (
                           <Box
@@ -2285,13 +2750,13 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateHiringType}
                               >
@@ -2309,7 +2774,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                       {/* Genero*/}
                       <div
                         hidden={currentTab !== 6}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 6 && (
                           <Box
@@ -2319,13 +2784,13 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateGender}
                               >
@@ -2343,7 +2808,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                       {/* Tipo salario*/}
                       <div
                         hidden={currentTab !== 7}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 7 && (
                           <Box
@@ -2353,13 +2818,13 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateSalaryType}
                               >
@@ -2378,7 +2843,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                        {/* Nivel de profesion*/}
                        <div
                         hidden={currentTab !== 8}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 8 && (
                           <Box
@@ -2388,13 +2853,13 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateProfession}
                               >
@@ -2412,7 +2877,7 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                       {/* Grupo de Trabajo Colectivo al que Pertenece*/}
                       <div
                         hidden={currentTab !== 9}
-                        id="settings-tabpanel-0"
+                        id='settings-tabpanel-0'
                       >
                         {currentTab === 9 && (
                           <Box
@@ -2422,13 +2887,13 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                           >
                             <Stack
                               spacing={2}
-                              direction="row-reverse"
+                              direction='row-reverse'
                               sx={{
                                 mb: 2,
                               }}
                             >
                               <Button
-                                variant="outlined"
+                                variant='outlined'
                                 startIcon={<AddIcon />}
                                 onClick={handleCreateCollectiveWorkGrouptoWhichitBelongs}
                               >
@@ -2438,7 +2903,106 @@ if (currentEdit.type === 'collectiveworkgrouptoWhichitBelongs') {
                             <MyTable
                               title={'Grupo de Trabajo Colectivo al que Pertenece'}
                               columns={CollectiveWorkGrouptoWhichitBelongsColumns}
-                              rows={mapCollectiveWorkGrouptoWhichitBelongs(collectiveWorkGrouptoWhichitBelongsss)}
+                              rows={mapCollectiveWorkGrouptoWhichitBelongs(collectiveWorkGrouptoWhichitBelongss)}
+                            />
+                          </Box>
+                        )}
+                      </div>
+                      {/* Prferencia sexual*/}
+                      <div
+                        hidden={currentTab !== 10}
+                        id='settings-tabpanel-0'
+                      >
+                        {currentTab === 10 && (
+                          <Box
+                            sx={{
+                              p: 3,
+                          }}
+                          >
+                            <Stack
+                              spacing={2}
+                              direction='row-reverse'
+                              sx={{
+                                mb: 2,
+                              }}
+                            >
+                              <Button
+                                variant='outlined'
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateSexualPreference}
+                              >
+                                Crear Grupo Preferencia sexual
+                              </Button>
+                            </Stack>
+                            <MyTable
+                              title={'Preferencia sexual'}
+                              columns={SexualPreferenceColumns}
+                              rows={mapSexualPreference(sexualPreferences)}
+                            />
+                          </Box>
+                        )}
+                      </div>
+                      {/* Prferencia sexual*/}
+                      <div
+                        hidden={currentTab !== 11}
+                        id='settings-tabpanel-0'
+                      >
+                        {currentTab === 11 && (
+                          <Box
+                            sx={{
+                              p: 3,
+                          }}
+                          >
+                            <Stack
+                              spacing={2}
+                              direction='row-reverse'
+                              sx={{
+                                mb: 2,
+                              }}
+                            >
+                              <Button
+                                variant='outlined'
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateMaritalStatus}
+                              >
+                                Crear Grupo Estado civil
+                              </Button>
+                            </Stack>
+                            <MyTable
+                              title={'Estado civil'}
+                              columns={MaritalStatusColumns}
+                              rows={mapMaritalStatus(maritalStatuses)}
+                            />
+                          </Box>
+                        )}
+                      </div>
+                       {/* Nivel de Organizacion*/}
+                       <div hidden={currentTab !== 12} id='settings-tabpanel-0'>
+                        {currentTab === 12 && (
+                          <Box
+                            sx={{
+                              p: 3,
+                            }}
+                          >
+                            <Stack
+                              spacing={2}
+                              direction='row-reverse'
+                              sx={{
+                                mb: 2,
+                              }}
+                            >
+                              <Button
+                                variant='outlined'
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateOrganizationalLevel}
+                              >
+                                Crear Organizacion
+                              </Button>
+                            </Stack>
+                            <MyTable
+                              title={'Organizacion'}
+                              columns={OrganizationalLevelColumns}
+                              rows={mapOrganizationalLevel(OrganizationalLevels)}
                             />
                           </Box>
                         )}
