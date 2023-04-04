@@ -66,7 +66,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route
-                path="/answer-survey/:surveyId/:companyId"
+                path="/answer-survey/:surveyId/:companyId/:answerId"
                 element={<AnswerSurvey />}
               />
               <Route element={<PrivateRoutes />}>
