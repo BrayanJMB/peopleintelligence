@@ -751,6 +751,7 @@ const handleDeleteGender = async (id) => {
     },
   );
 };
+
 const handleEditGender = (id) => {
   // find category
   const Gender = Genders.find((Gender) => Gender.id === id);
@@ -1695,6 +1696,7 @@ if (currentEdit.type === 'gender') {
     },
   );
 }
+
 if (currentEdit.type === 'salaryType') {
   // find category
   const SalaryType = SalaryTypes.find((SalaryType) => SalaryType.id === currentEdit.id);
