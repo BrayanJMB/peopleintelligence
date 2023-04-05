@@ -31,7 +31,7 @@ const defaultMessage = 'Hola @usuario, te invito a participar en la encuesta: @e
  * @returns {JSX.Element}
  * @constructor
  */
-const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen }) => {
+const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => {
   const [open, setOpen] = useState(false);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const { id: surveyId } = useParams();
@@ -247,6 +247,14 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen }) => {
     setOpen(isOpen);
   }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // watch email message
+  useEffect(() => {
+    if (!message) {
+      return;
+    }
+
+    setMessage(emailMessage);
+  }, [emailMessage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // component did mount
   useEffect(() => {
@@ -346,10 +354,12 @@ SendInvitationDialog.propTypes = {
   isPersonal: PropTypes.bool.isRequired,
   copyUrl: PropTypes.func.isRequired,
   isOpen: PropTypes.bool,
+  emailMessage: PropTypes.string,
 };
 
 SendInvitationDialog.defaultProps = {
   isOpen: null,
+  emailMessage: '',
 };
 
 export default SendInvitationDialog;

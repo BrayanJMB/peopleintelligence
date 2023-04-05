@@ -232,14 +232,16 @@ const SurveyForm = ({ questions, onAnswered }) => {
    *
    * @param paramName
    * @param paramId
+   * @param options
    * @returns {Promise<void>}
    */
-  const fetchApiOptionsByParamId = async (paramName, paramId) => {
+  const fetchApiOptionsByParamId = async (paramName, paramId, options) => {
     for (const question of questions) {
       const regex = new RegExp(`{${paramName}}`, 'g');
+      const option = options.find((option) => option.optionName === paramId);
 
       if (question.api && question.api.match(regex)) {
-        const url = question.api.replace(regex, paramId);
+        const url = question.api.replace(regex, option.numberOption);
         const { data } = await axios.get(url);
 
         setApiOptions((prevState) => ({
@@ -530,14 +532,14 @@ const SurveyForm = ({ questions, onAnswered }) => {
                 label={questionName}
                 onChange={(event) => {
                   handleRadioChange(event, index, urlParam);
-                  fetchApiOptionsByParamId(urlParam, event.target.value);
+                  fetchApiOptionsByParamId(urlParam, event.target.value, getOptions(options, questionId));
                 }}
                 disabled={getOptions(options, questionId).length === 0}
               >
                 {getOptions(options, questionId).map(({ numberOption, optionName }) => (
                   <MenuItem
                     key={numberOption}
-                    value={numberOption}
+                    value={optionName}
                   >
                     {optionName}
                   </MenuItem>
