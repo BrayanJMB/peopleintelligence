@@ -66,6 +66,10 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route
+                path="/answer-survey/:surveyId/:companyId"
+                element={<AnswerSurvey />}
+              />
+              <Route
                 path="/answer-survey/:surveyId/:companyId/:answerId"
                 element={<AnswerSurvey />}
               />

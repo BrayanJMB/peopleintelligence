@@ -48,6 +48,7 @@ const AnswerSurvey = () => {
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [stepsCompleted, setStepsCompleted] = useState([false, false, true]);
   const [answers, setAnswers] = useState([{}, {}]);
+  const [demographicUserData, setDemographicUserData] = useState(null);
   const surveyStatus = useSelector((state) => selectSurveysStatus(state));
   const currentSurvey = useSelector((state) => selectCurrentSurveyForAnswer(state));
   const [loading, setLoading] = useState(true);
@@ -83,13 +84,7 @@ const AnswerSurvey = () => {
 
     // if exists, set answers and skip demographic step
     if (data && data.demographics) {
-      setAnswers((prevAnswers) => {
-        const newAnswers = [...prevAnswers];
-
-        newAnswers[0] = data.demographics;
-
-        return newAnswers;
-      });
+      setDemographicUserData(data.demographics);
 
       setSteps((prevSteps) => {
         const newSteps = [...prevSteps];
@@ -170,6 +165,11 @@ const AnswerSurvey = () => {
         demographics: answers.length > 1 ? answers[0] : [],
         answers: answers.length > 1 ? answers[1] : answers[0],
       };
+
+      if (demographicUserData !== null) {
+        payload.demographics = demographicUserData;
+        payload.answers = answers[0];
+      }
 
       dispatch(storeSurvey(payload));
     }
@@ -439,7 +439,7 @@ const AnswerSurvey = () => {
                                 api: urlApi,
                                 urlParam,
                                 options: options.map(({ id, value }) => ({
-                                  numberOption: id,
+                                  numberOption: value,
                                   optionName: value,
                                 })),
                               }))}

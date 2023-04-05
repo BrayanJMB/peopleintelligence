@@ -130,7 +130,7 @@ export default function CreateSurvey() {
    */
   const createSurvey = async () => {
     setLoading(true);
-
+    
     const newSurvey = {
       survey: {
         nameSurvey: data.title,
@@ -704,10 +704,13 @@ export default function CreateSurvey() {
 
     if (isTemplate && isUpdate) {
       const { questionId, questionOptions } = await updateTemplateQuestion(newQuestion);
-      console.log(questionId, questionOptions);
+      
       newQuestion.questionId = questionId;
       newQuestion.questionOptions = questionOptions;
-      console.log(newQuestion);
+    }
+
+    if (!newQuestion.customOptions || newQuestion.customOptions.length === 0) {
+      newQuestion.customOptions = newQuestion.options;
     }
 
     setQuestions((previousQuestions) => [
