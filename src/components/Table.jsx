@@ -1448,6 +1448,18 @@ const fetchProfession = async () => {
           type: 'text',
           isRequired: true,
         },
+        {
+          label: 'Tipo Contratoooooo',
+          name: 'tipoContrato',
+          type: 'text',
+          isRequired: true,
+        },
+        {
+          label: 'Tipo Contratoooooo',
+          name: 'tipoContrato',
+          type: 'text',
+          isRequired: true,
+        },
       ],
     });
     setOpenCreateDialog(true);
@@ -2418,8 +2430,6 @@ if (currentEdit.type === 'estados-civiles') {
         return report;
       case 'Departamentos':
         return department;
-      case 'Otros campos':
-        return null;
       default:
         return null;
     }

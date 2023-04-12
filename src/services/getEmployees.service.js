@@ -6,3 +6,6 @@ export const getEmployeesAPI = async (id) => {
   const response = await axios.get('Employee/' + id);
   return response;
 };
+
+
+export const storeEmployeeAPI = async (data) => axios.post('Employee/FormEmployee', data);

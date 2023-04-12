@@ -3,14 +3,20 @@ import { CSVLink } from 'react-csv';
 import { useDispatch,useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
+import Stack from '@mui/material/Stack';
 import * as uuid from 'uuid';
 
 import Building from '../../assets/Building.svg';
+import MyCard from '../../components/MyCard/MyCard';
+import MyCreateDialog2 from '../../components/MyCreateDialog2/MyCreateDialog2';
+import MyLoader from '../../components/MyLoader/MyLoader';
+import MyTable from '../../components/MyTable/MyTable';
 import NewCompany from '../../components/NewCompany/NewCompany';
 import NewDepartment from '../../components/NewDepartment/NewDepartment';
 import NewEmployee from '../../components/NewEmployee/NewEmployee';
@@ -23,7 +29,7 @@ import Navbar from '../../Layout/Navbar/Navbar';
 import { getCompaniesAPI } from '../../services/getCompanies.service';
 import {   deleteAreaAPI,
   fetchAreaAPI,
-  getDepartmentsAPI,
+  fetchAreaByCompanyAPI,
   storeAreaAPI,
   updateAreaAPI,
  } from '../../services/getDepartments.service';
@@ -33,7 +39,12 @@ import { postCompanyAPI } from '../../services/postCompany.service';
 import { postEmployeeAPI } from '../../services/postEmployee.service';
 import axios from '../../utils/axiosInstance';
 
+import {officesColumns, useCreateOffice, useOffice} from './office/officeData';
+import {departmentsColumns, useCreateDepartment, useDepartment} from './department/departmentData';
+import {employeesColumns, useCreateEmployee, useEmployee} from './employees/employeesData';
+
 import styles from './InfoAdmin.module.css';
+import { current } from '@reduxjs/toolkit';
 
 
 const search = (value, inputArray, field, proprety) => {
@@ -45,6 +56,19 @@ const search = (value, inputArray, field, proprety) => {
 };
 
 export default function InfoAdmin() {
+  const [loading, setLoading] = useState(false);
+  const [currentEdit, setCurrentEdit] = useState(null);
+  const [currentCreate, setCurrentCreate] = useState(null);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
+  const { offices, mapOffice, fetchOffice, handleSubmittedCreateOffice } = useOffice();
+  const { handleCreateOffice }  = useCreateOffice(setOpenCreateDialog, setCurrentCreate);
+  const {  departments, setDepartments, mapDepartment, fetchDepartments, handleSubmittedCreateDepartment } = useDepartment(currentCompany);
+  const { handleCreateDepartment }  = useCreateDepartment(setOpenCreateDialog, setCurrentCreate);
+
+  const { handleCreateEmployee }  = useCreateEmployee(setOpenCreateDialog, setCurrentCreate);
+  const { handleSubmittedCreateEmployee } = useEmployee();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const admin = useSelector((state) => state.admin);
@@ -52,6 +76,9 @@ export default function InfoAdmin() {
   const { type } = useParams();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
+
+
+
   const [compania, setCompania] = useState({
     nombreCompania: '',
     IdPais: '',
@@ -144,8 +171,6 @@ export default function InfoAdmin() {
 
   const [employecsv, setEmployecsv] = useState('');
 
-  // get ids data
-
   const sectorConsume = async () => {
     try {
       await axios.get('Sector/').then((res) => {
@@ -167,6 +192,39 @@ export default function InfoAdmin() {
     }
   };
 
+  const handleCloseEditDialog = () => {
+    setOpenEditDialog(false);
+  };
+
+  /**
+   * Handle close create dialog.
+   */
+  const handleCloseCreateDialog = () => {
+    setOpenCreateDialog(false);
+  };
+
+
+  const handleSubmittedCreateDialog = async (formValues) => {
+    if (currentCreate.type === 'office') {
+      handleSubmittedCreateOffice(formValues);
+    }
+    if (currentCreate.type === 'department') {
+      console.log("entro");
+      handleSubmittedCreateDepartment(formValues);
+    }
+
+    if (currentCreate.type === 'employee') {
+      console.log("entro");
+      handleSubmittedCreateEmployee(formValues);
+    }
+
+
+
+
+
+    setCurrentCreate(null);
+    setOpenCreateDialog(false);
+  };
   const sizeCompanyConsume = async () => {
     try {
       await axios.get('TamanoCompania/').then((res) => {
@@ -367,7 +425,6 @@ export default function InfoAdmin() {
       await axios.get('HiringType/').then((res) => {
         let fetch = [];
         let id = [];
-        console.log(res);
         res.data.forEach((val) => {
           if (!fetch.includes(val.tipoContrato)) {
             fetch.push(val.tipoContrato);
@@ -389,7 +446,6 @@ export default function InfoAdmin() {
       await axios.get('PreferenciSexual/').then((res) => {
         let fetch = [];
         let id = [];
-        console.log(res);
         res.data.forEach((val) => {
           if (!fetch.includes(val.preferenciaSexual)) {
             fetch.push(val.preferenciaSexual);
@@ -411,7 +467,6 @@ export default function InfoAdmin() {
       await axios.get('Campus/').then((res) => {
         let fetch = [];
         let id = [];
-        console.log(res);
         res.data.forEach((val) => {
           if (!fetch.includes(val.sede)) {
             fetch.push(val.sede);
@@ -433,7 +488,6 @@ export default function InfoAdmin() {
       await axios.get('EnglishLevel/').then((res) => {
         let fetch = [];
         let id = [];
-        console.log(res);
         res.data.forEach((val) => {
           if (!fetch.includes(val.nivelIngles)) {
             fetch.push(val.nivelIngles);
@@ -455,7 +509,6 @@ export default function InfoAdmin() {
       await axios.get('EducationLevel/').then((res) => {
         let fetch = [];
         let id = [];
-        console.log(res);
         res.data.forEach((val) => {
           if (!fetch.includes(val.nivelEducativo)) {
             fetch.push(val.nivelEducativo);
@@ -476,8 +529,7 @@ export default function InfoAdmin() {
     try {
       await axios.get('MaritalStatus/').then((res) => {
         let fetch = [];
-        let id = [];
-        console.log(res);
+        let id = [];;
         res.data.forEach((val) => {
           if (!fetch.includes(val.estadoCivil)) {
             fetch.push(val.estadoCivil);
@@ -499,7 +551,6 @@ export default function InfoAdmin() {
       await axios.get('EducationLevel/').then((res) => {
         let fetch = [];
         let id = [];
-        console.log(res);
         res.data.forEach((val) => {
           if (!fetch.includes(val.nivelEducativo)) {
             fetch.push(val.nivelEducativo);
@@ -521,7 +572,6 @@ export default function InfoAdmin() {
       await axios.get('TipoSalario/').then((res) => {
         let fetch = [];
         let id = [];
-        console.log(res);
         res.data.forEach((val) => {
           if (!fetch.includes(val.tipoDeSalario)) {
             fetch.push(val.tipoDeSalario);
@@ -543,7 +593,6 @@ export default function InfoAdmin() {
       await axios.get('EducationLevel/').then((res) => {
         let fetch = [];
         let id = [];
-        console.log(res);
         res.data.forEach((val) => {
           if (!fetch.includes(val.nivelEducativo)) {
             fetch.push(val.nivelEducativo);
@@ -559,7 +608,6 @@ export default function InfoAdmin() {
       console.log(error);
     }
   };
-
   // handle modal
   const handleOpenModal = () => setOpen(true);
   const handleCloseModal = () => {
@@ -744,7 +792,6 @@ export default function InfoAdmin() {
 
       holder = { ...holder, person: updatedPerson, employee: updatedEmployee };  
 
-      console.log(holder);
       /*
       postEmployeeAPI(
         oficina,
@@ -883,17 +930,7 @@ export default function InfoAdmin() {
             handleOffice={handleOficina}
           />
         );
-      case 'Empleados':
-        return (
-          <NewEmployee
-            info={employee}
-            content={data.content}
-            handleAutocomplete={handleAutoCompleteEmployee}
-            handleChangeEmployee={handleChangeEmployee}
-            handleCloseModal={handleCloseModal}
-            handleEmployee={handleEmployee}
-          />
-        );
+
       case 'Departamentos':
         return (
           <NewDepartment
@@ -1007,24 +1044,7 @@ export default function InfoAdmin() {
           })
           .catch((e) => console.log(e));
         break;
-      case 'Departamentos':
-        countryConsume();
-        documentTypeConsume();
-        getDepartmentsAPI()
-          .then((res) => {
-            let data = [];
-            res.data.forEach((val) => {
-              let id = uuid.v4();
-              if (!data.includes(val)) {
-                let holder = val;
-                holder._id = id;
-                data.push(val);
-              }
-            });
-            dispatch(storeItems({ data, type: type }));
-          })
-          .catch((e) => console.log(e));
-        break;
+
       
       default:
     }
@@ -1072,7 +1092,14 @@ export default function InfoAdmin() {
       navigate('/dashboard');
     }
     getTableData();
+    fetchOffice();
+
+
   }, [type]);
+
+  useEffect(() => {
+    fetchDepartments();
+  }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -1156,7 +1183,7 @@ export default function InfoAdmin() {
                     </Button>
                   </div>
                 ) : null}
-                 {type !== 'Otros campos' && (
+                 {type !== 'Otros campos' && type !== 'Empleados' && (
                   <Button
                     variant="contained"
                     style={{
@@ -1168,7 +1195,6 @@ export default function InfoAdmin() {
                     color="primary"
                     onClick={handleOpenModal}
                   >
-                    {type === 'Empleados' ? 'nuevo ' : 'nueva '}
                     {type}
                   </Button>
                 )}
@@ -1182,6 +1208,7 @@ export default function InfoAdmin() {
                 />
               </div>
             </div>
+            {type !== 'Oficinas' && type !== 'Departamentos' && type !== 'Empleados' ?(
             <div className={styles.buttom}>
               <Table
                 tableData={tableData}
@@ -1191,6 +1218,164 @@ export default function InfoAdmin() {
                 handleEditItem={handleEditItem}
               />
             </div>
+            ): (
+             
+              <Box sx={{ display: 'flex' }} >
+                <div style={{ backgroundColor: 'white' }}>
+                  <div className={styles.DataTable}>
+                    <div className={styles.DataTable2}>  
+                      {loading === true && (
+                        <MyLoader />
+                      )}
+      
+                      {loading === false && type === 'Oficinas'&& (
+                        <MyCard sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                          <Box sx={{ width: '100%' }}>                  
+                            <Box
+                              sx={{
+                                borderBottom: 1,
+                                borderColor: 'divider',
+                              }}>
+                                
+                                {/* categories */}
+                                <div
+                                  id='settings-tabpanel-0'
+                                >
+                                  <Box
+                                    sx={{
+                                      p: 3,
+                                  }}
+                                  >
+                                    <Stack
+                                      spacing={2}
+                                      direction='row-reverse'
+                                      sx={{
+                                        mb: 2,
+                                      }}
+                                    >
+                                      <Button
+                                        variant='outlined'
+                                        startIcon={<AddIcon />}
+                                        onClick={handleCreateOffice}
+                                      >
+                                        Crear Oficinas
+                                      </Button>
+                                    </Stack>
+                                    <MyTable
+                                      title={'Tipo Contrato'}
+                                      columns={officesColumns}
+                                      rows={mapOffice(offices)}
+                                    />
+                                  </Box>                      
+                                </div>
+                              </Box>
+                          </Box>
+                        </MyCard>
+                      )}
+                      {loading === false && type === 'Departamentos'&& (
+                        <MyCard >
+                          <Box sx={{ width: '100%' }}>                  
+                            <Box
+                              sx={{
+                                borderBottom: 1,
+                                borderColor: 'divider',
+                              }}>
+                                
+                                {/* departments */}
+                                <div
+                                  id='settings-tabpanel-0'
+                                >
+                                  <Box
+                                    sx={{
+                                      p: 3,
+                                  }}
+                                  >
+                                    <Stack
+                                      spacing={2}
+                                      direction='row-reverse'
+                                      sx={{
+                                        mb: 2,
+                                      }}
+                                    >
+                                      <Button
+                                        variant='outlined'
+                                        startIcon={<AddIcon />}
+                                        onClick={handleCreateDepartment}
+                                      >
+                                        Crear Departamento
+                                      </Button>
+                                    </Stack>
+                                    <MyTable
+                                      title={'Departamentos'}
+                                      columns={departmentsColumns}
+                                      rows={mapDepartment(departments)}
+                                    />
+                                  </Box>                      
+                                </div>
+                              </Box>
+                          </Box>
+                        </MyCard>
+                      )}
+                      {loading === false && type === 'Empleados'&& (
+                        <MyCard >
+                          <Box sx={{ width: '100%' }}>                  
+                            <Box
+                              sx={{
+                                borderBottom: 1,
+                                borderColor: 'divider',
+                              }}>
+                                
+                                {/* departments */}
+                                <div
+                                  id='settings-tabpanel-0'
+                                >
+                                  <Box
+                                    sx={{
+                                      p: 3,
+                                  }}
+                                  >
+                                    <Stack
+                                      spacing={2}
+                                      direction='row-reverse'
+                                      sx={{
+                                        mb: 2,
+                                      }}
+                                    >
+                                      <Button
+                                        variant='outlined'
+                                        startIcon={<AddIcon />}
+                                        onClick={handleCreateEmployee}
+                                      >
+                                        Crear Empleado
+                                      </Button>
+                                    </Stack>
+                                    <MyTable
+                                      title={'Empleados'}
+                                      columns={departmentsColumns}
+                                      rows={mapDepartment(departments)}
+                                    />
+                                  </Box>                      
+                                </div>
+                              </Box>
+                          </Box>
+                        </MyCard>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                  {/* create form */}
+                      {currentCreate !== null && (
+                      <MyCreateDialog2
+                        onClose={handleCloseCreateDialog}
+                        onSubmit={handleSubmittedCreateDialog}
+                        title={currentCreate.title}
+                        open={openCreateDialog}
+                        fields={currentCreate.fields}
+                        type={currentCreate.type}
+                      />
+                    )}                     
+              </Box>
+              )}
           </div>
         </div>
       </div>

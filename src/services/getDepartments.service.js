@@ -1,17 +1,13 @@
 import axios from '../utils/axiosInstance';
 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-export const getDepartmentsAPI = async () => {
-  console.log('getDepartmentsAPI');
 
-  const response = await axios.get('departamentos/');
-  return response;
-};
+export const storeDepartmentsAPI = async (data) => axios.post(`Area/${userInfo.Company}`, data);
 /**
  * Fetch Contract Type.
  * 
  * @returns {Promise<any>}
  */
-export const fetchAreaAPI = async () => axios.get(`Area/getAreaByCompany/${userInfo.Company}`);
+export const fetchAreaByCompanyAPI = async (id) => axios.get(`Area/getAreaByCompany/${id}`);
 
 /**
  * Update Contract Type.
