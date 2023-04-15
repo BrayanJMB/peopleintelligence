@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -34,7 +32,7 @@ import {
 } from '../services/getCollectiveWorkGrouptoWhichitBelongs.service';
 import {
   deleteContractTypeAPI,
-  fetchContractTypeAPI,
+  fetchContractTypeByCompanyAPI,
   storeContractTypeAPI,
   updateContractTypeAPI,
 } from '../services/getContractType.service';
@@ -60,6 +58,7 @@ import {
   deleteEnglishLevelAPI,
   fetchEnglishLevelAPI,
   storeEnglishLevelAPI,
+  storeEnglishLevelByCompanyIdAPI,
   updateEnglishLevelAPI,
 } from '../services/getEnglishLevel.service';
 import {
@@ -104,6 +103,13 @@ import {
   storeSexualPreferenceAPI,
   updateSexualPreferenceAPI,
 } from '../services/getSexualPreference.service';
+
+import {
+  storeRolCompanyAPI,
+  fetchRolCompanyAPI,
+  deleteRolCompanyAPI
+}from '../services/getRolCompany.service';
+
 import axios from '../utils/axiosInstance';
 
 import MyCard from './MyCard/MyCard';
@@ -127,6 +133,7 @@ function search(id, inputArray, field, proprety) {
 export default function Table(props) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [contractTypes, setcontractType] = useState([]);
   const [categories, setCategories] = useState([]);
   const [DocumentsTypes, setDocumentos] = useState([]);
@@ -136,6 +143,7 @@ export default function Table(props) {
   const [HiringTypes, setTipoContratacion] = useState([]);
   const [SalaryTypes, setSalario] = useState([]);
   const [Professions, setProfessions] = useState([]);
+  const [companyRols, setCompanyRols] = useState([]);
   const [Genders, setGenero] = useState([]);
   const [collectiveWorkGrouptoWhichitBelongss, setGrupoTrabajo] = useState([]);
   const [sexualPreferences, setPreferenciaSexual] = useState([]);
@@ -150,14 +158,8 @@ export default function Table(props) {
   const [pageSize, setpageSize] = useState(5);
   const [rows, setRows] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
- //Tipo de documento
- const documentTypeColumns = [
-
-    {
-      id: 'id',
-      label: 'ID',
-      numeric: true,
-    },
+  //Tipo de documento
+  const documentTypeColumns = [
     {
       id: 'name',
       label: 'Tipo Documento',
@@ -187,10 +189,6 @@ export default function Table(props) {
   };
   const mapDocumentType = (documentType) => documentType.map((documentType) => [
     {
-      column: 'id',
-      value: documentType.documentTypeId.toString(),
-    },
-    {
       column: 'name',
       value: documentType.tipoDocumento,
     },
@@ -204,7 +202,7 @@ export default function Table(props) {
       },
     },
   ]);
- const handleDeleteDocumentType = async (id) => {
+  const handleDeleteDocumentType = async (id) => {
     const DocumentType = DocumentsTypes.find((DocumentType) => DocumentType.id === id);
 
     if (DocumentType === undefined) {
@@ -213,7 +211,7 @@ export default function Table(props) {
 
     try {
       await deleteDocumentTypeAPI(id);
-    } catch (e) {}
+    } catch (e) { }
     enqueueSnackbar(
       'Tipo de documento eliminado con éxito',
       {
@@ -254,1208 +252,1188 @@ export default function Table(props) {
     setLoading(false);
   };
   //Nivel de ingles
- const EnglishLevelColumns = [
-
-  {
-    id: 'id',
-    label: 'ID',
-    numeric: true,
-  },
-  {
-    id: 'name',
-    label: 'Nivel de ingles',
-    numeric: false,
-  },
-  {
-    id: 'options',
-    label: 'Opciones',
-    numeric: false,
-  },
-
-];
-const handleCreateEnglishLevel = () => {
-  setCurrentCreate({
-    type: 'englishLevel',
-    title: 'Crear nivel de ingles',
-    fields: [
-      {
-        label: 'Nivel de ingles',
-        name: 'nivelIngles',
-        type: 'text',
-        isRequired: true,
-      },
-    ],
-  });
-  setOpenCreateDialog(true);
-};
-const mapEnglishLevel = (EnglishLevel) => EnglishLevel.map((EnglishLevel) => [
-  {
-    column: 'id',
-    value: EnglishLevel.id.toString(), //swagger
-  },
-  {
-    column: 'name',
-    value: EnglishLevel.nivelIngles, //swagger
-  },
-  {
-    column: 'options',
-    value: '',
-    payload: {
-      handleDelete: handleDeleteEnglishLevel,
-      handleEdit: handleEditEnglishLevel,
-      id: EnglishLevel.id,
-    },
-  },
-]);
-
-const handleDeleteEnglishLevel = async (id) => {
-  const EnglishLevel = EnglishLevels.find((EnglishLevel) => EnglishLevel.id === id);
-
-  if (EnglishLevel === undefined) {
-    return;
-  }
-
-  try {
-    await deleteEnglishLevelAPI(id);
-  } catch (e) {}
-  enqueueSnackbar(
-    'Nivel de ingles eliminado con exito',
+  const EnglishLevelColumns = [
     {
-      variant: 'success',
+      id: 'name',
+      label: 'Nivel de ingles',
+      numeric: false,
     },
-  );
-};
-const handleEditEnglishLevel = (id) => {
-  // find category
-  const EnglishLevel = EnglishLevels.find((EnglishLevel) => EnglishLevel.id === id);
-
-  if (EnglishLevel === undefined) {
-    return;
-  }
-
-  setCurrentEdit({
-    type: 'englishLevel',
-    id: EnglishLevel.id,
-    title: 'Editar nivel de ingles',
-    fields: [
-      {
-        label: 'Nivel de ingles',
-        name: 'name',
-        type: 'text',
-        value: EnglishLevel.nivelIngles,
-      },
-    ],
-  });
-  setOpenEditDialog(true);
-};
-
-const fetchEnglishLevel = async () => {
-  setLoading(true);
-
-  const { data } = await fetchEnglishLevelAPI();
-  console.log(data);
-  setNivelIngles(data);
-  setLoading(false);
-};
-
-//fin ingles
-
-
-//Nivel de educacion
-const EducationLevelColumns = [
-
-  {
-    id: 'id',
-    label: 'ID',
-    numeric: true,
-  },
-  {
-    id: 'name',
-    label: 'Nivel de educación',
-    numeric: false,
-  },
-  {
-    id: 'options',
-    label: 'Opciones',
-    numeric: false,
-  },
-
-];
-// camel Case ---> JS holaMundo, comoEstasYoMuyBien
-// Clases --> PascalCase HolaMundo, CómoEstasYoMuyBien
-
-const handleCreateEducationLevel = () => {
-  setCurrentCreate({
-    type: 'educationLevel',
-    title: 'Crear nivel de educacion',
-    fields: [
-      {
-        label: 'Nivel de educacion',
-        name: 'nivelEducacion',
-        type: 'text',
-        isRequired: true,
-      },
-    ],
-  });
-  setOpenCreateDialog(true);
-};
-const mapEducationLevel = (EducationLevel) => EducationLevel.map((EducationLevel) => [
-  {
-    column: 'id',
-    value: EducationLevel.id.toString(), //swagger
-  },
-  {
-    column: 'name',
-    value: EducationLevel.nivelEducacion, //swagger
-  },
-  {
-    column: 'options',
-    value: '',
-    payload: {
-      handleDelete: handleDeleteEducationLevel,
-      handleEdit: handleEditEducationLevel,
-      id: EducationLevel.id,
-    },
-  },
-]);
-
-const handleDeleteEducationLevel = async (id) => {
-  const EducationLevel = EducationLevels.find((EducationLevel) => EducationLevel.id === id);
-
-  if (EducationLevel === undefined) {
-    return;
-  }
-
-  try {
-    await deleteEducationLevelAPI(id);
-  } catch (e) {}
-  enqueueSnackbar(
-    'Nivel de educacion eliminado con exito',
     {
-      variant: 'success',
+      id: 'options',
+      label: 'Opciones',
+      numeric: false,
     },
-  );
-};
 
-const handleEditEducationLevel = (id) => {
-  // find category
-  const EducationLevel = EducationLevels.find((EducationLevel) => EducationLevel.id === id);
-
-  if (EducationLevel === undefined) {
-    return;
-  }
-
-  setCurrentEdit({
-    type: 'nivelEducacion',
-    id: EducationLevel.id,
-    title: 'Editar nivel de educacion',
-    fields: [
-      {
-        label: 'Nivel de educación',
-        name: 'name',
-        type: 'text',
-        value: EducationLevel.nivelEducacion,
-      },
-    ],
-  });
-  setOpenEditDialog(true);
-};
-
-const fetchEducationLevel = async () => {
-  setLoading(true);
-  const { data } = await fetchEducationLevelAPI();
-  setEducationLevels(data);
-  setLoading(false);
-};
-//fin de educacion
-
-
-//Disabilities
-const DisabilitiesColumns = [
-
-  {
-    id: 'id',
-    label: 'ID',
-    numeric: true,
-  },
-  {
-    id: 'name',
-    label: 'Discapacidades',
-    numeric: false,
-  },
-  {
-    id: 'options',
-    label: 'Opciones',
-    numeric: false,
-  },
-
-];
-const handleCreateDisabilities = () => {
-  setCurrentCreate({
-    type: 'disabilities',
-    title: 'Crear discapacidad',
-    fields: [
-      {
-        label: 'Discapacidad',
-        name: 'disabilities',
-        type: 'text',
-        isRequired: true,
-      },
-    ],
-  });
-  setOpenCreateDialog(true);
-};
-const mapDisabilities = (Disabilities) => Disabilities.map((Disabilities) => [
-  {
-    column: 'id',
-    value: Disabilities.id.toString(), //swagger
-  },
-  {
-    column: 'name',
-    value: Disabilities.discapacIdades, //swagger
-  },
-  {
-    column: 'options',
-    value: '',
-    payload: {
-      handleDelete: handleDeleteDisabilities,
-      handleEdit: handleEditDisabilities,
-      id: Disabilities.id,
-    },
-  },
-]);
-const handleDeleteDisabilities = async (id) => {
-  const Disabilities = disabilitieS.find((Disabilities) => Disabilities.id === id);
-
-  if (Disabilities === undefined) {
-    return;
-  }
-
-  try {
-    await deleteDisabilitiesAPI(id);
-  } catch (e) {}
-  enqueueSnackbar(
-    'Discapacidad eliminado con exito',
-    {
-      variant: 'success',
-    },
-  );
-};
-const handleEditDisabilities = (id) => {
-  // find category
-  const Disabilities = disabilitieS.find((Disabilities) => Disabilities.id === id);
-
-  if (Disabilities === undefined) {
-    return;
-  }
-
-  setCurrentEdit({
-    type: 'disabilities',
-    id: Disabilities.id,
-    title: 'Editar discapacidad',
-    fields: [
-      {
-        label: 'Discapacidad',
-        name: 'name',
-        type: 'text',
-        value: Disabilities.discapacIdades,
-      },
-    ],
-  });
-  setOpenEditDialog(true);
-};
-
-const fetchDisabilities = async () => {
-  setLoading(true);
-
-  const { data } = await fetchDisabilitiesAPI();
-  console.log(data);
-  setDiscapacidades(data);
-  setLoading(false);
-};
-//fin discapacidades
-
-//Tipo de cotratacion
-const HiringTypeColumns = [
-
-  {
-    id: 'id',
-    label: 'ID',
-    numeric: true,
-  },
-  {
-    id: 'name',
-    label: 'Tipo de contratacion',
-    numeric: false,
-  },
-  {
-    id: 'options',
-    label: 'Opciones',
-    numeric: false,
-  },
-
-];
-const handleCreateHiringType = () => {
-  setCurrentCreate({
-    type: 'HiringType',
-    title: 'Crear tipo de contratacion',
-    fields: [
-      {
-        label: 'Tipo de contratacion',
-        name: 'tipoContrato',
-        type: 'text',
-        isRequired: true,
-      },
-    ],
-  });
-  setOpenCreateDialog(true);
-};
-const mapHiringType= (HiringType) => HiringType.map((HiringType) => [
-  {
-    column: 'id',
-    value: HiringType.id.toString(), //swagger
-  },
-  {
-    column: 'name',
-    value: HiringType.tipoContrato, //swagger
-  },
-  {
-    column: 'options',
-    value: '',
-    payload: {
-      handleDelete: handleDeleteHiringType,
-      handleEdit: handleEditHiringType,
-      id: HiringType.id,
-    },
-  },
-]);
-const handleDeleteHiringType = async (id) => {
-  const HiringType = HiringTypes.find((HiringType) => HiringType.id === id);
-
-  if (HiringType === undefined) {
-    return;
-  }
-
-  try {
-    await deleteHiringTypeAPI(id);
-  } catch (e) {}
-  enqueueSnackbar(
-    'Tipo de contratacion eliminado con exito',
-    {
-      variant: 'success',
-    },
-  );
-};
-const handleEditHiringType = (id) => {
-  // find tipo de contartacion
-  const HiringType = HiringTypes.find((HiringType) => HiringType.id === id);
-
-  if (HiringType === undefined) {
-    return;
-  }
-
-  setCurrentEdit({
-    type: 'HiringType',
-    id: HiringType.id,
-    title: 'Editar tipo de contratacion',
-    fields: [
-      {
-        label: 'Tipo contratacion',
-        name: 'name',
-        type: 'text',
-        value: HiringTypes.tipoContrato,
-      },
-    ],
-  });
-  setOpenEditDialog(true);
-};
-
-const fetchHiringType = async () => {
-  setLoading(true);
-
-  const { data } = await fetchHiringTypeAPI();
-  console.log(data);
-  setTipoContratacion(data);
-  setLoading(false);
-};
-//fin discapacidades HiringType
-
- //Gender
- const GenderColumns = [
-
-  {
-    id: 'id',
-    label: 'ID',
-    numeric: true,
-  },
-  {
-    id: 'name',
-    label: 'Genero',
-    numeric: false,
-  },
-  {
-    id: 'options',
-    label: 'Opciones',
-    numeric: false,
-  },
-
-];
-const handleCreateGender = () => {
-  setCurrentCreate({
-    type: 'gender',
-    title: 'Crear genero',
-    fields: [
-      {
-        label: 'Genero',
-        name: 'gender',
-        type: 'text',
-        isRequired: true,
-      },
-    ],
-  });
-  setOpenCreateDialog(true);
-};
-const mapGender= (Gender) => Gender.map((Gender) => [
-  {
-    column: 'id',
-    value: Gender.id.toString(), //swagger
-  },
-  {
-    column: 'name',
-    value: Gender.genero, //swagger
-  },
-  {
-    column: 'options',
-    value: '',
-    payload: {
-      handleDelete: handleDeleteGender,
-      handleEdit: handleEditGender,
-      id: Gender.id,
-    },
-  },
-]);
-const handleDeleteGender = async (id) => {
-  const Gender = Genders.find((Gender) => Gender.id === id);
-
-  if (Gender === undefined) {
-    return;
-  }
-
-  try {
-    await deleteGenderAPI(id);
-  } catch (e) {}
-  enqueueSnackbar(
-    'Genero eliminado con exito',
-    {
-      variant: 'success',
-    },
-  );
-};
-
-const handleEditGender = (id) => {
-  // find category
-  const Gender = Genders.find((Gender) => Gender.id === id);
-
-  if (Gender === undefined) {
-    return;
-  }
-
-  setCurrentEdit({
-    type: 'gender',
-    id: Gender.id,
-    title: 'Editar tipo de contratacion',
-    fields: [
-      {
-        label: 'Tipo contratacion',
-        name: 'name',
-        type: 'text',
-        value: Genders.tipoGenero,
-      },
-    ],
-  });
-  setOpenEditDialog(true);
-};
-
-const fetchGender = async () => {
-  setLoading(true);
-
-  const { data } = await fetchGenderAPI();
-  console.log(data);
-  setGenero(data);
-  setLoading(false);
-};
-//fin  Gender
-
-//SalaryType
-const SalaryTypeColumns = [
-
-  {
-    id: 'id',
-    label: 'ID',
-    numeric: true,
-  },
-  {
-    id: 'name',
-    label: 'Tipo salario',
-    numeric: false,
-  },
-  {
-    id: 'options',
-    label: 'Opciones',
-    numeric: false,
-  },
-
-];
-const handleCreateSalaryType = () => {
-  setCurrentCreate({
-    type: 'salaryType',
-    title: 'Crear tipo de salario',
-    fields: [
-      {
-        label: 'Tipo salario',
-        name: 'salaryType',
-        type: 'text',
-        isRequired: true,
-      },
-    ],
-  });
-  setOpenCreateDialog(true);
-};
-const mapSalaryType= (SalaryType) => SalaryType.map((SalaryType) => [
-  {
-    column: 'id',
-    value: SalaryType.id.toString(), //swagger
-  },
-  {
-    column: 'name',
-    value: SalaryType.tipoDeSalario, //swagger
-  },
-  {
-    column: 'options',
-    value: '',
-    payload: {
-      handleDelete: handleDeleteSalaryType,
-      handleEdit: handleEditSalaryType,
-      id: SalaryType.id,
-    },
-  },
-]);
-const handleDeleteSalaryType = async (id) => {
-  const SalaryType = SalaryTypes.find((SalaryType) => SalaryType.id === id);
-
-  if (SalaryType === undefined) {
-    return;
-  }
-
-  try {
-    await deleteSalaryTypeAPI(id);
-  } catch (e) {}
-  enqueueSnackbar(
-    'Tipo salario eliminado con exito',
-    {
-      variant: 'success',
-    },
-  );
-};
-const handleEditSalaryType = (id) => {
-  // find category
-  const SalaryType = SalaryTypes.find((SalaryType) => SalaryType.id === id);
-
-  if (SalaryType === undefined) {
-    return;
-  }
-
-  setCurrentEdit({
-    type: 'salaryType',
-    id: SalaryType.id,
-    title: 'Editar tipo de contratacion',
-    fields: [
-      {
-        label: 'Tipo contratacion',
-        name: 'name',
-        type: 'text',
-        value: SalaryTypes.tipoSalario,
-      },
-    ],
-  });
-  setOpenEditDialog(true);
-};
-
-const fetchSalaryType = async () => {
-  setLoading(true);
-
-  const { data } = await fetchSalaryTypeAPI();
-  console.log(data);
-  setSalario(data);
-  setLoading(false);
-};
-//fin  SalaryType
-
-//CollectiveWorkGrouptoWhichitBelongs
-const CollectiveWorkGrouptoWhichitBelongsColumns = [
-
-  {
-    id: 'id',
-    label: 'ID',
-    numeric: true,
-  },
-  {
-    id: 'name',
-    label: 'Grupo de Trabajo Colectivo al que Pertenece',
-    numeric: false,
-  },
-  {
-    id: 'options',
-    label: 'Opciones',
-    numeric: false,
-  },
-
-];
-const handleCreateCollectiveWorkGrouptoWhichitBelongs = () => {
-  setCurrentCreate({
-    type: 'CollectiveWorkGrouptoWhichitBelongs',
-    title: 'Crear tipo de grupo colectivo',
-    fields: [
-      {
-        label: 'Grupo de Trabajo Colectivo al que Pertenece',
-        name: 'grupoColectivoDeTrabajo',
-        type: 'text',
-        isRequired: true,
-      },
-    ],
-  });
-  setOpenCreateDialog(true);
-};
-const mapCollectiveWorkGrouptoWhichitBelongs= (CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.map((CollectiveWorkGrouptoWhichitBelongs) => [
-  {
-    column: 'id',
-    value: CollectiveWorkGrouptoWhichitBelongs.id.toString(), //swagger
-  },
-  {
-    column: 'name',
-    value: CollectiveWorkGrouptoWhichitBelongs.grupoColectivoDeTrabajo, //swagger
-  },
-  {
-    column: 'options',
-    value: '',
-    payload: {
-      handleDelete: handleDeleteCollectiveWorkGrouptoWhichitBelongs,
-      handleEdit: handleEditCollectiveWorkGrouptoWhichitBelongs,
-      id: CollectiveWorkGrouptoWhichitBelongs.id,
-    },
-  },
-]);
-const handleDeleteCollectiveWorkGrouptoWhichitBelongs = async (id) => {
-  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === id);
-
-  if (CollectiveWorkGrouptoWhichitBelongs === undefined) {
-    return;
-  }
-
-  try {
-    await deleteCollectiveWorkGrouptoWhichitBelongsAPI(id);
-  } catch (e) {}
-  enqueueSnackbar(
-    'Grupo de Trabajo Colectivo al que Pertenece eliminado con exito',
-    {
-      variant: 'success',
-    },
-  );
-};
-const handleEditCollectiveWorkGrouptoWhichitBelongs = (id) => {
-  // find category
-  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === id);
-
-  if (CollectiveWorkGrouptoWhichitBelongs === undefined) {
-    return;
-  }
-
-  setCurrentEdit({
-    type: 'CollectiveWorkGrouptoWhichitBelongs',
-    id: CollectiveWorkGrouptoWhichitBelongs.id,
-    title: 'Editar tipo de contratacion',
-    fields: [
-      {
-        label: 'Tipo contratacion',
-        name: 'name',
-        type: 'text',
-        value: collectiveWorkGrouptoWhichitBelongss.grupoColectivoDeTrabajo,
-      },
-    ],
-  });
-  setOpenEditDialog(true);
-};
-
-const fetchCollectiveWorkGrouptoWhichitBelongs = async () => {
-  setLoading(true);
-
-  const { data } = await fetchCollectiveWorkGrouptoWhichitBelongsAPI();
-  console.log(data);
-  setGrupoTrabajo(data);
-  setLoading(false);
-};
-//fin  CollectiveWorkGrouptoWhichitBelongs
-//SexualPreference
-const SexualPreferenceColumns = [
-
-  {
-    id: 'id',
-    label: 'ID',
-    numeric: true,
-  },
-  {
-    id: 'name',
-    label: 'Preferncias sexuales',
-    numeric: false,
-  },
-  {
-    id: 'options',
-    label: 'Opciones',
-    numeric: false,
-  },
-
-];
-const handleCreateSexualPreference = () => {
-  setCurrentCreate({
-    type: 'preferenciaSexual',
-    title: 'Crear tipo de contratacion',
-    fields: [
-      {
-        label: 'Preferencia Sexual',
-        name: 'preferenciaSexual',
-        type: 'text',
-        isRequired: true,
-      },
-    ],
-  });
-  setOpenCreateDialog(true);
-};
-const mapSexualPreference= (SexualPreference) => SexualPreference.map((SexualPreference) => [
-  {
-    column: 'id',
-    value: SexualPreference.id.toString(), //swagger
-  },
-  {
-    column: 'name',
-    value: SexualPreference.preferenciaSexual, //swagger
-  },
-  {
-    column: 'options',
-    value: '',
-    payload: {
-      handleDelete: handleDeleteSexualPreference,
-      handleEdit: handleEditSexualPreference,
-      id: SexualPreference.id,
-    },
-  },
-]);
-const handleDeleteSexualPreference = async (id) => {
-  const SexualPreference = sexualPreferences.find((SexualPreference) => SexualPreference.id === id);
-
-  if (SexualPreference === undefined) {
-    return;
-  }
-
-  try {
-    await deleteSexualPreferenceAPI(id);
-  } catch (e) {}
-  enqueueSnackbar(
-    'Preferencia sexual eliminado con exito',
-    {
-      variant: 'success',
-    },
-  );
-};
-const handleEditSexualPreference = (id) => {
-  // find category
-  const SexualPreference = sexualPreferences.find((SexualPreference) => SexualPreference.id === id);
-
-  if (SexualPreference === undefined) {
-    return;
-  }
-
-  setCurrentEdit({
-    type: 'preferenciaSexual',
-    id: SexualPreference.id,
-    title: 'Editar Preferencia sexual',
-    fields: [
-      {
-        label: 'Preferencia sexual',
-        name: 'name',
-        type: 'text',
-        value: SexualPreference.preferenciaSexual,
-      },
-    ],
-  });
-  setOpenEditDialog(true);
-};
-
-const fetchSexualPreference = async () => {
-  setLoading(true);
-
-  const { data } = await fetchSexualPreferenceAPI();
-  console.log(data);
-  setPreferenciaSexual(data);
-  setLoading(false);
-};
-//fin  SexualPreference
-//Nivel de organizacion
-const OrganizationalLevelColumns = [
-  {
-    id: 'id',
-    label: 'ID',
-    numeric: true,
-  },
-  {
-    id: 'name',
-    label: 'Nivel de organizacion',
-    numeric: false,
-  },
-  {
-    id: 'options',
-    label: 'Opciones',
-    numeric: false,
-  },
-];
-
-const handleCreateOrganizationalLevel = () => {
-  setCurrentCreate({
-    type: 'OrganizationalLevel',
-    title: 'Crear nivel de organizacion',
-    fields: [
-      {
-        label: 'Nivel de organizacion',
-        name: 'nivelOrganizacional',
-        type: 'text',
-        isRequired: true,
-      },
-    ],
-  });
-  setOpenCreateDialog(true);
-};
-const mapOrganizationalLevel = (OrganizationalLevel) =>
-  OrganizationalLevel.map((OrganizationalLevel) => [
-    {
-      column: 'id',
-      value: OrganizationalLevel.id.toString(), //swagger
-    },
+  ];
+  const handleCreateEnglishLevel = () => {
+    setCurrentCreate({
+      type: 'englishLevel',
+      title: 'Crear nivel de ingles',
+      fields: [
+        {
+          label: 'Nivel de ingles',
+          name: 'nivelIngles',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
+  const mapEnglishLevel = (EnglishLevel) => EnglishLevel.map((EnglishLevel) => [
     {
       column: 'name',
-      value: OrganizationalLevel.nivelOrganizacional, //swagger
+      value: EnglishLevel.nivelIngles, //swagger
     },
     {
       column: 'options',
       value: '',
       payload: {
-        handleDelete: handleDeleteOrganizationalLevel,
-        handleEdit: handleEditOrganizationalLevel,
-        id: OrganizationalLevel.id,
+        handleDelete: handleDeleteEnglishLevel,
+        handleEdit: handleEditEnglishLevel,
+        id: EnglishLevel.id,
       },
     },
   ]);
-const handleDeleteOrganizationalLevel = async (id) => {
-  const OrganizationalLevel = OrganizationalLevels.find(
-    (OrganizationalLevel) => OrganizationalLevel.id === id
-  );
 
-  if (OrganizationalLevel === undefined) {
-    return;
-  }
+  const handleDeleteEnglishLevel = async (id) => {
+    const EnglishLevel = EnglishLevels.find((EnglishLevel) => EnglishLevel.id === id);
 
-  try {
-    await deleteOrganizationalLevelAPI(id);
-  } catch (e) {}
-  enqueueSnackbar('Nivel de organizacion eliminado con exito', {
-    variant: 'success',
-  });
-};
-const handleEditOrganizationalLevel = (id) => {
-  // find category
-  const OrganizationalLevel = OrganizationalLevels.find(
-    (OrganizationalLevel) => OrganizationalLevel.id === id
-  );
+    if (EnglishLevel === undefined) {
+      return;
+    }
 
-  if (OrganizationalLevel === undefined) {
-    return;
-  }
-
-  setCurrentEdit({
-    type: 'OrganizationalLevel',
-    id: OrganizationalLevel.id,
-    title: 'Editar nivel de organizacion',
-    fields: [
+    try {
+      await deleteEnglishLevelAPI(id);
+    } catch (e) { }
+    enqueueSnackbar(
+      'Nivel de ingles eliminado con exito',
       {
-        label: 'Nivel de organizacion',
-        name: 'name',
-        type: 'text',
-        value: OrganizationalLevel.nivelOrganizacional,
+        variant: 'success',
       },
-    ],
-  });
-  setOpenEditDialog(true);
-};
+    );
+  };
+  const handleEditEnglishLevel = (id) => {
+    // find category
+    const EnglishLevel = EnglishLevels.find((EnglishLevel) => EnglishLevel.id === id);
 
-const fetchOrganizationalLevel = async () => {
-  setLoading(true);
+    if (EnglishLevel === undefined) {
+      return;
+    }
 
-  const { data } = await fetchOrganizationalLevelAPI();
-  console.log(data);
-  setOrganizationalLevels(data);
-  setLoading(false);
-};
+    setCurrentEdit({
+      type: 'englishLevel',
+      id: EnglishLevel.id,
+      title: 'Editar nivel de ingles',
+      fields: [
+        {
+          label: 'Nivel de ingles',
+          name: 'name',
+          type: 'text',
+          value: EnglishLevel.nivelIngles,
+        },
+      ],
+    });
+    setOpenEditDialog(true);
+  };
 
-//fin orgaizacion
-//MaritalStatus
-const MaritalStatusColumns = [
+  const fetchEnglishLevel = async () => {
+    setLoading(true);
 
-  {
-    id: 'id',
-    label: 'ID',
-    numeric: true,
-  },
-  {
-    id: 'name',
-    label: 'Preferncias sexuales',
-    numeric: false,
-  },
-  {
-    id: 'options',
-    label: 'Opciones',
-    numeric: false,
-  },
+    const { data } = await fetchEnglishLevelAPI();
+    console.log(data);
+    setNivelIngles(data);
+    setLoading(false);
+  };
 
-];
-const handleCreateMaritalStatus = () => {
-  setCurrentCreate({
-    type: 'estadoCivil',
-    title: 'Crear tipo de contratacion',
-    fields: [
+  //fin ingles
+
+
+  //Nivel de educacion
+  const EducationLevelColumns = [
+
+    {
+      id: 'name',
+      label: 'Nivel de educación',
+      numeric: false,
+    },
+    {
+      id: 'options',
+      label: 'Opciones',
+      numeric: false,
+    },
+
+  ];
+  // camel Case ---> JS holaMundo, comoEstasYoMuyBien
+  // Clases --> PascalCase HolaMundo, CómoEstasYoMuyBien
+
+  const handleCreateEducationLevel = () => {
+    setCurrentCreate({
+      type: 'educationLevel',
+      title: 'Crear nivel de educacion',
+      fields: [
+        {
+          label: 'Nivel de educacion',
+          name: 'nivelEducacion',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
+  const mapEducationLevel = (EducationLevel) => EducationLevel.map((EducationLevel) => [
+    {
+      column: 'name',
+      value: EducationLevel.nivelEducacion, //swagger
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteEducationLevel,
+        handleEdit: handleEditEducationLevel,
+        id: EducationLevel.id,
+      },
+    },
+  ]);
+
+  const handleDeleteEducationLevel = async (id) => {
+    const EducationLevel = EducationLevels.find((EducationLevel) => EducationLevel.id === id);
+
+    if (EducationLevel === undefined) {
+      return;
+    }
+
+    try {
+      await deleteEducationLevelAPI(id);
+    } catch (e) { }
+    enqueueSnackbar(
+      'Nivel de educacion eliminado con exito',
       {
-        label: 'Preferencia Sexual',
-        name: 'estadoCivil',
-        type: 'text',
-        isRequired: true,
+        variant: 'success',
       },
-    ],
-  });
-  setOpenCreateDialog(true);
-};
-const mapMaritalStatus= (MaritalStatus) => MaritalStatus.map((MaritalStatus) => [
-  {
-    column: 'id',
-    value: MaritalStatus.id.toString(), //swagger
-  },
-  {
-    column: 'name',
-    value: MaritalStatus.estadoCivil, //swagger
-  },
-  {
-    column: 'options',
-    value: '',
-    payload: {
-      handleDelete: handleDeleteMaritalStatus,
-      handleEdit: handleEditMaritalStatus,
+    );
+  };
+
+  const handleEditEducationLevel = (id) => {
+    // find category
+    const EducationLevel = EducationLevels.find((EducationLevel) => EducationLevel.id === id);
+
+    if (EducationLevel === undefined) {
+      return;
+    }
+
+    setCurrentEdit({
+      type: 'nivelEducacion',
+      id: EducationLevel.id,
+      title: 'Editar nivel de educacion',
+      fields: [
+        {
+          label: 'Nivel de educación',
+          name: 'name',
+          type: 'text',
+          value: EducationLevel.nivelEducacion,
+        },
+      ],
+    });
+    setOpenEditDialog(true);
+  };
+
+  const fetchEducationLevel = async () => {
+    setLoading(true);
+    const { data } = await fetchEducationLevelAPI();
+    setEducationLevels(data);
+    setLoading(false);
+  };
+  //fin de educacion
+
+
+  //Disabilities
+  const DisabilitiesColumns = [
+    {
+      id: 'name',
+      label: 'Discapacidades',
+      numeric: false,
+    },
+    {
+      id: 'options',
+      label: 'Opciones',
+      numeric: false,
+    },
+
+  ];
+  const handleCreateDisabilities = () => {
+    setCurrentCreate({
+      type: 'disabilities',
+      title: 'Crear discapacidad',
+      fields: [
+        {
+          label: 'Discapacidad',
+          name: 'disabilities',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
+  const mapDisabilities = (Disabilities) => Disabilities.map((Disabilities) => [
+    {
+      column: 'name',
+      value: Disabilities.discapacIdades, //swagger
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteDisabilities,
+        handleEdit: handleEditDisabilities,
+        id: Disabilities.id,
+      },
+    },
+  ]);
+  const handleDeleteDisabilities = async (id) => {
+    const Disabilities = disabilitieS.find((Disabilities) => Disabilities.id === id);
+
+    if (Disabilities === undefined) {
+      return;
+    }
+
+    try {
+      await deleteDisabilitiesAPI(id);
+    } catch (e) { }
+    enqueueSnackbar(
+      'Discapacidad eliminado con exito',
+      {
+        variant: 'success',
+      },
+    );
+  };
+  const handleEditDisabilities = (id) => {
+    // find category
+    const Disabilities = disabilitieS.find((Disabilities) => Disabilities.id === id);
+
+    if (Disabilities === undefined) {
+      return;
+    }
+
+    setCurrentEdit({
+      type: 'disabilities',
+      id: Disabilities.id,
+      title: 'Editar discapacidad',
+      fields: [
+        {
+          label: 'Discapacidad',
+          name: 'name',
+          type: 'text',
+          value: Disabilities.discapacIdades,
+        },
+      ],
+    });
+    setOpenEditDialog(true);
+  };
+
+  const fetchDisabilities = async () => {
+    setLoading(true);
+
+    const { data } = await fetchDisabilitiesAPI();
+    console.log(data);
+    setDiscapacidades(data);
+    setLoading(false);
+  };
+  //fin discapacidades
+
+  //Tipo de cotratacion
+  const HiringTypeColumns = [
+    {
+      id: 'name',
+      label: 'Tipo de contratacion',
+      numeric: false,
+    },
+    {
+      id: 'options',
+      label: 'Opciones',
+      numeric: false,
+    },
+
+  ];
+  const handleCreateHiringType = () => {
+    setCurrentCreate({
+      type: 'HiringType',
+      title: 'Crear tipo de contratacion',
+      fields: [
+        {
+          label: 'Tipo de contratacion',
+          name: 'tipoContrato',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
+  const mapHiringType = (HiringType) => HiringType.map((HiringType) => [
+    {
+      column: 'name',
+      value: HiringType.tipoContrato, //swagger
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteHiringType,
+        handleEdit: handleEditHiringType,
+        id: HiringType.id,
+      },
+    },
+  ]);
+  const handleDeleteHiringType = async (id) => {
+    const HiringType = HiringTypes.find((HiringType) => HiringType.id === id);
+
+    if (HiringType === undefined) {
+      return;
+    }
+
+    try {
+      await deleteHiringTypeAPI(id);
+    } catch (e) { }
+    enqueueSnackbar(
+      'Tipo de contratacion eliminado con exito',
+      {
+        variant: 'success',
+      },
+    );
+  };
+  const handleEditHiringType = (id) => {
+    // find tipo de contartacion
+    const HiringType = HiringTypes.find((HiringType) => HiringType.id === id);
+
+    if (HiringType === undefined) {
+      return;
+    }
+
+    setCurrentEdit({
+      type: 'HiringType',
+      id: HiringType.id,
+      title: 'Editar tipo de contratacion',
+      fields: [
+        {
+          label: 'Tipo contratacion',
+          name: 'name',
+          type: 'text',
+          value: HiringTypes.tipoContrato,
+        },
+      ],
+    });
+    setOpenEditDialog(true);
+  };
+
+  const fetchHiringType = async () => {
+    setLoading(true);
+
+    const { data } = await fetchHiringTypeAPI();
+    console.log(data);
+    setTipoContratacion(data);
+    setLoading(false);
+  };
+  //fin discapacidades HiringType
+
+  //Gender
+  const GenderColumns = [
+    {
+      id: 'name',
+      label: 'Genero',
+      numeric: false,
+    },
+    {
+      id: 'options',
+      label: 'Opciones',
+      numeric: false,
+    },
+
+  ];
+  const handleCreateGender = () => {
+    setCurrentCreate({
+      type: 'gender',
+      title: 'Crear genero',
+      fields: [
+        {
+          label: 'Genero',
+          name: 'gender',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
+  const mapGender = (Gender) => Gender.map((Gender) => [
+    {
+      column: 'name',
+      value: Gender.genero, //swagger
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteGender,
+        handleEdit: handleEditGender,
+        id: Gender.id,
+      },
+    },
+  ]);
+  const handleDeleteGender = async (id) => {
+    const Gender = Genders.find((Gender) => Gender.id === id);
+
+    if (Gender === undefined) {
+      return;
+    }
+
+    try {
+      await deleteGenderAPI(id);
+    } catch (e) { }
+    enqueueSnackbar(
+      'Genero eliminado con exito',
+      {
+        variant: 'success',
+      },
+    );
+  };
+
+  const handleEditGender = (id) => {
+    // find category
+    const Gender = Genders.find((Gender) => Gender.id === id);
+
+    if (Gender === undefined) {
+      return;
+    }
+
+    setCurrentEdit({
+      type: 'gender',
+      id: Gender.id,
+      title: 'Editar tipo de contratacion',
+      fields: [
+        {
+          label: 'Tipo contratacion',
+          name: 'name',
+          type: 'text',
+          value: Genders.tipoGenero,
+        },
+      ],
+    });
+    setOpenEditDialog(true);
+  };
+
+  const fetchGender = async () => {
+    setLoading(true);
+
+    const { data } = await fetchGenderAPI();
+    setGenero(data);
+    setLoading(false);
+  };
+  //fin  Gender
+
+  //SalaryType
+  const SalaryTypeColumns = [
+    {
+      id: 'name',
+      label: 'Tipo salario',
+      numeric: false,
+    },
+    {
+      id: 'options',
+      label: 'Opciones',
+      numeric: false,
+    },
+
+  ];
+  const handleCreateSalaryType = () => {
+    setCurrentCreate({
+      type: 'salaryType',
+      title: 'Crear tipo de salario',
+      fields: [
+        {
+          label: 'Tipo salario',
+          name: 'salaryType',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
+  const mapSalaryType = (SalaryType) => SalaryType.map((SalaryType) => [
+    {
+      column: 'name',
+      value: SalaryType.tipoDeSalario, //swagger
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteSalaryType,
+        handleEdit: handleEditSalaryType,
+        id: SalaryType.id,
+      },
+    },
+  ]);
+  const handleDeleteSalaryType = async (id) => {
+    const SalaryType = SalaryTypes.find((SalaryType) => SalaryType.id === id);
+
+    if (SalaryType === undefined) {
+      return;
+    }
+
+    try {
+      await deleteSalaryTypeAPI(id);
+    } catch (e) { }
+    enqueueSnackbar(
+      'Tipo salario eliminado con exito',
+      {
+        variant: 'success',
+      },
+    );
+  };
+  const handleEditSalaryType = (id) => {
+    // find category
+    const SalaryType = SalaryTypes.find((SalaryType) => SalaryType.id === id);
+
+    if (SalaryType === undefined) {
+      return;
+    }
+
+    setCurrentEdit({
+      type: 'salaryType',
+      id: SalaryType.id,
+      title: 'Editar tipo de contratacion',
+      fields: [
+        {
+          label: 'Tipo contratacion',
+          name: 'name',
+          type: 'text',
+          value: SalaryTypes.tipoSalario,
+        },
+      ],
+    });
+    setOpenEditDialog(true);
+  };
+
+  const fetchSalaryType = async () => {
+    setLoading(true);
+
+    const { data } = await fetchSalaryTypeAPI();
+    console.log(data);
+    setSalario(data);
+    setLoading(false);
+  };
+  //fin  SalaryType
+
+  //CollectiveWorkGrouptoWhichitBelongs
+  const CollectiveWorkGrouptoWhichitBelongsColumns = [
+    {
+      id: 'name',
+      label: 'Grupo de Trabajo Colectivo al que Pertenece',
+      numeric: false,
+    },
+    {
+      id: 'options',
+      label: 'Opciones',
+      numeric: false,
+    },
+
+  ];
+  const handleCreateCollectiveWorkGrouptoWhichitBelongs = () => {
+    setCurrentCreate({
+      type: 'CollectiveWorkGrouptoWhichitBelongs',
+      title: 'Crear tipo de grupo colectivo',
+      fields: [
+        {
+          label: 'Grupo de Trabajo Colectivo al que Pertenece',
+          name: 'grupoColectivoDeTrabajo',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
+  const mapCollectiveWorkGrouptoWhichitBelongs = (CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.map((CollectiveWorkGrouptoWhichitBelongs) => [
+    {
+      column: 'name',
+      value: CollectiveWorkGrouptoWhichitBelongs.grupoColectivoDeTrabajo, //swagger
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteCollectiveWorkGrouptoWhichitBelongs,
+        handleEdit: handleEditCollectiveWorkGrouptoWhichitBelongs,
+        id: CollectiveWorkGrouptoWhichitBelongs.id,
+      },
+    },
+  ]);
+  const handleDeleteCollectiveWorkGrouptoWhichitBelongs = async (id) => {
+    const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === id);
+
+    if (CollectiveWorkGrouptoWhichitBelongs === undefined) {
+      return;
+    }
+
+    try {
+      await deleteCollectiveWorkGrouptoWhichitBelongsAPI(id);
+    } catch (e) { }
+    enqueueSnackbar(
+      'Grupo de Trabajo Colectivo al que Pertenece eliminado con exito',
+      {
+        variant: 'success',
+      },
+    );
+  };
+  const handleEditCollectiveWorkGrouptoWhichitBelongs = (id) => {
+    // find category
+    const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === id);
+
+    if (CollectiveWorkGrouptoWhichitBelongs === undefined) {
+      return;
+    }
+
+    setCurrentEdit({
+      type: 'CollectiveWorkGrouptoWhichitBelongs',
+      id: CollectiveWorkGrouptoWhichitBelongs.id,
+      title: 'Editar tipo de contratacion',
+      fields: [
+        {
+          label: 'Tipo contratacion',
+          name: 'name',
+          type: 'text',
+          value: collectiveWorkGrouptoWhichitBelongss.grupoColectivoDeTrabajo,
+        },
+      ],
+    });
+    setOpenEditDialog(true);
+  };
+
+  const fetchCollectiveWorkGrouptoWhichitBelongs = async () => {
+    setLoading(true);
+
+    const { data } = await fetchCollectiveWorkGrouptoWhichitBelongsAPI();
+    console.log(data);
+    setGrupoTrabajo(data);
+    setLoading(false);
+  };
+  //fin  CollectiveWorkGrouptoWhichitBelongs
+  //SexualPreference
+  const SexualPreferenceColumns = [
+    {
+      id: 'name',
+      label: 'Preferncias sexuales',
+      numeric: false,
+    },
+    {
+      id: 'options',
+      label: 'Opciones',
+      numeric: false,
+    },
+
+  ];
+  const handleCreateSexualPreference = () => {
+    setCurrentCreate({
+      type: 'preferenciaSexual',
+      title: 'Crear tipo de contratacion',
+      fields: [
+        {
+          label: 'Preferencia Sexual',
+          name: 'preferenciaSexual',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
+  const mapSexualPreference = (SexualPreference) => SexualPreference.map((SexualPreference) => [
+    {
+      column: 'name',
+      value: SexualPreference.preferenciaSexual, //swagger
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteSexualPreference,
+        handleEdit: handleEditSexualPreference,
+        id: SexualPreference.id,
+      },
+    },
+  ]);
+  const handleDeleteSexualPreference = async (id) => {
+    const SexualPreference = sexualPreferences.find((SexualPreference) => SexualPreference.id === id);
+
+    if (SexualPreference === undefined) {
+      return;
+    }
+
+    try {
+      await deleteSexualPreferenceAPI(id);
+    } catch (e) { }
+    enqueueSnackbar(
+      'Preferencia sexual eliminado con exito',
+      {
+        variant: 'success',
+      },
+    );
+  };
+  const handleEditSexualPreference = (id) => {
+    // find category
+    const SexualPreference = sexualPreferences.find((SexualPreference) => SexualPreference.id === id);
+
+    if (SexualPreference === undefined) {
+      return;
+    }
+
+    setCurrentEdit({
+      type: 'preferenciaSexual',
+      id: SexualPreference.id,
+      title: 'Editar Preferencia sexual',
+      fields: [
+        {
+          label: 'Preferencia sexual',
+          name: 'name',
+          type: 'text',
+          value: SexualPreference.preferenciaSexual,
+        },
+      ],
+    });
+    setOpenEditDialog(true);
+  };
+
+  const fetchSexualPreference = async () => {
+    setLoading(true);
+
+    const { data } = await fetchSexualPreferenceAPI();
+    console.log(data);
+    setPreferenciaSexual(data);
+    setLoading(false);
+  };
+  //fin  SexualPreference
+  //Nivel de organizacion
+  const OrganizationalLevelColumns = [
+    {
+      id: 'name',
+      label: 'Nivel de organizacion',
+      numeric: false,
+    },
+    {
+      id: 'options',
+      label: 'Opciones',
+      numeric: false,
+    },
+  ];
+
+  const handleCreateOrganizationalLevel = () => {
+    setCurrentCreate({
+      type: 'OrganizationalLevel',
+      title: 'Crear nivel de organizacion',
+      fields: [
+        {
+          label: 'Nivel de organizacion',
+          name: 'nivelOrganizacional',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
+
+  const mapOrganizationalLevel = (OrganizationalLevel) =>
+    OrganizationalLevel.map((OrganizationalLevel) => [
+      {
+        column: 'name',
+        value: OrganizationalLevel.nivelOrganizacional, //swagger
+      },
+      {
+        column: 'options',
+        value: '',
+        payload: {
+          handleDelete: handleDeleteOrganizationalLevel,
+          handleEdit: handleEditOrganizationalLevel,
+          id: OrganizationalLevel.id,
+        },
+      },
+    ]);
+  const handleDeleteOrganizationalLevel = async (id) => {
+    const OrganizationalLevel = OrganizationalLevels.find(
+      (OrganizationalLevel) => OrganizationalLevel.id === id
+    );
+
+    if (OrganizationalLevel === undefined) {
+      return;
+    }
+
+    try {
+      await deleteOrganizationalLevelAPI(id);
+    } catch (e) { }
+    enqueueSnackbar('Nivel de organizacion eliminado con exito', {
+      variant: 'success',
+    });
+  };
+  const handleEditOrganizationalLevel = (id) => {
+    // find category
+    const OrganizationalLevel = OrganizationalLevels.find(
+      (OrganizationalLevel) => OrganizationalLevel.id === id
+    );
+
+    if (OrganizationalLevel === undefined) {
+      return;
+    }
+
+    setCurrentEdit({
+      type: 'OrganizationalLevel',
+      id: OrganizationalLevel.id,
+      title: 'Editar nivel de organizacion',
+      fields: [
+        {
+          label: 'Nivel de organizacion',
+          name: 'name',
+          type: 'text',
+          value: OrganizationalLevel.nivelOrganizacional,
+        },
+      ],
+    });
+    setOpenEditDialog(true);
+  };
+
+  const fetchOrganizationalLevel = async () => {
+    setLoading(true);
+
+    const { data } = await fetchOrganizationalLevelAPI();
+    console.log(data);
+    setOrganizationalLevels(data);
+    setLoading(false);
+  };
+
+  //fin orgaizacion
+  //MaritalStatus
+  const MaritalStatusColumns = [
+    {
+      id: 'name',
+      label: 'Preferncias sexuales',
+      numeric: false,
+    },
+    {
+      id: 'options',
+      label: 'Opciones',
+      numeric: false,
+    },
+
+  ];
+  const handleCreateMaritalStatus = () => {
+    setCurrentCreate({
+      type: 'estadoCivil',
+      title: 'Crear tipo de contratacion',
+      fields: [
+        {
+          label: 'Preferencia Sexual',
+          name: 'estadoCivil',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
+  const mapMaritalStatus = (MaritalStatus) => MaritalStatus.map((MaritalStatus) => [
+    {
+      column: 'name',
+      value: MaritalStatus.estadoCivil, //swagger
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteMaritalStatus,
+        handleEdit: handleEditMaritalStatus,
+        id: MaritalStatus.id,
+      },
+    },
+  ]);
+  const handleDeleteMaritalStatus = async (id) => {
+    const MaritalStatus = maritalStatuses.find((MaritalStatus) => MaritalStatus.id === id);
+
+    if (MaritalStatus === undefined) {
+      return;
+    }
+
+    try {
+      await deleteMaritalStatusAPI(id);
+    } catch (e) { }
+    enqueueSnackbar(
+      'Estado civil eliminado con exito',
+      {
+        variant: 'success',
+      },
+    );
+  };
+  const handleEditMaritalStatus = (id) => {
+    // find category
+    const MaritalStatus = maritalStatuses.find((MaritalStatus) => MaritalStatus.id === id);
+
+    if (MaritalStatus === undefined) {
+      return;
+    }
+
+    setCurrentEdit({
+      type: 'estados-civiles',
       id: MaritalStatus.id,
-    },
-  },
-]);
-const handleDeleteMaritalStatus = async (id) => {
-  const MaritalStatus = maritalStatuses.find((MaritalStatus) => MaritalStatus.id === id);
+      title: 'Editar Estado civil',
+      fields: [
+        {
+          label: 'Estado civil',
+          name: 'name',
+          type: 'text',
+          value: MaritalStatus.estadoCivil,
+        },
+      ],
+    });
+    setOpenEditDialog(true);
+  };
 
-  if (MaritalStatus === undefined) {
-    return;
-  }
+  const fetchMaritalStatus = async () => {
+    setLoading(true);
 
-  try {
-    await deleteMaritalStatusAPI(id);
-  } catch (e) {}
-  enqueueSnackbar(
-    'Estado civil eliminado con exito',
+    const { data } = await fetchMaritalStatusAPI();
+    console.log(data);
+    setEstadoCivil(data);
+    setLoading(false);
+  };
+  //fin  MaritalStatus
+
+  //Nivel de profession
+  const ProfessionColumns = [
     {
-      variant: 'success',
+      id: 'name',
+      label: 'Profesion',
+      numeric: false,
     },
-  );
-};
-const handleEditMaritalStatus = (id) => {
-  // find category
-  const MaritalStatus = maritalStatuses.find((MaritalStatus) => MaritalStatus.id === id);
+    {
+      id: 'options',
+      label: 'Opciones',
+      numeric: false,
+    },
 
-  if (MaritalStatus === undefined) {
-    return;
-  }
+  ];
 
-  setCurrentEdit({
-    type: 'estados-civiles',
-    id: MaritalStatus.id,
-    title: 'Editar Estado civil',
-    fields: [
-      {
-        label: 'Estado civil',
-        name: 'name',
-        type: 'text',
-        value: MaritalStatus.estadoCivil,
+  const handleCreateProfession = () => {
+    setCurrentCreate({
+      type: 'Profesion',
+      title: 'Crear Profesion',
+      fields: [
+        {
+          label: 'Profesion',
+          name: 'profesion',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
+  const mapProfession = (Profession) => Profession.map((Profession) => [
+    {
+      column: 'name',
+      value: Profession.profesion, //swagger
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteProfession,
+        handleEdit: handleEditProfession,
+        id: Profession.id,
       },
-    ],
-  });
-  setOpenEditDialog(true);
-};
+    },
+  ]);
+  const handleDeleteProfession = async (id) => {
+    const Profession = Professions.find((Profession) => Profession.id === id);
 
-const fetchMaritalStatus = async () => {
-  setLoading(true);
+    if (Profession === undefined) {
+      return;
+    }
 
-  const { data } = await fetchMaritalStatusAPI();
-  console.log(data);
-  setEstadoCivil(data);
-  setLoading(false);
-};
-//fin  MaritalStatus
-//Nivel de profession
-const ProfessionColumns = [
-
-  {
-    id: 'id',
-    label: 'ID',
-    numeric: true,
-  },
-  {
-    id: 'name',
-    label: 'Profesion',
-    numeric: false,
-  },
-  {
-    id: 'options',
-    label: 'Opciones',
-    numeric: false,
-  },
-
-];
-
-const handleCreateProfession = () => {
-  setCurrentCreate({
-    type: 'Profesion',
-    title: 'Crear Profesion',
-    fields: [
+    try {
+      await deleteProfessionAPI(id);
+    } catch (e) { }
+    enqueueSnackbar(
+      'Nivel de educacion eliminado con exito',
       {
-        label: 'Profesion',
-        name: 'profesion',
-        type: 'text',
-        isRequired: true,
+        variant: 'success',
       },
-    ],
-  });
-  setOpenCreateDialog(true);
-};
-const mapProfession = (Profession) => Profession.map((Profession) => [
-  {
-    column: 'id',
-    value: Profession.id.toString(), //swagger
-  },
-  {
-    column: 'name',
-    value: Profession.profesion, //swagger
-  },
-  {
-    column: 'options',
-    value: '',
-    payload: {
-      handleDelete: handleDeleteProfession,
-      handleEdit: handleEditProfession,
+    );
+  };
+
+  const handleEditProfession = (id) => {
+    // find category
+    const Profession = Professions.find((Profession) => Profession.id === id);
+
+    if (Profession === undefined) {
+      return;
+    }
+
+    setCurrentEdit({
+      type: 'Profesion',
       id: Profession.id,
-    },
-  },
-]);
-const handleDeleteProfession = async (id) => {
-  const Profession = Professions.find((Profession) => Profession.id === id);
+      title: 'Editar nivel de educacion',
+      fields: [
+        {
+          label: 'Nivel de profesion',
+          name: 'name',
+          type: 'text',
+          value: Profession.profesion,
+        },
+      ],
+    });
+    setOpenEditDialog(true);
+  };
 
-  if (Profession === undefined) {
-    return;
-  }
+  const fetchProfession = async () => {
+    setLoading(true);
 
-  try {
-    await deleteProfessionAPI(id);
-  } catch (e) {}
-  enqueueSnackbar(
-    'Nivel de educacion eliminado con exito',
+    const { data } = await fetchProfessionAPI();
+    console.log(data);
+    setProfessions(data);
+    setLoading(false);
+  };
+  //fin Profesiones
+
+  //Roles Company
+  const companyRolsColumns = [
     {
-      variant: 'success',
+      id: 'name',
+      label: 'Rol',
+      numeric: false,
     },
-  );
-};
-const handleEditProfession = (id) => {
-  // find category
-  const Profession = Professions.find((Profession) => Profession.id === id);
+    {
+      id: 'options',
+      label: 'Opciones',
+      numeric: false,
+    },
 
-  if (Profession === undefined) {
-    return;
-  }
+  ];
 
-  setCurrentEdit({
-    type: 'Profesion',
-    id: Profession.id,
-    title: 'Editar nivel de educacion',
-    fields: [
-      {
-        label: 'Nivel de profesion',
-        name: 'name',
-        type: 'text',
-        value: Profession.profesion,
+  const handleCreateCompanyRols = () => {
+    setCurrentCreate({
+      type: 'companyRol',
+      title: 'Crear Rol',
+      fields: [
+        {
+          label: 'Rol',
+          name: 'rol',
+          type: 'text',
+          isRequired: true,
+        },
+      ],
+    });
+    setOpenCreateDialog(true);
+  };
+
+  const mapCompanyRols = (companyRol) => companyRol.map((companyRol) => [
+    {
+      column: 'name',
+      value: companyRol.rol,
+    },
+    {
+      column: 'options',
+      value: '',
+      payload: {
+        handleDelete: handleDeleteCompanyRols,
+        handleEdit: handleEditCompanyRols,
+        id: companyRol.id,
       },
-    ],
-  });
-  setOpenEditDialog(true);
-};
+    },
+  ]);
+  const handleDeleteCompanyRols = async (id) => {
+    const companyRol = companyRols.find((companyRol) => companyRol.id === id);
 
-const fetchProfession = async () => {
-  setLoading(true);
+    if (Profession === undefined) {
+      return;
+    }
 
-  const { data } = await fetchProfessionAPI();
-  console.log(data);
-  setProfessions(data);
-  setLoading(false);
-};
-    /**
-   * Handle tab change.
-   *
-   * @param event
-   * @param newValue
-   */
+    try {
+      await deleteRolCompanyAPI(id, currentCompany.id);
+    } catch (e) { }
+    enqueueSnackbar(
+      'Nivel de educacion eliminado con exito',
+      {
+        variant: 'success',
+      },
+    );
+  };
 
-    const handleTabChange = (event, newValue) => {
-      setCurrentTab(newValue);
-    };
-    const handleLeftButtonClick = () => {
-      const newTab = currentTab === 0 ? tabLabels.length - 1 : currentTab - 1;
-      setCurrentTab(newTab);
-    };
-  
-    const handleRightButtonClick = () => {
-      const newTab = currentTab === tabLabels.length - 1 ? 0 : currentTab + 1;
-      setCurrentTab(newTab);
-    };
-//fin Profesiones
+  const handleEditCompanyRols = (id) => {
+    // find category
+    const Profession = Professions.find((Profession) => Profession.id === id);
 
-    /**
-   * Handle create category.
-   */
+    if (Profession === undefined) {
+      return;
+    }
+
+    setCurrentEdit({
+      type: 'companyRol',
+      id: Profession.id,
+      title: 'Editar nivel de educacion',
+      fields: [
+        {
+          label: 'Nivel de profesion',
+          name: 'name',
+          type: 'text',
+          value: Profession.profesion,
+        },
+      ],
+    });
+    setOpenEditDialog(true);
+  };
+
+  const fetchCompanyRol = async () => {
+    setLoading(true);
+    const { data } = await fetchProfessionAPI();
+    setCompanyRols(data);
+    setLoading(false);
+  };
+  //fin Roles Company
+  /**
+ * Handle tab change.
+ *
+ * @param event
+ * @param newValue
+ */
+
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
+  };
+  const handleLeftButtonClick = () => {
+    const newTab = currentTab === 0 ? tabLabels.length - 1 : currentTab - 1;
+    setCurrentTab(newTab);
+  };
+
+  const handleRightButtonClick = () => {
+    const newTab = currentTab === tabLabels.length - 1 ? 0 : currentTab + 1;
+    setCurrentTab(newTab);
+  };
+
+
+
+  /**
+ * Handle create category.
+ */
   const handleCreateCategory = () => {
     setCurrentCreate({
       type: 'contractType',
       title: 'Crear tipo contrato',
       fields: [
         {
-          label: 'Tipo Contratoooooo',
-          name: 'tipoContrato',
-          type: 'text',
-          isRequired: true,
-        },
-        {
-          label: 'Tipo Contratoooooo',
-          name: 'tipoContrato',
-          type: 'text',
-          isRequired: true,
-        },
-        {
-          label: 'Tipo Contratoooooo',
+          label: 'Tipo Contrato',
           name: 'tipoContrato',
           type: 'text',
           isRequired: true,
@@ -1473,10 +1451,6 @@ const fetchProfession = async () => {
    * @returns {*}
    */
   const mapContractType = (contractType) => contractType.map((contractType) => [
-    {
-      column: 'id',
-      value: contractType.id.toString(),
-    },
     {
       column: 'name',
       value: contractType.tipoContrato,
@@ -1498,29 +1472,29 @@ const fetchProfession = async () => {
    *
    * @param id
    */
-    const handleDeleteContractType = async (id) => {
-      const contractType = contractTypes.find((contractType) => contractType.id === id);
-  
-      if (contractType === undefined) {
-        return;
-      }
-  
-      try {
-        await deleteContractTypeAPI(id);
-      } catch (e) {}
-      enqueueSnackbar(
-        'Tipo contrato eliminado con éxito',
-        {
-          variant: 'success',
-        },
-      );
-    };
+  const handleDeleteContractType = async (id) => {
+    const contractType = contractTypes.find((contractType) => contractType.id === id);
 
-      /**
-   * Handle edit category.
-   *
-   * @param id
-   */
+    if (contractType === undefined) {
+      return;
+    }
+
+    try {
+      await deleteContractTypeAPI(id);
+    } catch (e) { }
+    enqueueSnackbar(
+      'Tipo contrato eliminado con éxito',
+      {
+        variant: 'success',
+      },
+    );
+  };
+
+  /**
+* Handle edit category.
+*
+* @param id
+*/
   const handleEditContractType = (id) => {
     // find category
     const contractType = contractTypes.find((contractType) => contractType.id === id);
@@ -1545,26 +1519,26 @@ const fetchProfession = async () => {
     setOpenEditDialog(true);
   };
 
-    /**
-   * Handle close edit dialog.
-   */
-    const handleCloseEditDialog = () => {
-      setOpenEditDialog(false);
-    };
-  
-    /**
-     * Handle close create dialog.
-     */
-    const handleCloseCreateDialog = () => {
-      setOpenCreateDialog(false);
-    };
+  /**
+ * Handle close edit dialog.
+ */
+  const handleCloseEditDialog = () => {
+    setOpenEditDialog(false);
+  };
 
-      /**
-   * Handle submitted edit dialog.
-   *
-   * @param formValues
-   * @returns {Promise<void>}
+  /**
+   * Handle close create dialog.
    */
+  const handleCloseCreateDialog = () => {
+    setOpenCreateDialog(false);
+  };
+
+  /**
+* Handle submitted edit dialog.
+*
+* @param formValues
+* @returns {Promise<void>}
+*/
   const handleSubmittedEditDialog = async (formValues) => {
     if (currentEdit.type === 'contractType') {
       // find category
@@ -1579,7 +1553,7 @@ const fetchProfession = async () => {
 
       try {
         await updateContractTypeAPI(category);
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Categoría actualizada con éxito',
         {
@@ -1599,7 +1573,7 @@ const fetchProfession = async () => {
 
       try {
         await updateDocumentTypeAPI(DocumentType);
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Documento actualizada con éxito',
         {
@@ -1619,7 +1593,7 @@ const fetchProfession = async () => {
 
       try {
         await updateEnglishLevelAPI(EnglishLevel);
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Nivel de ingles actualizado con exito',
         {
@@ -1639,7 +1613,7 @@ const fetchProfession = async () => {
 
       try {
         await updateEducationLevelAPI(EducationLevel);
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'nivel de educacion actualizado con exito',
         {
@@ -1659,7 +1633,7 @@ const fetchProfession = async () => {
 
       try {
         await updateDisabilitiesAPI(Disabilities);
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Discapacidad actualizada con exito',
         {
@@ -1679,7 +1653,7 @@ const fetchProfession = async () => {
 
       try {
         await updateHiringTypeAPI(HiringType);
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Tipo de contratacion actualizada con exito',
         {
@@ -1687,146 +1661,166 @@ const fetchProfession = async () => {
         },
       );
     }
-    
-if (currentEdit.type === 'gender') {
-  // find category
-  const Gender = Genders.find((Gender) => Gender.id === currentEdit.id);
 
-  if (Gender === undefined) {
-    return;
-  }
+    if (currentEdit.type === 'gender') {
+      // find category
+      const Gender = Genders.find((Gender) => Gender.id === currentEdit.id);
 
-  Gender.genero = formValues.name || Gender.genero;
+      if (Gender === undefined) {
+        return;
+      }
 
-  try {
-    await updateGenderAPI(Gender);
-  } catch (e) {}
-  enqueueSnackbar(
-    'Genero actualizado con exito',
-    {
-      variant: 'success',
-    },
-  );
-}
+      Gender.genero = formValues.name || Gender.genero;
 
-if (currentEdit.type === 'salaryType') {
-  // find category
-  const SalaryType = SalaryTypes.find((SalaryType) => SalaryType.id === currentEdit.id);
+      try {
+        await updateGenderAPI(Gender);
+      } catch (e) { }
+      enqueueSnackbar(
+        'Genero actualizado con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
 
-  if (SalaryType === undefined) {
-    return;
-  }
+    if (currentEdit.type === 'salaryType') {
+      // find category
+      const SalaryType = SalaryTypes.find((SalaryType) => SalaryType.id === currentEdit.id);
 
-  SalaryType.tipoDeSalario = formValues.name || SalaryType.tipoDeSalario;
+      if (SalaryType === undefined) {
+        return;
+      }
 
-  try {
-    await updateSalaryTypeAPI(SalaryType);
-  } catch (e) {}
-  enqueueSnackbar(
-    'Tipo salario actualizado con exito',
-    {
-      variant: 'success',
-    },
-  );
-}
-if (currentEdit.type === 'Profesion') {
-  // find category
-  const Profession = Professions.find((Profession) => Profession.id === currentEdit.id);
+      SalaryType.tipoDeSalario = formValues.name || SalaryType.tipoDeSalario;
 
-  if (Profession === undefined) {
-    return;
-  }
+      try {
+        await updateSalaryTypeAPI(SalaryType);
+      } catch (e) { }
+      enqueueSnackbar(
+        'Tipo salario actualizado con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+    if (currentEdit.type === 'Profesion') {
+      // find category
+      const Profession = Professions.find((Profession) => Profession.id === currentEdit.id);
 
-  Profession.profesion = formValues.name || Profession.profesion;
+      if (Profession === undefined) {
+        return;
+      }
 
-  try {
-    await updateProfessionAPI(Profession);
-  } catch (e) {}
-  enqueueSnackbar(
-    'nivel de educacion actualizado con exito',
-    {
-      variant: 'success',
-    },
-  );
-}
-if (currentEdit.type === 'CollectiveWorkGrouptoWhichitBelongs') {
-  // find category
-  const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === currentEdit.id);
+      Profession.profesion = formValues.name || Profession.profesion;
 
-  if (CollectiveWorkGrouptoWhichitBelongs === undefined) {
-    return;
-  }
+      try {
+        await updateProfessionAPI(Profession);
+      } catch (e) { }
+      enqueueSnackbar(
+        'nivel de educacion actualizado con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+    if (currentEdit.type === 'CollectiveWorkGrouptoWhichitBelongs') {
+      // find category
+      const CollectiveWorkGrouptoWhichitBelongs = collectiveWorkGrouptoWhichitBelongss.find((CollectiveWorkGrouptoWhichitBelongs) => CollectiveWorkGrouptoWhichitBelongs.id === currentEdit.id);
 
-  CollectiveWorkGrouptoWhichitBelongs.grupoColectivoDeTrabajo = formValues.name || CollectiveWorkGrouptoWhichitBelongs.grupoColectivoDeTrabajo;
+      if (CollectiveWorkGrouptoWhichitBelongs === undefined) {
+        return;
+      }
 
-  try {
-    await updateCollectiveWorkGrouptoWhichitBelongsAPI(CollectiveWorkGrouptoWhichitBelongs);
-  } catch (e) {}
-  enqueueSnackbar(
-    'Grupo de Trabajo Colectivo al que Pertenece actualizado con exito',
-    {
-      variant: 'success',
-    },
-  );
-}
-if (currentEdit.type === 'preferenciaSexual') {
-  // find category
-  const SexualPreference = sexualPreferences.find((SexualPreference) => SexualPreference.id === currentEdit.id);
+      CollectiveWorkGrouptoWhichitBelongs.grupoColectivoDeTrabajo = formValues.name || CollectiveWorkGrouptoWhichitBelongs.grupoColectivoDeTrabajo;
 
-  if (SexualPreference === undefined) {
-    return;
-  }
+      try {
+        await updateCollectiveWorkGrouptoWhichitBelongsAPI(CollectiveWorkGrouptoWhichitBelongs);
+      } catch (e) { }
+      enqueueSnackbar(
+        'Grupo de Trabajo Colectivo al que Pertenece actualizado con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+    if (currentEdit.type === 'preferenciaSexual') {
+      // find category
+      const SexualPreference = sexualPreferences.find((SexualPreference) => SexualPreference.id === currentEdit.id);
 
-  SexualPreference.preferenciaSexual = formValues.name || SexualPreference.nameCatogory;
-  try {
-    await updateSexualPreferenceAPI(SexualPreference);
-  } catch (e) {}
-  enqueueSnackbar(
-    'Preferencia sexual con exito',
-    {
-      variant: 'success',
-    },
-  );
-}
-if (currentEdit.type === 'OrganizationalLevel') {
-  // find organizacion
-  const OrganizationalLevel = OrganizationalLevels.find(
-    (OrganizationalLevel) => OrganizationalLevel.id === currentEdit.id
-  );
+      if (SexualPreference === undefined) {
+        return;
+      }
 
-  if (OrganizationalLevel === undefined) {
-    return;
-  }
+      SexualPreference.preferenciaSexual = formValues.name || SexualPreference.nameCatogory;
+      try {
+        await updateSexualPreferenceAPI(SexualPreference);
+      } catch (e) { }
+      enqueueSnackbar(
+        'Preferencia sexual con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+    if (currentEdit.type === 'OrganizationalLevel') {
+      // find organizacion
+      const OrganizationalLevel = OrganizationalLevels.find(
+        (OrganizationalLevel) => OrganizationalLevel.id === currentEdit.id
+      );
 
-  OrganizationalLevel.nivelOrganizacional =
-    formValues.name || OrganizationalLevel.nivelOrganizacional;
+      if (OrganizationalLevel === undefined) {
+        return;
+      }
 
-  try {
-    await updateOrganizationalLevelAPI(OrganizationalLevel);
-  } catch (e) {}
-  enqueueSnackbar('nivel de organizacion actualizado con exito', {
-    variant: 'success',
-  });
-}
-if (currentEdit.type === 'estados-civiles') {
-  // find category
-  const MaritalStatus = maritalStatuses.find((MaritalStatus) => MaritalStatus.id === currentEdit.id);
+      OrganizationalLevel.nivelOrganizacional =
+        formValues.name || OrganizationalLevel.nivelOrganizacional;
 
-  if (MaritalStatus === undefined) {
-    return;
-  }
+      try {
+        await updateOrganizationalLevelAPI(OrganizationalLevel);
+      } catch (e) { }
+      enqueueSnackbar('nivel de organizacion actualizado con exito', {
+        variant: 'success',
+      });
+    }
+    if (currentEdit.type === 'estados-civiles') {
+      // find category
+      const MaritalStatus = maritalStatuses.find((MaritalStatus) => MaritalStatus.id === currentEdit.id);
 
-  MaritalStatus.estadoCivil = formValues.name || MaritalStatus.nameCatogory;
-  try {
-    await updateMaritalStatusAPI(MaritalStatus);
-  } catch (e) {}
-  enqueueSnackbar(
-    'Estado civil con exito',
-    {
-      variant: 'success',
-    },
-  );
-}
+      if (MaritalStatus === undefined) {
+        return;
+      }
+
+      MaritalStatus.estadoCivil = formValues.name || MaritalStatus.nameCatogory;
+      try {
+        await updateMaritalStatusAPI(MaritalStatus);
+      } catch (e) { }
+      enqueueSnackbar(
+        'Estado civil con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
+
+    if (currentEdit.type === 'companyRol') {
+      // find category
+      const MaritalStatus = maritalStatuses.find((MaritalStatus) => MaritalStatus.id === currentEdit.id);
+
+      if (MaritalStatus === undefined) {
+        return;
+      }
+
+      MaritalStatus.estadoCivil = formValues.name || MaritalStatus.nameCatogory;
+      try {
+        await updateMaritalStatusAPI(MaritalStatus);
+      } catch (e) { }
+      enqueueSnackbar(
+        'Estado civil con exito',
+        {
+          variant: 'success',
+        },
+      );
+    }
 
     setCurrentEdit(null);
     setOpenEditDialog(false);
@@ -1839,12 +1833,13 @@ if (currentEdit.type === 'estados-civiles') {
    * @returns {Promise<void>}
    */
   const handleSubmittedCreateDialog = async (formValues) => {
+    console.log(currentCreate.type)
     if (currentCreate.type === 'contractType') {
       try {
         await storeContractTypeAPI({
           tipoContrato: formValues.tipoContrato,
         });
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Tipo Contrato creado con éxito',
         {
@@ -1854,10 +1849,11 @@ if (currentEdit.type === 'estados-civiles') {
     }
     if (currentCreate.type === 'documentType') {
       try {
-        await storeDocumentTypeAPI({
+        await storeEnglishLevelByCompanyIdAPI({
+          idCompany: companyId,
           tipoDocumento: formValues.tipoDocumento,
         });
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Tipo de documento creado con éxito',
         {
@@ -1870,7 +1866,7 @@ if (currentEdit.type === 'estados-civiles') {
         await storeEnglishLevelAPI({
           nivelIngles: formValues.nivelIngles,
         });
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Nivel de ingles creado con exito',
         {
@@ -1883,7 +1879,7 @@ if (currentEdit.type === 'estados-civiles') {
         await storeEducationLevelAPI({
           nivelEducacion: formValues.nivelEducacion,
         });
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Nivel de educacion creado con exito',
         {
@@ -1896,7 +1892,7 @@ if (currentEdit.type === 'estados-civiles') {
         await storeDisabilitiesAPI({
           discapacIdades: formValues.discapacIdades,
         });
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Discapacidad creada con exito',
         {
@@ -1909,7 +1905,7 @@ if (currentEdit.type === 'estados-civiles') {
         await storeHiringTypeAPI({
           tipoContrato: formValues.tipoContrato,
         });
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Tipo de contratacion creada con exito',
         {
@@ -1922,7 +1918,7 @@ if (currentEdit.type === 'estados-civiles') {
         await storeGenderAPI({
           genero: formValues.genero,
         });
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Genero creado con exito',
         {
@@ -1935,7 +1931,7 @@ if (currentEdit.type === 'estados-civiles') {
         await storeSalaryTypeAPI({
           tipoDeSalario: formValues.tipoDeSalario,
         });
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Tipo salario creado con exito',
         {
@@ -1949,7 +1945,7 @@ if (currentEdit.type === 'estados-civiles') {
         await storeProfessionAPI({
           profesion: formValues.profesion,
         });
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'profesion creada con exito',
         {
@@ -1962,7 +1958,7 @@ if (currentEdit.type === 'estados-civiles') {
         await storeCollectiveWorkGrouptoWhichitBelongsAPI({
           grupoColectivoDeTrabajo: formValues.grupoColectivoDeTrabajo,
         });
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Grupo de Trabajo Colectivo al que Pertenece creado con exito',
         {
@@ -1975,7 +1971,7 @@ if (currentEdit.type === 'estados-civiles') {
         await storeSexualPreferenceAPI({
           preferenciaSexual: formValues.preferenciaSexual,
         });
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Preferencia sexual creado con exito',
         {
@@ -1988,7 +1984,7 @@ if (currentEdit.type === 'estados-civiles') {
         await storeOrganizationalLevelAPI({
           nivelOrganizacional: formValues.nivelOrganizacional,
         });
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar('organizacion creada con exito', {
         variant: 'success',
       });
@@ -1998,7 +1994,7 @@ if (currentEdit.type === 'estados-civiles') {
         await storeMaritalStatusAPI({
           estadoCivil: formValues.estadoCivil,
         });
-      } catch (e) {}
+      } catch (e) { }
       enqueueSnackbar(
         'Estado civil creado con exito',
         {
@@ -2006,41 +2002,101 @@ if (currentEdit.type === 'estados-civiles') {
         },
       );
     }
+    if (currentCreate.type === 'companyRol') {
+      try {
+        await storeRolCompanyAPI({
+          idCompany: currentCompany.id,
+          rolAA: formValues.rol,
+        });
+        enqueueSnackbar(
+          'Rol creado con éxito',
+          {
+            variant: 'success',
+          },
+        );
+      } catch (e) { console.log(e)
+        enqueueSnackbar(
+          'Hubo un error al crear el Rol',
+          {
+            variant: 'error',
+          },
+        );
+      }
+      
+    }
     setCurrentCreate(null);
     setOpenCreateDialog(false);
   };
-  
-    /**
-   * Fetch categories.
+
+  /**
+ * Fetch categories.
+ *
+ * @returns {Promise<void>}
+ */
+  const fetchContractType = async () => {
+    if (!currentCompany) {
+      return;
+    }
+
+    const { data } = await fetchContractTypeByCompanyAPI(currentCompany.id);
+    setcontractType(data);
+  };
+
+  /**
+   * Fetch fields.
    *
    * @returns {Promise<void>}
    */
-    const fetchContractType = async () => {
-      setLoading(true);
+  const fetchEnglishLevels = async () => {
+    if (!currentCompany) {
+      return;
+    }
+
+    // fetch journeys by map and company
+    const { data } = await fetchEnglishLevelByCompanyIdAPI(currentCompany.id);
+    setGenero(data);
+  };
+
+  const fetchRolCompany = async () => {
+    console.log(currentCompany)
+    if (!currentCompany) {
+      return;
+    }
+
+    // fetch journeys by map and company
+    const { data } = await fetchRolCompanyAPI(currentCompany.id);
+    console.log(data);
+    setCompanyRols(data);
+  };
+
   
-      const { data } = await fetchContractTypeAPI();
-      console.log(data);
-      setcontractType(data);
-      setLoading(false);
-    };
 
 
-    // component did mount
-    useEffect(() => { 
-      fetchContractType();
-      fetchDocumentType();
-      fetchEnglishLevel();
-      fetchEducationLevel();
-      fetchDisabilities();
-      fetchHiringType();
-      fetchGender();
-      fetchSalaryType();
-      fetchProfession();
-      fetchCollectiveWorkGrouptoWhichitBelongs();
-      fetchSexualPreference();
-      fetchOrganizationalLevel();
-      fetchMaritalStatus();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // component did mount
+  useEffect(() => {
+    fetchContractType();
+    fetchDocumentType();
+    fetchEnglishLevel();
+    fetchEducationLevel();
+    fetchDisabilities();
+    fetchHiringType();
+    fetchGender();
+    fetchSalaryType();
+    fetchProfession();
+    fetchCollectiveWorkGrouptoWhichitBelongs();
+    fetchSexualPreference();
+    fetchOrganizationalLevel();
+    fetchMaritalStatus();
+    fetchCompanyRol();
+    fetchRolCompany();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    fetchEnglishLevels();
+    fetchRolCompany();
+    fetchContractType();
+  }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDeleteItem = async (id, trueid) => {
     dispatch(removeItem({ id: id, type: props.type }));
@@ -2114,11 +2170,11 @@ if (currentEdit.type === 'estados-civiles') {
         isNaN(params.row.IdTamanoCompania)
           ? params.row.IdTamanoCompania
           : search(
-              params.row.IdTamanoCompania,
-              props.ids.sizeCompany,
-              'quantityOfEmployees',
-              'id'
-            ),
+            params.row.IdTamanoCompania,
+            props.ids.sizeCompany,
+            'quantityOfEmployees',
+            'id'
+          ),
     },
     {
       field: 'SectorId',
@@ -2257,11 +2313,11 @@ if (currentEdit.type === 'estados-civiles') {
         return isNaN(params.row.companyId)
           ? params.row.companyId
           : search(
-              params.row.companyId,
-              props.ids.company,
-              'nombreCompania',
-              'id'
-            );
+            params.row.companyId,
+            props.ids.company,
+            'nombreCompania',
+            'id'
+          );
       },
     },
     {
@@ -2397,11 +2453,6 @@ if (currentEdit.type === 'estados-civiles') {
   const contractTypeColumns = [
 
     {
-      id: 'id',
-      label: 'ID',
-      numeric: true,
-    },
-    {
       id: 'name',
       label: 'Tipo Contrato',
       numeric: false,
@@ -2434,23 +2485,24 @@ if (currentEdit.type === 'estados-civiles') {
         return null;
     }
   };
-  
-  
-const tabLabels = [
-  'Tipo Contrato',
-  'Tipos de documentos',
-  'Nivel de ingles',
-  'Nivel de educacion',
-  'Discapacidades',
-  'Tipo de contrataciones',
-  'Tipo generos',
-  'Tipo salarios',
-  'Profesion',
-  'Nivel Organizacional',
-  'Grupo de Trabajo Colectivo al que Pertenece',
-  'Preferencia sexual',
-  'Estado civil',
-];
+
+
+  const tabLabels = [
+    'Tipo Contrato',
+    'Tipos de documentos',
+    'Nivel de ingles',
+    'Nivel de educacion',
+    'Discapacidades',
+    'Tipo de contrataciones',
+    'Tipo generos',
+    'Tipo salarios',
+    'Profesion',
+    'Nivel Organizacional',
+    'Grupo de Trabajo Colectivo al que Pertenece',
+    'Preferencia sexual',
+    'Estado civil',
+    'Rol Company',
+  ];
 
   const columns = useMemo(() => renderColumn(), [props.type]);
 
@@ -2458,120 +2510,122 @@ const tabLabels = [
     setRows(props.tableData);
   }, [props.tableData]);
 
-  if (props.type != 'Otros campos'){
-      return (
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          getRowId={(row) => row._id}
-          rowsPerPageOptions={[5, 10, 20]}
-          pageSize={pageSize}
-          onPageSizeChange={(newPageSize) => setpageSize(newPageSize)}
-          getRowSpacing={(params) => ({
-            top: params.isFirstVisible ? 0 : 5,
-            bottom: params.isLastVisible ? 0 : 5,
-          })}
-          sx={{
-            [`& .${gridClasses.row}`]: {
-              bgcolor: (theme) =>
-                theme.palette.mode === 'light' ? grey[200] : grey[900],
-            },
-          }}
-        />
-      );
-      
-  }else{
+  if (props.type != 'Otros campos') {
+    return (
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        getRowId={(row) => row._id}
+        rowsPerPageOptions={[5, 10, 20]}
+        pageSize={pageSize}
+        onPageSizeChange={(newPageSize) => setpageSize(newPageSize)}
+        getRowSpacing={(params) => ({
+          top: params.isFirstVisible ? 0 : 5,
+          bottom: params.isLastVisible ? 0 : 5,
+        })}
+        sx={{
+          [`& .${gridClasses.row}`]: {
+            bgcolor: (theme) =>
+              theme.palette.mode === 'light' ? grey[200] : grey[900],
+          },
+        }}
+      />
+    );
+
+  } else {
     return (
       <Box sx={{ display: 'flex' }} >
         <div style={{ backgroundColor: 'white' }}>
           <div className={styles.StyleOtherCamps}>
-            <div className={styles.StyleOthercamps__content}>  
+            <div className={styles.StyleOthercamps__content}>
               {loading === true && (
                 <MyLoader />
               )}
-  
+
               {loading === false && (
                 <MyCard sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <Box sx={{ width: '100%' }}>
-                 
+
                     <Box
                       sx={{
                         borderBottom: 1,
                         borderColor: 'divider',
                       }}>
-                     <Box sx={{ display: 'flex', justifyContent: 'between' }} >
-                     <IconButton onClick={handleLeftButtonClick}>
-                        <ArrowLeftIcon />
+                      <Box sx={{ display: 'flex', justifyContent: 'between' }} >
+                        <IconButton onClick={handleLeftButtonClick}>
+                          <ArrowLeftIcon />
                         </IconButton>
-                      <Tabs sx={{ width: '90%', justifyContent: 'center' }}
-                    
-                        value={currentTab}
-                        onChange={(event, newValue) => handleTabChange(event, newValue)}
-                        
-                      >
-                        
-                        <Tab
-                          label='Tipo Contrato'
-                          id='settings-tab-0'
-                        />
-                        <Tab
-                          label='Tipos de documentos'
-                          id='settings-tab-1'
-                        />
-                        <Tab
-                          label='Nivel de ingles'
-                          id='settings-tab-2'
-                        />
-                        <Tab
-                          label='Nivel de educacion'
-                          id='settings-tab-3'
-                        />
-                        <Tab
-                          label='Discapacidades'
-                          id='settings-tab-4'
-                        />
-                         <Tab
-                          label='Tipo de contrataciones'
-                          id='settings-tab-5'
-                        />
-                       <Tab
-                          label='Tipo generos'
-                          id='settings-tab-6'
-                        />
-						
-                       <Tab
-                          label='Tipo salarios'
-                          id='settings-tab-7'
-                        />
-                        <Tab
-                          label='Profesion'
-                          id='settings-tab-8'
-                        />
-                         <Tab
-                          label='Grupo de Trabajo Colectivo al que Pertenece'
-                          id='settings-tab-9'
-                        />
-                        <Tab
-                          label='Preferencia sexual'
-                          id='settings-tab-10'
-                        />
-                        <Tab
-                          label='Estado civil'
-                          id='settings-tab-11'
-                        />
-                         <Tab
-                          label='Nivel Organizacional'
-                          id='settings-tab-12'
-                        />
-                        
-                        
-                        
-                      </Tabs>
-                      <IconButton onClick={handleRightButtonClick}>
-                      <ArrowRightIcon />
-                       </IconButton>
+                        <Tabs sx={{ width: '90%', justifyContent: 'center' }}
+
+                          value={currentTab}
+                          onChange={(event, newValue) => handleTabChange(event, newValue)}
+
+                        >
+                          <Tab
+                            label='Tipo Contrato'
+                            id='settings-tab-0'
+                          />
+                          <Tab
+                            label='Tipos de documentos'
+                            id='settings-tab-1'
+                          />
+                          <Tab
+                            label='Nivel de ingles'
+                            id='settings-tab-2'
+                          />
+                          <Tab
+                            label='Nivel de educacion'
+                            id='settings-tab-3'
+                          />
+                          <Tab
+                            label='Discapacidades'
+                            id='settings-tab-4'
+                          />
+                          <Tab
+                            label='Tipo de contrataciones'
+                            id='settings-tab-5'
+                          />
+                          <Tab
+                            label='Tipo generos'
+                            id='settings-tab-6'
+                          />
+
+                          <Tab
+                            label='Tipo salarios'
+                            id='settings-tab-7'
+                          />
+                          <Tab
+                            label='Profesion'
+                            id='settings-tab-8'
+                          />
+                          <Tab
+                            label='Grupo de Trabajo Colectivo al que Pertenece'
+                            id='settings-tab-9'
+                          />
+                          <Tab
+                            label='Preferencia sexual'
+                            id='settings-tab-10'
+                          />
+                          <Tab
+                            label='Estado civil'
+                            id='settings-tab-11'
+                          />
+                          <Tab
+                            label='Nivel Organizacional'
+                            id='settings-tab-12'
+                          />
+
+                          <Tab
+                            label='Rol Compañia'
+                            id='settings-tab-12'
+                          />
+
+                        </Tabs>
+                        <IconButton onClick={handleRightButtonClick}>
+                          <ArrowRightIcon />
+                        </IconButton>
                       </Box>
-                      
+
                       {/* categories */}
                       <div
                         hidden={currentTab !== 0}
@@ -2581,7 +2635,7 @@ const tabLabels = [
                           <Box
                             sx={{
                               p: 3,
-                          }}
+                            }}
                           >
                             <Stack
                               spacing={2}
@@ -2606,9 +2660,6 @@ const tabLabels = [
                           </Box>
                         )}
                       </div>
-
-
-
                       {/* Documento*/}
                       <div
                         hidden={currentTab !== 1}
@@ -2618,7 +2669,7 @@ const tabLabels = [
                           <Box
                             sx={{
                               p: 3,
-                          }}
+                            }}
                           >
                             <Stack
                               spacing={2}
@@ -2652,7 +2703,7 @@ const tabLabels = [
                           <Box
                             sx={{
                               p: 3,
-                          }}
+                            }}
                           >
                             <Stack
                               spacing={2}
@@ -2677,9 +2728,8 @@ const tabLabels = [
                           </Box>
                         )}
                       </div>
-
-                       {/* Nivel de educacion*/}
-                       <div
+                      {/* Nivel de educacion*/}
+                      <div
                         hidden={currentTab !== 3}
                         id='settings-tabpanel-0'
                       >
@@ -2687,7 +2737,7 @@ const tabLabels = [
                           <Box
                             sx={{
                               p: 3,
-                          }}
+                            }}
                           >
                             <Stack
                               spacing={2}
@@ -2721,7 +2771,7 @@ const tabLabels = [
                           <Box
                             sx={{
                               p: 3,
-                          }}
+                            }}
                           >
                             <Stack
                               spacing={2}
@@ -2746,7 +2796,6 @@ const tabLabels = [
                           </Box>
                         )}
                       </div>
-
                       {/* Tipo de contratacion*/}
                       <div
                         hidden={currentTab !== 5}
@@ -2756,7 +2805,7 @@ const tabLabels = [
                           <Box
                             sx={{
                               p: 3,
-                          }}
+                            }}
                           >
                             <Stack
                               spacing={2}
@@ -2790,7 +2839,7 @@ const tabLabels = [
                           <Box
                             sx={{
                               p: 3,
-                          }}
+                            }}
                           >
                             <Stack
                               spacing={2}
@@ -2824,7 +2873,7 @@ const tabLabels = [
                           <Box
                             sx={{
                               p: 3,
-                          }}
+                            }}
                           >
                             <Stack
                               spacing={2}
@@ -2849,9 +2898,8 @@ const tabLabels = [
                           </Box>
                         )}
                       </div>
-
-                       {/* Nivel de profesion*/}
-                       <div
+                      {/* Nivel de profesion*/}
+                      <div
                         hidden={currentTab !== 8}
                         id='settings-tabpanel-0'
                       >
@@ -2859,7 +2907,7 @@ const tabLabels = [
                           <Box
                             sx={{
                               p: 3,
-                          }}
+                            }}
                           >
                             <Stack
                               spacing={2}
@@ -2893,7 +2941,7 @@ const tabLabels = [
                           <Box
                             sx={{
                               p: 3,
-                          }}
+                            }}
                           >
                             <Stack
                               spacing={2}
@@ -2927,7 +2975,7 @@ const tabLabels = [
                           <Box
                             sx={{
                               p: 3,
-                          }}
+                            }}
                           >
                             <Stack
                               spacing={2}
@@ -2961,7 +3009,7 @@ const tabLabels = [
                           <Box
                             sx={{
                               p: 3,
-                          }}
+                            }}
                           >
                             <Stack
                               spacing={2}
@@ -2986,8 +3034,8 @@ const tabLabels = [
                           </Box>
                         )}
                       </div>
-                       {/* Nivel de Organizacion*/}
-                       <div hidden={currentTab !== 12} id='settings-tabpanel-0'>
+                      {/* Nivel de Organizacion*/}
+                      <div hidden={currentTab !== 12} id='settings-tabpanel-0'>
                         {currentTab === 12 && (
                           <Box
                             sx={{
@@ -3017,6 +3065,37 @@ const tabLabels = [
                           </Box>
                         )}
                       </div>
+                      {/* Roll Company*/}
+                      <div hidden={currentTab !== 13} id='settings-tabpanel-0'>
+                        {currentTab === 13 && (
+                          <Box
+                            sx={{
+                              p: 3,
+                            }}
+                          >
+                            <Stack
+                              spacing={2}
+                              direction='row-reverse'
+                              sx={{
+                                mb: 2,
+                              }}
+                            >
+                              <Button
+                                variant='outlined'
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateCompanyRols}
+                              >
+                                Crear Rol
+                              </Button>
+                            </Stack>
+                            <MyTable
+                              title={'Rol'}
+                              columns={companyRolsColumns}
+                              rows={mapCompanyRols(companyRols)}
+                            />
+                          </Box>
+                        )}
+                      </div>
                     </Box>
                   </Box>
                 </MyCard>
@@ -3024,7 +3103,7 @@ const tabLabels = [
             </div>
           </div>
         </div>
-  
+
         {/* edit form */}
         {currentEdit !== null && (
           <MyEditDialog
@@ -3035,7 +3114,7 @@ const tabLabels = [
             fields={currentEdit.fields}
           />
         )}
-  
+
         {/* create form */}
         {currentCreate !== null && (
           <MyCreateDialog

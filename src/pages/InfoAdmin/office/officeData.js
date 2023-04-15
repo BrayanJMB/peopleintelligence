@@ -104,7 +104,14 @@ export const useOffice = () => {
     try {
         await deleteOfficeAPI(id);
         getInformationOffices(setOffices);
-      } catch (e) {}
+      } catch (e) {
+        enqueueSnackbar(
+          'Hubo un error al crear la oficina',
+          {
+            variant: 'error',
+          },
+        );
+      }
       enqueueSnackbar(
         'Oficina eliminada con éxito',
         {
@@ -178,6 +185,7 @@ export const useOffice = () => {
 
 
     const handleSubmittedCreateOffice = async (formValues) => {
+      console.log(formValues);  
          try {
             await storeOfficeAPI({
                 sede: formValues.sede,
@@ -196,13 +204,21 @@ export const useOffice = () => {
             }));
         
             setOffices(offices);
-        } catch (e) {}
-        enqueueSnackbar(
-            'Tipo Contrato creado con éxito',
+            enqueueSnackbar(
+              'Oficina creada con éxito',
+              {
+              variant: 'success',
+              },
+          );
+        } catch (e) {
+          enqueueSnackbar(
+            'Hubo un error al crear la oficina',
             {
-            variant: 'success',
+              variant: 'error',
             },
-        );
+          );
+        }
+
     };
 
   return {

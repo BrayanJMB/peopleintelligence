@@ -1,14 +1,28 @@
 import axios from '../utils/axiosInstance';
 
 /**
- * Fetch Contract Type.
+ * Fetch EnglishLevel.
  *
  * @returns {Promise<any>}
  */
 export const fetchEnglishLevelAPI = async () => axios.get('EnglishLevel/');
 
 /**
- * Update Contract Type.
+ * Fetch EnglishLevel by companyId.
+ *
+ * @returns {Promise<any>}
+ */
+export const fetchEnglishLevelByCompanyIdAPI = async (idCompany) => axios.get(`EnglishLevel/${idCompany}`);
+
+/**
+ * Store EnglishLevel by companyId.
+ *
+ * @returns {Promise<any>}
+ */
+export const storeEnglishLevelByCompanyIdAPI = async ({ idCompany, tipoDocumento }) => axios.post(`EnglishLevel/${idCompany}`, { tipoDocumento });
+
+/**
+ * Update EnglishLevel.
  *
  * @param id
  * @param data
@@ -17,7 +31,7 @@ export const fetchEnglishLevelAPI = async () => axios.get('EnglishLevel/');
 export const updateEnglishLevelAPI = async ({...data}) => axios.put('EnglishLevel/', data);
 
 /**
- * Delete Contract Type.
+ * Delete EnglishLevel.
  *
  * @param id
  * @returns {Promise<any>}
@@ -25,7 +39,7 @@ export const updateEnglishLevelAPI = async ({...data}) => axios.put('EnglishLeve
 export const deleteEnglishLevelAPI = async (id) => axios.delete(`EnglishLevel/${id}`);
 
 /**
- * Store Contract Type.
+ * Store EnglishLevel.
  *
  * @param data
  * @returns {Promise<any>}

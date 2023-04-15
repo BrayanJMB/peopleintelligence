@@ -33,3 +33,12 @@ export const deleteAreaAPI = async (id) => axios.delete(`Area/${id}`);
  * @returns {Promise<any>}
  */
 export const storeAreaAPI = async (id) => axios.post(`Area/${userInfo.Company}`);
+
+
+/**
+ * Fecth Area.
+ *
+ * @param data
+ * @returns {Promise<any>}
+ */
+export const fecthAreaAPI = async () => axios.get('Area/');

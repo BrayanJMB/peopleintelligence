@@ -7,6 +7,15 @@ import axios from '../utils/axiosInstance';
  */
 export const fetchContractTypeAPI = async () => axios.get('ContractType/');
 
+
+
+/**
+ * Fetch Contract Type.
+ *
+ * @returns {Promise<any>}
+ */
+export const fetchContractTypeByCompanyAPI = async (idCompany) => axios.get(`ContractType/${idCompany}`);
+
 /**
  * Update Contract Type.
  *
@@ -22,13 +31,13 @@ export const updateContractTypeAPI = async ({...data}) => axios.put('ContractTyp
  * @param id
  * @returns {Promise<any>}
  */
-export const deleteContractTypeAPI = async (id) => axios.delete(`ContractType/${id}`);
+export const deleteContractTypeAPI = async (id, idCompany) => axios.delete(`ContractType/${id}/${idCompany}`);
+
 
 /**
  * Store Contract Type.
  *
- * @param data
  * @returns {Promise<any>}
  */
-export const storeContractTypeAPI = async (data) => axios.post('ContractType/', data);
+export const storeContractTypeByCompanyIdAPI = async ({ idCompany, tipoContrato }) => axios.post(`ContractType/${idCompany}`, { tipoContrato });
 

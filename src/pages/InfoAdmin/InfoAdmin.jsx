@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef,useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { CSVLink } from 'react-csv';
-import { useDispatch,useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
@@ -11,10 +11,12 @@ import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
 import * as uuid from 'uuid';
-
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import Building from '../../assets/Building.svg';
 import MyCard from '../../components/MyCard/MyCard';
 import MyCreateDialog2 from '../../components/MyCreateDialog2/MyCreateDialog2';
+import MyEditDialog2 from '../../components/MyEditDialog2/MyEditDialog2';
 import MyLoader from '../../components/MyLoader/MyLoader';
 import MyTable from '../../components/MyTable/MyTable';
 import NewCompany from '../../components/NewCompany/NewCompany';
@@ -27,21 +29,22 @@ import { addItem, storeItems, updateItem } from '../../features/adminSlice';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import { getCompaniesAPI } from '../../services/getCompanies.service';
-import {   deleteAreaAPI,
+import {
+  deleteAreaAPI,
   fetchAreaAPI,
   fetchAreaByCompanyAPI,
   storeAreaAPI,
   updateAreaAPI,
- } from '../../services/getDepartments.service';
+} from '../../services/getDepartments.service';
 import { getEmployeesAPI } from '../../services/getEmployees.service';
 import { getOfficesAPI, postOfficeAPI } from '../../services/getOffices.service';
 import { postCompanyAPI } from '../../services/postCompany.service';
 import { postEmployeeAPI } from '../../services/postEmployee.service';
 import axios from '../../utils/axiosInstance';
 
-import {officesColumns, useCreateOffice, useOffice} from './office/officeData';
-import {departmentsColumns, useCreateDepartment, useDepartment} from './department/departmentData';
-import {employeesColumns, useCreateEmployee, useEmployee} from './employees/employeesData';
+import { officesColumns, useCreateOffice, useOffice } from './office/officeData';
+import { departmentsColumns, useCreateDepartment, useDepartment } from './department/departmentData';
+import { employeesColumns, useCreateEmployee, useEmployee } from './employees/employeesData';
 
 import styles from './InfoAdmin.module.css';
 import { current } from '@reduxjs/toolkit';
@@ -63,12 +66,33 @@ export default function InfoAdmin() {
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const { offices, mapOffice, fetchOffice, handleSubmittedCreateOffice } = useOffice();
-  const { handleCreateOffice }  = useCreateOffice(setOpenCreateDialog, setCurrentCreate);
-  const {  departments, setDepartments, mapDepartment, fetchDepartments, handleSubmittedCreateDepartment } = useDepartment(currentCompany);
-  const { handleCreateDepartment }  = useCreateDepartment(setOpenCreateDialog, setCurrentCreate);
+  const { handleCreateOffice } = useCreateOffice(setOpenCreateDialog, setCurrentCreate);
+  const { departments, setDepartments, mapDepartment, fetchDepartments, handleSubmittedCreateDepartment } = useDepartment(currentCompany);
+  const { handleCreateDepartment } = useCreateDepartment(setOpenCreateDialog, setCurrentCreate);
 
-  const { handleCreateEmployee }  = useCreateEmployee(setOpenCreateDialog, setCurrentCreate);
-  const { handleSubmittedCreateEmployee } = useEmployee();
+  const { handleCreateEmployee,
+    handleEditEmployee,
+    mapEmployee,
+    employees,
+    fetchEmployee,
+    handleSubmittedCreateEmployee,
+    fetchCity,
+    fetchGender,
+    fetchDocumentsTypes,
+    fetchCompanies,
+    fetchMaritalStatus,
+    fetchSalaryType,
+    fetchProfessions,
+    fetchEducationLevel,
+    fetchEnglishLevel,
+    fetchCampus,
+    fetchSexualPreference,
+    fetchDisabilities,
+    fetchHiringType,
+    fetchContractType,
+    fetchOrganizationalLevel,
+    fetchPerson } = useEmployee(setOpenCreateDialog, setCurrentCreate, setOpenEditDialog, setCurrentEdit);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const admin = useSelector((state) => state.admin);
@@ -76,6 +100,7 @@ export default function InfoAdmin() {
   const { type } = useParams();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [currentTab, setCurrentTab] = useState(0);
 
 
 
@@ -143,22 +168,28 @@ export default function InfoAdmin() {
     }
   );
 
-
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
+  };
   const tableData = admin[type];
 
   // state for ids
   const [data, setData] = useState({
-    content: { country: [], sizeCompany: [], sector: [], company: [], 
-      documentType: [], gender: [], AreaFuncional:[],NivelOrganizacional:[],
-      TipoContrato:[] , TipoContratacion:[], Disabilities:[], SexualPreference:[],
-      Campus:[], EnglishLevel:[],EducationLevel:[], GrupoCiolectivo:[], Jornada:[], 
-      SalaryType:[], EstadoCivil:[] },
+    content: {
+      country: [], sizeCompany: [], sector: [], company: [],
+      documentType: [], gender: [], AreaFuncional: [], NivelOrganizacional: [],
+      TipoContrato: [], TipoContratacion: [], Disabilities: [], SexualPreference: [],
+      Campus: [], EnglishLevel: [], EducationLevel: [], GrupoCiolectivo: [], Jornada: [],
+      SalaryType: [], EstadoCivil: []
+    },
 
-    ids: { country: [], sizeCompany: [], sector: [], company: [], 
-      documentType:[ ], gender: [], AreaFuncional:[], NivelOrganizacional:[], 
-      TipoContrato:[], TipoContratacion:[], Disabilities:[], SexualPreference:[],
-      Campus:[], EnglishLevel:[],EducationLevel:[], GrupoCiolectivo:[], Jornada:[], 
-      SalaryType:[], EstadoCivil:[] },
+    ids: {
+      country: [], sizeCompany: [], sector: [], company: [],
+      documentType: [], gender: [], AreaFuncional: [], NivelOrganizacional: [],
+      TipoContrato: [], TipoContratacion: [], Disabilities: [], SexualPreference: [],
+      Campus: [], EnglishLevel: [], EducationLevel: [], GrupoCiolectivo: [], Jornada: [],
+      SalaryType: [], EstadoCivil: []
+    },
   });
   const csvLink = useRef();
   const importcsv = useRef();
@@ -209,18 +240,12 @@ export default function InfoAdmin() {
       handleSubmittedCreateOffice(formValues);
     }
     if (currentCreate.type === 'department') {
-      console.log("entro");
       handleSubmittedCreateDepartment(formValues);
     }
 
     if (currentCreate.type === 'employee') {
-      console.log("entro");
       handleSubmittedCreateEmployee(formValues);
     }
-
-
-
-
 
     setCurrentCreate(null);
     setOpenCreateDialog(false);
@@ -270,7 +295,7 @@ export default function InfoAdmin() {
   const companyConsume = async () => {
     try {
       await axios.get('companias/').then((res) => {
-        
+
         let fetch = [];
 
         let id = [];
@@ -289,325 +314,326 @@ export default function InfoAdmin() {
       console.log(error);
     }
   };
-
-  const documentTypeConsume = async () => {
-    try {
-      await axios.get('tipo-documentos/').then((res) => {
-        let fetch = [];
-        let id = [];
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.tipoDocumento)) {
-            fetch.push(val.tipoDocumento);
-            id.push(val);
-          }
+  /*
+    const documentTypeConsume = async () => {
+      try {
+        await axios.get('tipo-documentos/').then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.tipoDocumento)) {
+              fetch.push(val.tipoDocumento);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.documentType = fetch;
+          holder.ids.documentType = id;
+          setData(holder);
+  
         });
-        let holder = data;
-        holder.content.documentType = fetch;
-        holder.ids.documentType = id;
-        setData(holder);
-
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const genderConsume = async () => {
-    try {
-      await axios.get('generos/').then((res) => {
-        let fetch = [];
-        let id = [];
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.genero)) {
-            fetch.push(val.genero);
-            id.push(val);
-          }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    const genderConsume = async () => {
+      try {
+        await axios.get('generos/').then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.genero)) {
+              fetch.push(val.genero);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.gender = fetch;
+          holder.ids.gender = id;
+          setData(holder);
+  
         });
-        let holder = data;
-        holder.content.gender = fetch;
-        holder.ids.gender = id;
-        setData(holder);
-
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const cityConsume = async () => {
-    try {
-      await axios.get('ciudades/').then((res) => {
-        let fetch = [];
-        let id = [];
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.genero)) {
-            fetch.push(val.genero);
-            id.push(val);
-          }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    const cityConsume = async () => {
+      try {
+        await axios.get('ciudades/').then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.genero)) {
+              fetch.push(val.genero);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.gender = fetch;
+          holder.ids.gender = id;
+          setData(holder);
+  
         });
-        let holder = data;
-        holder.content.gender = fetch;
-        holder.ids.gender = id;
-        setData(holder);
-
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const areaConsume = async () => {
-    try {
-      await axios.get('Area/').then((res) => {
-        let fetch = [];
-        let id = [];
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.NombreArea)) {
-            fetch.push(val.NombreArea);
-            id.push(val);
-          }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    const areaConsume = async () => {
+      try {
+        await axios.get('Area/').then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.NombreArea)) {
+              fetch.push(val.NombreArea);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.AreaFuncional = fetch;
+          holder.ids.AreaFuncional = id;
+          setData(holder);
         });
-        let holder = data;
-        holder.content.AreaFuncional = fetch;
-        holder.ids.AreaFuncional = id;
-        setData(holder);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-
-  const organizationalLevelConsume = async () => {
-    try {
-      await axios.get('OrganizationalLevel/').then((res) => {
-        let fetch = [];
-        let id = [];
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.nivelOrganizacional)) {
-            fetch.push(val.nivelOrganizacional);
-            id.push(val);
-          }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+  
+    const organizationalLevelConsume = async () => {
+      try {
+        await axios.get('OrganizationalLevel/').then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.nivelOrganizacional)) {
+              fetch.push(val.nivelOrganizacional);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.NivelOrganizacional = fetch;
+          holder.ids.NivelOrganizacional = id;
+          setData(holder);
         });
-        let holder = data;
-        holder.content.NivelOrganizacional = fetch;
-        holder.ids.NivelOrganizacional = id;
-        setData(holder);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const contractTypeConsume = async () => {
-    try {
-      await axios.get('ContractType/').then((res) => {
-        let fetch = [];
-        let id = [];
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.tipoContrato)) {
-            fetch.push(val.tipoContrato);
-            id.push(val);
-          }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    const contractTypeConsume = async () => {
+      try {
+        await axios.get('ContractType/').then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.tipoContrato)) {
+              fetch.push(val.tipoContrato);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.TipoContrato = fetch;
+          holder.ids.TipoContrato = id;
+          setData(holder);
         });
-        let holder = data;
-        holder.content.TipoContrato = fetch;
-        holder.ids.TipoContrato = id;
-        setData(holder);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const hiringTypeConsume = async () => {
-    try {
-      await axios.get('HiringType/').then((res) => {
-        let fetch = [];
-        let id = [];
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.tipoContrato)) {
-            fetch.push(val.tipoContrato);
-            id.push(val);
-          }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    const hiringTypeConsume = async () => {
+      try {
+        await axios.get('HiringType/').then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.tipoContrato)) {
+              fetch.push(val.tipoContrato);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.TipoContratacion = fetch;
+          holder.ids.TipoContratacion = id;
+          setData(holder);
         });
-        let holder = data;
-        holder.content.TipoContratacion= fetch;
-        holder.ids.TipoContratacion = id;
-        setData(holder);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const sexualPreferenceConsume = async () => {
-    try {
-      await axios.get('PreferenciSexual/').then((res) => {
-        let fetch = [];
-        let id = [];
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.preferenciaSexual)) {
-            fetch.push(val.preferenciaSexual);
-            id.push(val);
-          }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    const sexualPreferenceConsume = async () => {
+      try {
+        await axios.get('PreferenciSexual/').then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.preferenciaSexual)) {
+              fetch.push(val.preferenciaSexual);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.SexualPreference = fetch;
+          holder.ids.SexualPreference = id;
+          setData(holder);
         });
-        let holder = data;
-        holder.content.SexualPreference = fetch;
-        holder.ids.SexualPreference = id;
-        setData(holder);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const campusConsume = async () => {
-    try {
-      await axios.get('Campus/').then((res) => {
-        let fetch = [];
-        let id = [];
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.sede)) {
-            fetch.push(val.sede);
-            id.push(val);
-          }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    const campusConsume = async () => {
+      try {
+        await axios.get('Campus/').then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.sede)) {
+              fetch.push(val.sede);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.Campus = fetch;
+          holder.ids.Campus = id;
+          setData(holder);
         });
-        let holder = data;
-        holder.content.Campus = fetch;
-        holder.ids.Campus = id;
-        setData(holder);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const englishLevelConsume = async () => {
-    try {
-      await axios.get('EnglishLevel/').then((res) => {
-        let fetch = [];
-        let id = [];
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.nivelIngles)) {
-            fetch.push(val.nivelIngles);
-            id.push(val);
-          }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    const englishLevelConsume = async () => {
+      try {
+        await axios.get('EnglishLevel/').then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.nivelIngles)) {
+              fetch.push(val.nivelIngles);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.EnglishLevel = fetch;
+          holder.ids.EnglishLevel = id;
+          setData(holder);
         });
-        let holder = data;
-        holder.content.EnglishLevel = fetch;
-        holder.ids.EnglishLevel = id;
-        setData(holder);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const JornadaConsume = async () => {
-    try {
-      await axios.get('EducationLevel/').then((res) => {
-        let fetch = [];
-        let id = [];
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.nivelEducativo)) {
-            fetch.push(val.nivelEducativo);
-            id.push(val);
-          }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    const JornadaConsume = async () => {
+      try {
+        await axios.get('EducationLevel/').then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.nivelEducativo)) {
+              fetch.push(val.nivelEducativo);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.EducationLevel = fetch;
+          holder.ids.EducationLevel = id;
+          setData(holder);
         });
-        let holder = data;
-        holder.content.EducationLevel = fetch;
-        holder.ids.EducationLevel = id;
-        setData(holder);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const EstadoCivilConsume = async () => {
-    try {
-      await axios.get('MaritalStatus/').then((res) => {
-        let fetch = [];
-        let id = [];;
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.estadoCivil)) {
-            fetch.push(val.estadoCivil);
-            id.push(val);
-          }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    const EstadoCivilConsume = async () => {
+      try {
+        await axios.get('MaritalStatus/').then((res) => {
+          let fetch = [];
+          let id = [];;
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.estadoCivil)) {
+              fetch.push(val.estadoCivil);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.EstadoCivil = fetch;
+          holder.ids.EstadoCivil = id;
+          setData(holder);
         });
-        let holder = data;
-        holder.content.EstadoCivil = fetch;
-        holder.ids.EstadoCivil = id;
-        setData(holder);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const GrupoCiolectivoConsume = async () => {
-    try {
-      await axios.get('EducationLevel/').then((res) => {
-        let fetch = [];
-        let id = [];
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.nivelEducativo)) {
-            fetch.push(val.nivelEducativo);
-            id.push(val);
-          }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    const GrupoCiolectivoConsume = async () => {
+      try {
+        await axios.get('EducationLevel/').then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.nivelEducativo)) {
+              fetch.push(val.nivelEducativo);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.EducationLevel = fetch;
+          holder.ids.EducationLevel = id;
+          setData(holder);
         });
-        let holder = data;
-        holder.content.EducationLevel = fetch;
-        holder.ids.EducationLevel = id;
-        setData(holder);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const SalaryTypeConsume = async () => {
-    try {
-      await axios.get('TipoSalario/').then((res) => {
-        let fetch = [];
-        let id = [];
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.tipoDeSalario)) {
-            fetch.push(val.tipoDeSalario);
-            id.push(val);
-          }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    const SalaryTypeConsume = async () => {
+      try {
+        await axios.get('TipoSalario/').then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.tipoDeSalario)) {
+              fetch.push(val.tipoDeSalario);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.SalaryType = fetch;
+          holder.ids.SalaryType = id;
+          setData(holder);
         });
-        let holder = data;
-        holder.content.SalaryType = fetch;
-        holder.ids.SalaryType = id;
-        setData(holder);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const educationLevelConsume = async () => {
-    try {
-      await axios.get('EducationLevel/').then((res) => {
-        let fetch = [];
-        let id = [];
-        res.data.forEach((val) => {
-          if (!fetch.includes(val.nivelEducativo)) {
-            fetch.push(val.nivelEducativo);
-            id.push(val);
-          }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    const educationLevelConsume = async () => {
+      try {
+        await axios.get('EducationLevel/').then((res) => {
+          let fetch = [];
+          let id = [];
+          res.data.forEach((val) => {
+            if (!fetch.includes(val.nivelEducativo)) {
+              fetch.push(val.nivelEducativo);
+              id.push(val);
+            }
+          });
+          let holder = data;
+          holder.content.EducationLevel = fetch;
+          holder.ids.EducationLevel = id;
+          setData(holder);
         });
-        let holder = data;
-        holder.content.EducationLevel = fetch;
-        holder.ids.EducationLevel = id;
-        setData(holder);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    */
   // handle modal
   const handleOpenModal = () => setOpen(true);
   const handleCloseModal = () => {
@@ -640,7 +666,7 @@ export default function InfoAdmin() {
 
   const handleAutoCompleteEmployee = useCallback((name, value) => {
     const fieldNames = name.split('.'); // Separamos el nombre del campo en base al punto (.)
-  
+
     setEmployee((prevState) => ({
       ...prevState,
       [fieldNames[0]]: {
@@ -722,7 +748,7 @@ export default function InfoAdmin() {
     });
     handleCloseModal();
   };
-  
+
   const handleOficina = () => {
     if (edit) {
       dispatch(updateItem({ data: oficina, type: type, id: oficina._id }));
@@ -785,12 +811,12 @@ export default function InfoAdmin() {
         IdCiudad: '1',
       };
 
-      let updatedEmployee= {
+      let updatedEmployee = {
         ...holder.employee,
-        IdCompania: IdCompany ,
+        IdCompania: IdCompany,
       };
 
-      holder = { ...holder, person: updatedPerson, employee: updatedEmployee };  
+      holder = { ...holder, person: updatedPerson, employee: updatedEmployee };
 
       /*
       postEmployeeAPI(
@@ -848,7 +874,7 @@ export default function InfoAdmin() {
     handleCloseModal();
   };
 
-  
+
   // handle change input
 
   const handleChangeCompania = useCallback(
@@ -872,21 +898,21 @@ export default function InfoAdmin() {
     },
     [department]
   );
-    /*
-  const handleChangeEmployee = useCallback(
-    (event) => {
-      setEmployee({
-        ...employee,
-        [event.target.name]: event.target.value,
-      });
-    },
-    [employee]
-  );*/
+  /*
+const handleChangeEmployee = useCallback(
+  (event) => {
+    setEmployee({
+      ...employee,
+      [event.target.name]: event.target.value,
+    });
+  },
+  [employee]
+);*/
 
   const handleChangeEmployee = useCallback((event) => {
     const { name, value } = event.target;
     const fieldNames = name.split('.'); // Separamos el nombre del campo en base al punto (.)
-  
+
     setEmployee((prevState) => ({
       ...prevState,
       [fieldNames[0]]: {
@@ -958,9 +984,9 @@ export default function InfoAdmin() {
       case 'Oficinas':
         setOficina({ ...row });
         break;
-        case 'Empleados':
-          setEmployee({ ...row });
-          break;
+      case 'Empleados':
+        setEmployee({ ...row });
+        break;
       case 'Departamentos':
         setDepartement({ ...row });
         break;
@@ -992,7 +1018,7 @@ export default function InfoAdmin() {
             dispatch(storeItems({ data, type: type }));
           })
           .catch((e) => console.log(e));
-        break;
+        break;/*
       case 'Empleados':
         countryConsume();
         sizeCompanyConsume();
@@ -1026,7 +1052,7 @@ export default function InfoAdmin() {
             dispatch(storeItems({ data, type: type }));
           })
           .catch((e) => console.log(e));
-        break;
+        break;*/
       case 'Oficinas':
         companyConsume();
         getOfficesAPI()
@@ -1045,7 +1071,7 @@ export default function InfoAdmin() {
           .catch((e) => console.log(e));
         break;
 
-      
+
       default:
     }
   };
@@ -1093,8 +1119,23 @@ export default function InfoAdmin() {
     }
     getTableData();
     fetchOffice();
-
-
+    fetchEmployee();
+    fetchCity();
+    fetchGender();
+    fetchDocumentsTypes();
+    fetchCompanies();
+    fetchMaritalStatus();
+    fetchSalaryType();
+    fetchProfessions();
+    fetchEducationLevel();
+    fetchEnglishLevel();
+    fetchCampus();
+    fetchSexualPreference();
+    fetchDisabilities();
+    fetchHiringType();
+    fetchContractType();
+    fetchOrganizationalLevel();
+    fetchPerson();
   }, [type]);
 
   useEffect(() => {
@@ -1183,7 +1224,7 @@ export default function InfoAdmin() {
                     </Button>
                   </div>
                 ) : null}
-                 {type !== 'Otros campos' && type !== 'Empleados' && (
+                {type !== 'Otros campos' && type !== 'Empleados' && type !== 'Departamentos' && (
                   <Button
                     variant="contained"
                     style={{
@@ -1208,87 +1249,109 @@ export default function InfoAdmin() {
                 />
               </div>
             </div>
-            {type !== 'Oficinas' && type !== 'Departamentos' && type !== 'Empleados' ?(
-            <div className={styles.buttom}>
-              <Table
-                tableData={tableData}
-                type={type}
-                ids={data.ids}
-                content={data.content}
-                handleEditItem={handleEditItem}
-              />
-            </div>
-            ): (
-             
+            {type !== 'Oficinas' && type !== 'Departamentos' && type !== 'Empleados' ? (
+              <div className={styles.buttom}>
+                <Table
+                  tableData={tableData}
+                  type={type}
+                  ids={data.ids}
+                  content={data.content}
+                  handleEditItem={handleEditItem}
+                />
+              </div>
+            ) : (
+
               <Box sx={{ display: 'flex' }} >
                 <div style={{ backgroundColor: 'white' }}>
                   <div className={styles.DataTable}>
-                    <div className={styles.DataTable2}>  
+                    <div className={styles.DataTable2}>
                       {loading === true && (
                         <MyLoader />
                       )}
-      
-                      {loading === false && type === 'Oficinas'&& (
+
+                      {loading === false && type === 'Oficinas' && (
                         <MyCard sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                          <Box sx={{ width: '100%' }}>                  
+                          <Box sx={{ width: '100%' }}>
                             <Box
                               sx={{
                                 borderBottom: 1,
                                 borderColor: 'divider',
                               }}>
-                                
-                                {/* categories */}
-                                <div
-                                  id='settings-tabpanel-0'
-                                >
-                                  <Box
-                                    sx={{
-                                      p: 3,
+
+                              {/* categories */}
+                              <div
+                                id='settings-tabpanel-0'
+                              >
+                                <Box
+                                  sx={{
+                                    p: 3,
                                   }}
+                                >
+                                  <Stack
+                                    spacing={2}
+                                    direction='row-reverse'
+                                    sx={{
+                                      mb: 2,
+                                    }}
                                   >
-                                    <Stack
-                                      spacing={2}
-                                      direction='row-reverse'
-                                      sx={{
-                                        mb: 2,
-                                      }}
+                                    <Button
+                                      variant='outlined'
+                                      startIcon={<AddIcon />}
+                                      onClick={handleCreateOffice}
                                     >
-                                      <Button
-                                        variant='outlined'
-                                        startIcon={<AddIcon />}
-                                        onClick={handleCreateOffice}
-                                      >
-                                        Crear Oficinas
-                                      </Button>
-                                    </Stack>
-                                    <MyTable
-                                      title={'Tipo Contrato'}
-                                      columns={officesColumns}
-                                      rows={mapOffice(offices)}
-                                    />
-                                  </Box>                      
-                                </div>
-                              </Box>
+                                      Crear Oficinas
+                                    </Button>
+                                  </Stack>
+                                  <MyTable
+                                    title={'Tipo Contrato'}
+                                    columns={officesColumns}
+                                    rows={mapOffice(offices)}
+                                  />
+                                </Box>
+                              </div>
+                            </Box>
                           </Box>
                         </MyCard>
                       )}
-                      {loading === false && type === 'Departamentos'&& (
+                      {loading === false && type === 'Departamentos' && (
                         <MyCard >
-                          <Box sx={{ width: '100%' }}>                  
+                          <Box sx={{ width: '100%' }}>
                             <Box
                               sx={{
                                 borderBottom: 1,
                                 borderColor: 'divider',
                               }}>
-                                
-                                {/* departments */}
-                                <div
-                                  id='settings-tabpanel-0'
-                                >
+                              <Tabs sx={{ width: '90%', justifyContent: 'center' }}
+
+                                value={currentTab}
+                                onChange={(event, newValue) => handleTabChange(event, newValue)}
+
+                              >
+                                <Tab
+                                  label='Departamento'
+                                  id='settings-tab-3'
+                                />
+                                <Tab
+                                  label='Oficina'
+                                  id='settings-tab-0'
+                                />
+                                <Tab
+                                  label='Cargo'
+                                  id='settings-tab-2'
+                                />
+
+                              </Tabs>
+
+                              {/* departments */}
+                              <div
+                                hidden={currentTab !== 0}
+                                id='settings-tabpanel-0'
+                              >
+                                {currentTab === 0 && (
                                   <Box
                                     sx={{
                                       p: 3,
-                                  }}
+                                    }}
                                   >
                                     <Stack
                                       spacing={2}
@@ -1310,29 +1373,20 @@ export default function InfoAdmin() {
                                       columns={departmentsColumns}
                                       rows={mapDepartment(departments)}
                                     />
-                                  </Box>                      
-                                </div>
-                              </Box>
-                          </Box>
-                        </MyCard>
-                      )}
-                      {loading === false && type === 'Empleados'&& (
-                        <MyCard >
-                          <Box sx={{ width: '100%' }}>                  
-                            <Box
-                              sx={{
-                                borderBottom: 1,
-                                borderColor: 'divider',
-                              }}>
-                                
-                                {/* departments */}
-                                <div
-                                  id='settings-tabpanel-0'
-                                >
+                                  </Box>
+                                )}
+                              </div>
+
+                              {/* offices */}
+                              <div
+                                hidden={currentTab !== 1}
+                                id='settings-tabpanel-0'
+                              >
+                                {currentTab === 1 && (
                                   <Box
                                     sx={{
                                       p: 3,
-                                  }}
+                                    }}
                                   >
                                     <Stack
                                       spacing={2}
@@ -1344,38 +1398,93 @@ export default function InfoAdmin() {
                                       <Button
                                         variant='outlined'
                                         startIcon={<AddIcon />}
-                                        onClick={handleCreateEmployee}
+                                        onClick={handleCreateOffice}
                                       >
-                                        Crear Empleado
+                                        Crear Oficina
                                       </Button>
                                     </Stack>
                                     <MyTable
-                                      title={'Empleados'}
-                                      columns={departmentsColumns}
-                                      rows={mapDepartment(departments)}
+                                      title={'Oficina'}
+                                      columns={officesColumns}
+                                      rows={mapOffice(offices)}
                                     />
-                                  </Box>                      
-                                </div>
-                              </Box>
+                                  </Box>
+                                )}
+                              </div>
+                            </Box>
+                          </Box>
+                        </MyCard>
+                      )}
+                      {loading === false && type === 'Empleados' && (
+                        <MyCard >
+                          <Box sx={{ width: '100%' }}>
+                            <Box
+                              sx={{
+                                borderBottom: 1,
+                                borderColor: 'divider',
+                              }}>
+
+                              {/* departments */}
+                              <div
+                                id='settings-tabpanel-0'
+                              >
+                                <Box
+                                  sx={{
+                                    p: 3,
+                                  }}
+                                >
+                                  <Stack
+                                    spacing={2}
+                                    direction='row-reverse'
+                                    sx={{
+                                      mb: 2,
+                                    }}
+                                  >
+                                    <Button
+                                      variant='outlined'
+                                      startIcon={<AddIcon />}
+                                      onClick={handleCreateEmployee}
+                                    >
+                                      Crear Empleado
+                                    </Button>
+                                  </Stack>
+                                  <MyTable
+                                    title={'Empleados'}
+                                    columns={employeesColumns}
+                                    rows={mapEmployee(employees)}
+                                  />
+                                </Box>
+                              </div>
+                            </Box>
                           </Box>
                         </MyCard>
                       )}
                     </div>
                   </div>
                 </div>
-                  {/* create form */}
-                      {currentCreate !== null && (
-                      <MyCreateDialog2
-                        onClose={handleCloseCreateDialog}
-                        onSubmit={handleSubmittedCreateDialog}
-                        title={currentCreate.title}
-                        open={openCreateDialog}
-                        fields={currentCreate.fields}
-                        type={currentCreate.type}
-                      />
-                    )}                     
+                {/* create form */}
+                {currentCreate !== null && (
+                  <MyCreateDialog2
+                    onClose={handleCloseCreateDialog}
+                    onSubmit={handleSubmittedCreateDialog}
+                    title={currentCreate.title}
+                    open={openCreateDialog}
+                    fields={currentCreate.fields}
+                    type={currentCreate.type}
+                  />
+                )}
+                {currentEdit !== null && (
+                  <MyEditDialog2
+                    onClose={handleCloseEditDialog}
+                    onSubmit={handleEditEmployee}
+                    title={currentEdit.title}
+                    open={openEditDialog}
+                    fields={currentEdit.fields}
+                    type={currentEdit.type}
+                  />
+                )}
               </Box>
-              )}
+            )}
           </div>
         </div>
       </div>
