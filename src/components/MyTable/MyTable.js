@@ -267,9 +267,9 @@ const MyTable = ({ title, rows, columns }) => {
                     tabIndex={-1}
                     key={index}
                   >
-                    {row.map((item) => (
+                    {row.map((item, itemIndex) => (
                       <Fragment
-                        key={item.value}
+                        key={itemIndex}
                       >
                         {item.column.includes('id') === true && (
                           <TableCell

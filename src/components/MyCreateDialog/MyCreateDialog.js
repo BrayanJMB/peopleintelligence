@@ -112,7 +112,6 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit }) => {
           </DialogActions>
         </form>
       </Dialog>
-      MyCreateDialog Component
     </div>
   );
 };
