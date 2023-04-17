@@ -1,14 +1,30 @@
 import axios from '../utils/axiosInstance';
 
 /**
- * Fetch Contract Type.
+ * Fetch Hiring Type.
  *
  * @returns {Promise<any>}
  */
 export const fetchHiringTypeAPI = async () => axios.get('HiringType/');
 
 /**
- * Update Contract Type.
+ * Fetch Hiring Type by companyId.
+ *
+ * @returns {Promise<any>}
+ */
+export const fetchHiringTypeByCompanyAPI = async (idCompany) => axios.get(`HiringType/Company/${idCompany}`);
+
+
+/**
+ * Store Hiring Type.
+ *
+ * @param data
+ * @returns {Promise<any>}
+ */
+export const storeHiringTypeAPI = async ({ idCompany, ...data }) => axios.post(`HiringType/${idCompany}`, data);
+
+/**
+ * Update Hiring Type.
  *
  * @param id
  * @param data
@@ -17,17 +33,10 @@ export const fetchHiringTypeAPI = async () => axios.get('HiringType/');
 export const updateHiringTypeAPI = async ({...data}) => axios.put('HiringType/', data);
 
 /**
- * Delete Contract Type.
+ * Delete Hiring Type.
  *
  * @param id
  * @returns {Promise<any>}
  */
-export const deleteHiringTypeAPI = async (id) => axios.delete(`HiringType/${id}`);
+export const deleteHiringTypeAPI = async (id, idCompany) => axios.delete(`HiringType/${id}/${idCompany}`);
 
-/**
- * Store Contract Type.
- *
- * @param data
- * @returns {Promise<any>}
- */
-export const storeHiringTypeAPI = async (data) => axios.post('HiringType/', data);

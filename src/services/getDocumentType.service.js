@@ -8,6 +8,15 @@ import axios from '../utils/axiosInstance';
 export const fetchDocumentTypeAPI = async () => axios.get('tipo-documentos/');
 
 /**
+ * Store Contract Type.
+ *
+ * @param data
+ * @returns {Promise<any>}
+ */
+export const storeDocumentTypeAPI = async (data) => axios.post('tipo-documentos/', data);
+
+
+/**
  * Update Contract Type.
  *
  * @param id
@@ -24,10 +33,3 @@ export const updateDocumentTypeAPI = async ({...data}) => axios.put('tipo-docume
  */
 export const deleteDocumentTypeAPI = async (id) => axios.delete(`tipo-documentos/${id}`);
 
-/**
- * Store Contract Type.
- *
- * @param data
- * @returns {Promise<any>}
- */
-export const storeDocumentTypeAPI = async (data) => axios.post('tipo-documentos/', data);

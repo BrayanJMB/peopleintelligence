@@ -1,7 +1,7 @@
 import axios from '../utils/axiosInstance';
 
-export const getOfficesAPI = async () => {
-  const response = await axios.get('Campus/');
+export const getOfficesAPI = async (idCompany) => {
+  const response = await axios.get(`Campus/Company/${idCompany}`);
   return response;
 };
 

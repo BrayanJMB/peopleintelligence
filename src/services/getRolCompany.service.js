@@ -1,25 +1,25 @@
 import axios from '../utils/axiosInstance';
 
 /**
- * Fetch EnglishLevel.
+ * Store Rol Company.
  *
  * @returns {Promise<any>}
  */
-export const storeRolCompanyAPI = async ({ idCompany, rol }) => axios.post(`/RolesCompany/${idCompany}`, { rol });
+export const storeRolCompanyAPI = async ({idCompany, ...data}) => axios.post(`/RollCompany/${idCompany}`, data);
 
 
 /**
- * Fetch EnglishLevel.
+ * Fetch Rol Company.
  *
  * @returns {Promise<any>}
  */
-export const fetchRolCompanyAPI = async (idCompany) => axios.get(`/RolesCompany/Company/${idCompany}`);
+export const fetchRolCompanyAPI = async (idCompany) => axios.get(`/RollCompany/Company/${idCompany}`);
 
 
 /**
- * Fetch EnglishLevel.
+ * Delete Rol Company.
  *
  * @returns {Promise<any>}
  */
-export const deleteRolCompanyAPI = async (id, idCompany) => axios.get(`/RolesCompany/${id}/${idCompany}`);
+export const deleteRolCompanyAPI = async (id, idCompany) => axios.delete(`/RollCompany/${id}/${idCompany}`);
 

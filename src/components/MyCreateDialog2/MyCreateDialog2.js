@@ -57,14 +57,15 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
 
   const createInitialValues = () => {
     const initialValues = {};
-
-    fields.forEach((sectionObj) =>
-      Object.keys(sectionObj).forEach((section) =>
-        sectionObj[section].forEach((field) => {
-          initialValues[field.name] = "";
-        })
-      )
-    );
+    if (type === 'employee'){
+      fields.forEach((sectionObj) =>
+        Object.keys(sectionObj).forEach((section) =>
+          sectionObj[section].forEach((field) => {
+            initialValues[field.name] = "";
+          })
+        )
+      );
+    }
 
     return initialValues;
   };
@@ -74,10 +75,25 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
   //Valida si el campo es requerido y esta vacío
   const validateForm = () => {
     const validationErrors = {};
-
-    fields.forEach((sectionObj) =>
-      Object.keys(sectionObj).forEach((section) =>
-        sectionObj[section].forEach((field) => {
+    if (type === 'employee'){
+      fields.forEach((sectionObj) =>
+        Object.keys(sectionObj).forEach((section) =>
+          sectionObj[section].forEach((field) => {
+            const { name, isRequired } = field;
+            const value = values[name] || "";
+            const { error, helperText } = validateField(name, value);
+            if (isRequired && (!value || (typeof value === "string" && value.trim() === ""))) {
+              validationErrors[`${name}Error`] = true;
+              validationErrors[`${name}HelperText`] = "Este campo es obligatorio";
+            } else if (error) {
+              validationErrors[`${name}Error`] = error;
+              validationErrors[`${name}HelperText`] = helperText;
+            }
+          })
+        )
+      );
+    }else{
+      fields.forEach((field) =>{
           const { name, isRequired } = field;
           const value = values[name] || "";
           const { error, helperText } = validateField(name, value);
@@ -89,8 +105,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
             validationErrors[`${name}HelperText`] = helperText;
           }
         })
-      )
-    );
+    }
 
     return validationErrors;
   };

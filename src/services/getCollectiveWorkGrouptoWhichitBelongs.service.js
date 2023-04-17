@@ -7,6 +7,15 @@ import axios from '../utils/axiosInstance';
  */
 export const fetchCollectiveWorkGrouptoWhichitBelongsAPI = async () => axios.get('CollectiveWorkGrouptoWhichitBelongs/');
 
+
+/**
+ * Store Contract Type.
+ *
+ * @param data
+ * @returns {Promise<any>}
+ */
+export const storeCollectiveWorkGrouptoWhichitBelongsAPI = async ({ idCompany, ...data }) => axios.post('CollectiveWorkGrouptoWhichitBelongs/', data);
+
 /**
  * Update Contract Type.
  *
@@ -24,10 +33,4 @@ export const updateCollectiveWorkGrouptoWhichitBelongsAPI = async ({...data}) =>
  */
 export const deleteCollectiveWorkGrouptoWhichitBelongsAPI = async (id) => axios.delete(`CollectiveWorkGrouptoWhichitBelongs/${id}`);
 
-/**
- * Store Contract Type.
- *
- * @param data
- * @returns {Promise<any>}
- */
-export const storeCollectiveWorkGrouptoWhichitBelongsAPI = async (data) => axios.post('CollectiveWorkGrouptoWhichitBelongs/', data);
+

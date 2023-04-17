@@ -1,14 +1,30 @@
 import axios from '../utils/axiosInstance';
 
 /**
- * Fetch Contract Type.
+ * Fetch Gender.
  *
  * @returns {Promise<any>}
  */
 export const fetchGenderAPI = async () => axios.get('generos/');
 
 /**
- * Update Contract Type.
+ * Fetch Gender by companyId.
+ *
+ * @returns {Promise<any>}
+ */
+export const fetchGenderByCompanyAPI = async (idCompany) => axios.get(`generos/Company/${idCompany}`);
+
+
+/**
+ * Store Gender.
+ *
+ * @param data
+ * @returns {Promise<any>}
+ */
+export const storeGenderAPI = async ({ idCompany, ...data }) => axios.post(`generos/${idCompany}`, data);
+
+/**
+ * Update Gender.
  *
  * @param id
  * @param data
@@ -17,17 +33,11 @@ export const fetchGenderAPI = async () => axios.get('generos/');
 export const updateGenderAPI = async ({...data}) => axios.put('generos/', data);
 
 /**
- * Delete Contract Type.
+ * Delete Gender.
  *
  * @param id
  * @returns {Promise<any>}
  */
-export const deleteGenderAPI = async (id) => axios.delete(`generos/${id}`);
+export const deleteGenderAPI = async (id, idCompany) => axios.delete(`generos/${id}/${idCompany}`);
 
-/**
- * Store Contract Type.
- *
- * @param data
- * @returns {Promise<any>}
- */
-export const storeGenderAPI = async (data) => axios.post('generos/', data);
+

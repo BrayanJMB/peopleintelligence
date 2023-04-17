@@ -4,7 +4,22 @@ import axios from '../utils/axiosInstance';
  *
  * @returns {Promise<any>}
  */
-export const fetchProfessionAPI = async () => axios.get('Profesion/');
+export const fetchProfessionAPI = async () => axios.get('Profession/');
+
+/**
+ * Fetch Profession by companyId.
+ *
+ * @returns {Promise<any>}
+ */
+export const fetchProfessionByCompanyAPI = async (idCompany) => axios.get(`Profession/Company/${idCompany}`);
+
+/**
+ * Store Profession Type.
+ *
+ * @param data
+ * @returns {Promise<any>}
+ */
+export const storeProfessionAPI = async ({idCompany, ...data}) => axios.post(`Profession/${idCompany}`, data);
 
 /**
  * Update Profession Type.
@@ -13,7 +28,7 @@ export const fetchProfessionAPI = async () => axios.get('Profesion/');
  * @param data
  * @returns {Promise<any>}
  */
-export const updateProfessionAPI = async ({...data}) => axios.put('Profesion/', data);
+export const updateProfessionAPI = async ({...data}) => axios.put('Profession/', data);
 
 /**
  * Delete Profession Type.
@@ -21,12 +36,5 @@ export const updateProfessionAPI = async ({...data}) => axios.put('Profesion/', 
  * @param id
  * @returns {Promise<any>}
  */
-export const deleteProfessionAPI = async (id) => axios.delete(`Profesion/${id}`);
+export const deleteProfessionAPI = async (id, idCompany) => axios.delete(`Profession/${id}/${idCompany}`);
 
-/**
- * Store Profession Type.
- *
- * @param data
- * @returns {Promise<any>}
- */
-export const storeProfessionAPI = async (data) => axios.post('Profesion/', data);

@@ -12,7 +12,7 @@ const getAllCompanies = async () => {
 };
 
 const getInformationOffices = async (setOffices) => {
-    const { data } = await getOfficesAPI();
+    const { data } = await getOfficesAPI(currentCompany.id);
     const companies = await getAllCompanies();
     const companyNames = companies.reduce((acc, company) => {
         acc[company.id] = company.nombreCompania;
@@ -44,18 +44,7 @@ export const officesColumns = [
   },
 ];
 
-export const useCreateOffice = (setOpenCreateDialog, setCurrentCreate) => {
-    const [companies, setCompanies] = useState([]);
-
-    useEffect(() => {
-      const fetchCompanies = async () => {
-        const companiesData = await getAllCompanies();
-        setCompanies(companiesData);
-      };
-  
-      fetchCompanies();
-    }, []);
-  
+export const useCreateOffice = (setOpenCreateDialog, setCurrentCreate) => {  
     const handleCreateOffice = () => {
     setCurrentCreate({
       type: 'office',
@@ -67,16 +56,6 @@ export const useCreateOffice = (setOpenCreateDialog, setCurrentCreate) => {
           type: 'text',
           isRequired: true,
         },
-        {
-        label: 'Compañia',
-        name: 'compañia',
-        type: 'select',
-        isRequired: true,
-        options: companies.map((company) => ({
-            value: company.id,
-            label: company.nombreCompania,
-          })),
-        },
       ],
     });
     setOpenCreateDialog(true);
@@ -87,7 +66,7 @@ export const useCreateOffice = (setOpenCreateDialog, setCurrentCreate) => {
   };
 };
 
-export const useOffice = () => {
+export const useOffice = (currentCompany) => {
     const [loading, setLoading] = useState(false);
     const [offices, setOffices] = useState([]);
     const [currentEdit, setCurrentEdit] = useState(null);
@@ -104,6 +83,7 @@ export const useOffice = () => {
     try {
         await deleteOfficeAPI(id);
         getInformationOffices(setOffices);
+        fetchOffice();
       } catch (e) {
         enqueueSnackbar(
           'Hubo un error al crear la oficina',
@@ -158,7 +138,7 @@ export const useOffice = () => {
         value: '',
         payload: {
         handleDelete: handleDeleteOffice,
-        handleEdit: handleEditOffice,
+        //handleEdit: handleEditOffice,
         id: office.id,
         },
     },
@@ -167,7 +147,8 @@ export const useOffice = () => {
     const fetchOffice = async () => {
     setLoading(true);
 
-    const { data } = await getOfficesAPI();
+    const { data } = await getOfficesAPI(currentCompany.id);
+    console.log(data);
     const companies = await getAllCompanies();
     const companyNames = companies.reduce((acc, company) => {
       acc[company.id] = company.nombreCompania;
@@ -189,9 +170,9 @@ export const useOffice = () => {
          try {
             await storeOfficeAPI({
                 sede: formValues.sede,
-                IdCompania: formValues.compañia,
+                IdCompania: currentCompany.id,
             });
-            const { data } = await getOfficesAPI();
+            const { data } = await getOfficesAPI(currentCompany.id);
             const companies = await getAllCompanies();
             const companyNames = companies.reduce((acc, company) => {
               acc[company.id] = company.nombreCompania;

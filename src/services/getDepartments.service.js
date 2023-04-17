@@ -1,13 +1,21 @@
 import axios from '../utils/axiosInstance';
 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
-export const storeDepartmentsAPI = async (data) => axios.post(`Area/${userInfo.Company}`, data);
 /**
  * Fetch Contract Type.
  * 
  * @returns {Promise<any>}
  */
 export const fetchAreaByCompanyAPI = async (id) => axios.get(`Area/getAreaByCompany/${id}`);
+
+
+/**
+ * Store Contract Type.
+ *
+ * @param data
+ * @returns {Promise<any>}
+ */
+export const storeAreaAPI = async ({ idCompany, ...data }) => axios.post(`Area/${idCompany}`, data);
 
 /**
  * Update Contract Type.
@@ -26,13 +34,7 @@ export const updateAreaAPI = async () => axios.put('Area/');
  */
 export const deleteAreaAPI = async (id) => axios.delete(`Area/${id}`);
 
-/**
- * Store Contract Type.
- *
- * @param data
- * @returns {Promise<any>}
- */
-export const storeAreaAPI = async (id) => axios.post(`Area/${userInfo.Company}`);
+
 
 
 /**

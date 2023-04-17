@@ -12,14 +12,14 @@ export const fetchEnglishLevelAPI = async () => axios.get('EnglishLevel/');
  *
  * @returns {Promise<any>}
  */
-export const fetchEnglishLevelByCompanyIdAPI = async (idCompany) => axios.get(`EnglishLevel/${idCompany}`);
+export const fetchEnglishLevelByCompanyAPI = async (idCompany) => axios.get(`EnglishLevel/Company/${idCompany}`);
 
 /**
  * Store EnglishLevel by companyId.
  *
  * @returns {Promise<any>}
  */
-export const storeEnglishLevelByCompanyIdAPI = async ({ idCompany, tipoDocumento }) => axios.post(`EnglishLevel/${idCompany}`, { tipoDocumento });
+export const storeEnglishLevelAPI = async ({ idCompany, ...data }) => axios.post(`EnglishLevel/${idCompany}`,  data );
 
 /**
  * Update EnglishLevel.
@@ -36,12 +36,4 @@ export const updateEnglishLevelAPI = async ({...data}) => axios.put('EnglishLeve
  * @param id
  * @returns {Promise<any>}
  */
-export const deleteEnglishLevelAPI = async (id) => axios.delete(`EnglishLevel/${id}`);
-
-/**
- * Store EnglishLevel.
- *
- * @param data
- * @returns {Promise<any>}
- */
-export const storeEnglishLevelAPI = async (data) => axios.post('EnglishLevel/', data);
+export const deleteEnglishLevelAPI = async (id, idCompany) => axios.delete(`EnglishLevel/${id}/${idCompany}`);

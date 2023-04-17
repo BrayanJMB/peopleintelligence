@@ -3,6 +3,7 @@ import { CSVLink } from 'react-csv';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/material/Box';
@@ -30,12 +31,10 @@ import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import { getCompaniesAPI } from '../../services/getCompanies.service';
 import {
-  deleteAreaAPI,
-  fetchAreaAPI,
-  fetchAreaByCompanyAPI,
-  storeAreaAPI,
-  updateAreaAPI,
-} from '../../services/getDepartments.service';
+  storeRolCompanyAPI,
+  fetchRolCompanyAPI,
+  deleteRolCompanyAPI,
+} from "../../services/getRolCompany.service";
 import { getEmployeesAPI } from '../../services/getEmployees.service';
 import { getOfficesAPI, postOfficeAPI } from '../../services/getOffices.service';
 import { postCompanyAPI } from '../../services/postCompany.service';
@@ -59,13 +58,14 @@ const search = (value, inputArray, field, proprety) => {
 };
 
 export default function InfoAdmin() {
+  const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
   const [currentEdit, setCurrentEdit] = useState(null);
   const [currentCreate, setCurrentCreate] = useState(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
-  const { offices, mapOffice, fetchOffice, handleSubmittedCreateOffice } = useOffice();
+  const { offices, mapOffice, fetchOffice, handleSubmittedCreateOffice } = useOffice(currentCompany);
   const { handleCreateOffice } = useCreateOffice(setOpenCreateDialog, setCurrentCreate);
   const { departments, setDepartments, mapDepartment, fetchDepartments, handleSubmittedCreateDepartment } = useDepartment(currentCompany);
   const { handleCreateDepartment } = useCreateDepartment(setOpenCreateDialog, setCurrentCreate);
@@ -93,6 +93,7 @@ export default function InfoAdmin() {
     fetchOrganizationalLevel,
     fetchPerson } = useEmployee(setOpenCreateDialog, setCurrentCreate, setOpenEditDialog, setCurrentEdit);
 
+  const [companyRols, setCompanyRols] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const admin = useSelector((state) => state.admin);
@@ -236,6 +237,7 @@ export default function InfoAdmin() {
 
 
   const handleSubmittedCreateDialog = async (formValues) => {
+    console.log(currentCreate.type)
     if (currentCreate.type === 'office') {
       handleSubmittedCreateOffice(formValues);
     }
@@ -247,6 +249,23 @@ export default function InfoAdmin() {
       handleSubmittedCreateEmployee(formValues);
     }
 
+    if (currentCreate.type === 'companyRol') {
+      try {
+        await storeRolCompanyAPI({
+          idCompany: currentCompany.id,
+          rol: formValues.rol,
+        });
+        fetchCompanyRol();
+        enqueueSnackbar("Rol creado con éxito", {
+          variant: "success",
+        });
+      } catch (e) {
+        console.log(e)
+        enqueueSnackbar("Hubo un error al crear el rol", {
+          variant: "error",
+        });
+      }
+    }
     setCurrentCreate(null);
     setOpenCreateDialog(false);
   };
@@ -314,6 +333,108 @@ export default function InfoAdmin() {
       console.log(error);
     }
   };
+
+    //Roles Company
+    const companyRolsColumns = [
+      {
+        id: "name",
+        label: "Rol",
+        numeric: false,
+      },
+      {
+        id: "options",
+        label: "Opciones",
+        numeric: false,
+      },
+    ];
+  
+    const handleCreateCompanyRols = () => {
+      setCurrentCreate({
+        type: "companyRol",
+        title: "Crear Rol",
+        fields: [
+          {
+            label: "Rol",
+            name: "rol",
+            type: "text",
+            isRequired: true,
+          },
+        ],
+      });
+      setOpenCreateDialog(true);
+    };
+  
+    const mapCompanyRols = (companyRol) =>
+      companyRol.map((companyRol) => [
+        {
+          column: "name",
+          value: companyRol.rol,
+        },
+        {
+          column: "options",
+          value: "",
+          payload: {
+            handleDelete: handleDeleteCompanyRols,
+            //handleEdit: handleEditCompanyRols,
+            id: companyRol.id,
+          },
+        },
+      ]);
+    const handleDeleteCompanyRols = async (id) => {
+      const companyRol = companyRols.find((companyRol) => companyRol.id === id);
+  
+      if (companyRol === undefined) {
+        return;
+      }
+  
+      try {
+        await deleteRolCompanyAPI(id, currentCompany.id);
+        enqueueSnackbar("Rol eliminado con exito", {
+          variant: "success",
+        });
+        fetchCompanyRol();
+      } catch (e) {
+        console.log(e)
+        enqueueSnackbar("Error eliminar crear Rol", {
+          variant: "error",
+        });
+      }
+
+    };
+  
+    const handleEditCompanyRols = (id) => {
+      const Profession = Professions.find((Profession) => Profession.id === id);
+  
+      if (Profession === undefined) {
+        return;
+      }
+  
+      setCurrentEdit({
+        type: "companyRol",
+        id: Profession.id,
+        title: "Editar nivel de educacion",
+        fields: [
+          {
+            label: "Nivel de profesion",
+            name: "name",
+            type: "text",
+            value: Profession.profesion,
+          },
+        ],
+      });
+      setOpenEditDialog(true);
+    };
+  
+    const fetchCompanyRol = async () => {
+      if (!currentCompany) {
+        return;
+      }
+      setLoading(true);
+      const { data } = await  fetchRolCompanyAPI(currentCompany.id);
+      setCompanyRols(data);
+      setLoading(false);
+    };
+    //fin Roles Company
   /*
     const documentTypeConsume = async () => {
       try {
@@ -1071,7 +1192,10 @@ const handleChangeEmployee = useCallback(
           .catch((e) => console.log(e));
         break;
 
-
+        case 'Otros campos':
+          dispatch(storeItems({ data, type: type }));
+            return null;
+          break;
       default:
     }
   };
@@ -1117,10 +1241,13 @@ const handleChangeEmployee = useCallback(
       alert('No tiene permiso para acceder a esta funcionalidad');
       navigate('/dashboard');
     }
+
+    /*
+        fetchCity();
     getTableData();
     fetchOffice();
     fetchEmployee();
-    fetchCity();
+
     fetchGender();
     fetchDocumentsTypes();
     fetchCompanies();
@@ -1135,11 +1262,14 @@ const handleChangeEmployee = useCallback(
     fetchHiringType();
     fetchContractType();
     fetchOrganizationalLevel();
-    fetchPerson();
+    fetchPerson();*/
   }, [type]);
 
   useEffect(() => {
     fetchDepartments();
+    fetchOffice();
+    fetchCompanyRol();
+    
   }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -1407,6 +1537,41 @@ const handleChangeEmployee = useCallback(
                                       title={'Oficina'}
                                       columns={officesColumns}
                                       rows={mapOffice(offices)}
+                                    />
+                                  </Box>
+                                )}
+                              </div>
+
+                              {/* rol company */}
+                              <div
+                                hidden={currentTab !== 2}
+                                id='settings-tabpanel-0'
+                              >
+                                {currentTab === 2 && (
+                                  <Box
+                                    sx={{
+                                      p: 3,
+                                    }}
+                                  >
+                                    <Stack
+                                      spacing={2}
+                                      direction='row-reverse'
+                                      sx={{
+                                        mb: 2,
+                                      }}
+                                    >
+                                      <Button
+                                        variant='outlined'
+                                        startIcon={<AddIcon />}
+                                        onClick={handleCreateCompanyRols}
+                                      >
+                                        Crear Rol
+                                      </Button>
+                                    </Stack>
+                                    <MyTable
+                                      title={'Rol Compañia'}
+                                      columns={companyRolsColumns}
+                                      rows={mapCompanyRols(companyRols)}
                                     />
                                   </Box>
                                 )}

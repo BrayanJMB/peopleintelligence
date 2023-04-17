@@ -14,7 +14,16 @@ export const fetchContractTypeAPI = async () => axios.get('ContractType/');
  *
  * @returns {Promise<any>}
  */
-export const fetchContractTypeByCompanyAPI = async (idCompany) => axios.get(`ContractType/${idCompany}`);
+export const fetchContractTypeByCompanyAPI = async (idCompany) => axios.get(`ContractType/Company/${idCompany}`);
+
+
+/**
+ * Store Contract Type.
+ *
+ * @returns {Promise<any>}
+ */
+export const storeContractTypeAPI = async ({ idCompany, ...data }) => axios.post(`ContractType/${idCompany}`,  data );
+
 
 /**
  * Update Contract Type.
@@ -34,10 +43,4 @@ export const updateContractTypeAPI = async ({...data}) => axios.put('ContractTyp
 export const deleteContractTypeAPI = async (id, idCompany) => axios.delete(`ContractType/${id}/${idCompany}`);
 
 
-/**
- * Store Contract Type.
- *
- * @returns {Promise<any>}
- */
-export const storeContractTypeByCompanyIdAPI = async ({ idCompany, tipoContrato }) => axios.post(`ContractType/${idCompany}`, { tipoContrato });
 

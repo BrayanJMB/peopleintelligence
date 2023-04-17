@@ -25,7 +25,7 @@ import { fetchRolCompanyAPI } from '../../../services/getRolCompany.service';
 
 
 const getAllRols = async () => {
-  const { data } = await fetchRolCompanyAPI();
+  const { data } = await fetchRolCompanyAPI(1);
   return data;
 };
 
@@ -192,6 +192,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
       return acc;
     }, {});
 
+
     const persons = await getAllPersons();
     const personNames = persons.reduce((acc, person) => {
       acc[person.id] = person.nombres;
@@ -203,6 +204,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
       acc[rol.id] = rol.rol;
       return acc;
     }, {});
+
 
     const employee = data.map((employee) => ({
       ...employee,
@@ -592,8 +594,6 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
 
   const handleEditEmployee = async (id) => {
     const employee = employees.find((employee) => employee.id === id);
-    console.log(employee.IdPersona);
-    console.log(persons)
     const person = persons.find((person) => person.id === employee.IdPersona);
     //const gender = genders.find((gender) => gender.id === person.IdGenero);
     if (employee === undefined || person === undefined) {
@@ -942,8 +942,6 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
   ]);
 
   const handleSubmittedCreateEmployee = async (formValues) => {
-    console.log(formValues);
-
     try {
       await storeEmployeeAPI({
         person: {

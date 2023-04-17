@@ -1,28 +1,19 @@
 import axios from '../utils/axiosInstance';
 
 /**
- * Fetch Contract Type.
+ * Fetch Sexual Preference.
  *
  * @returns {Promise<any>}
  */
-export const fetchSexualPreferenceAPI = async () => axios.get('PreferenciaSexual/');
+export const fetchSexualPreferenceAPI = async () => axios.get('SexualPreference/');
 
 /**
- * Update Contract Type.
+ * Fetch Sexual Preference by companyId.
  *
- * @param id
- * @param data
  * @returns {Promise<any>}
  */
-export const updateSexualPreferenceAPI = async ({...data}) => axios.put('PreferenciaSexual/', data);
+export const fetchSexualPreferenceByCompanyAPI = async (idCompany) => axios.get(`SexualPreference/Company/${idCompany}`);
 
-/**
- * Delete Contract Type.
- *
- * @param id
- * @returns {Promise<any>}
- */
-export const deleteSexualPreferenceAPI = async (id) => axios.delete(`PreferenciaSexual/${id}`);
 
 /**
  * Store Contract Type.
@@ -30,4 +21,24 @@ export const deleteSexualPreferenceAPI = async (id) => axios.delete(`Preferencia
  * @param data
  * @returns {Promise<any>}
  */
-export const storeSexualPreferenceAPI = async (data) => axios.post('PreferenciaSexual/', data);
+export const storeSexualPreferenceAPI = async ({idCompany, ...data}) => axios.post(`SexualPreference/${idCompany}`, data);
+
+
+/**
+ * Update Sexual Preference.
+ *
+ * @param id
+ * @param data
+ * @returns {Promise<any>}
+ */
+export const updateSexualPreferenceAPI = async ({...data}) => axios.put('SexualPreference/', data);
+
+/**
+ * Delete Sexual Preference.
+ *
+ * @param id
+ * @returns {Promise<any>}
+ */
+export const deleteSexualPreferenceAPI = async (id, idCompany) => axios.delete(`SexualPreference/${id}/${idCompany}`);
+
+

@@ -3,7 +3,7 @@
 import { useEffect,useState } from 'react';
 import { useSnackbar } from 'notistack';
 
-import { storeDepartmentsAPI, fetchAreaByCompanyAPI, deleteAreaAPI } from '../../../services/getDepartments.service';
+import { storeAreaAPI, fetchAreaByCompanyAPI, deleteAreaAPI } from '../../../services/getDepartments.service';
 
 
 export const departmentsColumns = [
@@ -130,7 +130,7 @@ export const useDepartment = (currentCompany) => {
         value: '',
         payload: {
         handleDelete: handleDeleteDepartment,
-        handleEdit: handleEditDepartment,
+        //handleEdit: handleEditDepartment,
         id: department.id,
         },
     },
@@ -138,20 +138,27 @@ export const useDepartment = (currentCompany) => {
 
     const handleSubmittedCreateDepartment = async (formValues) => {
         try {
-          await storeDepartmentsAPI({
+          await storeAreaAPI({
+              idCompany: currentCompany.id,
               NombreArea: formValues.area,
               descripcion: formValues.descripcion,
           });
           const { data } = await fetchAreaByCompanyAPI(currentCompany.id);
-      
+          enqueueSnackbar(
+            'Departamento creado con éxito',
+            {
+            variant: 'success',
+            },
+        );  
           setDepartments(data);
-      } catch (e) {}
-      enqueueSnackbar(
-          'Departamento creado con éxito',
+      } catch (e) {console.log(e)
+        enqueueSnackbar(
+          'Hubo error al crear el Departamento',
           {
-          variant: 'success',
+          variant: 'error',
           },
-      );         
+      );  }
+       
     };
 
   return {
