@@ -4,15 +4,15 @@ import { useEffect,useState } from 'react';
 import { useSnackbar } from 'notistack';
 
 import { getAllCompaniesAPI, getCompaniesByIdAPI } from '../../../services/getCompanies.service';
-import { getOfficesAPI, storeOfficeAPI, deleteOfficeAPI  } from '../../../services/getOffices.service';
+import { deleteOfficeAPI,getOfficesAPI, storeOfficeAPI  } from '../../../services/getOffices.service';
 
 const getAllCompanies = async () => {
     const { data } = await getAllCompaniesAPI();
     return data;
 };
 
-const getInformationOffices = async (setOffices) => {
-    const { data } = await getOfficesAPI(currentCompany.id);
+const getInformationOffices = async (setOffices, idCompany) => {
+    const { data } = await getOfficesAPI(idCompany);
     const companies = await getAllCompanies();
     const companyNames = companies.reduce((acc, company) => {
         acc[company.id] = company.nombreCompania;
@@ -82,7 +82,7 @@ export const useOffice = (currentCompany) => {
 
     try {
         await deleteOfficeAPI(id);
-        getInformationOffices(setOffices);
+        getInformationOffices(setOffices, currentCompany.id);
         fetchOffice();
       } catch (e) {
         enqueueSnackbar(
