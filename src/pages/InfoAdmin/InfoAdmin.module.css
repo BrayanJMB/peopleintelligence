@@ -1,5 +1,5 @@
 .content {
-  width: 83vw;
+  width: 90vw;
   height: 92vh;
   margin-top: 4rem;
 }
@@ -10,7 +10,7 @@
 .top {
   display: flex;
   justify-content: space-between;
-  padding: 1em 2em;
+  padding: 1em 3em;
 }
 
 .type {
@@ -31,12 +31,14 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  height: 60vh;
   transform: translate(-50%, -50%);
   width: 65vw;
   background-color: white;
   box-shadow: 24px;
   padding: 1rem;
+  max-height: calc(100vh - 50px);
+  overflow-y: auto;
+  padding-right: 16px;
 }
 .modaltop {
   display: flex;
@@ -49,4 +51,18 @@
   height: 70vh;
   padding: 0 1em;
   margin: 0 2em;
+}
+
+.DataTable{
+    width: 86.5vw;
+    height: 90vh;
+    margin-top: -1rem;
+    border-top-left-radius: 0px;
+    background-color: rgb(255, 255, 255);
+    overflow-y: scroll;
+}
+
+.DataTable2 {
+    justify-content: left;
+    margin: 0em 5rem;
 }

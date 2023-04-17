@@ -14,6 +14,7 @@ import styles from './MyEditDialog.module.css';
 // form field types
 const FIELD_TYPES = {
   TEXT: 'text',
+  SELECT: 'select',
 };
 
 /**

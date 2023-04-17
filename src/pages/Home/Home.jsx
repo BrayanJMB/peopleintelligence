@@ -184,6 +184,7 @@ export default function Home() {
       await axios
         .post('Aut/', { bearer: `Bearer ${access_token}` }, config)
         .then((res) => {
+          console.log(res);
           let token = res.data.token;
           let decodedToken = decodeToken(token);
           if (!Array.isArray(decodedToken.role)) {

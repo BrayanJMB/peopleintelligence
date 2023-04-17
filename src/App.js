@@ -24,6 +24,7 @@ import Questions from './pages/Questions/Questions';
 import Register from './pages/Register/Register';
 import Roles from './pages/Roles/Roles';
 import SurveyDetailPage from './pages/SurveyDetailPage/SurveyDetailPage';
+import UserAdministrator from './pages/userAdministrator/UserAdministrator';
 import { store } from './redux/store';
 import IdleTimer from './utils/IdleTimer';
 import PrivateRoutes from './utils/PrivateRoutes';
@@ -80,6 +81,7 @@ export default function App() {
                 <Route path="/onas/ver-encuestas" element={<OnasTable />} exact />
                 <Route path="/onas/details" element={<OnasDetails />} exact />
                 <Route path="/rolescompany" element={<Roles />} exact />
+                <Route path="/UserAministrator" element={<UserAdministrator/>} exact />
                 <Route path="/powerbi" element={<PowerBiDashboard />} exact />
                 <Route path="/powerbi/:idDashboard" element={<PowerBI />} exact />
                 <Route path="/register/:type" element={<Register />} exact />
