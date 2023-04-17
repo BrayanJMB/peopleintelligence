@@ -3,25 +3,25 @@
 import { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 
-import { fetchDocumentTypeAPI, getCompaniesByIdAPI } from '../../../services/getDocumentType.service';
-import { fetchEmployeeAPI, getEmployeesAPI, storeEmployeeAPI, deleteEmployeeAPI } from '../../../services/getEmployees.service';
-import { fetchGenderAPI } from '../../../services/getGender.service';
 import { fetchCityAPI } from '../../../services/getCity.service';
-import { fecthAreaAPI } from '../../../services/getDepartments.service';
 import { getAllCompaniesAPI } from '../../../services/getCompanies.service';
-import { fetchMaritalStatusAPI } from '../../../services/getMaritalStatus.service';
-import { fetchSalaryTypeAPI } from '../../../services/getSalaryType.service';
-import { fetchProfessionAPI } from '../../../services/getProfession.service';
-import { fetchEducationLevelAPI } from '../../../services/getEducationLevel.service';
-import { fetchEnglishLevelAPI } from '../../../services/getEnglishLevel.service';
-import { getOfficesAPI } from '../../../services/getOffices.service';
-import { fetchSexualPreferenceAPI } from '../../../services/getSexualPreference.service';
-import { fetchDisabilitiesAPI } from '../../../services/getDisabilities.service';
-import { fetchHiringTypeAPI } from '../../../services/getHiringType.service';
 import { fetchContractTypeAPI } from '../../../services/getContractType.service';
+import { fecthAreaAPI } from '../../../services/getDepartments.service';
+import { fetchDisabilitiesAPI } from '../../../services/getDisabilities.service';
+import { fetchDocumentTypeAPI, getCompaniesByIdAPI } from '../../../services/getDocumentType.service';
+import { fetchEducationLevelAPI } from '../../../services/getEducationLevel.service';
+import { deleteEmployeeAPI,fetchEmployeeAPI, getEmployeesAPI, storeEmployeeAPI } from '../../../services/getEmployees.service';
+import { fetchEnglishLevelAPI } from '../../../services/getEnglishLevel.service';
+import { fetchGenderAPI } from '../../../services/getGender.service';
+import { fetchHiringTypeAPI } from '../../../services/getHiringType.service';
+import { fetchMaritalStatusAPI } from '../../../services/getMaritalStatus.service';
+import { getOfficesAPI } from '../../../services/getOffices.service';
 import { fetchOrganizationalLevelAPI } from '../../../services/getOrganizationalLevel.service';
 import { fetchPersonAPI } from '../../../services/getPerson.service';
+import { fetchProfessionAPI } from '../../../services/getProfession.service';
 import { fetchRolCompanyAPI } from '../../../services/getRolCompany.service';
+import { fetchSalaryTypeAPI } from '../../../services/getSalaryType.service';
+import { fetchSexualPreferenceAPI } from '../../../services/getSexualPreference.service';
 
 
 const getAllRols = async () => {
@@ -298,7 +298,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
   const fetchPerson = async () => {
     const personData = await getAllPersons();
     setPersons(personData);
-  }
+  };
 
 
   const handleCreateEmployee = () => {
@@ -962,7 +962,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
           supervisor: formValues.supervisor || null,
           IdCompania: 1,
           rollCompania: formValues.rol || null,
-        }
+        },
       });
       setEmployees(employees);
     } catch (e) { }
@@ -999,7 +999,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
     fetchHiringType,
     fetchContractType,
     fetchOrganizationalLevel,
-    fetchPerson
+    fetchPerson,
   };
 };
 

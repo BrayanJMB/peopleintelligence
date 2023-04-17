@@ -3,7 +3,7 @@
 import { useEffect,useState } from 'react';
 import { useSnackbar } from 'notistack';
 
-import { storeAreaAPI, fetchAreaByCompanyAPI, deleteAreaAPI } from '../../../services/getDepartments.service';
+import { deleteAreaAPI,fetchAreaByCompanyAPI, storeAreaAPI } from '../../../services/getDepartments.service';
 
 
 export const departmentsColumns = [
@@ -151,7 +151,7 @@ export const useDepartment = (currentCompany) => {
             },
         );  
           setDepartments(data);
-      } catch (e) {console.log(e)
+      } catch (e) {console.log(e);
         enqueueSnackbar(
           'Hubo error al crear el Departamento',
           {

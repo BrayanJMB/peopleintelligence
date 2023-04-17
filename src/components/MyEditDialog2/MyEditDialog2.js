@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import { Grid } from "@mui/material";
+import { Grid } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import PropTypes from 'prop-types';
-import TextField from "@mui/material/TextField";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
-import Autocomplete from "@mui/material/Autocomplete";
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import TextField from '@mui/material/TextField';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { esES } from '@mui/x-date-pickers/locales';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import PropTypes from 'prop-types';
 
 
 // form field types
@@ -30,7 +30,7 @@ const FIELD_TYPES = {
  */
 const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
   const [currentTab, setCurrentTab] = useState(0);
-  const [maxWidth, setMaxWidth] = useState("80%");
+  const [maxWidth, setMaxWidth] = useState('80%');
 
 
   const createInitialValues = () => {
@@ -39,7 +39,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
     fields.forEach((sectionObj) =>
       Object.keys(sectionObj).forEach((section) =>
         sectionObj[section].forEach((field) => {
-          initialValues[field.name] = "";
+          initialValues[field.name] = '';
         })
       )
     );
@@ -57,11 +57,11 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
       Object.keys(sectionObj).forEach((section) =>
         sectionObj[section].forEach((field) => {
           const { name, isRequired } = field;
-          const value = values[name] || "";
+          const value = values[name] || '';
           const { error, helperText } = validateField(name, value);
-          if (isRequired && (!value || (typeof value === "string" && value.trim() === ""))) {
+          if (isRequired && (!value || (typeof value === 'string' && value.trim() === ''))) {
             validationErrors[`${name}Error`] = true;
-            validationErrors[`${name}HelperText`] = "Este campo es obligatorio";
+            validationErrors[`${name}HelperText`] = 'Este campo es obligatorio';
           } else if (error) {
             validationErrors[`${name}Error`] = error;
             validationErrors[`${name}HelperText`] = helperText;
@@ -77,7 +77,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
   const validateDocumentNumber = (documentNumber) => {
     const regex = /^[0-9]{6,17}?$/;
     return regex.test(documentNumber);
-  }
+  };
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -88,22 +88,22 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
   };
 
   const validateField = (name, value) => {
-    const validationResult = { error: false, helperText: "" };
-    if (name === "email") {
+    const validationResult = { error: false, helperText: '' };
+    if (name === 'email') {
       validationResult.error = !validateEmail(value);
       validationResult.helperText = validationResult.error
-        ? "Ingrese un correo válido"
-        : "";
-    } else if (name === "documentNumber") {
+        ? 'Ingrese un correo válido'
+        : '';
+    } else if (name === 'documentNumber') {
       validationResult.error = !validateDocumentNumber(value);
       validationResult.helperText = validationResult.error
-        ? (isNaN(value) ? "El tipo documento debe ser un número" : "Por favor ingrese un número documento válido")
-        : "";
-    } else if (name === "age") {
+        ? (isNaN(value) ? 'El tipo documento debe ser un número' : 'Por favor ingrese un número documento válido')
+        : '';
+    } else if (name === 'age') {
       validationResult.error = !validateAge(value);
       validationResult.helperText = validationResult.error
-        ? (isNaN(value) ? "La edad debe ser un número" : "La edad debe ser un número entre 0 y 100")
-        : "";
+        ? (isNaN(value) ? 'La edad debe ser un número' : 'La edad debe ser un número entre 0 y 100')
+        : '';
     }
     return validationResult;
   };
@@ -139,7 +139,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = "";
+        updatedValues[name] = '';
       }
     }
 
@@ -162,11 +162,11 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
 
     setCurrentTab(currentTab + 1);
 
-  }
+  };
 
   const handlePreviousButtonClick = () => {
     setCurrentTab(currentTab - 1);
-  }
+  };
 
   return (
     <div>
@@ -184,17 +184,17 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
               marginTop: 1,
             }}
           >
-            {type === "employee" && (
+            {type === 'employee' && (
               <>
                 <Box
                   sx={{
                     borderBottom: 1,
-                    borderColor: "divider",
+                    borderColor: 'divider',
                   }}
                 >
-                  <Box sx={{ display: "flex", justifyContent: "between" }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'between' }}>
                     <Tabs
-                      sx={{ width: "90%", justifyContent: "center" }}
+                      sx={{ width: '90%', justifyContent: 'center' }}
                       value={currentTab}
                       onChange={(event, newValue) =>
                         handleTabChange(event, newValue)
@@ -211,7 +211,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                     Object.keys(sectionObj).map((section, tabIndex) => {
                       return tabIndex === currentTab
                         ? sectionObj[section].map((field) => {
-                          if (field.type === "text") {
+                          if (field.type === 'text') {
                             return (
                               <Grid
                                 item
@@ -231,7 +231,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                                   variant="outlined"
                                   required={field.isRequired}
                                   error={values[`${field.name}Error`]}
-                                  helperText={values[`${field.name}HelperText`] || ""}
+                                  helperText={values[`${field.name}HelperText`] || ''}
                                   sx={{
                                     marginBottom: 2,
                                   }}
@@ -239,7 +239,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                               </Grid>
                             );
                           }
-                          else if (field.type === "date") {
+                          else if (field.type === 'date') {
                             return (
                               <Grid
                                 item
@@ -252,7 +252,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
 
                                     sx={{
                                       marginBottom: 2,
-                                      width: '100%'
+                                      width: '100%',
                                     }}
 
                                     id={field.name}
@@ -267,9 +267,9 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                                         variant="outlined"
                                         required={field.isRequired}
                                         error={values[`${field.name}Error`]}
-                                        helperText={values[`${field.name}HelperText`] || ""}
+                                        helperText={values[`${field.name}HelperText`] || ''}
                                         sx={{
-                                          marginBottom: 2
+                                          marginBottom: 2,
                                         }}
                                       />
                                     )}
@@ -277,7 +277,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                                 </LocalizationProvider>
                               </Grid>
                             );
-                          } else if (field.type === "select") {
+                          } else if (field.type === 'select') {
                             return (
                               <Grid
                                 item
@@ -302,7 +302,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                                         name: field.name,
                                         value: newValue
                                           ? newValue.value
-                                          : "",
+                                          : '',
                                       },
                                     });
                                   }}
@@ -312,7 +312,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                                       label={field.label}
                                       required={field.isRequired}
                                       error={values[`${field.name}Error`]}
-                                      helperText={values[`${field.name}HelperText`] || ""}
+                                      helperText={values[`${field.name}HelperText`] || ''}
                                     />
                                   )}
                                 />
@@ -362,7 +362,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
             <Grid container spacing={2}>
               {/* form fields */}
               {fields.map((field) => {
-                if (field.type === "text") {
+                if (field.type === 'text') {
                   return (
                     <Grid item xs={12} sm={6} key={field.name}>
                       <TextField
@@ -372,18 +372,18 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                         name={field.name}
                         onChange={handleInputChange}
                         type="text"
-                        value={values[field.name] || ""}
+                        value={values[field.name] || ''}
                         variant="outlined"
                         required={field.isRequired}
                         error={values[`${field.name}Error`]}
-                        helperText={values[`${field.name}HelperText`] || ""}
+                        helperText={values[`${field.name}HelperText`] || ''}
                         sx={{
                           marginBottom: 2,
                         }}
                       />
                     </Grid>
                   );
-                } else if (field.type === "select") {
+                } else if (field.type === 'select') {
                   return (
                     <Grid
                       item
@@ -408,7 +408,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                               name: field.name,
                               value: newValue
                                 ? newValue.value
-                                : "",
+                                : '',
                             },
                           });
                         }}
@@ -418,7 +418,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                             label={field.label}
                             required={field.isRequired}
                             error={values[`${field.name}Error`]}
-                            helperText={values[`${field.name}HelperText`] || ""}
+                            helperText={values[`${field.name}HelperText`] || ''}
                           />
                         )}
                       />
