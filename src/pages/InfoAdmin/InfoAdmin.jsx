@@ -3,7 +3,6 @@ import { CSVLink } from 'react-csv';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { useSnackbar } from 'notistack';
 import AddIcon from '@mui/icons-material/Add';
 import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/material/Box';
@@ -11,9 +10,12 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
-import * as uuid from 'uuid';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
+import { current } from '@reduxjs/toolkit';
+import { useSnackbar } from 'notistack';
+import * as uuid from 'uuid';
+
 import Building from '../../assets/Building.svg';
 import MyCard from '../../components/MyCard/MyCard';
 import MyCreateDialog2 from '../../components/MyCreateDialog2/MyCreateDialog2';
@@ -30,23 +32,22 @@ import { addItem, storeItems, updateItem } from '../../features/adminSlice';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import { getCompaniesAPI } from '../../services/getCompanies.service';
-import {
-  storeRolCompanyAPI,
-  fetchRolCompanyAPI,
-  deleteRolCompanyAPI,
-} from "../../services/getRolCompany.service";
 import { getEmployeesAPI } from '../../services/getEmployees.service';
 import { getOfficesAPI, postOfficeAPI } from '../../services/getOffices.service';
+import {
+  deleteRolCompanyAPI,
+  fetchRolCompanyAPI,
+  storeRolCompanyAPI,
+} from '../../services/getRolCompany.service';
 import { postCompanyAPI } from '../../services/postCompany.service';
 import { postEmployeeAPI } from '../../services/postEmployee.service';
 import axios from '../../utils/axiosInstance';
 
-import { officesColumns, useCreateOffice, useOffice } from './office/officeData';
 import { departmentsColumns, useCreateDepartment, useDepartment } from './department/departmentData';
 import { employeesColumns, useCreateEmployee, useEmployee } from './employees/employeesData';
+import { officesColumns, useCreateOffice, useOffice } from './office/officeData';
 
 import styles from './InfoAdmin.module.css';
-import { current } from '@reduxjs/toolkit';
 
 
 const search = (value, inputArray, field, proprety) => {
@@ -181,7 +182,7 @@ export default function InfoAdmin() {
       documentType: [], gender: [], AreaFuncional: [], NivelOrganizacional: [],
       TipoContrato: [], TipoContratacion: [], Disabilities: [], SexualPreference: [],
       Campus: [], EnglishLevel: [], EducationLevel: [], GrupoCiolectivo: [], Jornada: [],
-      SalaryType: [], EstadoCivil: []
+      SalaryType: [], EstadoCivil: [],
     },
 
     ids: {
@@ -189,7 +190,7 @@ export default function InfoAdmin() {
       documentType: [], gender: [], AreaFuncional: [], NivelOrganizacional: [],
       TipoContrato: [], TipoContratacion: [], Disabilities: [], SexualPreference: [],
       Campus: [], EnglishLevel: [], EducationLevel: [], GrupoCiolectivo: [], Jornada: [],
-      SalaryType: [], EstadoCivil: []
+      SalaryType: [], EstadoCivil: [],
     },
   });
   const csvLink = useRef();
@@ -237,7 +238,7 @@ export default function InfoAdmin() {
 
 
   const handleSubmittedCreateDialog = async (formValues) => {
-    console.log(currentCreate.type)
+    console.log(currentCreate.type);
     if (currentCreate.type === 'office') {
       handleSubmittedCreateOffice(formValues);
     }
@@ -256,13 +257,13 @@ export default function InfoAdmin() {
           rol: formValues.rol,
         });
         fetchCompanyRol();
-        enqueueSnackbar("Rol creado con éxito", {
-          variant: "success",
+        enqueueSnackbar('Rol creado con éxito', {
+          variant: 'success',
         });
       } catch (e) {
-        console.log(e)
-        enqueueSnackbar("Hubo un error al crear el rol", {
-          variant: "error",
+        console.log(e);
+        enqueueSnackbar('Hubo un error al crear el rol', {
+          variant: 'error',
         });
       }
     }
@@ -337,26 +338,26 @@ export default function InfoAdmin() {
     //Roles Company
     const companyRolsColumns = [
       {
-        id: "name",
-        label: "Rol",
+        id: 'name',
+        label: 'Rol',
         numeric: false,
       },
       {
-        id: "options",
-        label: "Opciones",
+        id: 'options',
+        label: 'Opciones',
         numeric: false,
       },
     ];
   
     const handleCreateCompanyRols = () => {
       setCurrentCreate({
-        type: "companyRol",
-        title: "Crear Rol",
+        type: 'companyRol',
+        title: 'Crear Rol',
         fields: [
           {
-            label: "Rol",
-            name: "rol",
-            type: "text",
+            label: 'Rol',
+            name: 'rol',
+            type: 'text',
             isRequired: true,
           },
         ],
@@ -367,12 +368,12 @@ export default function InfoAdmin() {
     const mapCompanyRols = (companyRol) =>
       companyRol.map((companyRol) => [
         {
-          column: "name",
+          column: 'name',
           value: companyRol.rol,
         },
         {
-          column: "options",
-          value: "",
+          column: 'options',
+          value: '',
           payload: {
             handleDelete: handleDeleteCompanyRols,
             //handleEdit: handleEditCompanyRols,
@@ -389,19 +390,19 @@ export default function InfoAdmin() {
   
       try {
         await deleteRolCompanyAPI(id, currentCompany.id);
-        enqueueSnackbar("Rol eliminado con exito", {
-          variant: "success",
+        enqueueSnackbar('Rol eliminado con exito', {
+          variant: 'success',
         });
         fetchCompanyRol();
       } catch (e) {
-        console.log(e)
-        enqueueSnackbar("Error eliminar crear Rol", {
-          variant: "error",
+        console.log(e);
+        enqueueSnackbar('Error eliminar crear Rol', {
+          variant: 'error',
         });
       }
 
     };
-  
+    /*
     const handleEditCompanyRols = (id) => {
       const Profession = Professions.find((Profession) => Profession.id === id);
   
@@ -410,20 +411,20 @@ export default function InfoAdmin() {
       }
   
       setCurrentEdit({
-        type: "companyRol",
+        type: 'companyRol',
         id: Profession.id,
-        title: "Editar nivel de educacion",
+        title: 'Editar nivel de educacion',
         fields: [
           {
-            label: "Nivel de profesion",
-            name: "name",
-            type: "text",
+            label: 'Nivel de profesion',
+            name: 'name',
+            type: 'text',
             value: Profession.profesion,
           },
         ],
       });
       setOpenEditDialog(true);
-    };
+    };*/
   
     const fetchCompanyRol = async () => {
       if (!currentCompany) {
