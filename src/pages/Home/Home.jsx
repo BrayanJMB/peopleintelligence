@@ -14,6 +14,7 @@ import { setCredentials } from '../../features/authSlice';
 import axios from '../../utils/axiosInstance';
 
 import styles from './Home.module.css';
+import MyLoader from '../../components/MyLoader/MyLoader';
 
 const config = {
   headers: {
@@ -22,6 +23,7 @@ const config = {
 };
 
 export default function Home() {
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -181,9 +183,11 @@ export default function Home() {
       headers: { 'Content-type': 'application/json' },
     };
     try {
+      setLoading(true);
       await axios
         .post('Aut/', { bearer: `Bearer ${access_token}` }, config)
         .then((res) => {
+          console.log("AUTNETI")
           console.log(res);
           let token = res.data.token;
           let decodedToken = decodeToken(token);
@@ -221,6 +225,7 @@ export default function Home() {
           sizeCompanyConsume();
           sectorConsume();
           documentTypeConsume();
+          setLoading(false);
         });
     } catch (error) {
       if (error.response.status === 401) {
@@ -319,7 +324,11 @@ export default function Home() {
     }
   }, [access_token]);
   return (
+    <>
+    {loading === true && <MyLoader />}
+    {loading === false && (
     <div className={styles.screen}>
+
       <ThemeProvider theme={theme}>
         <Notification
           severity={values.severity}
@@ -463,6 +472,9 @@ export default function Home() {
           </div>
         ) : null}
       </ThemeProvider>
+      
     </div>
+    )}
+    </>
   );
 }

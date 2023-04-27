@@ -1,5 +1,5 @@
 import { useEffect,useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -52,6 +52,7 @@ function stringAvatar(name) {
 const drawerWidth = 240;
 
 export default function Navbar() {
+  const companies = useSelector((state) => state.companies.companies);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -97,15 +98,14 @@ export default function Navbar() {
   };
   const companyConsume = async (id) => {
     try {
-      await axios.get('companias/MultiCompani/' + id).then((response) => {
+      await axios.get('companias/GetCompanias/' + id).then((response) => {
         let fetch = [];
         let id = [];
 
         dispatch(companiesAdded(response.data));
-
         response.data.forEach((val) => {
-          if (!fetch.includes(val.nombreCompania)) {
-            fetch.push(val.nombreCompania);
+          if (!fetch.includes(val.nombreCompañia)) {
+            fetch.push(val.nombreCompañia);
             id.push(val);
           }
         });
@@ -128,9 +128,11 @@ export default function Navbar() {
   };
 
   const handleSelect = (value) => {
+    console.log("ENTRO")
     let holder = JSON.parse(localStorage.getItem('userInfo'));
     localStorage.removeItem('userInfo');
     let company = search(value, data.ids.company);
+
 
     dispatch(
       setCredentials({
@@ -141,7 +143,6 @@ export default function Navbar() {
       })
     );
     dispatch(currentCompanySelected(company));
-
 
     localStorage.setItem(
       'userInfo',
@@ -156,10 +157,12 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    if (userInfo?.role.findIndex((p) => p === 'MultiCompania') > -1) {
+    const shouldFetchData = userInfo?.role.findIndex((p) => p === 'MultiCompania') > -1 && !companies?.length;
+
+    if (shouldFetchData) {
       companyConsume(userInfo.user);
     }
-  }, [userInfo]);
+  }, [userInfo, companies]);
 
   return (
     <AppBar

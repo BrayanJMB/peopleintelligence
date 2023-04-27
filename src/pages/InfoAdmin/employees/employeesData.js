@@ -5,127 +5,26 @@ import { useSnackbar } from 'notistack';
 
 import { fetchCityAPI } from '../../../services/getCity.service';
 import { getAllCompaniesAPI } from '../../../services/getCompanies.service';
-import { fetchContractTypeAPI } from '../../../services/getContractType.service';
-import { fecthAreaAPI } from '../../../services/getDepartments.service';
-import { fetchDisabilitiesAPI } from '../../../services/getDisabilities.service';
-import { fetchDocumentTypeAPI, getCompaniesByIdAPI } from '../../../services/getDocumentType.service';
-import { fetchEducationLevelAPI } from '../../../services/getEducationLevel.service';
-import { deleteEmployeeAPI,fetchEmployeeAPI, getEmployeesAPI, storeEmployeeAPI } from '../../../services/getEmployees.service';
-import { fetchEnglishLevelAPI } from '../../../services/getEnglishLevel.service';
-import { fetchGenderAPI } from '../../../services/getGender.service';
-import { fetchHiringTypeAPI } from '../../../services/getHiringType.service';
-import { fetchMaritalStatusAPI } from '../../../services/getMaritalStatus.service';
+import { fetchContractTypeByCompanyAPI } from '../../../services/getContractType.service';
+import { fetchAreaByCompanyAPI } from '../../../services/getDepartments.service';
+import { fetchDisabilitiesByCompanyAPI } from '../../../services/getDisabilities.service';
+import { fetchDocumentTypeAPI,} from '../../../services/getDocumentType.service';
+import { fetchEducationLevelByCompanyAPI } from '../../../services/getEducationLevel.service';
+import { deleteEmployeeAPI,fetchEmployeeAPI, storeEmployeeAPI } from '../../../services/getEmployees.service';
+import { fetchEnglishLevelByCompanyAPI } from '../../../services/getEnglishLevel.service';
+import { fetchGenderByCompanyAPI } from '../../../services/getGender.service';
+import { fetchHiringTypeByCompanyAPI } from '../../../services/getHiringType.service';
+import { fetchMaritalStatusByCompanyAPI } from '../../../services/getMaritalStatus.service';
 import { getOfficesAPI } from '../../../services/getOffices.service';
-import { fetchOrganizationalLevelAPI } from '../../../services/getOrganizationalLevel.service';
+import { fetchOrganizationalLevelByCompanyAPI } from '../../../services/getOrganizationalLevel.service';
 import { fetchPersonAPI } from '../../../services/getPerson.service';
-import { fetchProfessionAPI } from '../../../services/getProfession.service';
+import { fetchProfessionByCompanyAPI } from '../../../services/getProfession.service';
 import { fetchRolCompanyAPI } from '../../../services/getRolCompany.service';
-import { fetchSalaryTypeAPI } from '../../../services/getSalaryType.service';
-import { fetchSexualPreferenceAPI } from '../../../services/getSexualPreference.service';
+import { fetchSalaryTypeByCompanyAPI } from '../../../services/getSalaryType.service';
+import { fetchSexualPreferenceByCompanyAPI } from '../../../services/getSexualPreference.service';
+import { fetchWorkingDayByCompanyAPI } from '../../../services/getWorkingDay.service';
+import { getSegmentsAPI } from '../../../services/getSegments.service';
 
-
-const getAllRols = async () => {
-  const { data } = await fetchRolCompanyAPI(1);
-  return data;
-};
-
-const getAllPersons = async () => {
-  const { data } = await fetchPersonAPI();
-  return data;
-};
-
-const getAllAreas = async () => {
-  const { data } = await fecthAreaAPI();
-  return data;
-};
-const getAllCampus = async () => {
-  const { data } = await getOfficesAPI();
-  return data;
-};
-
-const getAllSexualPreferences = async () => {
-  const { data } = await fetchSexualPreferenceAPI();
-  return data;
-};
-
-const getAllDisabilities = async () => {
-  const { data } = await fetchDisabilitiesAPI();
-  return data;
-};
-
-const getAllHiringTypes = async () => {
-  const { data } = await fetchHiringTypeAPI();
-  return data;
-};
-
-const getAllContractTypes = async () => {
-  const { data } = await fetchContractTypeAPI();
-  return data;
-};
-
-const getAllOrganizationalLevels = async () => {
-  const { data } = await fetchOrganizationalLevelAPI();
-  return data;
-};
-const getAllEducationLevel = async () => {
-  const { data } = await fetchEducationLevelAPI();
-  return data;
-};
-
-const getAllEnglishLevel = async () => {
-  const { data } = await fetchEnglishLevelAPI();
-  return data;
-};
-
-const getAllProfession = async () => {
-  const { data } = await fetchProfessionAPI();
-  return data;
-};
-
-const getAllSalaryTypes = async () => {
-  const { data } = await fetchSalaryTypeAPI();
-  return data;
-};
-const getAllMaritalStatus = async () => {
-  const { data } = await fetchMaritalStatusAPI();
-  return data;
-};
-
-const getAllCompanies = async () => {
-  const { data } = await getAllCompaniesAPI();
-  return data;
-};
-
-const getAllDocumentsTypes = async () => {
-  const { data } = await fetchDocumentTypeAPI();
-  return data;
-};
-
-const getAllGenders = async () => {
-  const { data } = await fetchGenderAPI();
-  return data;
-};
-
-
-const getAllCities = async () => {
-  const { data } = await fetchCityAPI();
-  return data;
-};
-/*
-const getInformationEmployees = async (setEmployees) => {
-    const { data } = await getEmployeesAPI();
-    const companies = await getAllCompanies();
-    const companyNames = companies.reduce((acc, company) => {
-        acc[company.id] = company.nombreCompania;
-        return acc;
-    }, {});
-
-    const employees = data.map((employee) => ({
-        ...employee,
-        nombreCompania: companyNames[employee.IdCompania],
-    }));
-    setEmployees(employees);
-};*/
 
 export const employeesColumns = [
   {
@@ -160,11 +59,12 @@ export const employeesColumns = [
   },
 ];
 
-export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDialog, setCurrentEdit) => {
+export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDialog, setCurrentEdit, currentCompany) => {
+  const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
   const [employees, setEmployees] = useState([]);
   const [persons, setPersons] = useState([]);
-  const { enqueueSnackbar } = useSnackbar();
+  const [segments, setSegments] = useState([]);
   const [documentTypes, setDocumentTypes] = useState([]);
   const [genders, setGenders] = useState([]);
   const [cities, setCities] = useState([]);
@@ -180,26 +80,31 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
   const [hiringType, setHiringType] = useState([]);
   const [contractType, setContractType] = useState([]);
   const [organizationalLevel, setOrganizationalLevel] = useState([]);
+  const [workingDay, setWorkingDay] = useState([]);
+  const [rols, setRol] = useState([]);
+  const [areas, setArea] = useState([]);
+
 
 
   const fetchEmployee = async () => {
     setLoading(true);
 
-    const { data } = await fetchEmployeeAPI();
-    const areas = await getAllAreas();
-    const areasNames = areas.reduce((acc, area) => {
+    const { data } = await fetchEmployeeAPI(currentCompany.id);
+    const { data: area}   = await fetchAreaByCompanyAPI(currentCompany.id);
+    const areasNames = area.reduce((acc, area) => {
       acc[area.id] = area.NombreArea;
       return acc;
     }, {});
 
 
-    const persons = await getAllPersons();
-    const personNames = persons.reduce((acc, person) => {
+    const { data: person } = await fetchPersonAPI();
+    const personNames = person.reduce((acc, person) => {
       acc[person.id] = person.nombres;
       return acc;
     }, {});
 
-    const rols = await getAllRols();
+
+    const { data: rols } = await fetchRolCompanyAPI(currentCompany.id);
     const rolNames = rols.reduce((acc, rol) => {
       acc[rol.id] = rol.rol;
       return acc;
@@ -219,85 +124,105 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
 
 
   const fetchCompanies = async () => {
-    const companyData = await getAllCompanies();
+    const { data: companyData } = await getAllCompaniesAPI();
     setCompany(companyData);
   };
 
-  const fetchSexualPreference = async () => {
-    const sexualPreferenceData = await getAllSexualPreferences();
+  const fetchSexualPreference = async (idCompany) => {
+    const { data: sexualPreferenceData } = await fetchSexualPreferenceByCompanyAPI(currentCompany.id);
     setSexualPreference(sexualPreferenceData);
   };
 
-  const fetchDisabilities = async () => {
-    const disabilitiesData = await getAllDisabilities();
+  const fetchWorkingDay = async (idCompany) => {
+    const { data: workingDayData } = await fetchWorkingDayByCompanyAPI(currentCompany.id);
+    setWorkingDay(workingDayData);
+  };
+
+  const fetchDisabilities = async (idCompany) => {
+    const { data: disabilitiesData } = await fetchDisabilitiesByCompanyAPI(currentCompany.id);
     setDisabilities(disabilitiesData);
   };
 
 
-  const fetchHiringType = async () => {
-    const hiringTypeData = await getAllHiringTypes();
+  const fetchHiringType = async (idCompany) => {
+    const { data: hiringTypeData } = await fetchHiringTypeByCompanyAPI(currentCompany.id);
     setHiringType(hiringTypeData);
   };
 
-  const fetchContractType = async () => {
-    const contractTypeData = await getAllContractTypes();
+  const fetchContractType = async (idCompany) => {
+    const { data: contractTypeData } = await fetchContractTypeByCompanyAPI(currentCompany.id);
     setContractType(contractTypeData);
   };
 
-  const fetchOrganizationalLevel = async () => {
-    const organizationalLevelData = await getAllOrganizationalLevels();
+  const fetchOrganizationalLevel = async (idCompany) => {
+    const { data: organizationalLevelData } = await fetchOrganizationalLevelByCompanyAPI(currentCompany.id);
     setOrganizationalLevel(organizationalLevelData);
   };
 
-  const fetchCampus = async () => {
-    const campusData = await getAllCampus();
+  const fetchCampus = async (idCompany) => {
+    const { data: campusData } = await getOfficesAPI(currentCompany.id);
     setCampus(campusData);
   };
 
-  const fetchEducationLevel = async () => {
-    const educationLevelData = await getAllEducationLevel();
+  const fetchEducationLevel = async (idCompany) => {
+    const { data: educationLevelData } = await fetchEducationLevelByCompanyAPI(currentCompany.id);
     setEducationLevel(educationLevelData);
   };
 
 
-  const fetchEnglishLevel = async () => {
-    const englishLevelData = await getAllEnglishLevel();
+  const fetchEnglishLevel = async (idCompany) => {
+    const { data: englishLevelData } = await fetchEnglishLevelByCompanyAPI(currentCompany.id);
     setEnglishLevel(englishLevelData);
   };
 
 
-  const fetchProfessions = async () => {
-    const professionData = await getAllProfession();
+  const fetchProfessions = async (idCompany) => {
+    const { data : professionData } = await fetchProfessionByCompanyAPI(idCompany);
     setProfession(professionData);
   };
 
-  const fetchSalaryType = async () => {
-    const salaryTypeData = await getAllSalaryTypes();
+  const fetchSalaryType = async (idCompany) => {
+    const { data : salaryTypeData } = await fetchSalaryTypeByCompanyAPI(idCompany);
     setSalaryType(salaryTypeData);
   };
 
-  const fetchMaritalStatus = async () => {
-    const maritalStatusData = await getAllMaritalStatus();
+  const fetchMaritalStatus = async (idCompany) => {
+    const { data : maritalStatusData } = await fetchMaritalStatusByCompanyAPI(idCompany);
     setMaritalStatus(maritalStatusData);
   };
 
   const fetchDocumentsTypes = async () => {
-    const documentTypeData = await getAllDocumentsTypes();
+    const { data : documentTypeData } = await fetchDocumentTypeAPI();
     setDocumentTypes(documentTypeData);
   };
-  const fetchGender = async () => {
-    const genderData = await getAllGenders();
+  const fetchGender = async (idCompany) => {
+    const  { data: genderData } = await fetchGenderByCompanyAPI(currentCompany.id);
     setGenders(genderData);
   };
 
+  const fetchRol = async (idCompany) => {
+    const  { data: rolData } = await fetchRolCompanyAPI(currentCompany.id);
+    setRol(rolData);
+  };
+
+  const fetchArea = async (idCompany) => {
+    const { data: areaData } = await fetchAreaByCompanyAPI(idCompany);
+    setArea(areaData);
+  };
+
   const fetchCity = async () => {
-    const cityData = await getAllCities();
+    const { data: cityData } = await fetchCityAPI();
     setCities(cityData);
   };
 
   const fetchPerson = async () => {
-    const personData = await getAllPersons();
+    const { data: personData} = await fetchPersonAPI();
     setPersons(personData);
+  };
+
+  const fetchSegment = async () => {
+    const { data: segmentsData} = await getSegmentsAPI();
+    setSegments(segmentsData);
   };
 
 
@@ -380,7 +305,6 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
             {
               label: 'Ciudad',
               name: 'city',
-              type: 'text',
               type: 'select',
               isRequired: true,
               options: cities.map((city) => ({
@@ -404,21 +328,26 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               isRequired: false,
             },
             {
-              label: 'Compañía',
-              name: 'compañia',
+              label: 'Rol',
+              name: 'rol',
               type: 'select',
               isRequired: false,
-              options: company.map((company) => ({
-                value: company.id,
-                label: company.nombreCompania,
+              options: rols.map((rol) => ({
+                value: rol.id,
+                label: rol.rol,
               })),
             },
             {
-              label: 'Rol',
-              name: 'rol',
-              type: 'text',
+              label: 'Área',
+              name: 'area',
+              type: 'select',
               isRequired: false,
+              options: areas.map((area) => ({
+                value: area.id,
+                label: area.NombreArea,
+              })),
             },
+
           ],
           'segments': [
             {
@@ -444,16 +373,6 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               name: 'childNumber',
               type: 'text',
               isRequired: false,
-            },
-            {
-              label: 'Área Funcional',
-              name: 'compañia',
-              type: 'select',
-              isRequired: false,
-              options: company.map((company) => ({
-                value: company.id,
-                label: company.nombreCompania,
-              })),
             },
             {
               label: 'Nivel Organizacional',
@@ -492,7 +411,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               isRequired: false,
               options: disabilities.map((disabilities) => ({
                 value: disabilities.id,
-                label: disabilities.nombreCompania,
+                label: disabilities.discapacIdades,
               })),
             },
             {
@@ -546,23 +465,13 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               })),
             },
             {
-              label: 'Grupo Colectivo',
-              name: 'collectiveGroup',
-              type: 'select',
-              isRequired: false,
-              options: company.map((company) => ({
-                value: company.id,
-                label: company.nombreCompania,
-              })),
-            },
-            {
               label: 'Jornada',
               name: 'workingDay',
               type: 'select',
               isRequired: false,
-              options: company.map((company) => ({
-                value: company.id,
-                label: company.nombreCompania,
+              options: workingDay.map((workingDay) => ({
+                value: workingDay.id,
+                label: workingDay.jornada,
               })),
             },
             {
@@ -595,7 +504,29 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
   const handleEditEmployee = async (id) => {
     const employee = employees.find((employee) => employee.id === id);
     const person = persons.find((person) => person.id === employee.IdPersona);
-    //const gender = genders.find((gender) => gender.id === person.IdGenero);
+    console.log(person)
+    const { data: segmentsData} = await getSegmentsAPI(person.IdSegmentos);
+    const documentType = documentTypes.find((documentType) => documentType.documentTypeId === person.IdTipoDocumento);
+    const gender = genders.find((gender) => gender.id === person.IdGenero);
+    const city = cities.find((city) => city.id === person.IdCiudad);
+    const area = areas.find((area) => area.id === employee.areaId);
+    const rol = rols.find((rol) => rol.id === employee.rollCompania);
+
+    //Other fields
+    const OrganizationalLevel = organizationalLevel.find((organizationalLevel) => organizationalLevel.id === segmentsData.IdNivelOrganizacional);
+    const ContractType = contractType.find((contractType) => contractType.id === segmentsData.IdTipodeContrato);
+    const HiringType = hiringType.find((hiringType) => hiringType.id === segmentsData.IdTipodeContratacion);
+    const Disabilities = disabilities.find((disabilities) => disabilities.id === segmentsData.IdDisabilities);
+    const SexualPreference = sexualPreference.find((sexualPreference) => sexualPreference.id === segmentsData.IdSexualPreference);
+    const Campus = campus.find((campus) => campus.id === segmentsData.IdCampus);
+    const EnglishLevel = englishLevel.find((englishLevel) => englishLevel.id === segmentsData.IdEnglishLevel);
+    const EducationLevel = educationLevel.find((educationLevel) => educationLevel.id === segmentsData.IdEducationLevel);
+    const Profesion = profession.find((profession) => profession.id === segmentsData.IdProfession);
+    const WorkingDay = workingDay.find((workingDay) => workingDay.id === segmentsData.IdJornada);
+    const SalaryType = salaryType.find((salaryType) => salaryType.id === segmentsData.IdSalaryType);
+    const MaritalStatus = maritalStatus.find((maritalStatus) => maritalStatus.id === segmentsData.IdEstadoCivil);
+    
+
     if (employee === undefined || person === undefined) {
       return;
     }
@@ -611,6 +542,8 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               label: 'Tipo Documento',
               name: 'documentType',
               type: 'select',
+              isRequired: true,
+              value: documentType && documentType.documentTypeId || null,
               options: documentTypes.map((company) => ({
                 value: company.documentTypeId,
                 label: company.tipoDocumento,
@@ -620,54 +553,64 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               label: 'Número Documento',
               name: 'documentNumber',
               type: 'text',
+              isRequired: true,
               value: person.numeroDocumento,
             },
             {
               label: 'Nombres',
               name: 'name',
               type: 'text',
+              isRequired: true,
               value: person.nombres,
             },
             {
               label: 'Apellidos',
               name: 'lastName',
               type: 'text',
+              isRequired: true,
               value: person.apellIdos,
             },
             {
               label: 'Edad',
               name: 'age',
               type: 'text',
+              isRequired: true,
               value: person.edad,
             },
             {
               label: 'Número Telefónico',
               name: 'phoneNumber',
               type: 'text',
+              isRequired: true,
               value: person.numeroTelefonico,
             },
             {
               label: 'Dirección',
               name: 'address',
               type: 'text',
+              isRequired: true,
               value: person.direccion,
             },
             {
               label: 'Correo',
               name: 'email',
               type: 'text',
+              isRequired: true,
               value: person.correoElectronico,
             },
+            /*
             {
               label: 'Fecha Nacimiento',
               name: 'dateBirth',
               type: 'date',
               value: person.fechaNacimiento,
-            },
+            },*/
             {
               label: 'Género',
               name: 'gender',
               type: 'select',
+              isRequired: true,
+              value: gender && gender.id || null,
               options: genders.map((gender) => ({
                 value: gender.id,
                 label: gender.genero,
@@ -676,8 +619,9 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
             {
               label: 'Ciudad',
               name: 'city',
-              type: 'text',
               type: 'select',
+              isRequired: true,
+              value: city && city.id || null,
               options: cities.map((city) => ({
                 value: city.id,
                 label: city.ciudad,
@@ -686,35 +630,45 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
 
           ],
           'employee': [
+            /*
             {
               label: 'Fecha Admisión',
               name: 'fechaAdmision',
               type: 'date',
+              isRequired: false,
               value: employee.fechaAdmision,
-            },
+            },*/
             {
               label: 'Supervisor',
               name: 'supervisor',
               type: 'text',
+              value: employee.supervisor,
               isRequired: false,
-            },
-            {
-              label: 'Compañía',
-              name: 'compañia',
-              type: 'select',
-              isRequired: false,
-              options: company.map((company) => ({
-                value: company.id,
-                label: company.nombreCompania,
-              })),
             },
             {
               label: 'Rol',
               name: 'rol',
-              type: 'text',
+              type: 'select',
               isRequired: false,
+              value: rol && rol.id || null,
+              options: rols.map((rol) => ({
+                value: rol.id,
+                label: rol.rol,
+              })),
+            },
+            {
+              label: 'Área',
+              name: 'area',
+              type: 'select',
+              isRequired: false,
+              value: area && area.id || null,
+              options: areas.map((area) => ({
+                value: area.id,
+                label: area.NombreArea,
+              })),
             },
           ],
+         
           'segments': [
             {
               label: 'Antiguedad Trabajo',
@@ -730,7 +684,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
             },
             {
               label: 'Resultado Última Evaluación Desempeño',
-              name: 'resultadoEvaluacion',
+              name: 'lastResult',
               type: 'text',
               isRequired: false,
             },
@@ -741,20 +695,11 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               isRequired: false,
             },
             {
-              label: 'Área Funcional',
-              name: 'compañia',
-              type: 'select',
-              isRequired: false,
-              options: company.map((company) => ({
-                value: company.id,
-                label: company.nombreCompania,
-              })),
-            },
-            {
               label: 'Nivel Organizacional',
               name: 'organizationalLevel',
               type: 'select',
               isRequired: false,
+              value: OrganizationalLevel && OrganizationalLevel.id || null,
               options: organizationalLevel.map((organizationalLevel) => ({
                 value: organizationalLevel.id,
                 label: organizationalLevel.nivelOrganizacional,
@@ -765,6 +710,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               name: 'contractType',
               type: 'select',
               isRequired: false,
+              value: ContractType && ContractType.id || null,
               options: contractType.map((contractType) => ({
                 value: contractType.id,
                 label: contractType.tipoContrato,
@@ -775,6 +721,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               name: 'hiringType',
               type: 'select',
               isRequired: false,
+              value: HiringType && HiringType.id || null,
               options: hiringType.map((hiringType) => ({
                 value: hiringType.id,
                 label: hiringType.tipoContrato,
@@ -785,9 +732,10 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               name: 'disabilities',
               type: 'select',
               isRequired: false,
+              value: Disabilities && Disabilities.id || null,
               options: disabilities.map((disabilities) => ({
                 value: disabilities.id,
-                label: disabilities.nombreCompania,
+                label: disabilities.discapacIdades,
               })),
             },
             {
@@ -795,6 +743,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               name: 'sexualPreference',
               type: 'select',
               isRequired: false,
+              value: SexualPreference && SexualPreference.id || null,
               options: sexualPreference.map((sexualPreference) => ({
                 value: sexualPreference.id,
                 label: sexualPreference.preferenciaSexual,
@@ -805,6 +754,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               name: 'campus',
               type: 'select',
               isRequired: false,
+              value: Campus && Campus.id || null,
               options: campus.map((campus) => ({
                 value: campus.id,
                 label: campus.sede,
@@ -815,6 +765,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               name: 'englishLevel',
               type: 'select',
               isRequired: false,
+              value: EnglishLevel && EnglishLevel.id || null,
               options: englishLevel.map((englishLevel) => ({
                 value: englishLevel.id,
                 label: englishLevel.nivelIngles,
@@ -825,6 +776,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               name: 'educationLevel',
               type: 'select',
               isRequired: false,
+              value: EducationLevel && EducationLevel.id || null,
               options: educationLevel.map((educationLevel) => ({
                 value: educationLevel.id,
                 label: educationLevel.nivelEducacion,
@@ -835,19 +787,10 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               name: 'profession',
               type: 'select',
               isRequired: false,
+              value: Profesion && Profesion.id || null,
               options: profession.map((profession) => ({
                 value: profession.id,
                 label: profession.profesion,
-              })),
-            },
-            {
-              label: 'Grupo Colectivo',
-              name: 'collectiveGroup',
-              type: 'select',
-              isRequired: false,
-              options: company.map((company) => ({
-                value: company.id,
-                label: company.nombreCompania,
               })),
             },
             {
@@ -855,6 +798,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               name: 'workingDay',
               type: 'select',
               isRequired: false,
+              value: WorkingDay && WorkingDay.id || null,
               options: company.map((company) => ({
                 value: company.id,
                 label: company.nombreCompania,
@@ -865,6 +809,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               name: 'salaryType',
               type: 'select',
               isRequired: false,
+              value: SalaryType && SalaryType.id || null,
               options: salaryType.map((salaryType) => ({
                 value: salaryType.id,
                 label: salaryType.tipoDeSalario,
@@ -875,6 +820,7 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
               name: 'maritalStatus',
               type: 'select',
               isRequired: false,
+              value: MaritalStatus && MaritalStatus.id || null,
               options: maritalStatus.map((maritalStatus) => ({
                 value: maritalStatus.id,
                 label: maritalStatus.estadoCivil,
@@ -897,13 +843,22 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
     try {
       await deleteEmployeeAPI(id);
       //getInformationOffices(setOffices);
-    } catch (e) { }
-    enqueueSnackbar(
-      'Empleado eliminado con éxito',
-      {
-        variant: 'success',
-      },
-    );
+      enqueueSnackbar(
+        'Empleado eliminado con éxito',
+        {
+          variant: 'success',
+        },
+      );
+      fetchEmployee();
+    } catch (e) { 
+      enqueueSnackbar(
+        'Hubo un error al eliminar el Empleado',
+        {
+          variant: 'success',
+        },
+      );
+    }
+
 
 
   };
@@ -954,24 +909,52 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
           correoElectronico: formValues.email,
           fechaNacimiento: formValues.dateBirth,
           IdTipoDocumento: formValues.documentType,
-          IdGenero: 1,
-          IdCiudad: 1,
+          IdGenero: formValues.gender,
+          IdCiudad: formValues.city,
         },
         employee: {
           FechaAdmision: formValues.fechaAdmision || null,
           supervisor: formValues.supervisor || null,
-          IdCompania: 1,
+          IdCompania: currentCompany.id || null,
           rollCompania: formValues.rol || null,
+          areaId: formValues.area || null
         },
+        segments: {
+          antiguedadEnElTrabajo: formValues.antiguedadTrabajo || null,
+          EstadoParental: formValues.parentalStatus || null,
+          ResultadoUltimaEvaluacionDesempeno: formValues.resultadoEvaluacion || null,
+          NumerodeHijos: formValues.childNumber || null,
+          IdNivelOrganizacional: formValues.organizationalLevel || null,
+          IdTipodeContrato: formValues.contractType || null,
+          IdTipodeContratacion: formValues.hiringType || null,
+          IdDisabilities: formValues.disabilities || null,
+          IdSexualPreference: formValues.sexualPreference || null,
+          IdCampus: formValues.campus || null,
+          IdEnglishLevel: formValues.englishLevel || null,
+          IdEducationLevel: formValues.educationLevel || null,
+          IdProfession: formValues.profession || null,
+          IdJornada: formValues.workingDay || null,
+          IdSalaryType: formValues.salaryType || null,
+          IdEstadoCivil: formValues.maritalStatus || null
+        }
       });
       setEmployees(employees);
-    } catch (e) { }
-    enqueueSnackbar(
-      'Empleado creado con éxito',
-      {
-        variant: 'success',
-      },
-    );
+      fetchEmployee();
+      enqueueSnackbar(
+        'Empleado creado con éxito',
+        {
+          variant: 'success',
+        },
+      );
+    } catch (e) { 
+      enqueueSnackbar(
+        'Hubo un error al crear el Empleado',
+        {
+          variant: 'error',
+        },
+      );
+    }
+
   };
 
   return {
@@ -979,6 +962,24 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
     handleEditEmployee,
     mapEmployee,
     employees,
+    persons,
+    segments,
+    genders,
+    cities,
+    rols,
+    areas,
+    organizationalLevel,
+    contractType,
+    hiringType,
+    disabilities,
+    sexualPreference,
+    campus,
+    englishLevel,
+    educationLevel,
+    profession,
+    workingDay,
+    salaryType,
+    maritalStatus,
     handleDeleteEmployee,
     setEmployees,
     setLoading,
@@ -1000,6 +1001,10 @@ export const useEmployee = (setOpenCreateDialog, setCurrentCreate, setOpenEditDi
     fetchContractType,
     fetchOrganizationalLevel,
     fetchPerson,
+    fetchSegment,
+    fetchWorkingDay,
+    fetchRol,
+    fetchArea
   };
 };
 

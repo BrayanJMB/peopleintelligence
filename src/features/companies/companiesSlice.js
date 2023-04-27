@@ -10,6 +10,9 @@ const companiesSlice = createSlice({
   initialState,
   reducers: {
     companiesAdded(state, action) {
+      console.log(state)
+      console.log(action)
+      
       state.companies = [
         ...new Set([
           ...state.companies,
@@ -17,6 +20,7 @@ const companiesSlice = createSlice({
       ];
 
       if (state.companies.length > 0 && !state.currentCompany) {
+        console.log("entro")
         state.currentCompany = state.companies[0];
       }
     },

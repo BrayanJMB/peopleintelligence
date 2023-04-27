@@ -15,7 +15,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { esES } from '@mui/x-date-pickers/locales';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import PropTypes from 'prop-types';
-
+import { validateForm, validateField } from '../../utils/helpers'
+import dayjs from 'dayjs';
 
 // form field types
 const FIELD_TYPES = {
@@ -36,77 +37,26 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
   const createInitialValues = () => {
     const initialValues = {};
 
-    fields.forEach((sectionObj) =>
-      Object.keys(sectionObj).forEach((section) =>
-        sectionObj[section].forEach((field) => {
-          initialValues[field.name] = '';
+    if (type === 'employee'){
+      fields.forEach((sectionObj) =>
+        Object.keys(sectionObj).forEach((section) =>
+          sectionObj[section].forEach((field) => {
+            initialValues[field.name] = field.value;
+          })
+        )
+      );
+    }else{
+        fields.forEach((field) =>{
+          initialValues[field.name] = field.value;
         })
-      )
-    );
+    }
 
     return initialValues;
   };
   const [values, setValues] = useState(createInitialValues());
 
-
-  //Valida si el campo es requerido y esta vacío
-  const validateForm = () => {
-    const validationErrors = {};
-
-    fields.forEach((sectionObj) =>
-      Object.keys(sectionObj).forEach((section) =>
-        sectionObj[section].forEach((field) => {
-          const { name, isRequired } = field;
-          const value = values[name] || '';
-          const { error, helperText } = validateField(name, value);
-          if (isRequired && (!value || (typeof value === 'string' && value.trim() === ''))) {
-            validationErrors[`${name}Error`] = true;
-            validationErrors[`${name}HelperText`] = 'Este campo es obligatorio';
-          } else if (error) {
-            validationErrors[`${name}Error`] = error;
-            validationErrors[`${name}HelperText`] = helperText;
-          }
-        })
-      )
-    );
-
-    return validationErrors;
-  };
-
-
-  const validateDocumentNumber = (documentNumber) => {
-    const regex = /^[0-9]{6,17}?$/;
-    return regex.test(documentNumber);
-  };
-  const validateEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  };
-
-  const validateAge = (age) => {
-    return age <= 100;
-  };
-
-  const validateField = (name, value) => {
-    const validationResult = { error: false, helperText: '' };
-    if (name === 'email') {
-      validationResult.error = !validateEmail(value);
-      validationResult.helperText = validationResult.error
-        ? 'Ingrese un correo válido'
-        : '';
-    } else if (name === 'documentNumber') {
-      validationResult.error = !validateDocumentNumber(value);
-      validationResult.helperText = validationResult.error
-        ? (isNaN(value) ? 'El tipo documento debe ser un número' : 'Por favor ingrese un número documento válido')
-        : '';
-    } else if (name === 'age') {
-      validationResult.error = !validateAge(value);
-      validationResult.helperText = validationResult.error
-        ? (isNaN(value) ? 'La edad debe ser un número' : 'La edad debe ser un número entre 0 y 100')
-        : '';
-    }
-    return validationResult;
-  };
+  console.log(values)
+  console.log(fields)
   /**
    * Handle input change.
    *
@@ -135,7 +85,6 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
 
     // Agregar los campos que no tengan valor al objeto `values`
     let updatedValues = { ...values };
-    debugger;
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
@@ -145,9 +94,8 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
 
     // Actualizar el objeto `values` con la copia actualizada
     setValues(updatedValues);
-    const validationErrors = validateForm();
+    const validationErrors = validateForm(fields, values, type);
     if (Object.keys(validationErrors).length > 0) {
-      console.log(validationErrors);
       setValues((values) => ({ ...values, ...validationErrors }));
     } else {
       onSubmit(updatedValues);
@@ -155,12 +103,44 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
   };
 
   const handleTabChange = (event, newValue) => {
-    setCurrentTab(newValue);
+    // Agregar los campos que no tengan valor al objeto `values`
+    let updatedValues = { ...values };
+    for (let field of fields) {
+      const { name, isRequired } = field;
+      if (!(name in values) && !isRequired) {
+        updatedValues[name] = '';
+      }
+    }
+
+    // Actualizar el objeto `values` con la copia actualizada
+    setValues(updatedValues);
+    const validationErrors = validateForm(fields, values, type);
+    if (Object.keys(validationErrors).length > 0) {
+      setValues((values) => ({ ...values, ...validationErrors }));
+    } else {
+      setCurrentTab(newValue);
+    }
   };
 
   const handleContinueButtonClick = () => {
 
-    setCurrentTab(currentTab + 1);
+    // Agregar los campos que no tengan valor al objeto `values`
+    let updatedValues = { ...values };
+    for (let field of fields) {
+      const { name, isRequired } = field;
+      if (!(name in values) && !isRequired) {
+        updatedValues[name] = '';
+      }
+    }
+
+    // Actualizar el objeto `values` con la copia actualizada
+    setValues(updatedValues);
+    const validationErrors = validateForm(fields, values, type);
+    if (Object.keys(validationErrors).length > 0) {
+      setValues((values) => ({ ...values, ...validationErrors }));
+    } else {
+      setCurrentTab(currentTab + 1);
+    }
 
   };
 
@@ -201,7 +181,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                       }
                     >
                       <Tab label="Datos Personales" id="settings-tab-0" />
-                      <Tab label="Tipos de documentos" id="settings-tab-1" />
+                      <Tab label="Datos Empleado" id="settings-tab-1" />
                       <Tab label="Otros Datos" id="settings-tab-2" />
                     </Tabs>
                   </Box>
@@ -221,13 +201,12 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                               >
                                 <TextField
                                   fullWidth
-
                                   id={field.name}
                                   label={field.label}
                                   name={field.name}
                                   onChange={handleInputChange}
                                   type="text"
-                                  value={values[field.name] || field.value}
+                                  value={values[field.name] !== undefined ? values[field.name] : field.value}
                                   variant="outlined"
                                   required={field.isRequired}
                                   error={values[`${field.name}Error`]}
@@ -249,17 +228,14 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                               >
                                 <LocalizationProvider dateAdapter={AdapterDayjs} localeText={esES.components.MuiLocalizationProvider.defaultProps.localeText}>
                                   <DatePicker
-
                                     sx={{
                                       marginBottom: 2,
                                       width: '100%',
                                     }}
-
                                     id={field.name}
                                     label={field.label}
                                     name={field.name}
-                                    value={values[field.name] || field.value}
-                                    inputFormat="MM/dd/yyyy"
+                                    value={dayjs(values[field.name] || field.value)}
                                     onChange={(date) => handleInputChange({ target: { name: field.name, value: date } })}
                                     renderInput={(params) => (
                                       <TextField
@@ -289,11 +265,11 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                                   fullWidth
                                   id={field.name}
                                   options={field.options}
-                                  getOptionLabel={(option) => option.label}
+                                  getOptionSelected={(option, value) => option.value === value}
                                   value={
                                     field.options.find(
                                       (option) =>
-                                        option.label === field.value
+                                        option.value === values[field.name]
                                     ) || field.value
                                   }
                                   onChange={(event, newValue) => {
@@ -332,8 +308,8 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                   </Button>
                   {currentTab === 2 ? (
                     <>
-                      <Button variant="contained" type="submit">
-                        Guardar
+                      <Button variant="contained" type="submit" onClick={handleFormSubmit}>
+                        Actualizar
                       </Button>
                       {currentTab !== 0 && (
                         <Button variant="contained" type="button" onClick={handlePreviousButtonClick}>
@@ -395,12 +371,12 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                         fullWidth
                         id={field.name}
                         options={field.options}
-                        getOptionLabel={(option) => option.label}
+                        getOptionSelected={(option, value) => option.value === value}
                         value={
                           field.options.find(
                             (option) =>
                               option.value === values[field.name]
-                          ) || null
+                          ) || field.value
                         }
                         onChange={(event, newValue) => {
                           handleInputChange({
@@ -429,6 +405,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
             </Grid>
           </Box>
         </DialogContent>
+        {type !== 'employee' && (
         <DialogActions>
           <Button
             onClick={onClose}
@@ -442,6 +419,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
             Actualizar
           </Button>
         </DialogActions>
+        )}
       </Dialog>
     </div>
   );

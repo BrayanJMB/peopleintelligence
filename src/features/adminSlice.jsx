@@ -6,7 +6,7 @@ const adminSlice = createSlice({
     Empresas: [],
     Empleados: [],
     Departamentos: [],
-    Oficinas: [],
+    //Oficinas: [],
   },
   reducers: {
     addItem: (state, action) => {
