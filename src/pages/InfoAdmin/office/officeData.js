@@ -148,7 +148,6 @@ export const useOffice = (currentCompany) => {
     setLoading(true);
 
     const { data } = await getOfficesAPI(currentCompany.id);
-    console.log(data);
     const companies = await getAllCompanies();
     const companyNames = companies.reduce((acc, company) => {
       acc[company.id] = company.nombreCompania;
@@ -166,7 +165,6 @@ export const useOffice = (currentCompany) => {
 
 
     const handleSubmittedCreateOffice = async (formValues) => {
-      console.log(formValues);  
          try {
             await storeOfficeAPI({
                 sede: formValues.sede,

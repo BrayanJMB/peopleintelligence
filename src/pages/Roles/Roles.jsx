@@ -158,13 +158,14 @@ export default function Roles() {
       headerAlign: 'center',
       align: 'center',
     },
+    /*
     {
       field: 'userName',
       flex: 1,
       headerName: 'Usuario',
       headerAlign: 'center',
       align: 'center',
-    },
+    },*/
     {
       field: 'roles',
       flex: 1,
@@ -310,7 +311,7 @@ export default function Roles() {
       >
         <Box className={styles.modal}>
           <div className={styles.modaltop}>
-            <h2>Nueva Role</h2>
+            <h2>Nuevo Rol</h2>
             <div>
               <IconButton onClick={handleCloseModal}>
                 <ClearIcon sx={{ fontSize: '40px' }} />
@@ -368,6 +369,7 @@ export default function Roles() {
                 <h1>Roles</h1>
               </div>
               <div className={styles.new}>
+                {/* ksdlas
                 <Button
                   variant="contained"
                   style={{
@@ -380,7 +382,7 @@ export default function Roles() {
                   onClick={handleOpenMultiModal}
                 >
                   Añadir roles multicompañia
-                </Button>
+                </Button>*/}
                 <Button
                   variant="contained"
                   style={{

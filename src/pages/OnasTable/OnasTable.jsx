@@ -40,6 +40,7 @@ function formatDate(date) {
 export default function OnasTable() {
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [rows, setRows] = useState([]);
   const [transactionData, setTransactionData] = useState('');
@@ -121,7 +122,8 @@ export default function OnasTable() {
   const columns = useMemo(() => onasColumn, []);
 
   const getTableData = () => {
-    getOnasAPI(auth.Company)
+
+    getOnasAPI(currentCompany.id)
       .then((res) => {
         let data = [];
         res.data.forEach((val) => {
@@ -145,11 +147,13 @@ export default function OnasTable() {
       alert('No tiene permiso para acceder a esta funcionalidad');
       navigate('/dashboard');
     }
+    if (!currentCompany)
+      return;
     if (transactionData) {
       csvLink.current.link.click();
     }
     getTableData();
-  }, [transactionData, auth]);
+  }, [transactionData, currentCompany]);
 
   return (
     <Box sx={{ display: 'flex' }}>

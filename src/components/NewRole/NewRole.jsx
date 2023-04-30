@@ -37,7 +37,7 @@ export default function NewRole(props) {
           getOptionLabel={(option) => option}
           noOptionsText={'No se ha encontrado ningún País'}
           renderInput={(params) => (
-            <TextField {...params} label="company Name" />
+            <TextField {...params} label="Compañía" />
           )}
           size="small"
         />

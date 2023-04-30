@@ -26,18 +26,17 @@ const names = [
   'Organizational Network Analysis',
   'Dynamic Live Conversations',
   'Employee Journey',
-  'Sentiment Analysis',
 ];
 
 const list = [Iletter, Aletter, Oletter, Dletter, Jletter, Sletter];
 
 const drop = [
-  ['Empresas', 'Empleados', 'Oficinas', 'Departamentos', 'Otros campos'],
+  ['Empresas', 'Empleados', /*'Oficinas',*/ 'Departamentos', 'Otros campos'],
   ['powerbi'],
   ['Crear encuesta', 'Ver encuestas'],
   ['Build', 'Live', 'Analysis'],
   ['journey'],
-  ['Empresas', 'Empleados', 'Oficinas', 'Departamentos'],
+  ['Empresas', 'Empleados', /*'Oficinas',*/ 'Departamentos'],
 ];
 const project = [
   'infoadmin',

@@ -361,7 +361,7 @@ MyTable.propTypes = {
     PropTypes.arrayOf(
       PropTypes.shape({
         column: PropTypes.string.isRequired,
-        value: PropTypes.string.isRequired,
+        value: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
         payload: PropTypes.object,
       })
     )
