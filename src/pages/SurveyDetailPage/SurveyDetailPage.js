@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -57,32 +57,7 @@ const options = [
     icon: <DeleteIcon />,
   },
 ];
-// flags, tags and counters.
-const chips = [
-  {
-    id: 1,
-    text: 'Encuesta anónima',
-    backgroundColor: blue[200],
-    color: blue[900],
-    icon: <AdminPanelSettingsIcon style={{ color: blue[900] }} />,
-  },
-  {
-    id: 2,
-    text: 'Usuarios invitados',
-    backgroundColor: amber[100],
-    color: amber[800],
-    icon: <EmailIcon style={{ color: amber[800] }} />,
-    counter: 0,
-  },
-  {
-    id: 3,
-    text: 'Respuestas',
-    backgroundColor: teal['A100'],
-    color: teal[900],
-    icon: <ReplyIcon style={{ color: teal[900] }} />,
-    counter: 0,
-  },
-];
+
 
 /**
  * Survey Detail Page Component.
@@ -101,6 +76,34 @@ const SurveyDetailPage = () => {
   const [linkCopied, setLinkCopied] = useState(false);
   const [reminderSent, setReminderSent] = useState(false);
   const [showDemographicData, setShowDemographicData] = useState(false);
+  // flags, tags and counters.
+  const [chips, setChips] = useState([
+    {
+      id: 1,
+      text: 'Encuesta anónima',
+      backgroundColor: blue[200],
+      color: blue[900],
+      icon: <AdminPanelSettingsIcon style={{ color: blue[900] }} />,
+    },
+    {
+      id: 2,
+      text: 'Usuarios invitados',
+      backgroundColor: amber[100],
+      color: amber[800],
+      icon: <EmailIcon style={{ color: amber[800] }} />,
+      counter: 0,
+    },
+    {
+      id: 3,
+      text: 'Respuestas',
+      backgroundColor: teal['A100'],
+      color: teal[900],
+      icon: <ReplyIcon style={{ color: teal[900] }} />,
+      counter: 0,
+    },
+  ]);
+  const [searchParams] = useSearchParams();
+  const isOpenSendMail = searchParams.get('sendMail') === 'true';
 
   /**
    * Handle click menu for open survey options.
@@ -199,11 +202,24 @@ const SurveyDetailPage = () => {
   // watch currentSurvey state
   useEffect(() => {
     if (currentSurvey !== null) {
-      // set chips counters
-      chips[1].counter = currentSurvey.invitados;
-      chips[2].counter = currentSurvey.respuestas;
+      setChips((prevChips) => {
+        const newChips = [...prevChips];
+
+        // set chips counters
+        newChips[1].counter = currentSurvey.invitados;
+        newChips[2].counter = currentSurvey.respuestas;
+
+        // personal data
+        if (currentSurvey.ispersonal) {
+          newChips[0].text = 'Encuesta personalizada';
+        } else {
+          newChips[0].text = 'Encuesta anónima';
+        }
+
+        return newChips;
+      });
     }
-  }, [currentSurvey]);
+  }, [currentSurvey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -319,6 +335,8 @@ const SurveyDetailPage = () => {
                           <SendInvitationDialog
                             isPersonal={currentSurvey.ispersonal}
                             copyUrl={handleClickCopyUrl}
+                            isOpen={isOpenSendMail}
+                            emailMessage={currentSurvey.response.emailMessage}
                           />
                         </Stack>
                       </div>
@@ -347,11 +365,9 @@ const SurveyDetailPage = () => {
                         Resumen de respuesta
                       </Typography>
                       <div className={styles.SurveyDetailPage__resume__share}>
-                        {currentSurvey.ispersonal === false && (
                           <IconButton onClick={handleClickCopyUrl}>
                             <LinkIcon />
                           </IconButton>
-                        )}
 
                         <IconButton onClick={handleClickDownload}>
                           <DownloadIcon />

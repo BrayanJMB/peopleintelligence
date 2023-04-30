@@ -21,6 +21,7 @@ import {
   selectCurrentSurveyForAnswer,
   selectSurveysStatus, storeSurvey,
 } from '../../features/surveys/surveysSlice';
+import client from '../../utils/axiosInstance';
 
 import SuccessMessage from './components/SuccessMessage/SuccessMessage';
 import SurveyForm from './components/SurveyForm/SurveyForm';
@@ -34,7 +35,7 @@ import styles from './AnswerSurvey.module.css';
  * @constructor
  */
 const AnswerSurvey = () => {
-  const { surveyId, companyId } = useParams();
+  const { surveyId, companyId, answerId } = useParams();
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
   const [steps, setSteps] = useState([
@@ -43,11 +44,14 @@ const AnswerSurvey = () => {
     'Finalizar',
   ]);
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState(false);
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [stepsCompleted, setStepsCompleted] = useState([false, false, true]);
   const [answers, setAnswers] = useState([{}, {}]);
+  const [demographicUserData, setDemographicUserData] = useState(null);
   const surveyStatus = useSelector((state) => selectSurveysStatus(state));
   const currentSurvey = useSelector((state) => selectCurrentSurveyForAnswer(state));
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
   /**
@@ -66,8 +70,30 @@ const AnswerSurvey = () => {
    *
    * @param event
    */
-  const handleEmailSubmit = (event) => {
+  const handleEmailSubmit = async (event) => {
     event.preventDefault();
+
+    // validate email
+    if (!email || !email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
+      setEmailError(true);
+
+      return;
+    }
+
+    const { data } = await client.get(`getMailPersonalSurvey/${surveyId}/${companyId}/${email}`);
+
+    // if exists, set answers and skip demographic step
+    if (data && data.demographics) {
+      setDemographicUserData(data.demographics);
+
+      setSteps((prevSteps) => {
+        const newSteps = [...prevSteps];
+
+        newSteps.splice(0, 1);
+
+        return newSteps;
+      });
+    }
 
     setEmailSubmitted(true);
   };
@@ -140,12 +166,17 @@ const AnswerSurvey = () => {
         answers: answers.length > 1 ? answers[1] : answers[0],
       };
 
+      if (demographicUserData !== null) {
+        payload.demographics = demographicUserData;
+        payload.answers = answers[0];
+      }
+
       dispatch(storeSurvey(payload));
     }
 
     if ((activeStep + 1) === steps.length) {
-      // redirect to home
-      window.location.href = '/';
+      // close window
+      window.close();
 
       return;
     }
@@ -215,6 +246,24 @@ const AnswerSurvey = () => {
     });
   };
 
+
+  /**
+   * Check if is personal survey.
+   * 
+   * @returns {Promise<any>}
+   */
+  const checkIfIsPersonal = async () => {
+    setLoading(true);
+
+    const { data: isPersonal } = await client.get(`ValidateAnswerSurvey/${surveyId}/${companyId}`);
+
+    if (!isPersonal) {
+      setEmailSubmitted(true);
+    }
+
+    setLoading(false);
+  };
+
   // watch surveyId and companyId changes
   useEffect(() => {
     dispatch(fetchSurveyForAnswer({ surveyId, companyId }));
@@ -234,6 +283,11 @@ const AnswerSurvey = () => {
     }
   }, [currentSurvey]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // component did mount
+  useEffect(() => {
+    checkIfIsPersonal();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div className={styles.AnswerSurvey}>
       <div className={styles.AnswerSurvey__Background}>
@@ -246,7 +300,7 @@ const AnswerSurvey = () => {
           }}
         >
           <CardContent>
-            {surveyStatus === 'loading' && (<MyLoader />)}
+            {(surveyStatus === 'loading' || loading) && (<MyLoader />)}
             {surveyStatus === 'succeeded' && currentSurvey !== null && (
               <Fragment>
                 {/* company name */}
@@ -318,6 +372,7 @@ const AnswerSurvey = () => {
                           fontSize: '1.4em',
                           fontWeight: 'bold',
                         }}
+                        error={emailError}
                       >
                         Ingrese su correo electrónico para continuar
                       </FormLabel>
@@ -327,6 +382,7 @@ const AnswerSurvey = () => {
                         variant="outlined"
                         type="email"
                         onChange={handleEmailChange}
+                        error={emailError}
                       />
                     </FormControl>
                     <FormControl>
@@ -383,7 +439,7 @@ const AnswerSurvey = () => {
                                 api: urlApi,
                                 urlParam,
                                 options: options.map(({ id, value }) => ({
-                                  numberOption: id,
+                                  numberOption: value,
                                   optionName: value,
                                 })),
                               }))}

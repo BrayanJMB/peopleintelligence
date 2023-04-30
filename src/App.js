@@ -70,6 +70,10 @@ export default function App() {
                 path="/answer-survey/:surveyId/:companyId"
                 element={<AnswerSurvey />}
               />
+              <Route
+                path="/answer-survey/:surveyId/:companyId/:answerId"
+                element={<AnswerSurvey />}
+              />
               <Route element={<PrivateRoutes />}>
                 <Route path="/dashboard" element={<Dashboard />} exact />
                 <Route path="/onas" element={<Onas />} exact />
@@ -102,6 +106,11 @@ export default function App() {
                 />
                 <Route
                   path="/journey/create-survey"
+                  element={<CreateSurvey />}
+                  exact
+                />
+                <Route
+                  path="/journey/update-template/:id"
                   element={<CreateSurvey />}
                   exact
                 />

@@ -31,7 +31,7 @@ const defaultMessage = 'Hola @usuario, te invito a participar en la encuesta: @e
  * @returns {JSX.Element}
  * @constructor
  */
-const SendInvitationDialog = ({ isPersonal, copyUrl }) => {
+const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => {
   const [open, setOpen] = useState(false);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const { id: surveyId } = useParams();
@@ -183,11 +183,7 @@ const SendInvitationDialog = ({ isPersonal, copyUrl }) => {
 
       // trim and validate email
       const trimmedEmail = email.trim();
-      // should contain @ at start
-      if (trimmedEmail.charAt(0) !== '@') {
-        setIsValidEmails('El usuario debe contener "@" al inicio.');
-        error = true;
-      }
+
       // don't allow spaces
       if (trimmedEmail.includes(' ')) {
         setIsValidEmails('El usuario no debe contener espacios');
@@ -242,6 +238,24 @@ const SendInvitationDialog = ({ isPersonal, copyUrl }) => {
     handleClose();
   };
 
+  // watch open prop
+  useEffect(() => {
+    if (isOpen === null) {
+      return;
+    }
+
+    setOpen(isOpen);
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // watch email message
+  useEffect(() => {
+    if (!message) {
+      return;
+    }
+
+    setMessage(emailMessage);
+  }, [emailMessage]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // component did mount
   useEffect(() => {
     fetchGroups();
@@ -263,47 +277,6 @@ const SendInvitationDialog = ({ isPersonal, copyUrl }) => {
       >
         <DialogTitle>Enviar invitación</DialogTitle>
         <DialogContent>
-          {/* groups */}
-          <Stack
-            direction="row"
-            spacing={2}
-          >
-            {groups.map(({ nameApi, options, urlParam, value }, index) => (
-              <FormControl
-                style={{
-                  width: 150,
-                }}
-                key={nameApi}
-              >
-                <InputLabel
-                  id={`group-${nameApi}`}
-                >
-                  {nameApi}
-                </InputLabel>
-                <Select
-                  labelId={`group-${nameApi}`}
-                  id={`group-${nameApi}`}
-                  value={value}
-                  label={nameApi}
-                  disabled={options.length === 0}
-                  onChange={(event) => {
-                    handleChange(event, index);
-                    fetchApiOptionsByParam(urlParam, event.target.value);
-                  }}
-                >
-                  {options.map(({ value, id }) => (
-                    <MenuItem
-                      key={id}
-                      value={id}
-                    >
-                      {value}
-                    </MenuItem>
-                  ))}
-
-                </Select>
-              </FormControl>
-            ))}
-          </Stack>
 
           <TextField
             id="emails"
@@ -380,8 +353,13 @@ const SendInvitationDialog = ({ isPersonal, copyUrl }) => {
 SendInvitationDialog.propTypes = {
   isPersonal: PropTypes.bool.isRequired,
   copyUrl: PropTypes.func.isRequired,
+  isOpen: PropTypes.bool,
+  emailMessage: PropTypes.string,
 };
 
-SendInvitationDialog.defaultProps = {};
+SendInvitationDialog.defaultProps = {
+  isOpen: null,
+  emailMessage: '',
+};
 
 export default SendInvitationDialog;

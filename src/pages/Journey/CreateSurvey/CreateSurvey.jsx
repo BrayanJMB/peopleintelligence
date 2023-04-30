@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import DesignServicesIcon from '@mui/icons-material/DesignServices';
 import { Divider } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -24,7 +24,8 @@ import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
 import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../../Layout/Navbar/Navbar';
 import { fetchCategoriesAPI } from '../../../services/getCategories.service';
-import { showTemplateAPI } from '../../../services/templates.service';
+import { fetchQuestionTypesAPI } from '../../../services/questionTypes.service';
+import { deleteTemplateQuestionAPI, showTemplateAPI, updateTemplateAPI, updateTemplateOptionAPI, updateTemplateQuestionAPI } from '../../../services/templates.service';
 import client from '../../../utils/axiosInstance';
 
 import Cuestionario from './Cuestionario/Cuestionario';
@@ -33,25 +34,13 @@ import Introduction from './Introduction/Introduction';
 
 import styles from './CreateSurvey.module.css';
 
-
-const steps = [
-  'Introducción',
-  'Cuestionario',
-  'Privacidad',
-];
-const questionTypes = [
-  'Texto corto',
-  'Escala Likert',
-  'Opción múltiple',
-  'Opción única',
-  'Calificaciones',
-];
-
 export default function CreateSurvey() {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const [activeStep, setActiveStep] = useState(0);
+  const [questionTypes, setQuestionTypes] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [target, setTarget] = useState('');
   const [open, setOpen] = useState(false);
@@ -59,21 +48,22 @@ export default function CreateSurvey() {
   const [data, setData] = useState(null);
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
-  const [type, setType] = useState('');
+  const [type, setType] = useState(null);
   const [starmsg, setStarmsg] = useState('');
   const [information, setInformation] = useState({
     name: '',
     description: '',
     options: [
-      'Muy en desacuerdo',
-      'Discrepar',
-      'Neutral',
-      'Estar de acuerdo',
-      'Totalmente de acuerdo',
+      'Totalmente en Desacuerdo',
+      'En Desacuerdo',
+      'Ni de Acuerdo  Ni en Desacuerdo',
+      'De Acuerdo',
+      'Totalmente de Acuerdo',
     ],
     customOptions: Array(2).fill(''),
     stars: Array(3).fill(''),
   });
+
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
   const [categoryError, setCategoryError] = useState('');
@@ -85,8 +75,14 @@ export default function CreateSurvey() {
   const [loading, setLoading] = useState(false);
   const [templateDemographics, setTemplateDemographics] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
-  const isTemplate = searchParams.get('isTemplate') === 'true';
-  const templateId = searchParams.get('templateId');
+  const isTemplate = searchParams.get('isTemplate') === 'true' || location.pathname.indexOf('journey/update-template') !== -1;
+  const isUpdate = location.pathname.indexOf('journey/update-template') !== -1;
+  const templateId = searchParams.get('templateId') || location.pathname.split('/')[3];
+  const steps = [
+    'Introducción',
+    'Cuestionario',
+    ...(!isTemplate ? ['Privacidad'] : []),
+  ];
   
   /**
    * Handle introduction change.
@@ -134,37 +130,35 @@ export default function CreateSurvey() {
    */
   const createSurvey = async () => {
     setLoading(true);
-
+    
     const newSurvey = {
       survey: {
         nameSurvey: data.title,
         descriptionSurvey: data.description,
-        ispersonal: !anonymous,
-        jorneyMapId: data.map.id,
+        messageEmail: data.mailingMessage,
+        isPersonal: !anonymous,
+        mapId: data.map.id,
         companyId: currentCompany.id,
       },
       questions: questions.map((question) => ({
         question: {
-          categoryId: question.categoryId,
           nameQuestion: question.name,
-          typeQuestionId: question.type,
-          questionId: 0,
+          typeQuestionId: question.typeId,
           score: question.stars?.length,
         },
         options: question.customOptions?.map((option, index) => ({
           optionsName: option,
           numberOption: index + 1,
         })),
+        categoryId: question.categoryId,
       })),
       demographics: getDemographics(),
     };
 
-    try {
-      await client.post(`/createJourney/${currentCompany.id}`, newSurvey);
-    } catch (e) {}
+    const { data: createdJourney } = await client.post(`/createJourney/${currentCompany.id}`, newSurvey);
 
     setLoading(false);
-    navigate('/journey/survey-template');
+    navigate(`/journey/survey/${createdJourney.id}/detail?sendMail=true`);
     enqueueSnackbar('Cuestionario creado con éxito', {
       variant: 'success',
     });
@@ -178,56 +172,107 @@ export default function CreateSurvey() {
 
     // Create survey
     const newTemplate = {
-      templateSurvey: {
-        nameSurvey: data.title,
-        descriptionSurvey: data.description,
-        messagemail: data.mailingMessage,
-        isObligatory: data.surveyOrMap === 'survey',
-        demograficos: getDemographics(),
-      },
-      seccionQuestion: questions.map((question) => ({
+      mapId: data.map.id,
+      nameSurvey: data.title,
+      descriptionSurvey: data.description,
+      messageEmail: data.mailingMessage,
+      isObligatory: !(data.surveyOrMap === 'survey'),
+      questionSection: questions.map((question, index) => ({
         templateCategoryId: question.categoryId,
         templateQuestion: {
           nameQuestion: question.name,
-          typeQuestionId: question.type,
-          questionId: 0,
+          numberQuestion: index + 1,
           score: question.stars?.length,
+          typeQuestionId: question.typeId,
+          description: question.description,
         },
         templateOption: question.customOptions?.map((option, index) => ({
           templateOptionsName: option,
           numberOption: index + 1,
         })),
       })),
+      demographics: getDemographics().map((demographic) => ({
+        name: demographic.value,
+        options: demographic.options.map((option) => ({
+          value: option.value,
+          text: option.text,
+        })),
+      })),
     };
+    const resourceName = data.surveyOrMap === 'survey' ? 'Plantilla' : 'Ruta de mapa';
 
-    try {
-      await client.post('Administrator/createTemplate', newTemplate);
-    } catch (e) {}
+    await client.post('Administrator/createTemplate', newTemplate);
 
     setLoading(false);
-    navigate('/journey/survey-template');
-    enqueueSnackbar('Plantilla creada con éxito', {
+    navigate(`/journeysettings?tab=${data.surveyOrMap}`);
+    enqueueSnackbar(`${resourceName} creada con éxito`, {
       variant: 'success',
     });
   };
 
   /**
+   * Update template.
+   */
+  const updateTemplate = async () => {
+    setLoading(true);
+
+    const body = {
+      id: templateId,
+      nameSurvey: data.title,
+      descriptionSurvey: data.description,
+      messagemail: data.mailingMessage,
+      isObligatory: false,
+      journeyMapId: data.map.id,
+    };
+    
+    try {
+      await updateTemplateAPI(templateId, body);
+    } catch (e) {}
+
+    setLoading(false);
+  };
+
+  /**
    * Handle next step.
    */
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     switch (activeStep) {
       case 0:
         setCheckForm(true);
+
+        if (data.isValid && isTemplate && isUpdate) {
+          await updateTemplate();
+          setActiveStep((val) => val + 1);
+          setCheckForm(false);
+
+          return;
+        }
+
         if (data.isValid) {
           setActiveStep((val) => val + 1);
           setCheckForm(false);
         }
         break;
       case 1:
+        if (isUpdate && isTemplate) {
+          navigate('/journey/survey-template');
+          enqueueSnackbar('Plantilla actualizada con éxito', {
+            variant: 'success',
+          });
+
+          return;
+        }
+
+        if (isTemplate) {
+          createTemplate();
+
+          return;
+        }
+
         setActiveStep((val) => val + 1);
         break;
       case 2:
-        isTemplate ? createTemplate() : createSurvey();
+        createSurvey();
         break;
       default:
         setActiveStep(0);
@@ -266,6 +311,7 @@ export default function CreateSurvey() {
   const handleQuestion = (event) => {
     setQuestion({ ...question, [event.target.name]: event.target.value });
   };
+
   const handleinformationoptions = (key) => (event) => {
     let holder = information.customOptions.map((val, index) => {
       if (index === key) {
@@ -274,6 +320,56 @@ export default function CreateSurvey() {
     });
     setInformation({ ...information, customOptions: holder });
   };
+
+  /**
+   * Handle change for options.
+   * 
+   * @param {ChangeEvent<HTMLInputElement>} event
+   * @param {number} index The index of the option.
+   * @param {boolean} isEdit If is edit.
+   */
+  const handleChangeOptions = (event, index, isEdit = false) => {
+    if (isEdit) {
+      setQuestion({
+        ...question,
+        options: question.options.map((option, i) => {
+          if (i === index) {
+            return event.target.value;
+          }
+          
+          return option;
+        }),
+        customOptions: question.options.map((option, i) => {
+          if (i === index) {
+            return event.target.value;
+          }
+          
+          return option;
+        }),
+      });
+
+      return;
+    }
+
+    setInformation({
+      ...information,
+     options: information.options.map((option, i) => {
+        if (i === index) {
+          return event.target.value;
+        }
+
+        return option;
+      }),
+      customOptions:  information.options.map((option, i) => {
+        if (i === index) {
+          return event.target.value;
+        }
+
+        return option;
+      }),
+    });
+  };
+
   const handleeditoption = (key) => (event) => {
     let holder;
     holder = question.customOptions.map((val, i) => {
@@ -346,22 +442,74 @@ export default function CreateSurvey() {
    */
   const handleEdit = (index) => {
     setTarget(index);
+    console.log(questions[index]);
     setQuestion(questions[index]);
     setEdit(true);
   };
 
-  const handleActualizar = () => {
+  const handleActualizar = async () => {
     let holder = questions.map((val, index) => {
       if (index === target) {
         return {
           ...question,
-          categoryId,
+          categoryId: question.categoryId || categoryId,
         };
       } else {
         return val;
       }
     });
+
+    if (isTemplate && isUpdate) {
+      updateTemplateQuestion();
+    }
+
     setQuestions(holder);
+  };
+
+  /**
+   * Update template question.
+   */
+  const updateTemplateQuestion = async (newQuestion) => {
+    const questionCopy = newQuestion || question;
+    const questionId = Number(questionCopy.questionId) || 0;
+    const questionBody = {
+      id: questionId,
+      templateId: Number(templateId),
+      nameQuestion: questionCopy.name,
+      numberQuestion: Number(target + 1),
+      score: Number(questionCopy.stars) || null,
+      typeQuestionId: questionCopy.typeId,
+      description: questionCopy.description,
+      categoryId: questionCopy.categoryId,
+    };
+    const { data: updatedQuestion } = await updateTemplateQuestionAPI(questionId, questionBody);
+    const questionOptions = [];
+
+    if (questionCopy.customOptions || questionCopy.options) {
+      const options = questionCopy.customOptions || questionCopy.options;
+
+      options.forEach(async (option, index) => {
+        const optionId = Number(questionCopy.questionOptions[index]?.id) || 0;
+
+        const optionBody = {
+          id: optionId,
+          templateOptionsName: option,
+          numberOption: index + 1,
+          questionId: updatedQuestion.id,
+        };
+        const { data: updatedOption } = await updateTemplateOptionAPI(optionId, optionBody);
+
+        questionOptions.push(updatedOption);
+      });
+    }
+    
+    console.log(questionCopy);
+    console.log(updatedQuestion);
+
+    return {
+      questionId: updatedQuestion.id,
+      questionOptions: questionOptions,
+    };
   };
 
   /**
@@ -407,7 +555,7 @@ export default function CreateSurvey() {
               questions={questions}
               onEnd={onEnd}
               handleAdd={handleAdd}
-              handleDelete={handledelete}
+              handleDelete={handleDelete}
               handleEdit={handleEdit}
             />
           </Box>
@@ -484,34 +632,34 @@ export default function CreateSurvey() {
     setHelperText({});
 
     // validate questions
-    if (type === 'Texto corto') {
+    if (type.id === 1) {
       handleAddQuestion({
         type: 'Texto corto',
         name: information.name,
         description: information.description,
       });
-    } else if (type === 'Escala Likert') {
+    } else if (type.id === 2) {
       handleAddQuestion({
         type: 'Escala Likert',
         name: information.name,
         description: information.description,
         options: information.options,
       });
-    } else if (type === 'Opción múltiple') {
+    } else if (type.id === 3) {
       handleAddQuestion({
         type: 'Opción múltiple',
         name: information.name,
         description: information.description,
         customOptions: information.customOptions,
       });
-    } else if (type === 'Opción única') {
+    } else if (type.id === 8) {
       handleAddQuestion({
         type: 'Opción única',
         name: information.name,
         description: information.description,
         customOptions: information.customOptions,
       });
-    } else if (type === 'Calificaciones') {
+    } else if (type.id === 5) {
       handleAddQuestion({
         type: 'Calificaciones',
         name: information.name,
@@ -533,8 +681,8 @@ export default function CreateSurvey() {
       customOptions: Array(2).fill(''),
       stars: Array(3).fill(''),
     });
-    setQuestion('');
-    setType('');
+    setQuestion(null);
+    setType(null);
     setCategoryId(null);
     handleCloseModal();
   };
@@ -544,21 +692,44 @@ export default function CreateSurvey() {
    * 
    * @param {object} question 
    */
-  const handleAddQuestion = (question) => {
+  const handleAddQuestion = async (question) => {
+    const newQuestion = {
+      id: uuid.v4(),
+      categoryId,
+      typeId: type.id,
+      questionId: null,
+      questionOptions: [],
+      ...question,
+    };
+
+    if (isTemplate && isUpdate) {
+      const { questionId, questionOptions } = await updateTemplateQuestion(newQuestion);
+      
+      newQuestion.questionId = questionId;
+      newQuestion.questionOptions = questionOptions;
+    }
+
+    if (!newQuestion.customOptions || newQuestion.customOptions.length === 0) {
+      newQuestion.customOptions = newQuestion.options;
+    }
+
     setQuestions((previousQuestions) => [
       ...previousQuestions,
-      {
-        id: uuid.v4(),
-        categoryId,
-        ...question,
-      },
+      newQuestion,
     ]);
   };
 
-  const handledelete = (key) => {
-    let tmp = [...questions];
-    tmp.splice(key, 1);
-    setQuestions(tmp);
+  /**
+   * Handle delete question.
+   * 
+   * @param {number} id The id of the question to be deleted.
+   */
+  const handleDelete = async (id) => {
+    const question = questions.find((question) => question.questionId === id);
+    setQuestions((previousQuestions) => previousQuestions.filter((question) => question.questionId !== id));
+
+    await deleteTemplateQuestionAPI(question.questionId);
+    enqueueSnackbar('Pregunta eliminada', { variant: 'success' });
   };
 
   /**
@@ -583,6 +754,17 @@ export default function CreateSurvey() {
     const { data } = await fetchCategoriesAPI();
 
     setCategories(data);
+  };
+
+  /**
+   * Fetch question types.
+   * 
+   * @returns {Promise<void>}
+   */
+  const fetchQuestionTypes = async () => {
+    const { data } = await fetchQuestionTypesAPI();
+
+    setQuestionTypes(data);
   };
 
   /**
@@ -622,6 +804,12 @@ export default function CreateSurvey() {
         description: template.template.descriptionSurvey,
       };
     }
+    if (template.template?.messageMail) {
+      dataCopy = {
+        ...dataCopy,
+        mailingMessage: template.template.messageMail,
+      };
+    }
 
     setData(dataCopy);
 
@@ -632,11 +820,15 @@ export default function CreateSurvey() {
     // fill questions
     template.templatesQuestions.map((question) => questionsCopy.push({
       id: uuid.v4(),
+      questionId: question.question.id,
+      typeId: question.question.typeQuestionId,
       categoryId: question.categoryId,
-      type: question.type, // falta
+      type: question.typeQuestionId,
       name: question.question.nameQuestion,
-      description: question.description, // falta
+      description: question.question.description,
       customOptions: question.options.map((option) => option.templateOptionsName),
+      options: question.options.map((option) => option.templateOptionsName),
+      questionOptions: question.options,
       stars: question.question.score,
     }));
 
@@ -668,6 +860,7 @@ export default function CreateSurvey() {
   // component did mount
   useEffect(() => {
     fetchCategories();
+    fetchQuestionTypes();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -693,8 +886,8 @@ export default function CreateSurvey() {
                     onChange={(e, value) => {
                       handleAutocomplete(value);
                     }}
-                    getOptionLabel={(option) => option}
-                    noOptionsText={'No se ha encontrado ningún IdTipoDocumento'}
+                    getOptionLabel={(option) => option.typeQuestionName}
+                    noOptionsText={'No se encontraron tipos de pregunta'}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -714,6 +907,7 @@ export default function CreateSurvey() {
                   errorMessage={errorMessage}
                   helperText={helperText}
                   handleinformationoptions={handleinformationoptions}
+                  handleChangeOptions={handleChangeOptions}
                   handleaddoption={handleaddoption}
                   handleaddstars={handleaddstars}
                   handledeletestars={handledeletestars}
@@ -753,21 +947,24 @@ export default function CreateSurvey() {
           <Box className={styles.modal}>
             <div className={styles.modalbuttom}>
               <div className={styles.form}>
-                <EditForm
-                  question={question}
-                  handleInformation={handleQuestion}
-                  errorMessage={errorMessage}
-                  helperText={helperText}
-                  handleInformationOptions={handleeditoption}
-                  handleAddOption={handleeditaddoption}
-                  handleAddStars={handleeditstars}
-                  handleDeleteStars={handleeditdeletestars}
-                  starMessage={starmsg}
-                  questionNumber={Number(target + 1)}
-                  handleCategoryIdChange={handleCategoryIdChange}
-                  categories={categories}
-                  categoryError={categoryError}
-                />
+                {question && (
+                  <EditForm
+                    question={question}
+                    handleInformation={handleQuestion}
+                    errorMessage={errorMessage}
+                    helperText={helperText}
+                    handleInformationOptions={handleeditoption}
+                    handleAddOption={handleeditaddoption}
+                    handleAddStars={handleeditstars}
+                    handleDeleteStars={handleeditdeletestars}
+                    starMessage={starmsg}
+                    questionNumber={Number(target + 1)}
+                    handleCategoryIdChange={handleCategoryIdChange}
+                    categories={categories}
+                    categoryError={categoryError}
+                    handleChangeOptions={handleChangeOptions}
+                  />
+                )}
               </div>
             </div>
           </Box>
@@ -826,8 +1023,8 @@ export default function CreateSurvey() {
                     onClick={handleNextStep}
                     disabled={(activeStep !== 0 && questions.length === 0) || loading === true}
                   >
-                    {activeStep === 2
-                      ? 'Seleccionar encuestados'
+                    {activeStep === 2 || (activeStep === 1 && isTemplate)
+                      ? 'Finalizar'
                       : 'Continuar'}
                   </Button>
                 </div>

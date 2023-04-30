@@ -165,6 +165,7 @@ export default function Navbar() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+
   useEffect(() => {
     if (!drop && activeCompanies && activeCompanies.length > 0) {
       dispatch(setDrop(activeCompanies[0]));
@@ -185,6 +186,7 @@ export default function Navbar() {
 
     }
   }, [activeCompanies, drop, dispatch]);
+
 
 
   return (

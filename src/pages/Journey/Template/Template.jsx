@@ -127,27 +127,6 @@ const Template = () => {
                 container
                 spacing={2}
               >
-                {/* create template */}
-                <Grid
-                  item 
-                  xs={4}
-                >
-                  <div
-                    className={styles.template}
-                    onClick={() => handleCreateSurvey(true)}>
-                    <div className={styles.title}>
-                      <AddCircleOutlineIcon /> <p>Crea tu plantilla</p>
-                    </div>
-                    <div className={styles.description}>
-                      Cree su propia plantilla personalizada desde cero.
-                    </div>
-                    <div className={styles.create}>
-                      <p>Crea plantilla</p>
-                      <KeyboardArrowRightIcon />
-                    </div>
-                  </div>
-                </Grid>
-                
                 {/* create survey */}
                 <Grid
                   item 
