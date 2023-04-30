@@ -199,9 +199,6 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
     }
   }, [file]);
 
-  useEffect(() => {
-    console.log(file)
-  }, [file]);
 
 
   return (
@@ -425,9 +422,11 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
 
                 {/* form fields */}
                 {fields.map((field) => {
+                   const gridColumnSize = fields.length === 1 ? 12 : 6;
                   if (field.type === 'text') {
                     return (
-                      <Grid item xs={12} sm={6} key={field.name}>
+                      <Grid item xs={12} sm={gridColumnSize} key={field.name}>
+                        
                         <TextField
                           fullWidth
                           id={field.name}
@@ -442,6 +441,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
                           helperText={values[`${field.name}HelperText`] || ''}
                           sx={{
                             marginBottom: 2,
+                            
                           }}
                         />
                       </Grid>
@@ -451,7 +451,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
                       <Grid
                         item
                         xs={12}
-                        sm={6}
+                        sm={gridColumnSize}
                         key={`${field.name}`}
                       >
                         <Autocomplete

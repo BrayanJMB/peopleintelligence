@@ -1,26 +1,28 @@
-import React, { useState } from 'react';
-import { Grid } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import TextField from '@mui/material/TextField';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { esES } from '@mui/x-date-pickers/locales';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import PropTypes from 'prop-types';
-import { validateForm, validateField } from '../../utils/helpers'
-import dayjs from 'dayjs';
+import React, { useState, useRef, useEffect } from "react";
+import { Grid } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import TextField from "@mui/material/TextField";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { esES } from "@mui/x-date-pickers/locales";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import PropTypes from "prop-types";
+import { validateForm, validateField } from "../../utils/helpers";
+import dayjs from "dayjs";
+import styles from '../MyCreateDialog2/MyCreateDialog2.module.css';
+import defaultImage from '../../assets/default.png';
 
 // form field types
 const FIELD_TYPES = {
-  TEXT: 'text',
+  TEXT: "text",
 };
 
 /**
@@ -29,15 +31,16 @@ const FIELD_TYPES = {
  * @returns {JSX.Element}
  * @constructor
  */
-const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
+const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setFile, logo, setLogo }) => {
+  const [image, setImage] = useState('');
+  const [showDeleteIcon, setShowDeleteIcon] = useState(true);
   const [currentTab, setCurrentTab] = useState(0);
-  const [maxWidth, setMaxWidth] = useState('80%');
-
+  const [maxWidth, setMaxWidth] = useState("80%");
 
   const createInitialValues = () => {
     const initialValues = {};
 
-    if (type === 'employee'){
+    if (type === "employee") {
       fields.forEach((sectionObj) =>
         Object.keys(sectionObj).forEach((section) =>
           sectionObj[section].forEach((field) => {
@@ -45,18 +48,16 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
           })
         )
       );
-    }else{
-        fields.forEach((field) =>{
-          initialValues[field.name] = field.value;
-        })
+    } else {
+      fields.forEach((field) => {
+        initialValues[field.name] = field.value;
+      });
     }
 
     return initialValues;
   };
   const [values, setValues] = useState(createInitialValues());
 
-  console.log(values)
-  console.log(fields)
   /**
    * Handle input change.
    *
@@ -72,7 +73,6 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
       [`${name}Error`]: validationResult.error,
       [`${name}HelperText`]: validationResult.helperText,
     }));
-
   };
 
   /**
@@ -88,7 +88,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = '';
+        updatedValues[name] = "";
       }
     }
 
@@ -108,7 +108,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = '';
+        updatedValues[name] = "";
       }
     }
 
@@ -123,13 +123,12 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
   };
 
   const handleContinueButtonClick = () => {
-
     // Agregar los campos que no tengan valor al objeto `values`
     let updatedValues = { ...values };
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = '';
+        updatedValues[name] = "";
       }
     }
 
@@ -141,40 +140,69 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
     } else {
       setCurrentTab(currentTab + 1);
     }
-
   };
 
   const handlePreviousButtonClick = () => {
     setCurrentTab(currentTab - 1);
   };
 
+    //Logic for image
+    const fileInputRef = useRef();
+
+    const hiddenFileInput = {
+      display: 'none',
+    };
+  
+    const handleClick = () => {
+      fileInputRef.current.click();
+    };
+  
+    const handlePhoto = (e) => {
+      if (e.target.files && e.target.files[0]) {
+        if (e.target.files[0].size < 500000) {
+          setFile(e.target.files[0]); // Guarda el objeto File en lugar de la URL
+          setShowDeleteIcon(true);
+        } else {
+          alert('El tamaño de la imagen no puede ser mayor a 500kB');
+        }
+      }
+    };
+  
+    const handleDeleteImage = () => {
+      setFile(null);
+      setLogo(null);
+      setShowDeleteIcon(false);
+    };
+  
+    useEffect(() => {
+      if (file) {
+        setImage(file);
+      } else {
+        setImage(defaultImage); // Ruta a la imagen por defecto
+      }
+    }, [file]);
+
   return (
     <div>
-      <Dialog
-        open={open}
-        onClose={onClose}
-        maxWidth={maxWidth}
-      >
-        <DialogTitle>
-          {title}
-        </DialogTitle>
-        <DialogContent sx={{ maxWidth: '80vw' }} >
+      <Dialog open={open} onClose={onClose} maxWidth={maxWidth}>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogContent sx={{ maxWidth: "80vw" }}>
           <Box
             sx={{
               marginTop: 1,
             }}
           >
-            {type === 'employee' && (
+            {type === "employee" && (
               <>
                 <Box
                   sx={{
                     borderBottom: 1,
-                    borderColor: 'divider',
+                    borderColor: "divider",
                   }}
                 >
-                  <Box sx={{ display: 'flex', justifyContent: 'between' }}>
+                  <Box sx={{ display: "flex", justifyContent: "between" }}>
                     <Tabs
-                      sx={{ width: '90%', justifyContent: 'center' }}
+                      sx={{ width: "90%", justifyContent: "center" }}
                       value={currentTab}
                       onChange={(event, newValue) =>
                         handleTabChange(event, newValue)
@@ -191,113 +219,140 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                     Object.keys(sectionObj).map((section, tabIndex) => {
                       return tabIndex === currentTab
                         ? sectionObj[section].map((field) => {
-                          if (field.type === 'text') {
-                            return (
-                              <Grid
-                                item
-                                xs={12}
-                                sm={6}
-                                key={`${field.name}-${index}`}
-                              >
-                                <TextField
-                                  fullWidth
-                                  id={field.name}
-                                  label={field.label}
-                                  name={field.name}
-                                  onChange={handleInputChange}
-                                  type="text"
-                                  value={values[field.name] !== undefined ? values[field.name] : field.value}
-                                  variant="outlined"
-                                  required={field.isRequired}
-                                  error={values[`${field.name}Error`]}
-                                  helperText={values[`${field.name}HelperText`] || ''}
-                                  sx={{
-                                    marginBottom: 2,
-                                  }}
-                                />
-                              </Grid>
-                            );
-                          }
-                          else if (field.type === 'date') {
-                            return (
-                              <Grid
-                                item
-                                xs={12}
-                                sm={6}
-                                key={`${field.name}-${index}`}
-                              >
-                                <LocalizationProvider dateAdapter={AdapterDayjs} localeText={esES.components.MuiLocalizationProvider.defaultProps.localeText}>
-                                  <DatePicker
-                                    sx={{
-                                      marginBottom: 2,
-                                      width: '100%',
-                                    }}
+                            if (field.type === "text") {
+                              return (
+                                <Grid
+                                  item
+                                  xs={12}
+                                  sm={6}
+                                  key={`${field.name}-${index}`}
+                                >
+                                  <TextField
+                                    fullWidth
                                     id={field.name}
                                     label={field.label}
                                     name={field.name}
-                                    value={dayjs(values[field.name] || field.value)}
-                                    onChange={(date) => handleInputChange({ target: { name: field.name, value: date } })}
+                                    onChange={handleInputChange}
+                                    type="text"
+                                    value={
+                                      values[field.name] !== undefined
+                                        ? values[field.name]
+                                        : field.value
+                                    }
+                                    variant="outlined"
+                                    required={field.isRequired}
+                                    error={values[`${field.name}Error`]}
+                                    helperText={
+                                      values[`${field.name}HelperText`] || ""
+                                    }
+                                    sx={{
+                                      marginBottom: 2,
+                                    }}
+                                  />
+                                </Grid>
+                              );
+                            } else if (field.type === "date") {
+                              return (
+                                <Grid
+                                  item
+                                  xs={12}
+                                  sm={6}
+                                  key={`${field.name}-${index}`}
+                                >
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
+                                    localeText={
+                                      esES.components.MuiLocalizationProvider
+                                        .defaultProps.localeText
+                                    }
+                                  >
+                                    <DatePicker
+                                      sx={{
+                                        marginBottom: 2,
+                                        width: "100%",
+                                      }}
+                                      id={field.name}
+                                      label={field.label}
+                                      name={field.name}
+                                      value={dayjs(
+                                        values[field.name] || field.value
+                                      )}
+                                      onChange={(date) =>
+                                        handleInputChange({
+                                          target: {
+                                            name: field.name,
+                                            value: date,
+                                          },
+                                        })
+                                      }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          variant="outlined"
+                                          required={field.isRequired}
+                                          error={values[`${field.name}Error`]}
+                                          helperText={
+                                            values[`${field.name}HelperText`] ||
+                                            ""
+                                          }
+                                          sx={{
+                                            marginBottom: 2,
+                                          }}
+                                        />
+                                      )}
+                                    />
+                                  </LocalizationProvider>
+                                </Grid>
+                              );
+                            } else if (field.type === "select") {
+                              return (
+                                <Grid
+                                  item
+                                  xs={12}
+                                  sm={6}
+                                  key={`${field.name}-${index}`}
+                                >
+                                  <Autocomplete
+                                    fullWidth
+                                    id={field.name}
+                                    options={field.options}
+                                    /*
+                                    getOptionSelected={(option, value) =>
+                                      option.value === value
+                                    }*/
+                                    value={
+                                      field.options.find(
+                                        (option) =>
+                                          option.value === values[field.name]
+                                      ) || field.value
+                                    }
+                                    onChange={(event, newValue) => {
+                                      handleInputChange({
+                                        target: {
+                                          name: field.name,
+                                          value: newValue ? newValue.value : "",
+                                        },
+                                      });
+                                    }}
                                     renderInput={(params) => (
                                       <TextField
                                         {...params}
-                                        variant="outlined"
+                                        label={field.label}
                                         required={field.isRequired}
                                         error={values[`${field.name}Error`]}
-                                        helperText={values[`${field.name}HelperText`] || ''}
-                                        sx={{
-                                          marginBottom: 2,
-                                        }}
+                                        helperText={
+                                          values[`${field.name}HelperText`] ||
+                                          ""
+                                        }
                                       />
                                     )}
                                   />
-                                </LocalizationProvider>
-                              </Grid>
-                            );
-                          } else if (field.type === 'select') {
-                            return (
-                              <Grid
-                                item
-                                xs={12}
-                                sm={6}
-                                key={`${field.name}-${index}`}
-                              >
-                                <Autocomplete
-                                  fullWidth
-                                  id={field.name}
-                                  options={field.options}
-                                  getOptionSelected={(option, value) => option.value === value}
-                                  value={
-                                    field.options.find(
-                                      (option) =>
-                                        option.value === values[field.name]
-                                    ) || field.value
-                                  }
-                                  onChange={(event, newValue) => {
-                                    handleInputChange({
-                                      target: {
-                                        name: field.name,
-                                        value: newValue
-                                          ? newValue.value
-                                          : '',
-                                      },
-                                    });
-                                  }}
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      label={field.label}
-                                      required={field.isRequired}
-                                      error={values[`${field.name}Error`]}
-                                      helperText={values[`${field.name}HelperText`] || ''}
-                                    />
-                                  )}
-                                />
-                              </Grid>
-                            );
-                          } else {
-                            return null;
-                          }
-                        })
+                                </Grid>
+                              );
+                            } else {
+                              return null;
+                            }
+                          })
                         : null;
                     })
                   )}
@@ -308,37 +363,75 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                   </Button>
                   {currentTab === 2 ? (
                     <>
-                      <Button variant="contained" type="submit" onClick={handleFormSubmit}>
+                      <Button
+                        variant="contained"
+                        type="submit"
+                        onClick={handleFormSubmit}
+                      >
                         Actualizar
                       </Button>
                       {currentTab !== 0 && (
-                        <Button variant="contained" type="button" onClick={handlePreviousButtonClick}>
+                        <Button
+                          variant="contained"
+                          type="button"
+                          onClick={handlePreviousButtonClick}
+                        >
                           Regresar
                         </Button>
                       )}
                     </>
-
                   ) : (
                     <>
                       {currentTab !== 0 && (
-                        <Button variant="contained" type="button" onClick={handlePreviousButtonClick}>
+                        <Button
+                          variant="contained"
+                          type="button"
+                          onClick={handlePreviousButtonClick}
+                        >
                           Regresar
                         </Button>
                       )}
-                      <Button variant="contained" type="button" onClick={handleContinueButtonClick}>
+                      <Button
+                        variant="contained"
+                        type="button"
+                        onClick={handleContinueButtonClick}
+                      >
                         Continuar
                       </Button>
-
                     </>
                   )}
                 </DialogActions>
               </>
+            )}
 
+            {type === "company" && (
+              <div className={styles.containerImage}>
+                <img
+                  src={file ? URL.createObjectURL(file) : logo || image} // Muestra la URL del objeto File
+                  alt="profile"
+                  className={styles.photo}
+                  onClick={handleClick}
+                />
+
+                <input
+                  ref={fileInputRef}
+                  style={hiddenFileInput}
+                  type="file"
+                  onChange={handlePhoto}
+                  accept="image/*"
+                  name="profile_image"
+                />
+                {((showDeleteIcon && logo) || file) && (
+                  <Button variant="text" onClick={handleDeleteImage}>
+                    Eliminar logotipo
+                  </Button>
+                )}
+              </div>
             )}
             <Grid container spacing={2}>
               {/* form fields */}
               {fields.map((field) => {
-                if (field.type === 'text') {
+                if (field.type === "text") {
                   return (
                     <Grid item xs={12} sm={6} key={field.name}>
                       <TextField
@@ -348,43 +441,38 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                         name={field.name}
                         onChange={handleInputChange}
                         type="text"
-                        value={values[field.name] || ''}
+                        value={values[field.name] || ""}
                         variant="outlined"
                         required={field.isRequired}
                         error={values[`${field.name}Error`]}
-                        helperText={values[`${field.name}HelperText`] || ''}
+                        helperText={values[`${field.name}HelperText`] || ""}
                         sx={{
                           marginBottom: 2,
                         }}
                       />
                     </Grid>
                   );
-                } else if (field.type === 'select') {
+                } else if (field.type === "select") {
                   return (
-                    <Grid
-                      item
-                      xs={12}
-                      sm={6}
-                      key={`${field.name}`}
-                    >
+                    <Grid item xs={12} sm={6} key={`${field.name}`}>
                       <Autocomplete
                         fullWidth
                         id={field.name}
                         options={field.options}
-                        getOptionSelected={(option, value) => option.value === value}
+                        /*
+                        getOptionSelected={(option, value) =>
+                          option.value === value
+                        }*/
                         value={
                           field.options.find(
-                            (option) =>
-                              option.value === values[field.name]
+                            (option) => option.value === values[field.name]
                           ) || field.value
                         }
                         onChange={(event, newValue) => {
                           handleInputChange({
                             target: {
                               name: field.name,
-                              value: newValue
-                                ? newValue.value
-                                : '',
+                              value: newValue ? newValue.value : "",
                             },
                           });
                         }}
@@ -394,7 +482,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                             label={field.label}
                             required={field.isRequired}
                             error={values[`${field.name}Error`]}
-                            helperText={values[`${field.name}HelperText`] || ''}
+                            helperText={values[`${field.name}HelperText`] || ""}
                           />
                         )}
                       />
@@ -405,20 +493,13 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
             </Grid>
           </Box>
         </DialogContent>
-        {type !== 'employee' && (
-        <DialogActions>
-          <Button
-            onClick={onClose}
-          >
-            Cancelar
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleFormSubmit}
-          >
-            Actualizar
-          </Button>
-        </DialogActions>
+        {type !== "employee" && (
+          <DialogActions>
+            <Button onClick={onClose}>Cancelar</Button>
+            <Button variant="contained" onClick={handleFormSubmit}>
+              Actualizar
+            </Button>
+          </DialogActions>
         )}
       </Dialog>
     </div>
@@ -433,7 +514,7 @@ MyEditDialog.propTypes = {
       name: PropTypes.string.isRequired,
       type: PropTypes.string.isRequired,
       value: PropTypes.string.isRequired,
-    }),
+    })
   ),
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,

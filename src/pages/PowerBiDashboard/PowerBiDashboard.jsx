@@ -16,6 +16,7 @@ import styles from './PowerBiDashboard.module.css';
 const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
 export default function PowerBiDashboard() {
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const powerBi = useSelector((state) => state.powerBi);
@@ -29,8 +30,10 @@ export default function PowerBiDashboard() {
   };
 
   useEffect(() => {
+    if (!currentCompany)
+      return;
     if (userInfo.role.findIndex((p) => p === 'PowerBiDashboard') > -1) {
-      getCompanyDashboardsAPI(userInfo.Company).then((res) => {
+      getCompanyDashboardsAPI(currentCompany.id).then((res) => {
         let data = [];
         res.data.forEach((val) => {
           if (!data.includes(val)) {
@@ -43,7 +46,7 @@ export default function PowerBiDashboard() {
       alert('No tiene permiso para acceder a esta funcionalidad');
       navigate('/dashboard');
     }
-  }, []);
+  }, [currentCompany]);
   return (
     <Box sx={{ display: 'flex' }}>
       <Navbar />

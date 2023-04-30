@@ -66,7 +66,7 @@ export const createForm = async (createConfigs, currentCreate, currentCompany, f
         }
         enqueueSnackbar(config.successMsg, {
           variant: 'success',
-        });
+        }); 
       } catch (e) {
         console.log(e);
         enqueueSnackbar(config.errorMsg, {
@@ -137,7 +137,7 @@ export const validateForm = (fields, values, type) => {
         }
       });
     }
-    console.log(validationErrors)
+
 
   return validationErrors;
 };

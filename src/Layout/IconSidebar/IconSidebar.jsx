@@ -26,7 +26,6 @@ const names = [
   'Organizational Network Analysis',
   'Dynamic Live Conversations',
   'Employee Journey',
-  'Sentiment Analysis',
 ];
 
 const list = [Iletter, Aletter, Oletter, Dletter, Jletter, Sletter];

@@ -6,6 +6,8 @@ export const getCompaniesByIdAPI = async (id) => axios.get('companias/' + id);
 
 export const getAllCompaniesAPI = async () => axios.get('companias/');
 
+export const updateCompaniesAPI = async ({...data}) => axios.put('companias/', data);
+
 export const storeCompanyAPI = async ({idUser, ...data}) => axios.post(`companias/${idUser}`, data);
 
 export const deleteCompanyAPI = async (id) => axios.delete(`companias/${id}`);

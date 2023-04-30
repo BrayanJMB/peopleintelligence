@@ -9,7 +9,6 @@ export const editDashboardAPI = async (
   isActive,
   companyId
 ) => {
-  console.log('editDashboardAPI');
 
   const response = await axios.put('PowerBy/UpdateDashboard', {
     id: id,
