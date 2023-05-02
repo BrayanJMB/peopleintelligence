@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import Box from '@mui/material/Box';
@@ -157,6 +158,7 @@ const JourneySettingsPage = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [searchParams] = useSearchParams();
   const tabQuery = searchParams.get('tab');
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
 
   /**
    * Handle tab change.
@@ -189,8 +191,8 @@ const JourneySettingsPage = () => {
    */
   const fetchJourneyMap = async () => {
     setLoading(true);
-
-    const { data } = await fetchJourneyMapAPI();
+    
+    const { data } = await fetchJourneyMapAPI(currentCompany.id);
 
     setJourneyMap(data);
     setLoading(false);
@@ -740,7 +742,9 @@ const JourneySettingsPage = () => {
 
       return;
     }
-
+    if (!currentCompany){
+      return;
+    }
     fetchCategories();
     fetchJourneyMap();
     fetchMapSurveys();
@@ -748,6 +752,12 @@ const JourneySettingsPage = () => {
     updateCurrentTab();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (!currentCompany){
+      return;
+    }
+    fetchJourneyMap();
+  }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
   // watch tab query param
   useEffect(() => {
     updateCurrentTab();

@@ -100,6 +100,46 @@ export default function Journey() {
     setCurrentMapId(id);
   };
 
+  const fetchJourneyMaps = async () => {
+    const MESSAGE = 'No tiene permiso para acceder a esta funcionalidad.';
+
+    if (!userInfo) {
+      return navigate('/dashboard', {state: {message: MESSAGE}});
+    }
+
+    const { role } = userInfo;
+    const validRoles = ['Journey', 'Administrador'];
+
+    if (!role.some((roleItem => validRoles.includes(roleItem)))) {
+      alert('No tiene permiso para acceder a esta funcionalidad.');
+      navigate('/dashboard');
+
+      return;
+    }
+
+    // fetch slider data
+    const { data } = await fetchJourneyMapAPI(currentCompany.id);
+
+    // the first item is current active slide
+    setSlides(data.map((slide, index) => ({
+      ...slide,
+      isCurrent: index === 0,
+    })));
+
+    // if there are no maps then cant fetch journeys
+    if (!data.length) {
+      return;
+    }
+
+    const companyId = userInfo.Company;
+    const mapId = data[0].id;
+
+    // fetch journeys by map and company
+
+    setCurrentMapId(mapId);
+
+    await fetchJourneys();
+  };
   /**
    * Component did mount.
    */
@@ -109,53 +149,16 @@ export default function Journey() {
      *
      * @returns {Promise<void>}
      */
-    const fetchJourneyMaps = async () => {
-      const MESSAGE = 'No tiene permiso para acceder a esta funcionalidad.';
-
-      if (!userInfo) {
-        return navigate('/dashboard', {state: {message: MESSAGE}});
-      }
-
-      const { role } = userInfo;
-      const validRoles = ['Journey', 'Administrador'];
-
-      if (!role.some((roleItem => validRoles.includes(roleItem)))) {
-        alert('No tiene permiso para acceder a esta funcionalidad.');
-        navigate('/dashboard');
-
-        return;
-      }
-
-      // fetch slider data
-      const { data } = await fetchJourneyMapAPI();
-
-      // the first item is current active slide
-      setSlides(data.map((slide, index) => ({
-        ...slide,
-        isCurrent: index === 0,
-      })));
-
-      // if there are no maps then cant fetch journeys
-      if (!data.length) {
-        return;
-      }
-
-      const companyId = userInfo.Company;
-      const mapId = data[0].id;
-
-      // fetch journeys by map and company
-
-      setCurrentMapId(mapId);
-
-      await fetchJourneys();
-    };
-
     fetchJourneyMaps();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetchJourneys();
-  }, [currentCompany, currentMapId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentCompany, currentMapId]); 
+  
+  useEffect(() => {
+    fetchJourneyMaps();
+  }, [currentCompany]); /// eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <ThemeProvider theme={theme}>
