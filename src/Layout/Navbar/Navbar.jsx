@@ -18,9 +18,9 @@ import Toolbar from '@mui/material/Toolbar';
 
 import { setCredentials } from '../../features/authSlice';
 import { companiesAdded, currentCompanySelected } from '../../features/companies/companiesSlice';
-import axios from '../../utils/axiosInstance';
 import { selectActiveCompanies } from '../../features/employe/employe';
 import { fetchActiveCompany, setDrop } from '../../features/employe/employe';
+import axios from '../../utils/axiosInstance';
 
 function stringToColor(string) {
   let hash = 0;
@@ -128,7 +128,7 @@ export default function Navbar() {
 
   const handleSelect = (value) => {
     if (!value){
-      dispatch(setDrop(null))
+      dispatch(setDrop(null));
       return;
     }
     let holder = JSON.parse(localStorage.getItem('userInfo'));

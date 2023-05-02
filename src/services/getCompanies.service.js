@@ -12,4 +12,4 @@ export const storeCompanyAPI = async ({idUser, ...data}) => axios.post(`compania
 
 export const deleteCompanyAPI = async (id) => axios.delete(`companias/${id}`);
 
-export const updateStateCompanyAPI = async (idCompany, state) => axios.patch(`companias/StateCompani/${idCompany}/${state}`)
+export const updateStateCompanyAPI = async (idCompany, state) => axios.patch(`companias/StateCompani/${idCompany}/${state}`);

@@ -93,12 +93,12 @@ export const handleDelete = async (id, currentCompany, stateData, fetchAPI, dele
     });
     fetchAPI();
   } catch (e) {
-    console.log(e)
+    console.log(e);
     enqueueSnackbar(`Hubo un error al eliminar ${message}`, {
       variant: 'error',
     });
   }
-}
+};
 
 /**
  * Validations
