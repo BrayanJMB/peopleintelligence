@@ -8,6 +8,7 @@ import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Switch from '@mui/material/Switch';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
+
 import { removeItemBi } from '../features/powerBiSlice';
 import { deleteDashboardAPI } from '../services/deleteDashboard.service';
 import { deleteReportAPI } from '../services/deleteReport.service';

@@ -8,13 +8,13 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Building from '../../assets/Building.svg';
 import Logo from '../../assets/Logo.svg';
 import Multiple from '../../components/Multiple/Multiple';
+import MyLoader from '../../components/MyLoader/MyLoader';
 import Notification from '../../components/Notification';
 import One from '../../components/One/One';
 import { setCredentials } from '../../features/authSlice';
 import axios from '../../utils/axiosInstance';
 
 import styles from './Home.module.css';
-import MyLoader from '../../components/MyLoader/MyLoader';
 
 const config = {
   headers: {
@@ -187,7 +187,7 @@ export default function Home() {
       await axios
         .post('Aut/', { bearer: `Bearer ${access_token}` }, config)
         .then((res) => {
-          console.log("AUTNETI")
+          console.log('AUTNETI');
           let token = res.data.token;
           let decodedToken = decodeToken(token);
           if (!Array.isArray(decodedToken.role)) {
