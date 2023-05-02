@@ -1,5 +1,5 @@
 import { useEffect,useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -19,6 +19,8 @@ import Toolbar from '@mui/material/Toolbar';
 import { setCredentials } from '../../features/authSlice';
 import { companiesAdded, currentCompanySelected } from '../../features/companies/companiesSlice';
 import axios from '../../utils/axiosInstance';
+import { selectActiveCompanies } from '../../features/employe/employe';
+import { fetchActiveCompany, setDrop } from '../../features/employe/employe';
 
 function stringToColor(string) {
   let hash = 0;
@@ -54,9 +56,11 @@ const drawerWidth = 240;
 export default function Navbar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const activeCompanies = useSelector((state) => state.activeCompanies.activeCompanies);
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorEl2, setAnchorEl2] = useState(null);
-  const [drop, setDrop] = useState(null);
+  //const [drop, setDrop] = useState(null);
+  const drop = useSelector((state) => state.activeCompanies.drop);
   const open = Boolean(anchorEl);
   const open2 = Boolean(anchorEl2);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -95,6 +99,7 @@ export default function Navbar() {
       'https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fsuite.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login'
     );
   };
+  
   const companyConsume = async (id) => {
     try {
       await axios.get('companias/MultiCompani/' + id).then((response) => {
@@ -119,47 +124,70 @@ export default function Navbar() {
     }
   };
 
-  const search = (key, inputArray) => {
-    for (let i = 0; i < inputArray.length; i++) {
-      if (inputArray[i].nombreCompania === key) {
-        return inputArray[i].id;
-      }
-    }
-  };
+
 
   const handleSelect = (value) => {
+    if (!value){
+      dispatch(setDrop(null))
+      return;
+    }
     let holder = JSON.parse(localStorage.getItem('userInfo'));
     localStorage.removeItem('userInfo');
-    let company = search(value, data.ids.company);
-
+    //let company = search(value, data.ids.company);
+    /*
     dispatch(
       setCredentials({
         user: holder.user,
-        Company: company,
+        Company: value.id,
         accessToken: holder.token,
         role: holder.role,
       })
-    );
-    dispatch(currentCompanySelected(company));
+    );*/
+    dispatch(currentCompanySelected(value.id));
 
 
     localStorage.setItem(
       'userInfo',
       JSON.stringify({
         user: holder.user,
-        Company: company,
+        Company: value.id,
         accessToken: holder.accessToken,
         role: holder.role,
       })
     );
-    setDrop(value);
+    dispatch(setDrop(value));
   };
 
   useEffect(() => {
     if (userInfo?.role.findIndex((p) => p === 'MultiCompania') > -1) {
       companyConsume(userInfo.user);
+      dispatch(fetchActiveCompany({ idUser: userInfo.user }));
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+  useEffect(() => {
+    if (!drop && activeCompanies && activeCompanies.length > 0) {
+      dispatch(setDrop(activeCompanies[0]));
+      let holder = JSON.parse(localStorage.getItem('userInfo'));
+      localStorage.removeItem('userInfo');
+      dispatch(currentCompanySelected(activeCompanies[0].id));
+  
+  
+      localStorage.setItem(
+        'userInfo',
+        JSON.stringify({
+          user: holder.user,
+          Company: activeCompanies[0].id,
+          accessToken: holder.accessToken,
+          role: holder.role,
+        })
+      );
+
+    }
+  }, [activeCompanies, drop, dispatch]);
+
+
 
   return (
     <AppBar
@@ -182,25 +210,23 @@ export default function Navbar() {
           >
             {userInfo.role.findIndex((p) => p === 'MultiCompania') > -1 ? (
               <Autocomplete
-                id="combo-box-demo"
-                style={{ flexBasis: '180px' }}
-                options={data.content.company}
-                clearOnEscape
-                value={drop}
-                onChange={(e, value) => handleSelect(value)}
-                getOptionLabel={(option) => {
-                  //console.log(option, 'option')
-                  return option;
-                }}
-                noOptionsText={'No Options'}
-                renderInput={(params) => (
-                  <TextField {...params} label="Compañias" />
-                )}
-                isOptionEqualToValue={(option, value) => {
-                  //console.log(option, value)
-                  return option === value;
-                }}
-              />
+              sx={{ width: '100%' }}
+              id="combo-box-demo"
+              style={{ flexBasis: '180px' }}
+              options={activeCompanies}
+              clearOnEscape
+              disableClearable={true}
+              value={drop}
+              onChange={(e, value) => handleSelect(value)}
+              getOptionLabel={(option) => option.nombreCompañia || null}
+              noOptionsText={'No Options'}
+              renderInput={(params) => (
+                <TextField {...params} label="Compañias" variant="standard"  
+                sx={{ width: 300 }}     
+                />
+              )}
+
+            />
             ) : null}
 
             <IconButton onClick={handleHome}>

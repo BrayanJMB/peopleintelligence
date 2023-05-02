@@ -10,8 +10,6 @@ const validphone = new RegExp('^[0-9]{12,15}$');
 export default function NewDepartment(props) {
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
-  console.log('OKAY');
-  console.log(props);
   const handleBlur = (event) => {
 
     let helperText = {};

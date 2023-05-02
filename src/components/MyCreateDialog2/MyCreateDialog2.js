@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Grid } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
@@ -10,6 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import TextField from '@mui/material/TextField';
+import { validateForm, validateField } from '../../utils/helpers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { esES } from '@mui/x-date-pickers/locales';
@@ -17,6 +18,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import PropTypes from 'prop-types';
 
 import styles from './MyCreateDialog2.module.css';
+import defaultImage from '../../assets/default.png';
+import { fetchUserGetRolsAPI } from '../../services/fetchUser.service';
 
 // form field types
 const FIELD_TYPES = {
@@ -50,10 +53,11 @@ function TabPanel(props) {
  * @returns {JSX.Element}
  * @constructor
  */
-const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
+const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, setFile, setUserRol}) => {
+  const [image, setImage] = useState('');
+  const [showDeleteIcon, setShowDeleteIcon] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [maxWidth, setMaxWidth] = useState('80%');
-
 
   const createInitialValues = () => {
     const initialValues = {};
@@ -71,85 +75,13 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
   };
   const [values, setValues] = useState(createInitialValues());
 
-
-  //Valida si el campo es requerido y esta vacío
-  const validateForm = () => {
-    const validationErrors = {};
-    if (type === 'employee'){
-      fields.forEach((sectionObj) =>
-        Object.keys(sectionObj).forEach((section) =>
-          sectionObj[section].forEach((field) => {
-            const { name, isRequired } = field;
-            const value = values[name] || '';
-            const { error, helperText } = validateField(name, value);
-            if (isRequired && (!value || (typeof value === 'string' && value.trim() === ''))) {
-              validationErrors[`${name}Error`] = true;
-              validationErrors[`${name}HelperText`] = 'Este campo es obligatorio';
-            } else if (error) {
-              validationErrors[`${name}Error`] = error;
-              validationErrors[`${name}HelperText`] = helperText;
-            }
-          })
-        )
-      );
-    }else{
-      fields.forEach((field) =>{
-          const { name, isRequired } = field;
-          const value = values[name] || '';
-          const { error, helperText } = validateField(name, value);
-          if (isRequired && (!value || (typeof value === 'string' && value.trim() === ''))) {
-            validationErrors[`${name}Error`] = true;
-            validationErrors[`${name}HelperText`] = 'Este campo es obligatorio';
-          } else if (error) {
-            validationErrors[`${name}Error`] = error;
-            validationErrors[`${name}HelperText`] = helperText;
-          }
-        });
-    }
-
-    return validationErrors;
-  };
-
-
-  const validateDocumentNumber = (documentNumber) => {
-    const regex = /^[0-9]{6,17}?$/;
-    return regex.test(documentNumber);
-  };
-  const validateEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  };
-
-  const validateAge = (age) => {
-    return age <= 100;
-  };
-
-  const validateField = (name, value) => {
-    const validationResult = { error: false, helperText: '' };
-    if (name === 'email') {
-      validationResult.error = !validateEmail(value);
-      validationResult.helperText = validationResult.error
-        ? 'Ingrese un correo válido'
-        : '';
-    } else if (name === 'documentNumber') {
-      validationResult.error = !validateDocumentNumber(value);
-      validationResult.helperText = validationResult.error
-        ? (isNaN(value) ? 'El tipo documento debe ser un número' : 'Por favor ingrese un número documento válido')
-        : '';
-    } else if (name === 'age') {
-      validationResult.error = !validateAge(value);
-      validationResult.helperText = validationResult.error
-        ? (isNaN(value) ? 'La edad debe ser un número' : 'La edad debe ser un número entre 0 y 100')
-        : '';
-    }
-    return validationResult;
-  };
   /**
    * Handle input change.
    *
    * @param event
    */
-  const handleInputChange = (event) => {
+  const handleInputChange = async (event) => {
+    
     const { name, value } = event.target;
     const validationResult = validateField(name, value);
 
@@ -160,6 +92,11 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
       [`${name}HelperText`]: validationResult.helperText,
     }));
 
+    if (name === 'userRolChange') {
+      setUserRol([]);
+      const { data } =  await fetchUserGetRolsAPI(event.target.value)
+      setUserRol(data);
+    }
   };
 
   /**
@@ -172,7 +109,6 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
 
     // Agregar los campos que no tengan valor al objeto `values`
     let updatedValues = { ...values };
-    debugger;
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
@@ -182,9 +118,8 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
 
     // Actualizar el objeto `values` con la copia actualizada
     setValues(updatedValues);
-    const validationErrors = validateForm();
+    const validationErrors = validateForm(fields, values, type);
     if (Object.keys(validationErrors).length > 0) {
-      console.log(validationErrors);
       setValues((values) => ({ ...values, ...validationErrors }));
     } else {
       onSubmit(updatedValues);
@@ -192,18 +127,83 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
   };
 
   const handleTabChange = (event, newValue) => {
-    setCurrentTab(newValue);
+    // Agregar los campos que no tengan valor al objeto `values`
+    let updatedValues = { ...values };
+    for (let field of fields) {
+      const { name, isRequired } = field;
+      if (!(name in values) && !isRequired) {
+        updatedValues[name] = '';
+      }
+    }
+
+    // Actualizar el objeto `values` con la copia actualizada
+    setValues(updatedValues);
+    const validationErrors = validateForm(fields, values, type);
+    if (Object.keys(validationErrors).length > 0) {
+      setValues((values) => ({ ...values, ...validationErrors }));
+    } else {
+      setCurrentTab(newValue);
+    }
   };
 
   const handleContinueButtonClick = () => {
+    // Agregar los campos que no tengan valor al objeto `values`
+    let updatedValues = { ...values };
+    for (let field of fields) {
+      const { name, isRequired } = field;
+      if (!(name in values) && !isRequired) {
+        updatedValues[name] = '';
+      }
+    }
 
-    setCurrentTab(currentTab + 1);
-
+    // Actualizar el objeto `values` con la copia actualizada
+    setValues(updatedValues);
+    const validationErrors = validateForm(fields, values, type);
+    if (Object.keys(validationErrors).length > 0) {
+      setValues((values) => ({ ...values, ...validationErrors }));
+    } else {
+      setCurrentTab(currentTab + 1);
+    }
   };
 
   const handlePreviousButtonClick = () => {
     setCurrentTab(currentTab - 1);
   };
+
+  //Logic for image
+  const fileInputRef = useRef();
+
+  const hiddenFileInput = {
+    display: 'none',
+  };
+
+  const handleClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handlePhoto = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      if (e.target.files[0].size < 500000) {
+        setFile(e.target.files[0]); // Guarda el objeto File en lugar de la URL
+        setShowDeleteIcon(true);
+      } else {
+        alert('El tamaño de la imagen no puede ser mayor a 500kB');
+      }
+    }
+  };
+
+  const handleDeleteImage = () => {
+    setFile(null);
+    setShowDeleteIcon(false);
+  };
+
+  useEffect(() => {
+    if (file) {
+      setImage(file);
+    } else {
+      setImage(defaultImage); // Ruta a la imagen por defecto
+    }
+  }, [file]);
 
 
 
@@ -236,7 +236,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                         }
                       >
                         <Tab label="Datos Personales" id="settings-tab-0" />
-                        <Tab label="Tipos de documentos" id="settings-tab-1" />
+                        <Tab label="Datos Empleado" id="settings-tab-1" />
                         <Tab label="Otros Datos" id="settings-tab-2" />
                       </Tabs>
                     </Box>
@@ -289,18 +289,20 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                                       marginBottom: 2,
                                       width: '100%',
                                     }}
-
-                                      id={field.name}
+                                      disableFuture
                                       label={field.label}
-                                      name={field.name}
                                       value={values[field.name] || null}
                                       inputFormat="MM/dd/yyyy"
                                       onChange={(date) => handleInputChange({ target: { name: field.name, value: date } })}
+                                      r
                                       renderInput={(params) => (
                                         <TextField
-                                          {...params}
+                                          name={field.name}
+                                          id={field.name}
                                           variant="outlined"
                                           required={field.isRequired}
+                                          {...params}
+
                                           error={values[`${field.name}Error`]}
                                           helperText={values[`${field.name}HelperText`] || ''}
                                           sx={{
@@ -394,12 +396,43 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                 </>
 
               )}
+              {type === 'company' && (
+              <div className={styles.containerImage}>
+               <img
+                src={file ? URL.createObjectURL(file) : image} // Muestra la URL del objeto File
+                alt="profile"
+                className={styles.photo}
+                onClick={handleClick}
+              />
+                
+                <input
+                  ref={fileInputRef}
+                  style={hiddenFileInput}
+                  type="file"
+                  onChange={handlePhoto}
+                  accept="image/*"
+                  name="profile_image"
+                />
+                {showDeleteIcon && (
+                  <Button 
+                    variant="text"
+                    onClick={handleDeleteImage}
+                    >
+                    Eliminar logotipo
+                  </Button>
+                )}
+                </div>
+
+              )}
               <Grid container spacing={2}>
+
                 {/* form fields */}
                 {fields.map((field) => {
+                  const gridColumnSize = fields.length === 1 ? 12 : 6;
                   if (field.type === 'text') {
                     return (
-                      <Grid item xs={12} sm={6} key={field.name}>
+                      <Grid item xs={12} sm={gridColumnSize} key={field.name} >
+                        
                         <TextField
                           fullWidth
                           id={field.name}
@@ -414,6 +447,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                           helperText={values[`${field.name}HelperText`] || ''}
                           sx={{
                             marginBottom: 2,
+                            
                           }}
                         />
                       </Grid>
@@ -423,7 +457,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                       <Grid
                         item
                         xs={12}
-                        sm={6}
+                        sm={gridColumnSize}
                         key={`${field.name}`}
                       >
                         <Autocomplete
@@ -449,6 +483,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type }) => {
                           }}
                           renderInput={(params) => (
                             <TextField
+                            fullWidth
                               {...params}
                               label={field.label}
                               required={field.isRequired}

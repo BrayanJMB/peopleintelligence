@@ -5,6 +5,7 @@ import authReducer from '../features/authSlice';
 import companiesSlice from '../features/companies/companiesSlice';
 import powerBiReducer from '../features/powerBiSlice';
 import surveysSlice from '../features/surveys/surveysSlice';
+import activeCompaniesSlice from '../features/employe/employe';
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     auth: authReducer,
     companies: companiesSlice,
     surveys : surveysSlice,
+    activeCompanies : activeCompaniesSlice,
   },
   devTools: true,
 });
