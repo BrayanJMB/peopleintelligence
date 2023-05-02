@@ -5,7 +5,7 @@ import axios from '../utils/axiosInstance';
  *
  * @returns {Promise<any>}
  */
-export const fetchJourneyMapAPI = async () => axios.get('GetJorneyMap/');
+export const fetchJourneyMapAPI = async (idCompany) => axios.get(`GetJorneyMapCompany/${idCompany}`);
 
 /**
  * Update Journey Map.

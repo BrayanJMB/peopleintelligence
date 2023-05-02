@@ -19,6 +19,7 @@ import PropTypes from 'prop-types';
 
 import styles from './MyCreateDialog2.module.css';
 import defaultImage from '../../assets/default.png';
+import { fetchUserGetRolsAPI } from '../../services/fetchUser.service';
 
 // form field types
 const FIELD_TYPES = {
@@ -52,12 +53,11 @@ function TabPanel(props) {
  * @returns {JSX.Element}
  * @constructor
  */
-const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, setFile}) => {
+const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, setFile, setUserRol}) => {
   const [image, setImage] = useState('');
   const [showDeleteIcon, setShowDeleteIcon] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [maxWidth, setMaxWidth] = useState('80%');
-
 
   const createInitialValues = () => {
     const initialValues = {};
@@ -80,7 +80,8 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
    *
    * @param event
    */
-  const handleInputChange = (event) => {
+  const handleInputChange = async (event) => {
+    
     const { name, value } = event.target;
     const validationResult = validateField(name, value);
 
@@ -91,6 +92,11 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
       [`${name}HelperText`]: validationResult.helperText,
     }));
 
+    if (name === 'userRolChange') {
+      setUserRol([]);
+      const { data } =  await fetchUserGetRolsAPI(event.target.value)
+      setUserRol(data);
+    }
   };
 
   /**
@@ -422,10 +428,10 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
 
                 {/* form fields */}
                 {fields.map((field) => {
-                   const gridColumnSize = fields.length === 1 ? 12 : 6;
+                  const gridColumnSize = fields.length === 1 ? 12 : 6;
                   if (field.type === 'text') {
                     return (
-                      <Grid item xs={12} sm={gridColumnSize} key={field.name}>
+                      <Grid item xs={12} sm={gridColumnSize} key={field.name} >
                         
                         <TextField
                           fullWidth
@@ -477,6 +483,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
                           }}
                           renderInput={(params) => (
                             <TextField
+                            fullWidth
                               {...params}
                               label={field.label}
                               required={field.isRequired}

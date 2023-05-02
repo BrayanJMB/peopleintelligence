@@ -158,7 +158,6 @@ import {
 
 
 export default function InfoAdmin() {
-  const [shouldFetchCompany, setShouldFetchCompany] = useState(false)
   const [contractTypes, setContractType] = useState([]);
   const [DocumentsTypes, setDocumentos] = useState([]);
   const [englishLevels, setNivelIngles] = useState([]);
