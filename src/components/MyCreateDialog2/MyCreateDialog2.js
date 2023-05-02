@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef,useState } from 'react';
 import { Grid } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
@@ -10,16 +10,17 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import TextField from '@mui/material/TextField';
-import { validateForm, validateField } from '../../utils/helpers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { esES } from '@mui/x-date-pickers/locales';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import PropTypes from 'prop-types';
 
-import styles from './MyCreateDialog2.module.css';
 import defaultImage from '../../assets/default.png';
 import { fetchUserGetRolsAPI } from '../../services/fetchUser.service';
+import { validateField,validateForm } from '../../utils/helpers';
+
+import styles from './MyCreateDialog2.module.css';
 
 // form field types
 const FIELD_TYPES = {
@@ -94,7 +95,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
 
     if (name === 'userRolChange') {
       setUserRol([]);
-      const { data } =  await fetchUserGetRolsAPI(event.target.value)
+      const { data } =  await fetchUserGetRolsAPI(event.target.value);
       setUserRol(data);
     }
   };

@@ -30,7 +30,7 @@ export const fetchUserGetRolsAPI = async (idUser) => axios.get(`Roles/GetRolesAd
  *
  * @returns {Promise<any>}
  */
-export const postUserRolsAPI = async (data) => axios.post(`Roles/AddRoles/`, data);
+export const postUserRolsAPI = async (data) => axios.post('Roles/AddRoles/', data);
 
 
 

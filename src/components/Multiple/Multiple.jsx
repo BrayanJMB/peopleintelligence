@@ -156,7 +156,7 @@ export default function Multiple(props) {
         );
         let field = matchdocumentid.documentTypeId;
         try {
-          console.log("entro")
+          console.log('entro');
           const response = await axios
             .create({
               baseURL: 'https://peopleintelligenceapi.azurewebsites.net/api',

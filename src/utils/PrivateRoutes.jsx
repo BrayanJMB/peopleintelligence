@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Navigate,Outlet } from 'react-router-dom';
 import { useLocation,useNavigate } from 'react-router-dom';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 import { getCompaniesAPI } from '../services/getCompanies.service';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 
 export default function PrivateRoutes() {
   const [openSnackbar, setOpenSnackbar] = useState(false);

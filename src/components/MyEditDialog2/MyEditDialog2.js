@@ -1,28 +1,30 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Grid } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
-import TextField from "@mui/material/TextField";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { esES } from "@mui/x-date-pickers/locales";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import PropTypes from "prop-types";
-import { validateForm, validateField } from "../../utils/helpers";
-import dayjs from "dayjs";
-import styles from '../MyCreateDialog2/MyCreateDialog2.module.css';
+import React, { useEffect,useRef, useState } from 'react';
+import { Grid } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import TextField from '@mui/material/TextField';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { esES } from '@mui/x-date-pickers/locales';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import dayjs from 'dayjs';
+import PropTypes from 'prop-types';
+
 import defaultImage from '../../assets/default.png';
+import { validateField,validateForm } from '../../utils/helpers';
+
+import styles from '../MyCreateDialog2/MyCreateDialog2.module.css';
 
 // form field types
 const FIELD_TYPES = {
-  TEXT: "text",
+  TEXT: 'text',
 };
 
 /**
@@ -35,12 +37,12 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
   const [image, setImage] = useState('');
   const [showDeleteIcon, setShowDeleteIcon] = useState(true);
   const [currentTab, setCurrentTab] = useState(0);
-  const [maxWidth, setMaxWidth] = useState("80%");
+  const [maxWidth, setMaxWidth] = useState('80%');
 
   const createInitialValues = () => {
     const initialValues = {};
 
-    if (type === "employee") {
+    if (type === 'employee') {
       fields.forEach((sectionObj) =>
         Object.keys(sectionObj).forEach((section) =>
           sectionObj[section].forEach((field) => {
@@ -88,7 +90,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = "";
+        updatedValues[name] = '';
       }
     }
 
@@ -108,7 +110,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = "";
+        updatedValues[name] = '';
       }
     }
 
@@ -128,7 +130,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = "";
+        updatedValues[name] = '';
       }
     }
 
@@ -186,23 +188,23 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
     <div>
       <Dialog open={open} onClose={onClose} maxWidth={maxWidth}>
         <DialogTitle>{title}</DialogTitle>
-        <DialogContent sx={{ maxWidth: "80vw" }}>
+        <DialogContent sx={{ maxWidth: '80vw' }}>
           <Box
             sx={{
               marginTop: 1,
             }}
           >
-            {type === "employee" && (
+            {type === 'employee' && (
               <>
                 <Box
                   sx={{
                     borderBottom: 1,
-                    borderColor: "divider",
+                    borderColor: 'divider',
                   }}
                 >
-                  <Box sx={{ display: "flex", justifyContent: "between" }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'between' }}>
                     <Tabs
-                      sx={{ width: "90%", justifyContent: "center" }}
+                      sx={{ width: '90%', justifyContent: 'center' }}
                       value={currentTab}
                       onChange={(event, newValue) =>
                         handleTabChange(event, newValue)
@@ -219,7 +221,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                     Object.keys(sectionObj).map((section, tabIndex) => {
                       return tabIndex === currentTab
                         ? sectionObj[section].map((field) => {
-                            if (field.type === "text") {
+                            if (field.type === 'text') {
                               return (
                                 <Grid
                                   item
@@ -243,7 +245,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                     required={field.isRequired}
                                     error={values[`${field.name}Error`]}
                                     helperText={
-                                      values[`${field.name}HelperText`] || ""
+                                      values[`${field.name}HelperText`] || ''
                                     }
                                     sx={{
                                       marginBottom: 2,
@@ -251,7 +253,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                   />
                                 </Grid>
                               );
-                            } else if (field.type === "date") {
+                            } else if (field.type === 'date') {
                               return (
                                 <Grid
                                   item
@@ -269,7 +271,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                     <DatePicker
                                       sx={{
                                         marginBottom: 2,
-                                        width: "100%",
+                                        width: '100%',
                                       }}
                                       id={field.name}
                                       label={field.label}
@@ -293,7 +295,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                           error={values[`${field.name}Error`]}
                                           helperText={
                                             values[`${field.name}HelperText`] ||
-                                            ""
+                                            ''
                                           }
                                           sx={{
                                             marginBottom: 2,
@@ -304,7 +306,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                   </LocalizationProvider>
                                 </Grid>
                               );
-                            } else if (field.type === "select") {
+                            } else if (field.type === 'select') {
                               return (
                                 <Grid
                                   item
@@ -330,7 +332,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                       handleInputChange({
                                         target: {
                                           name: field.name,
-                                          value: newValue ? newValue.value : "",
+                                          value: newValue ? newValue.value : '',
                                         },
                                       });
                                     }}
@@ -342,7 +344,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                         error={values[`${field.name}Error`]}
                                         helperText={
                                           values[`${field.name}HelperText`] ||
-                                          ""
+                                          ''
                                         }
                                       />
                                     )}
@@ -404,7 +406,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
               </>
             )}
 
-            {type === "company" && (
+            {type === 'company' && (
               <div className={styles.containerImage}>
                 <img
                   src={file ? URL.createObjectURL(file) : logo || image} // Muestra la URL del objeto File
@@ -431,7 +433,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
             <Grid container spacing={2}>
               {/* form fields */}
               {fields.map((field) => {
-                if (field.type === "text") {
+                if (field.type === 'text') {
                   return (
                     <Grid item xs={12} sm={6} key={field.name}>
                       <TextField
@@ -441,18 +443,18 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                         name={field.name}
                         onChange={handleInputChange}
                         type="text"
-                        value={values[field.name] || ""}
+                        value={values[field.name] || ''}
                         variant="outlined"
                         required={field.isRequired}
                         error={values[`${field.name}Error`]}
-                        helperText={values[`${field.name}HelperText`] || ""}
+                        helperText={values[`${field.name}HelperText`] || ''}
                         sx={{
                           marginBottom: 2,
                         }}
                       />
                     </Grid>
                   );
-                } else if (field.type === "select") {
+                } else if (field.type === 'select') {
                   return (
                     <Grid item xs={12} sm={6} key={`${field.name}`}>
                       <Autocomplete
@@ -472,7 +474,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                           handleInputChange({
                             target: {
                               name: field.name,
-                              value: newValue ? newValue.value : "",
+                              value: newValue ? newValue.value : '',
                             },
                           });
                         }}
@@ -482,7 +484,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                             label={field.label}
                             required={field.isRequired}
                             error={values[`${field.name}Error`]}
-                            helperText={values[`${field.name}HelperText`] || ""}
+                            helperText={values[`${field.name}HelperText`] || ''}
                           />
                         )}
                       />
@@ -493,7 +495,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
             </Grid>
           </Box>
         </DialogContent>
-        {type !== "employee" && (
+        {type !== 'employee' && (
           <DialogActions>
             <Button onClick={onClose}>Cancelar</Button>
             <Button variant="contained" onClick={handleFormSubmit}>
