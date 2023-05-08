@@ -8,7 +8,6 @@ import Stack from '@mui/material/Stack';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { useSnackbar } from 'notistack';
-import axios from '../../utils/axiosInstance';
 
 import MyCard from '../../components/MyCard/MyCard';
 import MyCreateDialog from '../../components/MyCreateDialog/MyCreateDialog';
@@ -37,6 +36,7 @@ import {
   deleteTemplateAPI,
   fetchTemplatesAPI,
 } from '../../services/templates.service';
+import axios from '../../utils/axiosInstance';
 import { isAdmin, isJourney } from '../../utils/helpers';
 
 import styles from './JourneySettingsPage.module.css';
@@ -272,7 +272,7 @@ const JourneySettingsPage = () => {
     // find category
 
     const map = journeyMap.find((map) => map.id === id);
-    setEditLogo(map.iconUrl)
+    setEditLogo(map.iconUrl);
     if (map === undefined) {
       return;
     }
@@ -615,7 +615,7 @@ const JourneySettingsPage = () => {
         mapJourney: formValues.name,
         description: formValues.description,
         iconUrl: urlLogo,
-        companyId: currentCompany.id
+        companyId: currentCompany.id,
       });
 
       setJourneyMap((journeyMap) => [...journeyMap, data]);
