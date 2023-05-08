@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -8,12 +8,19 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
+
 
 import styles from './MyCreateDialog.module.css';
+
+
+import defaultImage from '../../assets/default.png';
 
 // form field types
 const FIELD_TYPES = {
   TEXT: 'text',
+  ICON: 'icon'
 };
 
 /**
@@ -27,7 +34,11 @@ const FIELD_TYPES = {
  * @returns {JSX.Element}
  * @constructor
  */
-const MyCreateDialog = ({ title, fields, open, onClose, onSubmit }) => {
+const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, file, setFile }) => {
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [image, setImage] = useState('');
+  const [showDeleteIcon, setShowDeleteIcon] = useState(false);
   const [values, setValues] = useState({});
 
   /**
@@ -48,12 +59,73 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit }) => {
    * @param event
    */
   const handleFormSubmit = (event) => {
-    event.preventDefault();
+    event.preventDefault(); 
+    if (!file){
+      setSnackbarMessage('Debe colocar una imagen para el mapa');
+      setOpenSnackbar(true);
+      return;
+    }
     onSubmit(values);
   };
 
+    //Logic for image
+    const fileInputRef = useRef();
+
+    const hiddenFileInput = {
+      display: 'none',
+    };
+  
+    const handleClick = () => {
+      fileInputRef.current.click();
+    };
+  
+    const handlePhoto = (e) => {
+      if (e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        if (fileExtension === 'svg') {
+          if (e.target.files[0].size < 500000) {
+            setFile(e.target.files[0]); // Guarda el objeto File en lugar de la URL
+            setShowDeleteIcon(true);
+          } else {
+            setSnackbarMessage('El tamaño de la imagen no puede ser mayor a 500kB.');
+            setOpenSnackbar(true);
+            //alert('El tamaño de la imagen no puede ser mayor a 500kB');
+          }
+        }else {
+          setSnackbarMessage('Solo se permiten archivos con formato .svg');
+          setOpenSnackbar(true);
+          //alert('Solo se permiten archivos con formato .svg');
+        }
+      } 
+    };
+  
+    const handleDeleteImage = () => {
+      setFile(null);
+      setShowDeleteIcon(false);
+    };
+  
+    useEffect(() => {
+      if (file) {
+        setImage(file);
+      } else {
+        setImage(defaultImage); // Ruta a la imagen por defecto
+      }
+    }, [file]);
+  
+
   return (
     <div className={styles.MyCreateDialog}>
+      <Snackbar
+          open={openSnackbar}
+          autoHideDuration={30000} 
+          onClose={() => setOpenSnackbar(false)} 
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+        >
+          <Alert onClose={() => setOpenSnackbar(false)} severity="warning">
+            {snackbarMessage}
+          </Alert>
+      </Snackbar>
       <Dialog
         open={open}
         onClose={onClose}
@@ -91,6 +163,34 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit }) => {
                       variant="outlined"
                       required={field.isRequired}
                     />
+                  )}
+
+                  {field.type === FIELD_TYPES.ICON && (
+                    <div className={styles.containerImage}>
+                    <img
+                     src={file ? URL.createObjectURL(file) : image} // Muestra la URL del objeto File
+                     alt="profile"
+                     className={styles.photo}
+                     onClick={handleClick}
+                   />
+                     
+                     <input
+                       ref={fileInputRef}
+                       style={hiddenFileInput}
+                       type="file"
+                       onChange={handlePhoto}
+                       accept="image/*"
+                       name="profile_image"
+                     />
+                     {showDeleteIcon && (
+                       <Button 
+                         variant="text"
+                         onClick={handleDeleteImage}
+                         >
+                         Eliminar logotipo
+                       </Button>
+                     )}
+                     </div>           
                   )}
                 </FormControl>
               ))}

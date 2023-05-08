@@ -8,6 +8,7 @@ import Stack from '@mui/material/Stack';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { useSnackbar } from 'notistack';
+import axios from '../../utils/axiosInstance';
 
 import MyCard from '../../components/MyCard/MyCard';
 import MyCreateDialog from '../../components/MyCreateDialog/MyCreateDialog';
@@ -155,6 +156,8 @@ const JourneySettingsPage = () => {
   const [currentCreate, setCurrentCreate] = useState(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [file, setFile] = useState(null);
+  const [editLogo, setEditLogo] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
   const [searchParams] = useSearchParams();
   const tabQuery = searchParams.get('tab');
@@ -267,8 +270,9 @@ const JourneySettingsPage = () => {
    */
   const handleEditJourneyMap = (id) => {
     // find category
-    const map = journeyMap.find((map) => map.id === id);
 
+    const map = journeyMap.find((map) => map.id === id);
+    setEditLogo(map.iconUrl)
     if (map === undefined) {
       return;
     }
@@ -293,8 +297,7 @@ const JourneySettingsPage = () => {
         {
           label: 'URL de icono',
           name: 'icon',
-          type: 'text',
-          value: map.iconUrl,
+          type: 'icon',
         },
       ],
     });
@@ -358,7 +361,7 @@ const JourneySettingsPage = () => {
         {
           label: 'URL de icono',
           name: 'icon',
-          type: 'text',
+          type: 'icon',
           isRequired: false,
         },
       ],
@@ -489,6 +492,33 @@ const JourneySettingsPage = () => {
     setOpenCreateDialog(false);
   };
 
+  const createLogotipo = async (formValues) => {
+    let urlLogo = null;
+    if (file) {
+      const formData = new FormData();
+      formData.append('logoTipo', file); // Asegúrate de utilizar el nombre correcto para el campo de la imagen
+      try {
+        const response = await axios.post(
+          `MapImage/${formValues.name}/${currentCompany.id}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+
+        if (response) {
+          urlLogo = response.data.urlLogo;
+        } else {
+          console.error('Error al subir la imagen:', response.statusText);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    return urlLogo;
+  };
   /**
    * Handle submitted edit dialog.
    *
@@ -525,15 +555,16 @@ const JourneySettingsPage = () => {
     }
     if (currentEdit.type === 'journeyMap') {
       // find category
+      let urlLogo = await createLogotipo(formValues);
       const map = journeyMap.find((map) => map.id === currentEdit.id);
-
+      
       if (map === undefined) {
         return;
       }
 
       map.mapJourney = formValues.name || map.mapJourney;
       map.description = formValues.description || map.description;
-      map.iconUrl = formValues.iconUrl || map.iconUrl;
+      map.iconUrl = urlLogo || map.iconUrl;
 
       const { data } = await updateJourneyMapAPI(map);
 
@@ -578,10 +609,13 @@ const JourneySettingsPage = () => {
       );
     }
     if (currentCreate.type === 'journeyMap') {
+      let urlLogo = await createLogotipo(formValues);
+
       const { data } = await storeJourneyMapAPI({
         mapJourney: formValues.name,
         description: formValues.description,
-        iconUrl: formValues.icon,
+        iconUrl: urlLogo,
+        companyId: currentCompany.id
       });
 
       setJourneyMap((journeyMap) => [...journeyMap, data]);
@@ -756,7 +790,12 @@ const JourneySettingsPage = () => {
     if (!currentCompany){
       return;
     }
+    //fetchJourneyMap();
+    fetchCategories();
     fetchJourneyMap();
+    fetchMapSurveys();
+    fetchTemplates();
+    updateCurrentTab();
   }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
   // watch tab query param
   useEffect(() => {
@@ -954,6 +993,11 @@ const JourneySettingsPage = () => {
           title={currentEdit.title}
           open={openEditDialog}
           fields={currentEdit.fields}
+          type={currentEdit.type}
+          file={file}
+          setFile={setFile}
+          logo={editLogo}
+          setLogo={setEditLogo}
         />
       )}
 
@@ -965,6 +1009,9 @@ const JourneySettingsPage = () => {
           title={currentCreate.title}
           open={openCreateDialog}
           fields={currentCreate.fields}
+          type={currentCreate.type}
+          file={file}
+          setFile={setFile}
         />
       )}
     </Box>
