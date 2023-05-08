@@ -667,16 +667,16 @@ export default function CreateSurvey() {
         stars: information.stars,
       });
     }
-
+    
     setInformation({
       name: '',
       description: '',
       options: [
-        'Muy en desacuerdo',
-        'Discrepar',
-        'Neutral',
-        'Estar de acuerdo',
-        'Totalmente de acuerdo',
+        'Totalmente en Desacuerdo',
+        'En Desacuerdo',
+        'Ni de Acuerdo  Ni en Desacuerdo',
+        'De Acuerdo',
+        'Totalmente de Acuerdo',
       ],
       customOptions: Array(2).fill(''),
       stars: Array(3).fill(''),
