@@ -1,1 +1,20 @@
 .MyEditDialog {}
+
+.photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid #03aae4;
+  }
+
+  .photo:hover {
+    cursor: pointer;
+  }
+
+  .containerImage{
+    display: flex;
+    margin-bottom: 20px;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
