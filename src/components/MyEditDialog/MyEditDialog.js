@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect,useRef, useState } from 'react';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -6,18 +7,19 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
+import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
+
 import defaultImage from '../../assets/default.png';
+
 import styles from './MyEditDialog.module.css';
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
 
 // form field types
 const FIELD_TYPES = {
   TEXT: 'text',
   SELECT: 'select',
-  ICON: 'icon'
+  ICON: 'icon',
 };
 
 /**
