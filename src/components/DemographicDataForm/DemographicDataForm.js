@@ -159,6 +159,7 @@ const DemographicDataForm = ({
    * @returns {boolean}
    */
   const isDemographicChecked = (value) => {
+
     return demographicChecked.includes(value);
   };
 
@@ -253,7 +254,7 @@ const DemographicDataForm = ({
     if (!templateDemographicData.length) {
       return;
     }
-    
+
     const updatedDemographicChecked = [
       ...demographicChecked, 
       ...templateDemographicData,
@@ -310,7 +311,8 @@ const DemographicDataForm = ({
               >
                 <FormGroup>
                   <FormControlLabel
-                    control={<Checkbox
+                    control={
+                    <Checkbox
                       checked={isDemographicChecked(value)}
                       onChange={handleCheckboxChange}
                       value={value}

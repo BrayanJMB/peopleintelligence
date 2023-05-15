@@ -32,7 +32,7 @@ const FIELD_TYPES = {
  * @returns {JSX.Element}
  * @constructor
  */
-const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, file, setFile }) => {
+const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, file, setFile, type }) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [image, setImage] = useState('');
@@ -58,7 +58,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, file, setFile 
    */
   const handleFormSubmit = (event) => {
     event.preventDefault(); 
-    if (!file){
+    if (!file && type === 'journeyMap'){
       setSnackbarMessage('Debe colocar una imagen para el mapa');
       setOpenSnackbar(true);
       return;

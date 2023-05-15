@@ -23,7 +23,7 @@ import client from '../../../../utils/axiosInstance';
 
 import styles from './SendInvitationDialog.module.css';
 
-const defaultMessage = 'Hola @usuario, te invito a participar en la encuesta: @enlace';
+const defaultMessage = 'Hola, te invito a participar en la encuesta: @enlace';
 
 /**
  * Send invitation dialog component.
@@ -196,10 +196,11 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
       error = true;
     }
     // should contain @usuario and @enlace
+    /*
     if (!message.includes('@usuario')) {
       setIsValidMessage('El mensaje debe contener "@usuario".');
       error = true;
-    }
+    }*/
     if (!message.includes('@enlace')) {
       setIsValidMessage('El mensaje debe contener "@enlace".');
       error = true;
@@ -288,10 +289,7 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
             style={{
               marginTop: '1.3em',
             }}
-            helperText={getHelperText(
-              isValidEmails,
-              'Coloque los usuarios de esta forma: @usuario1, @usuario2, @usuario3 ...',
-            )}
+
             value={emails}
             error={isValidEmails !== ''}
             onChange={handleEmailsChange}
@@ -309,7 +307,7 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
             }}
             helperText={getHelperText(
               isValidMessage,
-              'Cada usuario representado por @usuario recibirá un mensaje personalizado y @enlace será reemplazado por el enlace de la encuesta.',
+              'Cada usuario recibirá un mensaje personalizado y @enlace será reemplazado por el enlace de la encuesta.',
             )}
             value={message}
             error={isValidMessage !== ''}

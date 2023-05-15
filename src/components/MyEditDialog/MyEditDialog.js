@@ -28,12 +28,19 @@ const FIELD_TYPES = {
  * @returns {JSX.Element}
  * @constructor
  */
-const MyEditDialog = ({ title, fields, open, onClose, onSubmit, file, setFile, logo, setLogo }) => {
+const MyEditDialog = ({ title, fields, open, onClose, onSubmit, file, setFile, logo, setLogo, type }) => {
+  const createInitialValues = () => {
+    const initialValues = {};
+      fields.forEach((field) => {
+        initialValues[field.name] = field.value;
+      });
+    return initialValues;
+  };
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [image, setImage] = useState('');
   const [showDeleteIcon, setShowDeleteIcon] = useState(true);
-  const [values, setValues] = useState({});
+  const [values, setValues] = useState(createInitialValues);
 
   /**
    * Handle input change.
@@ -53,11 +60,13 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, file, setFile, l
    * @param event
    */
   const handleFormSubmit = (event) => {
-    if (!file){
+  
+    if (!logo && !file && type === 'journeyMap'){
       setSnackbarMessage('Debe colocar una imagen para el mapa');
       setOpenSnackbar(true);
       return;
     }
+
     event.preventDefault();
     onSubmit(values);
   };

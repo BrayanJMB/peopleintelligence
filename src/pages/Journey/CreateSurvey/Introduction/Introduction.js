@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import Autocomplete from '@mui/material/Autocomplete';
 import FormControl from '@mui/material/FormControl';
@@ -34,6 +35,8 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
   const [searchParams] = useSearchParams();
   const isMap = searchParams.get('isMap') === 'true';
   const [surveyOrMap, setSurveyOrMap] = useState(isMap ? 'map' : 'survey');
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
+
 
   /**
    * Handel change.
@@ -74,7 +77,9 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
    * @returns {Promise<void>}
    */
   const fetchMaps = async () => {
-    const { data } = await client.get('GetJorneyMap/');
+    if (!currentCompany)
+      return;
+    const { data } = await client.get(`GetJorneyMapCompany/${currentCompany.id}`);
     const maps = data.map((item) => ({
       ...item,
       label: item.mapJourney,
@@ -145,7 +150,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
   // component did mount
   useEffect(() => {
     fetchMaps();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // watch for changes in previous data
   useEffect(() => {
