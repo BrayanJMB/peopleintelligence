@@ -32,7 +32,7 @@ export default function Form(props) {
         return (
           <div className={styles.top}>
             <div className={styles.question}>
-              <div className={styles.number}>Q1.</div>
+              <div className={styles.number}>{`Q${props.questions}`}</div>
               <div className={styles.input}>
                 <TextField
                   id="outlined-name"
@@ -77,7 +77,7 @@ export default function Form(props) {
         return (
           <div className={styles.top}>
             <div className={styles.question}>
-              <div className={styles.number}>Q1.</div>
+              <div className={styles.number}>{`Q${props.questions}`}</div>
               <div className={styles.input}>
                 <TextField
                   id="outlined-name"
@@ -155,7 +155,7 @@ export default function Form(props) {
         return (
           <div className={styles.top}>
             <div className={styles.question}>
-              <div className={styles.number}>Q1.</div>
+              <div className={styles.number}>{`Q${props.questions}`}</div>
               <div className={styles.input}>
                 <TextField
                   id="outlined-name"
@@ -217,6 +217,8 @@ export default function Form(props) {
                       placeholder="Añadir opción..."
                       value={props.information.customOptions[key]}
                       onChange={props.handleinformationoptions(key)}
+                      error={props.customOptionError[key]}
+                      helperText={props.customOptionError[key] ? 'La opción no puede estar vacía': ''}
                       InputProps={{
                         disableUnderline: true,
                       }}
@@ -243,7 +245,7 @@ export default function Form(props) {
         return (
           <div className={styles.top}>
             <div className={styles.question}>
-              <div className={styles.number}>Q1.</div>
+              <div className={styles.number}>{`Q${props.questions}`}</div>
               <div className={styles.input}>
                 <TextField
                   id="unique-option"
@@ -337,7 +339,7 @@ export default function Form(props) {
         return (
           <div className={styles.top}>
             <div className={styles.question}>
-              <div className={styles.number}>Q1.</div>
+              <div className={styles.number}>{`Q${props.questions}`}</div>
               <div className={styles.input}>
                 <TextField
                   id="outlined-name"
