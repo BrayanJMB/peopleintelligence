@@ -67,6 +67,7 @@ export default function CreateSurvey() {
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
   const [categoryError, setCategoryError] = useState('');
+  const [customOptionError, setCustomOptionError] = useState([]);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [question, setQuestion] = useState();
   const [anonymous, setAnonymous] = useState(true);
@@ -200,8 +201,7 @@ export default function CreateSurvey() {
       })),
     };
     const resourceName = data.surveyOrMap === 'survey' ? 'Plantilla' : 'Ruta de mapa';
-
-    await client.post('Administrator/createTemplate', newTemplate);
+    await client.post(`Administrator/createTemplate/${currentCompany.id}`, newTemplate);
 
     setLoading(false);
     navigate(`/journeysettings?tab=${data.surveyOrMap}`);
@@ -502,9 +502,9 @@ export default function CreateSurvey() {
         questionOptions.push(updatedOption);
       });
     }
-    
-    console.log(questionCopy);
-    console.log(updatedQuestion);
+    console.log(questionOptions);
+    //console.log(questionCopy);
+    //console.log(updatedQuestion);
 
     return {
       questionId: updatedQuestion.id,
@@ -601,13 +601,37 @@ export default function CreateSurvey() {
     setCategoryError('');
 
     if (edit) {
+      if (question.name.length < 5) {
+        setErrorMessage({
+          ...errorMessage,
+          name: true,
+        });
+        setHelperText({
+          ...helperText,
+          name: 'Se requiere un mínimo de 5 caracteres.',
+        });
+        
+        return;
+      }
+      if(!question.customOptions.every(elemento => elemento !== '') && question.typeId === 3){
+        let checkCustomOptions = question.customOptions.map(elemento => elemento === '');
+        setCustomOptionError(
+          checkCustomOptions
+        )  
+        return;
+      }
+
+
+
+      setErrorMessage({});
+      setHelperText({});
+      setCustomOptionError([]);
+
       handleActualizar();
       handleCloseModal();
-
       return;
     }
-
-    // validate question name
+    
     if (information.name.length < 5) {
       setErrorMessage({
         ...errorMessage,
@@ -620,6 +644,13 @@ export default function CreateSurvey() {
       
       return;
     }
+    if(!information.customOptions.every(elemento => elemento !== '') && type.id === 3){
+      let checkCustomOptions = information.customOptions.map(elemento => elemento === '');
+      setCustomOptionError(
+        checkCustomOptions
+      )  
+      return;
+    }
     
     // validate category id
     if (categoryId === '' || categoryId === null) {
@@ -628,8 +659,11 @@ export default function CreateSurvey() {
       return;
     } 
 
+
+
     setErrorMessage({});
     setHelperText({});
+    setCustomOptionError([]);
 
     // validate questions
     if (type.id === 1) {
@@ -915,6 +949,8 @@ export default function CreateSurvey() {
                   handleCategoryIdChange={handleCategoryIdChange}
                   categories={categories}
                   categoryError={categoryError}
+                  questions={questions.length + 1}
+                  customOptionError={customOptionError}
                 />
               </div>
             </div>
@@ -963,6 +999,7 @@ export default function CreateSurvey() {
                     categories={categories}
                     categoryError={categoryError}
                     handleChangeOptions={handleChangeOptions}
+                    customOptionError={customOptionError}
                   />
                 )}
               </div>
