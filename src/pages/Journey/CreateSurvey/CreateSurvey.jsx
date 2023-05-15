@@ -617,7 +617,7 @@ export default function CreateSurvey() {
         let checkCustomOptions = question.customOptions.map(elemento => elemento === '');
         setCustomOptionError(
           checkCustomOptions
-        )  
+        );  
         return;
       }
 
@@ -648,7 +648,7 @@ export default function CreateSurvey() {
       let checkCustomOptions = information.customOptions.map(elemento => elemento === '');
       setCustomOptionError(
         checkCustomOptions
-      )  
+      );  
       return;
     }
     

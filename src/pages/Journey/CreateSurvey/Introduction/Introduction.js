@@ -78,7 +78,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
    */
   const fetchMaps = async () => {
     if (!currentCompany)
-      return
+      return;
     const { data } = await client.get(`GetJorneyMapCompany/${currentCompany.id}`);
     const maps = data.map((item) => ({
       ...item,

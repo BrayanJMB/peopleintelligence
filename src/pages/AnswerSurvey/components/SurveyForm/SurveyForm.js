@@ -242,7 +242,7 @@ const SurveyForm = ({ questions, onAnswered }) => {
 
       if (question.api && question.api.match(regex)) {
         const url = question.api.replace(regex, option.numberOption);
-        console.log(url)
+        console.log(url);
         const { data } = await axios.get(url);
 
         setApiOptions((prevState) => ({
@@ -274,7 +274,7 @@ const SurveyForm = ({ questions, onAnswered }) => {
       for (const question of questions) {
 
         if (question.api && !question.api.match(/[{ }]/g)) {
-          question.api = question.api.replace()
+          question.api = question.api.replace();
           const { data } = await axios.get(question.api);
 
           setApiOptions((prevState) => ({
