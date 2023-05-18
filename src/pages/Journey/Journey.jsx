@@ -13,6 +13,7 @@ import starIcon from '../../assets/icons/star_icon.png';
 import last from '../../assets/last.svg';
 import pulso from '../../assets/pulso.svg';
 import MyCarousel from '../../components/MyCarousel/MyCarousel';
+import { selectCompanyById } from '../../features/companies/companiesSlice';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import { fetchJourneyMapAPI, getJourneysCompanyAPI } from '../../services/getJourneyMap.service';
@@ -42,6 +43,7 @@ export default function Journey() {
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const currentCompany = useSelector((state) => state.companies.currentCompany);
+  const company = useSelector((state) => currentCompany ? selectCompanyById(state, currentCompany.id) : null);
   const [currentMapId, setCurrentMapId] = useState(null);
   const [slides, setSlides] = useState([]);
   const [journeys, setJourneys] = useState([]);
@@ -116,7 +118,8 @@ export default function Journey() {
 
       return;
     }
-
+    if (!currentCompany)
+      return;
     // fetch slider data
     const { data } = await fetchJourneyMapAPI(currentCompany.id);
 
@@ -182,7 +185,7 @@ export default function Journey() {
 
               <div className={styles.heading}>
                 <div style={{ paddingRight: '16px' }}>
-                  <img src={currentCompany?.Logotipo ?? starIcon} alt="" className={styles.icon} />
+                  <img src={company?.Logotipo ?? starIcon} alt="" className={styles.icon} />
                 </div>
                 <div style={{ paddingRight: '1em' }} className={styles.text}>
                   <h1

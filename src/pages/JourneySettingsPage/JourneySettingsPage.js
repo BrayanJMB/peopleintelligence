@@ -20,6 +20,7 @@ import Navbar from '../../Layout/Navbar/Navbar';
 import {
   deleteCategoryAPI,
   fetchCategoriesAPI,
+  fetchCategoriesByCompanyAPI,
   storeCategoryAPI,
   updateCategoryAPI,
 } from '../../services/getCategories.service';
@@ -31,6 +32,7 @@ import {
 import {
   deleteJourneyMapAPI as deleteJourneyMapsAPI,
   fetchJourneyMapsAPI,
+  fetchJourneyMapsCompanyAPI,
 } from '../../services/journeys.service';
 import {
   deleteTemplateAPI,
@@ -181,7 +183,7 @@ const JourneySettingsPage = () => {
   const fetchCategories = async () => {
     setLoading(true);
 
-    const { data } = await fetchCategoriesAPI();
+    const { data } = await fetchCategoriesByCompanyAPI(currentCompany.id);
 
     setCategories(data);
     setLoading(false);
@@ -219,11 +221,21 @@ const JourneySettingsPage = () => {
    * 
    * @returns {Promise<void>}
    */
+  /*
   const fetchMapSurveys = async () => {
     setLoading(true);
 
-    const { data } = await fetchJourneyMapsAPI();
+    const { data } = await fetchJourneyMapsCompanyAPI(currentCompany.id);
 
+    setMapSurveys(data);
+    setLoading(false);
+  };*/
+  
+  const fetchMapSurveys = async () => {
+    setLoading(true);
+
+    //const { data } = await fetchJourneyMapsAPI();
+    const { data } = await fetchJourneyMapsCompanyAPI(currentCompany.id);
     setMapSurveys(data);
     setLoading(false);
   };
@@ -397,7 +409,7 @@ const JourneySettingsPage = () => {
       return;
     }
 
-    await deleteCategoryAPI(id);
+    await deleteCategoryAPI(id, currentCompany.id);
     setCategories((categories) => categories.filter((category) => category.id !== id));
     enqueueSnackbar(
       'Categoría eliminada con éxito',
@@ -596,6 +608,7 @@ const JourneySettingsPage = () => {
   const handleSubmittedCreateDialog = async (formValues) => {
     if (currentCreate.type === 'category') {
       const { data } = await storeCategoryAPI({
+        companyId: currentCompany.id,
         nameCatogory: formValues.name,
         descriptionCategory: formValues.description,
       });
@@ -655,7 +668,7 @@ const JourneySettingsPage = () => {
       value: '',
       payload: {
         handleDelete: handleDeleteCategory,
-        handleEdit: handleEditCategory,
+        //handleEdit: handleEditCategory,
         id: category.id,
       },
     },
