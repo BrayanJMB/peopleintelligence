@@ -1,21 +1,32 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk,createSlice } from '@reduxjs/toolkit';
+
+import client from '../../utils/axiosInstance';
 
 const initialState = {
   companies: [],
   currentCompany: null,
 };
 
+export const fetchCompanies = createAsyncThunk(
+  'companies/fetchCompanies',
+  async ({idUser}) => {
+      const { data } = await client.get(`companias/MultiCompani/${idUser}`);
+    return data;
+  }
+);
+
 const companiesSlice = createSlice({
   name: 'companies',
   initialState,
   reducers: {
     companiesAdded(state, action) {
-      state.companies = [
-        ...new Set([
-          ...state.companies,
-          ...action.payload]),
-      ];
-
+      /*
+      state.companies = action.payload
+      ...new Set([
+        ...state.companies,
+        ...action.payload]),
+      ];*/
+      state.companies = action.payload;
       if (state.companies.length > 0 && !state.currentCompany) {
         state.currentCompany = state.companies[0];
       }
@@ -33,6 +44,24 @@ const companiesSlice = createSlice({
         state.currentCompany = null;
       }
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchCompanies.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchCompanies.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.companies = action.payload;
+        if (state.companies.length > 0 && !state.currentCompany) {
+          state.currentCompany = state.companies[0];
+        }
+      } )
+      .addCase(fetchCompanies.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      }
+    );
   },
 });
 

@@ -33,6 +33,8 @@ import NewOffice from '../../components/NewOffice/NewOffice';
 import Notification from '../../components/Notification';
 import Table from '../../components/Table';
 import { addItem, storeItems, updateItem } from '../../features/adminSlice';
+import { fetchCompanies } from '../../features/companies/companiesSlice';
+import { companiesAdded } from '../../features/companies/companiesSlice';
 import { fetchActiveCompany , setDrop} from '../../features/employe/employe';
 import { fetchCompanyMultiUser } from '../../features/employe/employe';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
@@ -147,7 +149,6 @@ import styles from './InfoAdmin.module.css';
 
 
 
-
 export default function InfoAdmin() {
   const [contractTypes, setContractType] = useState([]);
   const [DocumentsTypes, setDocumentos] = useState([]);
@@ -223,7 +224,7 @@ export default function InfoAdmin() {
     fetchCity,
     //fetchGender,
     //fetchDocumentsTypes,
-    fetchCompanies,
+    //fetchCompanies,
     //fetchCampus,
 
     fetchArea,
@@ -402,8 +403,9 @@ export default function InfoAdmin() {
           IdTamanoCompania: formValues.sizeCompany,
           SectorId: formValues.sector,
         });
-        dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
 
+        dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
+        dispatch(fetchCompanies({ idUser: userInfo.user }));
         enqueueSnackbar('Compañía actualizada con éxito', {
           variant: 'success',
         });
@@ -785,7 +787,7 @@ export default function InfoAdmin() {
       acc[sizeCompany.id] = sizeCompany.quantityOfEmployees;
       return acc;
     }, {});
-    console.log(currentMultiCompanies);
+
     if (!currentMultiCompanies)
         return;
     const company = currentMultiCompanies.map((company) => ({
@@ -1965,7 +1967,7 @@ export default function InfoAdmin() {
     fetchOrganizationalLevel();
     fetchPerson();
     */
-
+    
   }, [type]);
 
   useEffect(() => {
@@ -1978,6 +1980,7 @@ export default function InfoAdmin() {
     dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
 
   }, []);
+  
 
   useEffect(() => {
     if (!currentCompany ) {
@@ -1986,6 +1989,7 @@ export default function InfoAdmin() {
     setLoading(true);
     if (currentMultiCompanies.length > 0) {
       fetchCompany();
+
     }
     fetchPerson();
     //fetchSegment();

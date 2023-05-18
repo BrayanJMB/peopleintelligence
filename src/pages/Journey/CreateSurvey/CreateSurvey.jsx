@@ -23,7 +23,7 @@ import Form from '../../../components/Form/Form';
 import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
 import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../../Layout/Navbar/Navbar';
-import { fetchCategoriesAPI } from '../../../services/getCategories.service';
+import { fetchCategoriesAPI, fetchCategoriesByCompanyAPI } from '../../../services/getCategories.service';
 import { fetchQuestionTypesAPI } from '../../../services/questionTypes.service';
 import { deleteTemplateQuestionAPI, showTemplateAPI, updateTemplateAPI, updateTemplateOptionAPI, updateTemplateQuestionAPI } from '../../../services/templates.service';
 import client from '../../../utils/axiosInstance';
@@ -785,7 +785,7 @@ export default function CreateSurvey() {
    * @returns {Promise<void>}
    */
   const fetchCategories = async () => {
-    const { data } = await fetchCategoriesAPI();
+    const { data } = await fetchCategoriesByCompanyAPI(currentCompany.id);
 
     setCategories(data);
   };
@@ -896,6 +896,10 @@ export default function CreateSurvey() {
     fetchCategories();
     fetchQuestionTypes();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    fetchCategories();
+  }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Box sx={{ display: 'flex' }}>

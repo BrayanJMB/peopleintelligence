@@ -7,6 +7,14 @@ import client from '../utils/axiosInstance';
  */
 export const fetchCategoriesAPI = async () => client.get('Categories/');
 
+
+/**
+ * Fetch categories from API.
+ *
+ * @returns {Promise<any>}
+ */
+export const fetchCategoriesByCompanyAPI = async (companyId) => client.get(`Categories/Company/${companyId}`);
+
 /**
  * Update category from API.
  *
@@ -22,7 +30,7 @@ export const updateCategoryAPI = async ({id, ...data}) => client.put(`Categories
  * @param id
  * @returns {Promise<any>}
  */
-export const deleteCategoryAPI = async (id) => client.delete(`Categories/${id}`);
+export const deleteCategoryAPI = async (categoryId, companyId) => client.delete(`Categories/${categoryId}/${companyId}`);
 
 /**
  * Store category from API.
@@ -30,4 +38,4 @@ export const deleteCategoryAPI = async (id) => client.delete(`Categories/${id}`)
  * @param data
  * @returns {Promise<any>}
  */
-export const storeCategoryAPI = async (data) => client.post('Categories/', data);
+export const storeCategoryAPI = async ({companyId, ...data}) => client.post(`Categories/Company/${companyId}`, data);
