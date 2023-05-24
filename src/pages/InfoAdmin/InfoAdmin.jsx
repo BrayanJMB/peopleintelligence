@@ -2041,9 +2041,9 @@ export default function InfoAdmin() {
     'Tipo generos',
     'Tipo salarios',
     'Profesion',
-    'Nivel Organizacional',
     'Preferencia sexual',
     'Estado civil',
+    'Nivel Organizacional',
     'Jornada',
   ];
 
@@ -2209,9 +2209,9 @@ export default function InfoAdmin() {
                                 >
                                   <Tab
                                     label="Departamento"
-                                    id="settings-tab-3"
+                                    id="settings-tab-0"
                                   />
-                                  <Tab label="Oficina" id="settings-tab-0" />
+                                  <Tab label="Oficina" id="settings-tab-1" />
                                   <Tab label="Cargo" id="settings-tab-2" />
                                 </Tabs>
 
@@ -2253,7 +2253,7 @@ export default function InfoAdmin() {
                                 {/* offices */}
                                 <div
                                   hidden={currentTab !== 1}
-                                  id="settings-tabpanel-0"
+                                  id="settings-tabpanel-1"
                                 >
                                   {currentTab === 1 && (
                                     <Box
@@ -2288,7 +2288,7 @@ export default function InfoAdmin() {
                                 {/* rol company */}
                                 <div
                                   hidden={currentTab !== 2}
-                                  id="settings-tabpanel-0"
+                                  id="settings-tabpanel-2"
                                 >
                                   {currentTab === 2 && (
                                     <Box
