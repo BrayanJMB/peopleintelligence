@@ -572,7 +572,7 @@ export default function CreateSurvey() {
   };
   const handleCloseEditModal = () => setEdit(false);
   const handleanonyme = (event) => {
-    setAnonymous(event.target.value);
+    setAnonymous(event.target.value === 'true');
   };
 
   const reorder = (list, start, end) => {

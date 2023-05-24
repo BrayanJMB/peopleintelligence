@@ -289,7 +289,10 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
             style={{
               marginTop: '1.3em',
             }}
-
+            helperText={getHelperText(
+              isValidMessage,
+              'Coloque los correos de esta forma: correo1@example.com, correo2@example.com, correo3@example.com ...',
+            )}
             value={emails}
             error={isValidEmails !== ''}
             onChange={handleEmailsChange}

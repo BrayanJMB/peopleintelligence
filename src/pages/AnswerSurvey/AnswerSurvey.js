@@ -314,6 +314,7 @@ const AnswerSurvey = () => {
                   {currentSurvey.logo !== null && currentSurvey.logo.length !== 0 && (
                     <img
                       src={currentSurvey.logo}
+                      
                       alt="Logotipo de la empresa"
                       style={{
                         width: '1.5em',
@@ -443,6 +444,7 @@ const AnswerSurvey = () => {
                                   optionName: value,
                                 })),
                               }))}
+                              companyId={companyId}
                               onAnswered={(answers) => handleAnswered(answers, activeStep)}
                             />
                           </Fragment>

@@ -32,7 +32,7 @@ import TotalmenteEnDesacuerdo from '../../../../assets/icons/totalmente en desac
 
 import styles from './SurveyForm.module.css';
 
-const SurveyForm = ({ questions, onAnswered }) => {
+const SurveyForm = ({ questions, onAnswered, companyId }) => {
   const [formValues, setFormValues] = useState(questions.map((question) => ({
     id: question.questionId,
     value: '',
@@ -55,10 +55,13 @@ const SurveyForm = ({ questions, onAnswered }) => {
    * @param {string} typeQuestion
    * @returns {boolean}
    */
+  
   const isRadioFace = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case 'escala likkert':
+      /*
+      case 'escala likert':
         return true;
+        */
       default:
         return false;
     }
@@ -72,7 +75,8 @@ const SurveyForm = ({ questions, onAnswered }) => {
    */
   const isRadio = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case 'seleccion':
+      case 'selección':
+      case 'escala likert':
         return true;
       default:
         return false;
@@ -87,7 +91,7 @@ const SurveyForm = ({ questions, onAnswered }) => {
    */
   const isCheckbox = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case 'opcion multiple':
+      case 'opción múltiple':
         return true;
       case 'opcion multiple con imagenes':
         return true;
@@ -271,12 +275,22 @@ const SurveyForm = ({ questions, onAnswered }) => {
   // component did mount
   useEffect(() => {
     const fetchApiOptions = async () => {
+      console.log(questions);
       for (const question of questions) {
-
         if (question.api && !question.api.match(/[{ }]/g)) {
           question.api = question.api.replace();
           const { data } = await axios.get(question.api);
 
+          setApiOptions((prevState) => ({
+            ...prevState,
+            [question.questionId]: data.map(({id, value}) => ({
+              numberOption: id,
+              optionName: value,
+            })),
+          }));
+        }else if (question.api && question.api.includes('{CompanyId}') && (question.urlParam === null || question.urlParam === '') ){
+          let consumo = question.api.replace('{CompanyId}', companyId);
+          const { data } = await axios.get(consumo);
           setApiOptions((prevState) => ({
             ...prevState,
             [question.questionId]: data.map(({id, value}) => ({
