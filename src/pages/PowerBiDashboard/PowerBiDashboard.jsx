@@ -13,11 +13,12 @@ import { getCompanyDashboardsAPI } from '../../services/getCompanyDashboard.serv
 
 import styles from './PowerBiDashboard.module.css';
 
-const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
 export default function PowerBiDashboard() {
   const currentCompany = useSelector((state) => state.companies.currentCompany);
-  const navigate = useNavigate();
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
+  const navigate = useNavigate();   
   const dispatch = useDispatch();
   const powerBi = useSelector((state) => state.powerBi);
   const [page, setPage] = useState(1);
@@ -34,6 +35,7 @@ export default function PowerBiDashboard() {
       return;
     if (userInfo.role.findIndex((p) => p === 'PowerBiDashboard') > -1) {
       getCompanyDashboardsAPI(currentCompany.id).then((res) => {
+        console.log(res.data);
         let data = [];
         res.data.forEach((val) => {
           if (!data.includes(val)) {
