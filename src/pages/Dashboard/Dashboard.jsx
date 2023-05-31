@@ -12,6 +12,7 @@ import Sidebar from '../../Layout/Sidebar/Sidebar';
 import axios from '../../utils/axiosInstance';
 
 import styles from './Dashboard.module.css';
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -73,7 +74,7 @@ export default function Dashboard() {
   return (
     <Box sx={{ display: 'flex' }}>
       <Navbar />
-      <Sidebar />
+      <IconSidebar />
       <div style={{ backgroundColor: 'white' }}>
         <div className={styles.content}>
           <div className={styles.cases}>

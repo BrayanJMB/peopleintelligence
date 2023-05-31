@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CSVLink } from 'react-csv';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -6,42 +6,28 @@ import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import { current } from '@reduxjs/toolkit';
 import { useSnackbar } from 'notistack';
-import * as uuid from 'uuid';
-
-//import axios from '../utils/axiosInstance';
 import Building from '../../assets/Building.svg';
 import MyCard from '../../components/MyCard/MyCard';
 import MyCreateDialog2 from '../../components/MyCreateDialog2/MyCreateDialog2';
 import MyEditDialog2 from '../../components/MyEditDialog2/MyEditDialog2';
 import MyLoader from '../../components/MyLoader/MyLoader';
 import MyTable from '../../components/MyTable/MyTable';
-import NewCompany from '../../components/NewCompany/NewCompany';
-import NewDepartment from '../../components/NewDepartment/NewDepartment';
-import NewEmployee from '../../components/NewEmployee/NewEmployee';
-import NewOffice from '../../components/NewOffice/NewOffice';
 import Notification from '../../components/Notification';
-import Table from '../../components/Table';
-import { addItem, storeItems, updateItem } from '../../features/adminSlice';
 import { fetchCompanies } from '../../features/companies/companiesSlice';
-import { companiesAdded } from '../../features/companies/companiesSlice';
 import { fetchActiveCompany , setDrop} from '../../features/employe/employe';
 import { fetchCompanyMultiUser } from '../../features/employe/employe';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import {
   deleteCompanyAPI,
-  getCompaniesAPI,
   storeCompanyAPI,
   updateCompaniesAPI,
   updateStateCompanyAPI,
@@ -88,10 +74,6 @@ import {
   storeMaritalStatusAPI,
 } from '../../services/getMaritalStatus.service';
 import {
-  getOfficesAPI,
-  postOfficeAPI,
-} from '../../services/getOffices.service';
-import {
   deleteOrganizationalLevelAPI,
   fetchOrganizationalLevelByCompanyAPI,
   storeOrganizationalLevelAPI,
@@ -123,8 +105,6 @@ import {
   fetchWorkingDayByCompanyAPI,
   storeWorkingDayAPI,
 } from '../../services/getWorkingDay.service';
-import { postCompanyAPI } from '../../services/postCompany.service';
-import { postEmployeeAPI } from '../../services/postEmployee.service';
 import axios from '../../utils/axiosInstance';
 import { createForm, handleDelete } from '../../utils/helpers';
 import Error from '../Error/Error';
@@ -146,8 +126,6 @@ import {
 } from './office/officeData';
 
 import styles from './InfoAdmin.module.css';
-
-
 
 export default function InfoAdmin() {
   const [contractTypes, setContractType] = useState([]);
@@ -201,7 +179,6 @@ export default function InfoAdmin() {
   );
   const {
     departments,
-    setDepartments,
     mapDepartment,
     fetchDepartments,
     handleSubmittedCreateDepartment,
@@ -213,23 +190,14 @@ export default function InfoAdmin() {
 
   const {
     handleCreateEmployee,
-    handleEditEmployee,
     mapEmployee,
     employees,
     persons,
-    segments,
-
     fetchEmployee,
     handleSubmittedCreateEmployee,
     fetchCity,
-    //fetchGender,
-    //fetchDocumentsTypes,
-    //fetchCompanies,
-    //fetchCampus,
-
     fetchArea,
     fetchPerson,
-    fetchSegment,
   } = useEmployee(
     setOpenCreateDialog,
     setCurrentCreate,
@@ -251,13 +219,11 @@ export default function InfoAdmin() {
     workingDays,
     offices,
     companyRols
-
   );
 
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
   };
-  const tableData = admin[type];
   const csvLink = useRef();
   const importcsv = useRef();
 
@@ -319,7 +285,6 @@ export default function InfoAdmin() {
           IdTamanoCompania: formValues.sizeCompany,
           SectorId: formValues.sector,
         });
-        //fetchCompanyRol();
         dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
         enqueueSnackbar('Compañía creada con éxito', {
           variant: 'success',
@@ -365,7 +330,7 @@ export default function InfoAdmin() {
     let urlLogo = null;
     if (file) {
       const formData = new FormData();
-      formData.append('logoTipo', file); // Asegúrate de utilizar el nombre correcto para el campo de la imagen
+      formData.append('logoTipo', file);
       try {
         const response = await axios.post(
           `Autenticacion/LogoCompany?BussinesName=${formValues.companyName}`,
@@ -1974,9 +1939,10 @@ export default function InfoAdmin() {
     if ( !currentMultiCompanies) {
       return;
     }
+    /*
     fetchCountry();
     fetchSector();
-    fetchSizeCompany();
+    fetchSizeCompany();*/
     dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
 
   }, []);
@@ -1991,30 +1957,9 @@ export default function InfoAdmin() {
       fetchCompany();
 
     }
-    fetchPerson();
-    //fetchSegment();
-    fetchDepartments();
-    fetchDocumentType();
-    fetchOffice();
-    fetchCompanyRol();
-    fetchEmployee();
-    fetchSalaryType();
-    fetchCity();
-    fetchSector();
-    fetchSizeCompany();
-    fetchCountry();
-    fetchProfessions();
-    fetchGender();
-    fetchMaritalStatus();
-    fetchHiringType();
-    fetchEducationLevel();
-    fetchEnglishLevel();
-    fetchSexualPreference();
-    fetchDisabilities();
+
     fetchContractType();
-    fetchOrganizationalLevel();
-    fetchWorkingDay();
-    fetchArea(currentCompany.id);
+
     setLoading(false);
   }, [currentCompany, currentMultiCompanies]); // eslint-disable-line react-hooks/exhaustive-deps
 

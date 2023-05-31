@@ -19,6 +19,7 @@ import Sletter from '../../assets/icons/Sletter.png';
 import multicompani from '../../assets/multicompani.jpeg';
 
 import styles from './IconSidebar.module.css';
+import { useSelector } from 'react-redux';
 
 const names = [
   'Information Management',
@@ -53,6 +54,7 @@ export default function IconSidebar() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(Array(6).fill(null));
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
 
   const handleItemClick = (index) => (event) => {
     if (
@@ -148,15 +150,15 @@ export default function IconSidebar() {
         open
       >
         <Toolbar style={{ marginTop: '1.5em' }}>
-          <img
-            src={
-              userInfo?.role.findIndex((p) => p === 'MultiCompania') < 0
-                ? 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
-                : multicompani
-            }
-            alt="profile"
-            className={styles.photo}
-          />
+        <img
+          src={
+            userInfo?.role.findIndex((p) => p === 'MultiCompania') < 0
+              ? (currentCompany && currentCompany.Logotipo)  // Verifica si currentCompany no es null antes de intentar acceder a Logotipo
+              : multicompani
+          }
+          alt="profile"
+          className={styles.photo}
+        />
         </Toolbar>
         <List
           style={{

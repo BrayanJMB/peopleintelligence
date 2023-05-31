@@ -7,6 +7,7 @@ import Logout from '@mui/icons-material/Logout';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import AppBar from '@mui/material/AppBar';
 import Autocomplete from '@mui/material/Autocomplete';
+import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -16,9 +17,7 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 
-import { setCredentials } from '../../features/authSlice';
 import { companiesAdded, currentCompanySelected, fetchCompanies } from '../../features/companies/companiesSlice';
-import { selectActiveCompanies } from '../../features/employe/employe';
 import { fetchActiveCompany, setDrop } from '../../features/employe/employe';
 import axios from '../../utils/axiosInstance';
 
@@ -64,7 +63,7 @@ export default function Navbar() {
   const open = Boolean(anchorEl);
   const open2 = Boolean(anchorEl2);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [data, setData] = useState({
     content: { company: [] },
     ids: { company: [] },
@@ -164,6 +163,9 @@ export default function Navbar() {
       //companyConsume(userInfo.user);
       dispatch(fetchCompanies({ idUser: userInfo.user }));
       dispatch(fetchActiveCompany({ idUser: userInfo.user }));
+    }else{
+      dispatch(fetchCompanies({ idUser: userInfo.user }));
+      dispatch(fetchActiveCompany({ idUser: userInfo.user }));
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -229,7 +231,9 @@ export default function Navbar() {
               )}
 
             />
-            ) : null}
+            ) : (<Typography color="textPrimary" variant="h6" style={{ fontStyle: 'italic' }}>
+            {currentCompany && currentCompany.nombreCompania}
+          </Typography>)}
 
             <IconButton onClick={handleHome}>
               <HomeOutlinedIcon sx={{ fontSize: '40px' }} />
