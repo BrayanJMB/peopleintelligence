@@ -7,6 +7,7 @@ import Dletter from '../../assets/icons/Dletter.png';
 import Iletter from '../../assets/icons/Iletter.png';
 import Jletter from '../../assets/icons/Jletter.png';
 import Oletter from '../../assets/icons/Oletter.png';
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import Sidebar from '../../Layout/Sidebar/Sidebar';
 import axios from '../../utils/axiosInstance';
@@ -73,7 +74,7 @@ export default function Dashboard() {
   return (
     <Box sx={{ display: 'flex' }}>
       <Navbar />
-      <Sidebar />
+      <IconSidebar />
       <div style={{ backgroundColor: 'white' }}>
         <div className={styles.content}>
           <div className={styles.cases}>

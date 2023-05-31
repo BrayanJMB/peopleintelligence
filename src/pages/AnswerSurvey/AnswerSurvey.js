@@ -162,6 +162,7 @@ const AnswerSurvey = () => {
       // demographic step
       const payload = {
         surveyId: Number.parseInt(surveyId),
+        answerId: answerId,
         demographics: answers.length > 1 ? answers[0] : [],
         answers: answers.length > 1 ? answers[1] : answers[0],
       };
@@ -222,7 +223,7 @@ const AnswerSurvey = () => {
       const newAnswers = [...prevAnswers];
 
       newAnswers[step] = answers;
-
+      
       return newAnswers;
     });
 
@@ -350,7 +351,7 @@ const AnswerSurvey = () => {
                 </Typography>
 
                 {/* email */}
-                {emailSubmitted === false && (
+                {emailSubmitted === false && !answerId && (
                   <Box
                     sx={{
                       display: 'flex',
@@ -402,7 +403,7 @@ const AnswerSurvey = () => {
                 )}
 
                 {/* stepper */}
-                {emailSubmitted === true && (
+                {emailSubmitted === true  && (
                   <Fragment>
                     <Stepper
                       style={{ marginTop: '2em' }}
