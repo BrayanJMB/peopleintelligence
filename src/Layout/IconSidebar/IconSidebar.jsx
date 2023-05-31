@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -19,7 +20,6 @@ import Sletter from '../../assets/icons/Sletter.png';
 import multicompani from '../../assets/multicompani.jpeg';
 
 import styles from './IconSidebar.module.css';
-import { useSelector } from 'react-redux';
 
 const names = [
   'Information Management',

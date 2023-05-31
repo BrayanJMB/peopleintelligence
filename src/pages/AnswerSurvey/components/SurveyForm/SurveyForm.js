@@ -280,7 +280,7 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
         if (question.api && !question.api.match(/[{ }]/g)) {
           question.api = question.api.replace();
           const { data } = await axios.get(question.api);
-          console.log(data)
+          console.log(data);
           setApiOptions((prevState) => ({
             ...prevState,
             [question.questionId]: data.map(({id, value}) => ({
@@ -291,7 +291,7 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
         }else if (question.api && question.api.includes('{CompanyId}') && (question.urlParam === null || question.urlParam === '') ){
           let consumo = question.api.replace('{CompanyId}', companyId);
           const { data } = await axios.get(consumo);
-          console.log(data)
+          console.log(data);
           setApiOptions((prevState) => ({
             ...prevState,
             [question.questionId]: Array.isArray(data) ? data.map(({id, value}) => ({

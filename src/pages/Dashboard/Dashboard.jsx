@@ -7,12 +7,12 @@ import Dletter from '../../assets/icons/Dletter.png';
 import Iletter from '../../assets/icons/Iletter.png';
 import Jletter from '../../assets/icons/Jletter.png';
 import Oletter from '../../assets/icons/Oletter.png';
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import Sidebar from '../../Layout/Sidebar/Sidebar';
 import axios from '../../utils/axiosInstance';
 
 import styles from './Dashboard.module.css';
-import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 
 export default function Dashboard() {
   const navigate = useNavigate();
