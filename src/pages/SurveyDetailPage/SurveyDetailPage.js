@@ -311,13 +311,16 @@ const SurveyDetailPage = () => {
                       </div>
                       <div className={styles.SurveyDetailPage__sendInvitation__buttons}>
                         <Stack spacing={2} direction="row">
-                          <Button
-                            onClick={sendReminder}
-                            startIcon={<ScheduleSendIcon />}
-                            variant="text"
-                          >
-                            Enviar recordatorio
-                          </Button>
+                          { currentSurvey.ispersonal && (
+                              <Button
+                              onClick={sendReminder}
+                              startIcon={<ScheduleSendIcon />}
+                              variant="text"
+                            >
+                              Enviar recordatorio
+                            </Button>
+                          )}
+
                           <Snackbar
                             open={reminderSent}
                             autoHideDuration={3000}
