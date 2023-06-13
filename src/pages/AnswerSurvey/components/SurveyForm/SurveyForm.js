@@ -243,12 +243,9 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
     for (const question of questions) {
       const regex = new RegExp(`{${paramName}}`, 'g');
       const option = options.find((option) => option.optionName === paramId);
-
       if (question.api && question.api.match(regex)) {
         const url = question.api.replace(regex, option.numberOption);
-        console.log(url);
         const { data } = await axios.get(url);
-
         setApiOptions((prevState) => ({
           ...prevState,
           [question.questionId]: data.map(({id, value}) => ({
@@ -275,12 +272,11 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
   // component did mount
   useEffect(() => {
     const fetchApiOptions = async () => {
-      console.log(questions);
+      console.log(questions)
       for (const question of questions) {
         if (question.api && !question.api.match(/[{ }]/g)) {
           question.api = question.api.replace();
           const { data } = await axios.get(question.api);
-          console.log(data);
           setApiOptions((prevState) => ({
             ...prevState,
             [question.questionId]: data.map(({id, value}) => ({
@@ -289,9 +285,9 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
             })),
           }));
         }else if (question.api && question.api.includes('{CompanyId}') && (question.urlParam === null || question.urlParam === '') ){
+          console.log(question.api)
           let consumo = question.api.replace('{CompanyId}', companyId);
           const { data } = await axios.get(consumo);
-          console.log(data);
           setApiOptions((prevState) => ({
             ...prevState,
             [question.questionId]: Array.isArray(data) ? data.map(({id, value}) => ({

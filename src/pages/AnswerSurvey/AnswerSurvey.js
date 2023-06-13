@@ -48,7 +48,9 @@ const AnswerSurvey = () => {
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [stepsCompleted, setStepsCompleted] = useState([false, false, true]);
   const [answers, setAnswers] = useState([{}, {}]);
+  const [answerIdAPI, setAnswerIdAPI] = useState("");
   const [demographicUserData, setDemographicUserData] = useState(null);
+  const [isPersonal, setIsPersonal] =  useState(false);
   const surveyStatus = useSelector((state) => selectSurveysStatus(state));
   const currentSurvey = useSelector((state) => selectCurrentSurveyForAnswer(state));
   const [loading, setLoading] = useState(true);
@@ -81,7 +83,7 @@ const AnswerSurvey = () => {
     }
 
     const { data } = await client.get(`getMailPersonalSurvey/${surveyId}/${companyId}/${email}`);
-
+    setAnswerIdAPI(data.id);
     // if exists, set answers and skip demographic step
     if (data && data.demographics) {
       setDemographicUserData(data.demographics);
@@ -162,7 +164,7 @@ const AnswerSurvey = () => {
       // demographic step
       const payload = {
         surveyId: Number.parseInt(surveyId),
-        answerId: answerId,
+        answerId: isPersonal ? (answerId || answerIdAPI) : null,
         demographics: answers.length > 1 ? answers[0] : [],
         answers: answers.length > 1 ? answers[1] : answers[0],
       };
@@ -172,7 +174,7 @@ const AnswerSurvey = () => {
         payload.answers = answers[0];
       }
 
-      dispatch(storeSurvey(payload));
+      dispatch(storeSurvey(payload));   
     }
 
     if ((activeStep + 1) === steps.length) {
@@ -257,10 +259,11 @@ const AnswerSurvey = () => {
     setLoading(true);
 
     const { data: isPersonal } = await client.get(`ValidateAnswerSurvey/${surveyId}/${companyId}`);
-
+    
     if (!isPersonal) {
       setEmailSubmitted(true);
     }
+    setIsPersonal(isPersonalData)
 
     setLoading(false);
   };
@@ -302,6 +305,18 @@ const AnswerSurvey = () => {
         >
           <CardContent>
             {(surveyStatus === 'loading' || loading) && (<MyLoader />)}
+
+
+            {!loading && (surveyStatus !== 'succeeded' || currentSurvey === null) && (
+            <>
+              <Typography variant="h3" gutterBottom align="center">
+              Lo sentimos :{"("}
+            </Typography>
+              <Typography variant="h4" gutterBottom align="center">
+                Esta encuesta no se encuentra disponible.
+              </Typography>
+              </>
+            )}
             {surveyStatus === 'succeeded' && currentSurvey !== null && (
               <Fragment>
                 {/* company name */}
