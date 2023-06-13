@@ -101,7 +101,7 @@ export default function CreateSurvey() {
    */
   const getDemographics = () => {
     const demographics = [];
-
+    debugger;
     data.demographics.forEach((demographic) => {
       const index = newDemographics.findIndex(
         (item) => item.name === demographic,
@@ -170,7 +170,7 @@ export default function CreateSurvey() {
    */
   const createTemplate = async () => {
     setLoading(true);
-
+    debugger;
     // Create survey
     const newTemplate = {
       mapId: data.map.id,
@@ -193,7 +193,7 @@ export default function CreateSurvey() {
         })),
       })),
       demographics: getDemographics().map((demographic) => ({
-        name: demographic.value,
+        name: demographic.value || demographic.name,
         options: demographic.options.map((option) => ({
           value: option.value,
           text: option.text,

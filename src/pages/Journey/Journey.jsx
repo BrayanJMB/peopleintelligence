@@ -78,11 +78,13 @@ export default function Journey() {
    * @returns {Promise<void>}
    */
   const fetchJourneys = async () => {
+
     if (!currentCompany || !currentMapId) {
       return;
     }
 
     // fetch journeys by map and company
+    
     const { data } = await getJourneysCompanyAPI(currentCompany.id, currentMapId);
 
     // update current slide
@@ -91,6 +93,7 @@ export default function Journey() {
       isCurrent: slide.id === currentMapId,
     })));
     setJourneys(data);
+    
   };
 
   /**
@@ -138,26 +141,14 @@ export default function Journey() {
     const mapId = data[0].id;
 
     // fetch journeys by map and company
-
     setCurrentMapId(mapId);
 
-    await fetchJourneys();
+    //await fetchJourneys();
   };
-  /**
-   * Component did mount.
-   */
-  useEffect(() => {
-    /**
-     * Fetch journey map data and validate user role.
-     *
-     * @returns {Promise<void>}
-     */
-    fetchJourneyMaps();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    fetchJourneys();
-  }, [currentCompany, currentMapId]); 
+    fetchJourneys(currentMapId);
+  }, [currentMapId]); 
   
   useEffect(() => {
     fetchJourneyMaps();
