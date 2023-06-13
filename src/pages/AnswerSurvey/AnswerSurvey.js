@@ -48,7 +48,7 @@ const AnswerSurvey = () => {
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [stepsCompleted, setStepsCompleted] = useState([false, false, true]);
   const [answers, setAnswers] = useState([{}, {}]);
-  const [answerIdAPI, setAnswerIdAPI] = useState("");
+  const [answerIdAPI, setAnswerIdAPI] = useState('');
   const [demographicUserData, setDemographicUserData] = useState(null);
   const [isPersonal, setIsPersonal] =  useState(false);
   const surveyStatus = useSelector((state) => selectSurveysStatus(state));
@@ -259,11 +259,10 @@ const AnswerSurvey = () => {
     setLoading(true);
 
     const { data: isPersonal } = await client.get(`ValidateAnswerSurvey/${surveyId}/${companyId}`);
-    
     if (!isPersonal) {
       setEmailSubmitted(true);
     }
-    setIsPersonal(isPersonalData)
+    setIsPersonal(isPersonal);
 
     setLoading(false);
   };
@@ -310,7 +309,7 @@ const AnswerSurvey = () => {
             {!loading && (surveyStatus !== 'succeeded' || currentSurvey === null) && (
             <>
               <Typography variant="h3" gutterBottom align="center">
-              Lo sentimos :{"("}
+              Lo sentimos :{'('}
             </Typography>
               <Typography variant="h4" gutterBottom align="center">
                 Esta encuesta no se encuentra disponible.
@@ -418,7 +417,7 @@ const AnswerSurvey = () => {
                 )}
 
                 {/* stepper */}
-                {emailSubmitted === true  && (
+                {(emailSubmitted === true || (answerId || !isPersonal)) && (
                   <Fragment>
                     <Stepper
                       style={{ marginTop: '2em' }}

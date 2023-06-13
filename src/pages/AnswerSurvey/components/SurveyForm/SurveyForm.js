@@ -272,7 +272,7 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
   // component did mount
   useEffect(() => {
     const fetchApiOptions = async () => {
-      console.log(questions)
+      console.log(questions);
       for (const question of questions) {
         if (question.api && !question.api.match(/[{ }]/g)) {
           question.api = question.api.replace();
@@ -285,7 +285,7 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
             })),
           }));
         }else if (question.api && question.api.includes('{CompanyId}') && (question.urlParam === null || question.urlParam === '') ){
-          console.log(question.api)
+          console.log(question.api);
           let consumo = question.api.replace('{CompanyId}', companyId);
           const { data } = await axios.get(consumo);
           setApiOptions((prevState) => ({
