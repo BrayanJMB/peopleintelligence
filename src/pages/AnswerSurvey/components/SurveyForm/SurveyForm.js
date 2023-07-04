@@ -310,6 +310,7 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
 
   return (
     <div className={styles.SurveyForm}>
+      {totalOfSteps() !== 1 && (
       <MobileStepper
         variant="text"
         steps={totalOfSteps()}
@@ -332,7 +333,7 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
             Atrás
           </Button>
         }
-      />
+      />)}
       {questions.map(({ questionId, typeQuestion, questionName, options, score, urlParam }, index) => (
         <FormControl
           key={questionId}
@@ -563,6 +564,7 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
           )}
         </FormControl>)
       )}
+      {totalOfSteps() !== 1 && (
       <MobileStepper
         variant="text"
         steps={totalOfSteps()}
@@ -585,7 +587,7 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
             Atrás
           </Button>
         }
-      />
+      />)}
     </div>
   );
 };
