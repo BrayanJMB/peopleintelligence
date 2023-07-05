@@ -306,14 +306,14 @@ const AnswerSurvey = () => {
             {(surveyStatus === 'loading' || loading) && (<MyLoader />)}
 
 
-            {!loading && (surveyStatus !== 'succeeded' || currentSurvey === null) && (
-            <>
-              <Typography variant="h3" gutterBottom align="center">
-              Lo sentimos :{'('}
-            </Typography>
-              <Typography variant="h4" gutterBottom align="center">
-                Esta encuesta no se encuentra disponible.
-              </Typography>
+            {surveyStatus === 'failed' && (
+              <>
+                <Typography variant="h3" gutterBottom align="center">
+                  Lo sentimos :{'('}
+                </Typography>
+                <Typography variant="h4" gutterBottom align="center">
+                  Esta encuesta no se encuentra disponible.
+                </Typography>
               </>
             )}
             {surveyStatus === 'succeeded' && currentSurvey !== null && (

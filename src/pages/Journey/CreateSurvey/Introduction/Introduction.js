@@ -137,6 +137,9 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
     if (mailingMessage.length < 5) {
       setIsValidMailingMessage('Este campo debe tener al menos 5 caracteres');
       setIsValid(false);
+    }else if (!mailingMessage.includes('@enlace')) {
+        setIsValidMailingMessage('El mensaje debe contener "@enlace".');
+        setIsValid(false);
     }
   };
 

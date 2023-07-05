@@ -1888,6 +1888,13 @@ export default function InfoAdmin() {
   };
 
   useEffect(() => {
+    if ( !currentMultiCompanies) {
+      return;
+    }
+    dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
+  }, []);
+
+  useEffect(() => {
     if (employecsv) {
       csvLink.current.link.click();
     }
@@ -1901,53 +1908,7 @@ export default function InfoAdmin() {
       alert('No tiene permiso para acceder a esta funcionalidad');
       navigate('/dashboard');
     }
-    if (!currentCompany) {
-      return;
-    }
-    /*
-    fetchGender(currentCompany.id);
-    fetchSector();
-    fetchSizeCompany();
-    fetchCountry();
-*/
-    //getTableData();
-    //fetchCompany();
-
-    /*
-    fetchOffice();
-    fetchEmployee();
-
-    fetchGender();
-    fetchDocumentsTypes();
-    fetchCompanies();
-    fetchMaritalStatus();
-    fetchSalaryType();
-    fetchprofessions();
-    fetchEducationLevel();
-    fetchEnglishLevel();
-    fetchCampus();
-    fetchSexualPreference();
-    fetchDisabilities();
-    fetchHiringType();
-    fetchContractType();
-    fetchOrganizationalLevel();
-    fetchPerson();
-    */
-    
   }, [type]);
-
-  useEffect(() => {
-    if ( !currentMultiCompanies) {
-      return;
-    }
-    /*
-    fetchCountry();
-    fetchSector();
-    fetchSizeCompany();*/
-    dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
-
-  }, []);
-  
 
   useEffect(() => {
     if (!currentCompany ) {
@@ -1956,15 +1917,31 @@ export default function InfoAdmin() {
     setLoading(true);
     if (currentMultiCompanies.length > 0) {
       fetchCompany();
-
     }
-
+    fetchDepartments();
+    fetchSector();
+    fetchSizeCompany();
+    fetchCountry();
+    fetchOffice();
+    fetchEmployee();
+    fetchGender();
+    fetchDocumentType();
+    fetchCompanies();
+    fetchMaritalStatus();
+    fetchSalaryType();
+    fetchProfessions();
+    fetchEducationLevel();
+    fetchEnglishLevel();
+    fetchWorkingDay();
+    fetchSexualPreference();
+    fetchDisabilities();
+    fetchHiringType();
     fetchContractType();
-
+    fetchOrganizationalLevel();
+    fetchPerson();
+    fetchCompanyRol();
     setLoading(false);
   }, [currentCompany, currentMultiCompanies]); // eslint-disable-line react-hooks/exhaustive-deps
-
-
 
   //Tabs Logic
   const handleLeftButtonClick = () => {

@@ -442,7 +442,6 @@ export default function CreateSurvey() {
    */
   const handleEdit = (index) => {
     setTarget(index);
-    console.log(questions[index]);
     setQuestion(questions[index]);
     setEdit(true);
   };
@@ -502,9 +501,6 @@ export default function CreateSurvey() {
         questionOptions.push(updatedOption);
       });
     }
-    console.log(questionOptions);
-    //console.log(questionCopy);
-    //console.log(updatedQuestion);
 
     return {
       questionId: updatedQuestion.id,
@@ -613,16 +609,13 @@ export default function CreateSurvey() {
         
         return;
       }
-      if(!question.customOptions.every(elemento => elemento !== '') && question.typeId === 3){
-        let checkCustomOptions = question.customOptions.map(elemento => elemento === '');
+
+      if (question.customOptions !== null && question.typeId === 3 && question.customOptions.some(option => option === '')) {
         setCustomOptionError(
-          checkCustomOptions
+          question.customOptions.map(option => option === '')
         );  
         return;
       }
-
-
-
       setErrorMessage({});
       setHelperText({});
       setCustomOptionError([]);
@@ -759,10 +752,10 @@ export default function CreateSurvey() {
    * @param {number} id The id of the question to be deleted.
    */
   const handleDelete = async (id) => {
-    const question = questions.find((question) => question.questionId === id);
-    setQuestions((previousQuestions) => previousQuestions.filter((question) => question.questionId !== id));
+    const question = questions.find((question) => question.id === id);
+    setQuestions((previousQuestions) => previousQuestions.filter((question) => question.id !== id));
 
-    await deleteTemplateQuestionAPI(question.questionId);
+    await deleteTemplateQuestionAPI(question.id);
     enqueueSnackbar('Pregunta eliminada', { variant: 'success' });
   };
 
