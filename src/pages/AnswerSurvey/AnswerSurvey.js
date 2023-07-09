@@ -174,7 +174,8 @@ const AnswerSurvey = () => {
         payload.answers = answers[0];
       }
 
-      dispatch(storeSurvey(payload));   
+      dispatch(storeSurvey(payload));
+      localStorage.setItem('formValues', JSON.stringify([]));
     }
 
     if ((activeStep + 1) === steps.length) {
@@ -306,16 +307,7 @@ const AnswerSurvey = () => {
             {(surveyStatus === 'loading' || loading) && (<MyLoader />)}
 
 
-            {surveyStatus === 'failed' && (
-              <>
-                <Typography variant="h3" gutterBottom align="center">
-                  Lo sentimos :{'('}
-                </Typography>
-                <Typography variant="h4" gutterBottom align="center">
-                  Esta encuesta no se encuentra disponible.
-                </Typography>
-              </>
-            )}
+
             {surveyStatus === 'succeeded' && currentSurvey !== null && (
               <Fragment>
                 {/* company name */}
@@ -447,9 +439,10 @@ const AnswerSurvey = () => {
                         {isDemographicStep() && (
                           <Fragment>
                             <SurveyForm
-                              questions={currentSurvey.demograficos.map(({ id, name, type, urlApi, options, urlParam }, index) => ({
+                              questions={currentSurvey.demograficos.map(({ id, name, description, type, urlApi, options, urlParam }, index) => ({
                                 questionId: id,
                                 questionName: name,
+                                description: description,
                                 questionNumber: index + 1,
                                 typeQuestion: type,
                                 api: urlApi,
@@ -460,6 +453,8 @@ const AnswerSurvey = () => {
                                 })),
                               }))}
                               companyId={companyId}
+                              nameStep={steps}
+                              activeStepper={activeStep}
                               onAnswered={(answers) => handleAnswered(answers, activeStep)}
                             />
                           </Fragment>
@@ -479,26 +474,29 @@ const AnswerSurvey = () => {
                       </div>
 
                       <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                        <Button
-                          color="inherit"
-                          disabled={activeStep === 0 || activeStep + 1 === steps.length}
-                          onClick={handleBack}
-                          sx={{ mr: 1 }}
-                        >
-                          Atrás
-                        </Button>
-                        <Box sx={{ flex: '1 1 auto' }} />
-                        {isStepOptional(activeStep) && (
-                          <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-                            Saltar
+                        {activeStep !== 0 && activeStep +1 !== steps.length && (
+                          <Button
+                            color="inherit"
+                            disabled={activeStep === 0 || activeStep + 1 === steps.length}
+                            onClick={handleBack}
+                            sx={{ mr: 1 }}
+                          >
+                            Atrás
                           </Button>
                         )}
+                          <Box sx={{ flex: '1 1 auto' }} />
+                          {isStepOptional(activeStep) && (
+                            <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
+                              Saltar
+                            </Button>
+                          )}
+
 
                         <Button
                           onClick={handleNext}
                           disabled={!stepsCompleted[activeStep] || surveyStatus === 'loading'}
                         >
-                          {activeStep === steps.length - 1 ? 'Finalizar' : 'Siguiente'}
+                          {activeStep === steps.length - 1 ? '' : 'Siguiente'}
                         </Button>
                       </Box>
                     </React.Fragment>

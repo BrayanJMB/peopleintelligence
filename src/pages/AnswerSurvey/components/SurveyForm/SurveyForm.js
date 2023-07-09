@@ -32,12 +32,40 @@ import TotalmenteEnDesacuerdo from '../../../../assets/icons/totalmente en desac
 
 import styles from './SurveyForm.module.css';
 
-const SurveyForm = ({ questions, onAnswered, companyId }) => {
-  const [formValues, setFormValues] = useState(questions.map((question) => ({
-    id: question.questionId,
-    value: '',
-    values: {},
-  })));
+const SurveyForm = ({ questions, onAnswered, companyId, nameStep, activeStepper }) => {
+  const [formValues, setFormValues] = useState(() => {
+    const savedValues = localStorage.getItem('formValues');
+    let parsedValues = null;
+    
+    if (savedValues) {
+      try {
+        parsedValues = JSON.parse(savedValues);
+      } catch (e) {
+        console.error('Error parsing saved values:', e);
+      }
+    }
+  
+    const defaultValues = questions.map((question) => ({
+      id: question.questionId,
+      value: '',
+      values: {},
+    }));
+  
+    if (parsedValues && Array.isArray(parsedValues) && parsedValues.length > 0) {
+      // Si hay valores guardados, los fusionamos con los valores por defecto
+      return defaultValues.map((defaultValue) => {
+        // Buscamos el valor guardado para esta pregunta
+        const savedValue = parsedValues.find((value) => value.id === defaultValue.id);
+  
+        // Si encontramos un valor guardado, lo fusionamos con el valor por defecto
+        // Si no, simplemente devolvemos el valor por defecto
+        return savedValue ? { ...defaultValue, ...savedValue } : defaultValue;
+      });
+    } else {
+      // Si no hay valores guardados, simplemente devolvemos los valores por defecto
+      return defaultValues;
+    }
+  });
   const [apiOptions, setApiOptions] = useState({});
   const [activeStep, setActiveStep] = useState(0);
 
@@ -272,7 +300,6 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
   // component did mount
   useEffect(() => {
     const fetchApiOptions = async () => {
-      console.log(questions);
       for (const question of questions) {
         if (question.api && !question.api.match(/[{ }]/g)) {
           question.api = question.api.replace();
@@ -285,7 +312,6 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
             })),
           }));
         }else if (question.api && question.api.includes('{CompanyId}') && (question.urlParam === null || question.urlParam === '') ){
-          console.log(question.api);
           let consumo = question.api.replace('{CompanyId}', companyId);
           const { data } = await axios.get(consumo);
           setApiOptions((prevState) => ({
@@ -302,9 +328,11 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
     fetchApiOptions();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-
   // watch changes in form values
   useEffect(() => {
+    if(nameStep && nameStep[activeStepper] === 'Datos demográficos'){
+      localStorage.setItem('formValues', JSON.stringify(formValues));
+    }
     onAnswered(formValues);
   }, [formValues]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -334,7 +362,7 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
           </Button>
         }
       />)}
-      {questions.map(({ questionId, typeQuestion, questionName, options, score, urlParam }, index) => (
+      {questions.map(({ questionId, typeQuestion, questionName, options, score, urlParam, description }, index) => (
         <FormControl
           key={questionId}
           style={{
@@ -355,6 +383,9 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
               >
                 {questionName}
               </FormLabel>
+              <Typography variant="caption" style={{ display:'block', fontStyle: 'italic' }}>
+                  {description}
+              </Typography>
               <RadioGroup
                 name={`${questionId}-${typeQuestion}`}
                 onChange={(event) => handleRadioChange(event, index)}
@@ -394,6 +425,9 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
               >
                 {questionName}
               </FormLabel>
+              <Typography variant="caption" style={{ display:'block', fontStyle: 'italic' }}>
+                  {description}
+              </Typography>
               <RadioGroup
                 name={`${questionId}-${typeQuestion}`}
                 onChange={(event) => handleRadioChange(event, index)}
@@ -447,6 +481,9 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
               >
                 {questionName}
               </FormLabel>
+              <Typography variant="caption" style={{ fontStyle: 'italic' }}>
+                  {description}
+                </Typography>
               <FormGroup>
                 {options.map(({ numberOption, optionName }) => (
                   <FormControlLabel
@@ -477,6 +514,9 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
               >
                 {questionName}
               </FormLabel>
+              <Typography variant="caption" style={{ display:'block', fontStyle: 'italic' }}>
+                  {description}
+              </Typography>
               <Box sx={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -521,6 +561,9 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
               >
                 {questionName}
               </FormLabel>
+              <Typography variant="caption" style={{ display:'block', fontStyle: 'italic' }}>
+                  {description}
+              </Typography>
               <TextField
                 id={`${questionId}-${typeQuestion}`}
                 name={`${questionId}-${typeQuestion}`}
@@ -540,6 +583,9 @@ const SurveyForm = ({ questions, onAnswered, companyId }) => {
               >
                 {questionName}
               </InputLabel>
+              <Typography variant="caption" style={{ display:'block', fontStyle: 'italic' }}>
+                  {description}
+              </Typography>
               <Select
                 labelId={`${questionId}-${typeQuestion}`}
                 id={`${questionId}-${typeQuestion}`}
