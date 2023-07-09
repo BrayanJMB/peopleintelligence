@@ -141,7 +141,7 @@ export default function Cuestionario(props) {
                                           {/* delete */}
                                           <IconButton
                                             onClick={() => {
-                                              openDeleteDialog(val.questionId);
+                                              openDeleteDialog(val.id);
                                             }}
                                           >
                                             <DeleteForeverOutlinedIcon

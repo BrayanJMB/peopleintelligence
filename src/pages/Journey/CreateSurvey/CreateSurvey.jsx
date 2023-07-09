@@ -777,11 +777,7 @@ export default function CreateSurvey() {
    * @param {number} id The id of the question to be deleted.
    */
   const handleDelete = async (id) => {
-    console.log(id)
-    console.log(questions)
-
     const question = questions.find((question) => question.id === id);
-    console.log(question)
     setQuestions((previousQuestions) =>
       previousQuestions.filter((question) => question.id !== id)
     );
