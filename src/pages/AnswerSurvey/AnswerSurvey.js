@@ -72,6 +72,7 @@ const AnswerSurvey = () => {
    *
    * @param event
    */
+  console.log(currentSurvey)
   const handleEmailSubmit = async (event) => {
     event.preventDefault();
 
