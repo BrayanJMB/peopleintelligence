@@ -1,29 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
-import SaveIcon from "@mui/icons-material/Save";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormGroup from "@mui/material/FormGroup";
-import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import { useSnackbar } from "notistack";
-import PropTypes from "prop-types";
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import SaveIcon from '@mui/icons-material/Save';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { useSnackbar } from 'notistack';
+import PropTypes from 'prop-types';
 
-import client from "../../utils/axiosInstance";
-import MyLoader from "../MyLoader/MyLoader";
-import styles from "./DemographicDataForm.module.css";
-import { fetchDemographicsAPI } from "../../services/getDemographic.service";
+import { fetchDemographicsAPI } from '../../services/getDemographic.service';
+import client from '../../utils/axiosInstance';
+import MyLoader from '../MyLoader/MyLoader';
+
+import styles from './DemographicDataForm.module.css';
 
 /**
  * Demographic data form component.
@@ -40,11 +41,11 @@ const DemographicDataForm = ({
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [demographicData, setDemographicData] = useState(null);
   const [demographicChecked, setDemographicChecked] = useState([]);
-  const [newDemographicName, setNewDemographicName] = useState("");
+  const [newDemographicName, setNewDemographicName] = useState('');
   const [newDemographicOptions, setNewDemographicOptions] = useState([
-    "",
-    "",
-    "",
+    '',
+    '',
+    '',
   ]);
   const [newDemographics, setNewDemographics] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -86,8 +87,8 @@ const DemographicDataForm = ({
       });
     }
 
-    enqueueSnackbar("Demográfico creado correctamente.", {
-      variant: "success",
+    enqueueSnackbar('Demográfico creado correctamente.', {
+      variant: 'success',
     });
     setNewDemographics((prev) => [
       ...prev,
@@ -127,7 +128,7 @@ const DemographicDataForm = ({
    * Add new demographic option.
    */
   const addNewDemographicOption = () => {
-    setNewDemographicOptions((prev) => [...prev, ""]);
+    setNewDemographicOptions((prev) => [...prev, '']);
   };
 
   /**
@@ -179,9 +180,9 @@ const DemographicDataForm = ({
     let updatedDemographicChecked = [...demographicChecked];
 
     if (checked) {
-      if (value === "País" || value === "Ciudad" || value === "Departamento") {
+      if (value === 'País' || value === 'Ciudad' || value === 'Departamento') {
         // Si 'País', 'Ciudad' o 'Departamento' se han seleccionado, entonces también selecciona las demás.
-        const additionalValues = ["País", "Ciudad", "Departamento"].filter(
+        const additionalValues = ['País', 'Ciudad', 'Departamento'].filter(
           (item) => !demographicChecked.includes(item)
         );
 
@@ -229,8 +230,8 @@ const DemographicDataForm = ({
     );
     await fetchDemographicData();
 
-    enqueueSnackbar("Datos demográficos guardados correctamente.", {
-      variant: "success",
+    enqueueSnackbar('Datos demográficos guardados correctamente.', {
+      variant: 'success',
     });
   };
 
@@ -353,7 +354,7 @@ const DemographicDataForm = ({
         <Box
           sx={{
             marginTop: 2,
-            display: "flex",
+            display: 'flex',
           }}
         >
           {surveyId !== null && (
@@ -362,7 +363,7 @@ const DemographicDataForm = ({
               onClick={handleClickSaveDemographicData}
               variant="contained"
               sx={{
-                marginLeft: "auto",
+                marginLeft: 'auto',
               }}
               startIcon={<SaveIcon />}
             >
@@ -382,7 +383,7 @@ const DemographicDataForm = ({
             <FormControl
               sx={{
                 marginTop: 2,
-                width: "100%",
+                width: '100%',
               }}
             >
               <TextField
@@ -401,13 +402,13 @@ const DemographicDataForm = ({
               <Box
                 key={index}
                 sx={{
-                  display: "flex",
+                  display: 'flex',
                   marginTop: 2,
                 }}
               >
                 <FormControl
                   sx={{
-                    width: "100%",
+                    width: '100%',
                   }}
                 >
                   <TextField
@@ -428,7 +429,7 @@ const DemographicDataForm = ({
             {/* add new option or remove */}
             <Box
               sx={{
-                display: "flex",
+                display: 'flex',
               }}
             >
               <Button
@@ -450,7 +451,7 @@ const DemographicDataForm = ({
                   }
                   sx={{
                     marginTop: 2,
-                    marginLeft: "auto",
+                    marginLeft: 'auto',
                   }}
                 >
                   <RemoveIcon />
