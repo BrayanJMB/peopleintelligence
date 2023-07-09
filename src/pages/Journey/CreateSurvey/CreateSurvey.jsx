@@ -1,81 +1,81 @@
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import DesignServicesIcon from "@mui/icons-material/DesignServices";
-import { Divider } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
-import Stepper from "@mui/material/Stepper";
-import TextField from "@mui/material/TextField";
-import { useSnackbar } from "notistack";
-import * as uuid from "uuid";
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import DesignServicesIcon from '@mui/icons-material/DesignServices';
+import { Divider } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Stepper from '@mui/material/Stepper';
+import TextField from '@mui/material/TextField';
+import { useSnackbar } from 'notistack';
+import * as uuid from 'uuid';
 
-import DemographicDataForm from "../../../components/DemographicDataForm/DemographicDataForm";
-import EditForm from "../../../components/EditForm/EditForm";
-import Form from "../../../components/Form/Form";
-import MyPageHeader from "../../../components/MyPageHeader/MyPageHeader";
-import IconSidebar from "../../../Layout/IconSidebar/IconSidebar";
-import Navbar from "../../../Layout/Navbar/Navbar";
+import DemographicDataForm from '../../../components/DemographicDataForm/DemographicDataForm';
+import EditForm from '../../../components/EditForm/EditForm';
+import Form from '../../../components/Form/Form';
+import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
+import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../../Layout/Navbar/Navbar';
 import {
   fetchCategoriesAPI,
   fetchCategoriesByCompanyAPI,
-} from "../../../services/getCategories.service";
-import { fetchQuestionTypesAPI } from "../../../services/questionTypes.service";
+} from '../../../services/getCategories.service';
+import { fetchQuestionTypesAPI } from '../../../services/questionTypes.service';
 import {
   deleteTemplateQuestionAPI,
   showTemplateAPI,
   updateTemplateAPI,
   updateTemplateOptionAPI,
   updateTemplateQuestionAPI,
-} from "../../../services/templates.service";
-import client from "../../../utils/axiosInstance";
+} from '../../../services/templates.service';
+import client from '../../../utils/axiosInstance';
 
-import Cuestionario from "./Cuestionario/Cuestionario";
-import Intimidad from "./Intimidad/Intimidad.jsx";
-import Introduction from "./Introduction/Introduction";
+import Cuestionario from './Cuestionario/Cuestionario';
+import Intimidad from './Intimidad/Intimidad.jsx';
+import Introduction from './Introduction/Introduction';
 
-import styles from "./CreateSurvey.module.css";
+import styles from './CreateSurvey.module.css';
 
 export default function CreateSurvey() {
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [activeStep, setActiveStep] = useState(0);
   const [questionTypes, setQuestionTypes] = useState([]);
   const [questions, setQuestions] = useState([]);
-  const [target, setTarget] = useState("");
+  const [target, setTarget] = useState('');
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
   const [data, setData] = useState(null);
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
   const [type, setType] = useState(null);
-  const [starmsg, setStarmsg] = useState("");
+  const [starmsg, setStarmsg] = useState('');
   const [information, setInformation] = useState({
-    name: "",
-    description: "",
+    name: '',
+    description: '',
     options: [
-      "Totalmente en Desacuerdo",
-      "En Desacuerdo",
-      "Ni de Acuerdo  Ni en Desacuerdo",
-      "De Acuerdo",
-      "Totalmente de Acuerdo",
+      'Totalmente en Desacuerdo',
+      'En Desacuerdo',
+      'Ni de Acuerdo  Ni en Desacuerdo',
+      'De Acuerdo',
+      'Totalmente de Acuerdo',
     ],
-    customOptions: Array(2).fill(""),
-    stars: Array(3).fill(""),
+    customOptions: Array(2).fill(''),
+    stars: Array(3).fill(''),
   });
 
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
-  const [categoryError, setCategoryError] = useState("");
+  const [categoryError, setCategoryError] = useState('');
   const [customOptionError, setCustomOptionError] = useState([]);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [question, setQuestion] = useState();
@@ -86,15 +86,15 @@ export default function CreateSurvey() {
   const [templateDemographics, setTemplateDemographics] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
   const isTemplate =
-    searchParams.get("isTemplate") === "true" ||
-    location.pathname.indexOf("journey/update-template") !== -1;
-  const isUpdate = location.pathname.indexOf("journey/update-template") !== -1;
+    searchParams.get('isTemplate') === 'true' ||
+    location.pathname.indexOf('journey/update-template') !== -1;
+  const isUpdate = location.pathname.indexOf('journey/update-template') !== -1;
   const templateId =
-    searchParams.get("templateId") || location.pathname.split("/")[3];
+    searchParams.get('templateId') || location.pathname.split('/')[3];
   const steps = [
-    "Introducción",
-    "Cuestionario",
-    ...(!isTemplate ? ["Privacidad"] : []),
+    'Introducción',
+    'Cuestionario',
+    ...(!isTemplate ? ['Privacidad'] : []),
   ];
 
   /**
@@ -147,7 +147,7 @@ export default function CreateSurvey() {
       survey: {
         nameSurvey: data.title,
         descriptionSurvey: data.description,
-        messageEmail: data.mailingMessage,
+        messageMail: data.mailingMessage,
         isPersonal: !anonymous,
         mapId: data.map.id,
         companyId: currentCompany.id,
@@ -174,8 +174,8 @@ export default function CreateSurvey() {
 
     setLoading(false);
     navigate(`/journey/survey/${createdJourney.id}/detail?sendMail=true`);
-    enqueueSnackbar("Cuestionario creado con éxito", {
-      variant: "success",
+    enqueueSnackbar('Cuestionario creado con éxito', {
+      variant: 'success',
     });
   };
 
@@ -190,8 +190,8 @@ export default function CreateSurvey() {
       mapId: data.map.id,
       nameSurvey: data.title,
       descriptionSurvey: data.description,
-      messageEmail: data.mailingMessage,
-      isObligatory: !(data.surveyOrMap === "survey"),
+      messageMail: data.mailingMessage,
+      isObligatory: !(data.surveyOrMap === 'survey'),
       questionSection: questions.map((question, index) => ({
         templateCategoryId: question.categoryId,
         templateQuestion: {
@@ -215,7 +215,7 @@ export default function CreateSurvey() {
       })),
     };
     const resourceName =
-      data.surveyOrMap === "survey" ? "Plantilla" : "Ruta de mapa";
+      data.surveyOrMap === 'survey' ? 'Plantilla' : 'Ruta de mapa';
     await client.post(
       `Administrator/createTemplate/${currentCompany.id}`,
       newTemplate
@@ -224,7 +224,7 @@ export default function CreateSurvey() {
     setLoading(false);
     navigate(`/journeysettings?tab=${data.surveyOrMap}`);
     enqueueSnackbar(`${resourceName} creada con éxito`, {
-      variant: "success",
+      variant: 'success',
     });
   };
 
@@ -273,9 +273,9 @@ export default function CreateSurvey() {
         break;
       case 1:
         if (isUpdate && isTemplate) {
-          navigate("/journey/survey-template");
-          enqueueSnackbar("Plantilla actualizada con éxito", {
-            variant: "success",
+          navigate('/journey/survey-template');
+          enqueueSnackbar('Plantilla actualizada con éxito', {
+            variant: 'success',
           });
 
           return;
@@ -299,7 +299,7 @@ export default function CreateSurvey() {
 
   const handleCerrar = () => {
     if (activeStep === 0) {
-      navigate("/journey");
+      navigate('/journey');
     } else {
       setActiveStep((val) => val - 1);
     }
@@ -401,29 +401,29 @@ export default function CreateSurvey() {
   };
   const handleaddstars = () => {
     if (information.stars.length === 10) {
-      setStarmsg("Elija un valor entre 3 y 10");
+      setStarmsg('Elija un valor entre 3 y 10');
     } else {
-      setStarmsg("");
+      setStarmsg('');
       let holder = [...information.stars];
-      holder.push("");
+      holder.push('');
       setInformation({ ...information, stars: holder });
     }
   };
   const handleeditstars = () => {
     let holder = [...question.stars];
     if (holder.length === 10) {
-      setStarmsg("Elija un valor entre 3 y 10");
+      setStarmsg('Elija un valor entre 3 y 10');
     } else {
-      setStarmsg("");
-      holder.push("");
+      setStarmsg('');
+      holder.push('');
       setQuestion({ ...question, stars: holder });
     }
   };
   const handledeletestars = () => {
     if (information.stars.length === 3) {
-      setStarmsg("Elija un valor entre 3 y 10");
+      setStarmsg('Elija un valor entre 3 y 10');
     } else {
-      setStarmsg("");
+      setStarmsg('');
       let holder = [...information.stars];
       holder.splice(1, 1);
       setInformation({ ...information, stars: holder });
@@ -432,21 +432,21 @@ export default function CreateSurvey() {
   const handleeditdeletestars = () => {
     let holder = [...question.stars];
     if (holder.length === 3) {
-      setStarmsg("Elija un valor entre 3 y 10");
+      setStarmsg('Elija un valor entre 3 y 10');
     } else {
-      setStarmsg("");
+      setStarmsg('');
       holder.splice(1, 1);
       setQuestion({ ...question, stars: holder });
     }
   };
   const handleaddoption = () => {
     let holder = [...information.customOptions];
-    holder.push("");
+    holder.push('');
     setInformation({ ...information, customOptions: holder });
   };
   const handleeditaddoption = () => {
     let holder = [...question.customOptions];
-    holder.push("");
+    holder.push('');
     setQuestion({ ...question, customOptions: holder });
   };
   const handleAdd = () => {
@@ -590,7 +590,7 @@ export default function CreateSurvey() {
   };
   const handleCloseEditModal = () => setEdit(false);
   const handleanonyme = (event) => {
-    setAnonymous(event.target.value === "true");
+    setAnonymous(event.target.value === 'true');
   };
 
   const reorder = (list, start, end) => {
@@ -615,7 +615,7 @@ export default function CreateSurvey() {
   };
 
   const handleAgregar = () => {
-    setCategoryError("");
+    setCategoryError('');
 
     if (edit) {
       if (question.name.length < 5) {
@@ -625,7 +625,7 @@ export default function CreateSurvey() {
         });
         setHelperText({
           ...helperText,
-          name: "Se requiere un mínimo de 5 caracteres.",
+          name: 'Se requiere un mínimo de 5 caracteres.',
         });
 
         return;
@@ -634,10 +634,10 @@ export default function CreateSurvey() {
       if (
         question.customOptions !== null &&
         question.typeId === 3 &&
-        question.customOptions.some((option) => option === "")
+        question.customOptions.some((option) => option === '')
       ) {
         setCustomOptionError(
-          question.customOptions.map((option) => option === "")
+          question.customOptions.map((option) => option === '')
         );
         return;
       }
@@ -657,25 +657,25 @@ export default function CreateSurvey() {
       });
       setHelperText({
         ...helperText,
-        name: "Se requiere un mínimo de 5 caracteres.",
+        name: 'Se requiere un mínimo de 5 caracteres.',
       });
 
       return;
     }
     if (
-      !information.customOptions.every((elemento) => elemento !== "") &&
+      !information.customOptions.every((elemento) => elemento !== '') &&
       type.id === 3
     ) {
       let checkCustomOptions = information.customOptions.map(
-        (elemento) => elemento === ""
+        (elemento) => elemento === ''
       );
       setCustomOptionError(checkCustomOptions);
       return;
     }
 
     // validate category id
-    if (categoryId === "" || categoryId === null) {
-      setCategoryError("Seleccione una categoría");
+    if (categoryId === '' || categoryId === null) {
+      setCategoryError('Seleccione una categoría');
 
       return;
     }
@@ -687,34 +687,34 @@ export default function CreateSurvey() {
     // validate questions
     if (type.id === 1) {
       handleAddQuestion({
-        type: "Texto corto",
+        type: 'Texto corto',
         name: information.name,
         description: information.description,
       });
     } else if (type.id === 2) {
       handleAddQuestion({
-        type: "Escala Likert",
+        type: 'Escala Likert',
         name: information.name,
         description: information.description,
         options: information.options,
       });
     } else if (type.id === 3) {
       handleAddQuestion({
-        type: "Opción múltiple",
+        type: 'Opción múltiple',
         name: information.name,
         description: information.description,
         customOptions: information.customOptions,
       });
     } else if (type.id === 8) {
       handleAddQuestion({
-        type: "Opción única",
+        type: 'Opción única',
         name: information.name,
         description: information.description,
         customOptions: information.customOptions,
       });
     } else if (type.id === 5) {
       handleAddQuestion({
-        type: "Calificaciones",
+        type: 'Calificaciones',
         name: information.name,
         description: information.description,
         stars: information.stars,
@@ -722,17 +722,17 @@ export default function CreateSurvey() {
     }
 
     setInformation({
-      name: "",
-      description: "",
+      name: '',
+      description: '',
       options: [
-        "Totalmente en Desacuerdo",
-        "En Desacuerdo",
-        "Ni de Acuerdo  Ni en Desacuerdo",
-        "De Acuerdo",
-        "Totalmente de Acuerdo",
+        'Totalmente en Desacuerdo',
+        'En Desacuerdo',
+        'Ni de Acuerdo  Ni en Desacuerdo',
+        'De Acuerdo',
+        'Totalmente de Acuerdo',
       ],
-      customOptions: Array(2).fill(""),
-      stars: Array(3).fill(""),
+      customOptions: Array(2).fill(''),
+      stars: Array(3).fill(''),
     });
     setQuestion(null);
     setType(null);
@@ -783,7 +783,7 @@ export default function CreateSurvey() {
     );
 
     await deleteTemplateQuestionAPI(question.id);
-    enqueueSnackbar("Pregunta eliminada", { variant: "success" });
+    enqueueSnackbar('Pregunta eliminada', { variant: 'success' });
   };
 
   /**
@@ -793,10 +793,10 @@ export default function CreateSurvey() {
    */
   const getHeaderTitle = () => {
     if (isTemplate) {
-      return "Crear plantilla";
+      return 'Crear plantilla';
     }
 
-    return "Crear encuesta";
+    return 'Crear encuesta';
   };
 
   /**
@@ -805,6 +805,8 @@ export default function CreateSurvey() {
    * @returns {Promise<void>}
    */
   const fetchCategories = async () => {
+    if(!currentCompany)
+      return;
     const { data } = await fetchCategoriesByCompanyAPI(currentCompany.id);
 
     setCategories(data);
@@ -896,11 +898,11 @@ export default function CreateSurvey() {
 
   useEffect(() => {
     if (
-      userInfo?.role.findIndex((p) => p === "Journey") < 0 &&
-      userInfo?.role.findIndex((p) => p === "Administrador") < 0
+      userInfo?.role.findIndex((p) => p === 'Journey') < 0 &&
+      userInfo?.role.findIndex((p) => p === 'Administrador') < 0
     ) {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+      alert('No tiene permiso para acceder a esta funcionalidad');
+      navigate('/dashboard');
     }
     setQuestions(questions);
   }, [questions]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -925,7 +927,7 @@ export default function CreateSurvey() {
   }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Dialog maxWidth="md" open={open} onClose={handleCloseModal}>
         <DialogTitle>Agregar pregunta</DialogTitle>
         <DialogContent>
@@ -935,14 +937,14 @@ export default function CreateSurvey() {
                 <div className={styles.input}>
                   <Autocomplete
                     id="combo-box-demo"
-                    style={{ flexBasis: "40%" }}
+                    style={{ flexBasis: '40%' }}
                     options={questionTypes}
                     value={type}
                     onChange={(e, value) => {
                       handleAutocomplete(value);
                     }}
                     getOptionLabel={(option) => option.typeQuestionName}
-                    noOptionsText={"No se encontraron tipos de pregunta"}
+                    noOptionsText={'No se encontraron tipos de pregunta'}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -1028,7 +1030,7 @@ export default function CreateSurvey() {
       </Dialog>
       <Navbar />
       <IconSidebar />
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: 'white' }}>
         <div className={styles.content}>
           <div className={styles.survey_template}>
             <div className={styles.data}>
@@ -1051,11 +1053,11 @@ export default function CreateSurvey() {
               <div className={styles.display}>{renderSwitch(activeStep)}</div>
               <div
                 className={styles.display}
-                style={{ position: "sticky", bottom: 0 }}
+                style={{ position: 'sticky', bottom: 0 }}
               >
                 <div className={styles.impexp}>
                   <Button variant="text" onClick={handleCerrar}>
-                    {activeStep === 0 ? "Cerrar" : "atrás"}
+                    {activeStep === 0 ? 'Cerrar' : 'atrás'}
                   </Button>
                   <Button
                     variant="contained"
@@ -1066,8 +1068,8 @@ export default function CreateSurvey() {
                     }
                   >
                     {activeStep === 2 || (activeStep === 1 && isTemplate)
-                      ? "Finalizar"
-                      : "Continuar"}
+                      ? 'Finalizar'
+                      : 'Continuar'}
                   </Button>
                 </div>
               </div>
