@@ -142,7 +142,6 @@ export default function CreateSurvey() {
    */
   const createSurvey = async () => {
     setLoading(true);
-
     const newSurvey = {
       survey: {
         nameSurvey: data.title,
@@ -155,6 +154,7 @@ export default function CreateSurvey() {
       questions: questions.map((question) => ({
         question: {
           nameQuestion: question.name,
+          description:question.description,
           typeQuestionId: question.typeId,
           score: question.stars?.length,
         },
@@ -889,7 +889,6 @@ export default function CreateSurvey() {
         stars: question.question.score,
       })
     );
-
     setQuestions(questionsCopy);
     setTemplateDemographics(
       template.templateDemographics.map((demographic) => demographic.name)
