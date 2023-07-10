@@ -292,7 +292,7 @@ const EditForm = ({
             onChange={handleCategoryIdChange}
           >
             <MenuItem value={question.categoryId}>
-              <em>Ninguno</em>
+              <em>Seleccione</em>
             </MenuItem>
             {categories.map((category) => (
               <MenuItem
