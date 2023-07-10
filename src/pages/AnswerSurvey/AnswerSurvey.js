@@ -497,7 +497,8 @@ const AnswerSurvey = () => {
                           onClick={handleNext}
                           disabled={!stepsCompleted[activeStep] || surveyStatus === 'loading'}
                         >
-                          {activeStep === steps.length - 1 ? '' : 'Siguiente'}
+                          {steps[activeStep] === 'Encuesta'?'Finalizar':'Siguiente'}
+                          {/*activeStep === steps.length - 2 ? 'Finalizar' : 'Siguiente'*/}
                         </Button>
                       </Box>
                     </React.Fragment>
