@@ -476,7 +476,7 @@ export default function Form(props) {
             onChange={handleCategoryIdChange}
           >
             <MenuItem value={props.categoryId}>
-              <em>Ninguno</em>
+              <em>Seleccione</em>
             </MenuItem>
             {props.categories.map((category) => (
               <MenuItem
