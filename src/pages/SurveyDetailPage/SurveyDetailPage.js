@@ -49,7 +49,7 @@ import styles from './SurveyDetailPage.module.css';
 const options = [
   /*{
     option: "Editar",
-    icon: <EditIcon />,
+    icon: <EditIcon />, 
   },
   {
     option: "Duplicar",

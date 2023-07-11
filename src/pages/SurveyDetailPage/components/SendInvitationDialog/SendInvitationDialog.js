@@ -57,6 +57,11 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
    */
   const handleClose = () => {
     setOpen(false);
+    setEmails('');
+    setEmailSubject('');
+    setIsValidEmails('');
+    setIsValidEmailSubject('');
+    setIsValidMessage('')
   };
 
   /**
@@ -70,8 +75,6 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
   }; 
 
   const validateEmail = (email) => {
-    debugger;
-    console.log(email)
     if (!email || !email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
       setIsValidEmails('Por favor ingrese un correo válido');
       return;
@@ -91,10 +94,7 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
    */
   const handleEmailsChange = (event) => {
     setEmails(event.target.value);
-    setIsLoading(true);
     setIsValidEmails('');
-    setIsValidMessage('');
-    setIsValidEmailSubject('');
     // validate emails
     const emailsArray = event.target.value.split(',');
     let error = false;
@@ -122,7 +122,18 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
    * @param event
    */
   const handleMessageChange = (event) => {
+    setIsLoading(true);
+    setIsValidMessage('');
     setMessage(event.target.value);
+    // validate message
+    if (!event.target.value) {
+      setIsValidMessage('El mensaje es requerido.');
+    }else{
+      if (!event.target.value.includes('@enlace')) {
+        setIsValidMessage('El mensaje debe contener "@enlace".');
+      }
+    }
+    setIsLoading(false);
   };
 
 
@@ -132,7 +143,18 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
    * @param event
    */
     const handleEmailSubjectChange = (event) => {
+      setIsLoading(true);
+      setIsValidEmailSubject(''); 
       setEmailSubject(event.target.value);
+      //validate email subject
+      if(!event.target.value){
+        setIsValidEmailSubject('El asunto de correo es requerido');
+      }else{
+        if (event.target.value.length < 5) {
+          setIsValidEmailSubject('El asunto de correo debe tener al menos 10 carácteres');
+        }
+      }
+      setIsLoading(false);
     };
   
 
@@ -294,6 +316,7 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
         companyId,
         message,
         emails,
+        emailSubject,
         groups,
       });
       enqueueSnackbar('Invitación enviada', {
