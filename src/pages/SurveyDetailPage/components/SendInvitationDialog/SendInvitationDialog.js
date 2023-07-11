@@ -37,6 +37,8 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
   const { id: surveyId } = useParams();
   const [groups, setGroups] = useState([]);
   const [emails, setEmails] = useState('');
+  const [emailSubject, setEmailSubject] = useState('');
+  const [isValidEmailSubject, setIsValidEmailSubject] = useState('');
   const [isValidEmails, setIsValidEmails] = useState('');
   const [message, setMessage] = useState(defaultMessage);
   const [isValidMessage, setIsValidMessage] = useState('');
@@ -65,7 +67,22 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
     groupsCopy[index].value = event.target.value;
 
     setGroups(groupsCopy);
-  };
+  }; 
+
+  const validateEmail = (email) => {
+    debugger;
+    console.log(email)
+    if (!email || !email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
+      setIsValidEmails('Por favor ingrese un correo válido');
+      return;
+    }
+    return true;
+  }
+
+  function validateEmailsStructure(emails) {
+    const regex = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4},)*([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})$/;
+    return regex.test(emails);
+  }
 
   /**
    * Handle emails change.
@@ -74,6 +91,29 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
    */
   const handleEmailsChange = (event) => {
     setEmails(event.target.value);
+    setIsLoading(true);
+    setIsValidEmails('');
+    setIsValidMessage('');
+    setIsValidEmailSubject('');
+    // validate emails
+    const emailsArray = event.target.value.split(',');
+    let error = false;
+    emailsArray.forEach((email) => {
+      // if is empty don't validate
+      if (!email) {
+        return;
+      }
+      // trim and validate email
+      const trimmedEmail = email.trim();
+      // don't allow spaces
+      if (trimmedEmail.includes(' ')) {
+        setIsValidEmails('Los correos no debe contener espacios');
+        error = true;
+        return;
+      }
+      validateEmail(trimmedEmail);
+    });
+    setIsLoading(false);
   };
 
   /**
@@ -84,6 +124,17 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
+
+
+    /**
+   * Handle Email Subject change.
+   *
+   * @param event
+   */
+    const handleEmailSubjectChange = (event) => {
+      setEmailSubject(event.target.value);
+    };
+  
 
   /**
    * Get helper text.
@@ -171,39 +222,53 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
     setIsLoading(true);
     setIsValidEmails('');
     setIsValidMessage('');
+    setIsValidEmailSubject('');
 
     // validate emails
     const emailsArray = emails.split(',');
     let error = false;
-    emailsArray.forEach((email) => {
-      // if is empty don't validate
-      if (!email) {
-        return;
-      }
+    if(!emails){
+      setIsValidEmails('Debe colocar al menos 1 correo');
+      error = true;
+    }else{
+      emailsArray.forEach((email) => {
+        // if is empty don't validate
+        if (!email) {
+          return;
+        }
+        // trim and validate email
+        const trimmedEmail = email.trim();
 
-      // trim and validate email
-      const trimmedEmail = email.trim();
+        // don't allow spaces
+        if (trimmedEmail.includes(' ')) {
+          setIsValidEmails('Los correos no debe contener espacios');
+          error = true;
+        }else{
+          validateEmail(trimmedEmail);
+        }
 
-      // don't allow spaces
-      if (trimmedEmail.includes(' ')) {
-        setIsValidEmails('El usuario no debe contener espacios');
+      });
+    }
+    //validate email subject
+    if(!emailSubject){
+      setIsValidEmailSubject('El asunto de correo es requerido');
+      error = true;
+    }else{
+      if (emailSubject.length < 10) {
+        setIsValidEmailSubject('El asunto de correo debe tener al menos 10 carácteres');
         error = true;
       }
-    });
+    }
+
     // validate message
     if (!message) {
       setIsValidMessage('El mensaje es requerido.');
       error = true;
-    }
-    // should contain @usuario and @enlace
-    /*
-    if (!message.includes('@usuario')) {
-      setIsValidMessage('El mensaje debe contener "@usuario".');
-      error = true;
-    }*/
-    if (!message.includes('@enlace')) {
-      setIsValidMessage('El mensaje debe contener "@enlace".');
-      error = true;
+    }else{
+      if (!message.includes('@enlace')) {
+        setIsValidMessage('El mensaje debe contener "@enlace".');
+        error = true;
+      }
     }
 
     // if emails or message are invalid
@@ -223,18 +288,23 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
     }
 
     const { id: companyId } = currentCompany;
-    await client.post('sendMailJourney', {
-      surveyId: parseInt(surveyId),
-      companyId,
-      message,
-      emails,
-      groups,
-    });
-
-    enqueueSnackbar('Invitación enviada', {
-      variant: 'success',
-    });
-
+    try{
+      await client.post('sendMailJourney', {
+        surveyId: parseInt(surveyId),
+        companyId,
+        message,
+        emails,
+        groups,
+      });
+      enqueueSnackbar('Invitación enviada', {
+        variant: 'success',
+      });
+  
+    }catch(Exception){
+      enqueueSnackbar('Error al enviar la invitación', {
+        variant: 'error',
+      });
+    }
     setIsLoading(false);
     handleClose();
   };
@@ -290,14 +360,31 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
               marginTop: '1.3em',
             }}
             helperText={getHelperText(
-              isValidMessage,
+              isValidEmails,
               'Coloque los correos de esta forma: correo1@example.com, correo2@example.com, correo3@example.com ...',
             )}
             value={emails}
             error={isValidEmails !== ''}
             onChange={handleEmailsChange}
           />
-
+          <TextField
+            id="emailSubject"
+            label="Asunto del correo:"
+            fullWidth
+            variant="outlined"
+            multiline
+            rows={4}
+            style={{
+              marginTop: '1.3em',
+            }}
+            helperText={getHelperText(
+              isValidEmailSubject,
+              'Ingresa el asunto que deseas utilizar para tu correo electrónico. Recuerda que este asunto se aplicará a todos los destinatarios a los que envíes el correo.',
+            )}
+            value={emailSubject}
+            error={isValidEmailSubject !== ''}
+            onChange={handleEmailSubjectChange}
+          />
           <TextField
             id="message"
             label="Mensaje:"
