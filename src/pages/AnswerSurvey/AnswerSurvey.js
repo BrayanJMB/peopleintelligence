@@ -72,7 +72,6 @@ const AnswerSurvey = () => {
    *
    * @param event
    */
-  console.log(currentSurvey);
   const handleEmailSubmit = async (event) => {
     event.preventDefault();
 
@@ -470,6 +469,7 @@ const AnswerSurvey = () => {
                           <SurveyForm
                             questions={currentSurvey.response.preguntas}
                             handleNextAnswer={handleNext}
+                            nameStep={steps}
                             onAnswered={(answers) => handleAnswered(answers, activeStep)}
                           />
                         )}
@@ -502,7 +502,7 @@ const AnswerSurvey = () => {
                           onClick={handleNext}
                           disabled={!stepsCompleted[activeStep] || surveyStatus === 'loading'}
                         >
-                          {activeStep === steps.length - 2 ? 'Finalizar' : 'Siguiente'}
+                          {activeStep === steps.length - 2 ? '' : 'Siguiente'}
                         </Button>
                       </Box>
                     </React.Fragment>

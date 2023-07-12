@@ -50,7 +50,7 @@ const SurveyForm = ({
   setActiveStepAnswer,
   setSkipped,
   isStepSkipped,
-  handleNextAnswer
+  handleNextAnswer,
 }) => {
   const [formValues, setFormValues] = useState(() => {
     const savedValues = localStorage.getItem("formValues");
@@ -255,13 +255,12 @@ const SurveyForm = ({
       })
       .filter((index) => index !== -1);
     setUnansweredQuestions(unansweredIndexes);
-    
 
     return unansweredIndexes.length === 0;
   };
 
   useEffect(() => {
-    console.log(error)
+    console.log(error);
   }, [error]);
   /**
    * Handles the change of the checkbox.
@@ -765,7 +764,10 @@ const SurveyForm = ({
               </Fragment>
             )}
             {isSelect(typeQuestion) && (
-              <FormControl fullWidth>
+              <FormControl
+                fullWidth
+                error={unansweredQuestions.includes(index)}
+              >
                 <InputLabel id={`${questionId}-${typeQuestion}`}>
                   {questionName}
                 </InputLabel>
@@ -816,10 +818,19 @@ const SurveyForm = ({
             margin: "0 auto",
           }}
           nextButton={
-            <Button size="small" onClick={handleNext}>
-              {activeStep + 1 === totalOfSteps() ? "Finalizar" : "Siguiente"}
-              {<KeyboardArrowRight />}
-            </Button>
+            <Button
+              size="small"
+              onClick={handleNext}
+              disabled={
+                activeStep + 1 >= totalOfSteps() 
+              }
+            >
+              {nameStep[activeStep] !== "Encuesta" &&
+                activeStep + 1 === totalOfSteps()
+                  ? "Finalizar"
+                  : "Siguiente"}
+                {<KeyboardArrowRight />}
+              </Button>
           }
           backButton={
             <Button
