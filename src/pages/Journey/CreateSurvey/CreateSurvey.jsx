@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch,useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import DesignServicesIcon from '@mui/icons-material/DesignServices';
 import { Divider } from '@mui/material';
@@ -21,6 +22,7 @@ import DemographicDataForm from '../../../components/DemographicDataForm/Demogra
 import EditForm from '../../../components/EditForm/EditForm';
 import Form from '../../../components/Form/Form';
 import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
+import { fetchSurveyByIdAndCompanyId } from '../../../features/surveys/surveysSlice';
 import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../../Layout/Navbar/Navbar';
 import {
@@ -72,7 +74,7 @@ export default function CreateSurvey() {
     customOptions: Array(2).fill(''),
     stars: Array(3).fill(''),
   });
-
+  const dispatch = useDispatch();
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
   const [categoryError, setCategoryError] = useState('');
@@ -96,7 +98,7 @@ export default function CreateSurvey() {
     'Cuestionario',
     ...(!isTemplate ? ['Privacidad'] : []),
   ];
-
+  const { surveyId } = useParams();
   /**
    * Handle introduction change.
    *
@@ -147,6 +149,8 @@ export default function CreateSurvey() {
         nameSurvey: data.title,
         descriptionSurvey: data.description,
         messageMail: data.mailingMessage,
+        emailSubject: data.emailSubject,
+        emailMask: data.emailMask,
         isPersonal: !anonymous,
         mapId: data.map.id,
         companyId: currentCompany.id,
@@ -184,13 +188,14 @@ export default function CreateSurvey() {
    */
   const createTemplate = async () => {
     setLoading(true);
-    debugger;
-    // Create survey
+    // Create survey, encuesta de mapa
     const newTemplate = {
       mapId: data.map.id,
       nameSurvey: data.title,
       descriptionSurvey: data.description,
       messageMail: data.mailingMessage,
+      emailSubject: data.emailSubject,
+      emailMask: data.emailMask,
       isObligatory: !(data.surveyOrMap === 'survey'),
       questionSection: questions.map((question, index) => ({
         templateCategoryId: question.categoryId,
@@ -262,7 +267,7 @@ export default function CreateSurvey() {
           await updateTemplate();
           setActiveStep((val) => val + 1);
           setCheckForm(false);
-
+          
           return;
         }
 
@@ -304,7 +309,7 @@ export default function CreateSurvey() {
       setActiveStep((val) => val - 1);
     }
   };
-
+  
   /**
    * Handle change for current question.
    *
@@ -558,6 +563,7 @@ export default function CreateSurvey() {
             onUpdated={handleIntroductionChange}
             checkForm={checkForm}
             previousData={data}
+            isUpdate={isUpdate}
           />
         );
       case 1:
@@ -719,6 +725,14 @@ export default function CreateSurvey() {
         description: information.description,
         stars: information.stars,
       });
+      
+    }else if (type.id === 9) {
+      handleAddQuestion({
+        type: 'E-NPS',
+        name: information.name,
+        description: information.description,
+      });
+      
     }
 
     setInformation({
@@ -823,6 +837,92 @@ export default function CreateSurvey() {
     setQuestionTypes(data);
   };
 
+
+    /**
+   * Fetch survey and fill form data.
+   *
+   * @param {number} templateId
+   */
+    const fetchSurvey = async (templateId) => {
+      if(!currentCompany){
+        return;
+      }
+      const {data:survey} = await client.get(`ShowQuestion/${surveyId}/${currentCompany.id}`);
+      console.log(survey);
+      let dataCopy = {
+        ...data,
+      };
+
+      // fill journey map
+      if (survey.response) {
+        dataCopy = {
+          ...dataCopy,
+          map: survey.response,
+        };
+      }
+      // fill name
+      if (survey.response?.surveyName) {
+        dataCopy = {
+          ...dataCopy,
+          title: survey.response.surveyName,
+        };
+      }
+      // fill description
+      if (survey.response?.description) {
+        dataCopy = {
+          ...dataCopy,
+          description: survey.response.description,
+        };
+      }
+      if (survey.response?.emailMAsk) {
+        dataCopy = {
+          ...dataCopy,
+          emailMask: survey.response.emailMAsk,
+        };
+      }
+      if (survey.response?.emailSubject) {
+        dataCopy = {
+          ...dataCopy,
+          emailSubject: survey.response.emailSubject,
+        };
+      }
+      if (survey.response?.emailMessage) {
+        dataCopy = {
+          ...dataCopy,
+          mailingMessage: survey.response.emailMessage,
+        };
+      }
+      setData(dataCopy);
+
+      let questionsCopy = [...questions];
+
+      // fill questions
+      
+      survey.response.preguntas.map((question) =>
+        questionsCopy.push({
+          id: uuid.v4(),
+          questionId: question.questionId,
+          typeId: question.question.typeQuestionId,
+          categoryId: question.categoryId,
+          type: question.typeQuestionId,
+          name: question.questionName,
+          description: question.question.description,
+          customOptions: question.options.map(
+            (option) => option.templateOptionsName
+          ),
+          options: question.options.map((option) => option.templateOptionsName),
+          questionOptions: question.options,
+          stars: question.question.score,
+        })
+      );
+      setQuestions(questionsCopy);
+      /*
+      setTemplateDemographics(
+        template.templateDemographics.map((demographic) => demographic.name)
+      );*/
+
+    };
+
   /**
    * Fetch template and fill form data.
    *
@@ -830,7 +930,7 @@ export default function CreateSurvey() {
    */
   const fetchTemplate = async (templateId) => {
     const { data: template } = await showTemplateAPI(templateId);
-
+    console.log(template);
     if (!template) {
       return;
     }
@@ -838,6 +938,7 @@ export default function CreateSurvey() {
     let dataCopy = {
       ...data,
     };
+
 
     // fill journey map
     if (template.template?.journeyMap) {
@@ -866,7 +967,6 @@ export default function CreateSurvey() {
         mailingMessage: template.template.messageMail,
       };
     }
-
     setData(dataCopy);
 
     let questionsCopy = [...questions];
@@ -914,6 +1014,13 @@ export default function CreateSurvey() {
 
     fetchTemplate(templateId);
   }, [templateId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!surveyId) {
+      return;
+    }
+    fetchSurvey(templateId);
+  }, [surveyId, currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // component did mount
   useEffect(() => {

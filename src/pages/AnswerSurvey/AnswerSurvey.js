@@ -72,7 +72,6 @@ const AnswerSurvey = () => {
    *
    * @param event
    */
-  console.log(currentSurvey);
   const handleEmailSubmit = async (event) => {
     event.preventDefault();
 
@@ -171,10 +170,13 @@ const AnswerSurvey = () => {
       };
 
       if (demographicUserData !== null) {
-        payload.demographics = demographicUserData;
+        if (typeof demographicUserData === 'object' && !Array.isArray(demographicUserData)) {
+          payload.demographics = [demographicUserData];
+        } else if (Array.isArray(demographicUserData)) {
+          payload.demographics = demographicUserData;
+        }
         payload.answers = answers[0];
       }
-
       dispatch(storeSurvey(payload));
       localStorage.setItem('formValues', JSON.stringify([]));
     }
@@ -456,6 +458,7 @@ const AnswerSurvey = () => {
                               companyId={companyId}
                               nameStep={steps}
                               activeStepper={activeStep}
+                              handleNextAnswer={handleNext}
                               onAnswered={(answers) => handleAnswered(answers, activeStep)}
                             />
                           </Fragment>
@@ -465,6 +468,8 @@ const AnswerSurvey = () => {
                         {isSurveyStep() && (
                           <SurveyForm
                             questions={currentSurvey.response.preguntas}
+                            handleNextAnswer={handleNext}
+                            nameStep={steps}
                             onAnswered={(answers) => handleAnswered(answers, activeStep)}
                           />
                         )}
@@ -497,7 +502,7 @@ const AnswerSurvey = () => {
                           onClick={handleNext}
                           disabled={!stepsCompleted[activeStep] || surveyStatus === 'loading'}
                         >
-                          {activeStep === steps.length - 1 ? '' : 'Siguiente'}
+                          {activeStep === steps.length - 2 ? 'Finalizar' : 'Siguiente'}
                         </Button>
                       </Box>
                     </React.Fragment>
