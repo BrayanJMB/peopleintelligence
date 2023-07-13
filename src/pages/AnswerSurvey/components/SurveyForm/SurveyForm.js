@@ -1,4 +1,5 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useRef,useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import StarIcon from '@mui/icons-material/Star';
@@ -18,6 +19,7 @@ import MobileStepper from '@mui/material/MobileStepper';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Select from '@mui/material/Select';
+import Slider from '@mui/material/Slider';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
@@ -29,14 +31,23 @@ import EnDesacuerdo from '../../../../assets/icons/en desacuerdo.svg';
 import NiDeacuerdoNiEnDesacuerdo from '../../../../assets/icons/ni deacuerdo ni en desacuerdo.svg';
 import TotalmenteDeAcuerdo from '../../../../assets/icons/totalmente de acuerdo.svg';
 import TotalmenteEnDesacuerdo from '../../../../assets/icons/totalmente en desacuerdo.svg';
+import { storeSurvey } from '../../../../features/surveys/surveysSlice';
 
 import styles from './SurveyForm.module.css';
 
-const SurveyForm = ({ questions, onAnswered, companyId, nameStep, activeStepper }) => {
+const SurveyForm = ({
+  questions,
+  onAnswered,
+  companyId,
+  nameStep,
+  activeStepper,
+  surveyId,
+  handleNextAnswer,
+}) => {
   const [formValues, setFormValues] = useState(() => {
     const savedValues = localStorage.getItem('formValues');
     let parsedValues = null;
-    
+
     if (savedValues) {
       try {
         parsedValues = JSON.parse(savedValues);
@@ -44,19 +55,26 @@ const SurveyForm = ({ questions, onAnswered, companyId, nameStep, activeStepper 
         console.error('Error parsing saved values:', e);
       }
     }
-  
+
     const defaultValues = questions.map((question) => ({
       id: question.questionId,
+      questionType: question.typeQuestion,
       value: '',
       values: {},
     }));
-  
-    if (parsedValues && Array.isArray(parsedValues) && parsedValues.length > 0) {
+    console.log(questions, surveyId);
+    if (
+      parsedValues &&
+      Array.isArray(parsedValues) &&
+      parsedValues.length > 0
+    ) {
       // Si hay valores guardados, los fusionamos con los valores por defecto
       return defaultValues.map((defaultValue) => {
         // Buscamos el valor guardado para esta pregunta
-        const savedValue = parsedValues.find((value) => value.id === defaultValue.id);
-  
+        const savedValue = parsedValues.find(
+          (value) => value.id === defaultValue.id
+        );
+
         // Si encontramos un valor guardado, lo fusionamos con el valor por defecto
         // Si no, simplemente devolvemos el valor por defecto
         return savedValue ? { ...defaultValue, ...savedValue } : defaultValue;
@@ -66,15 +84,34 @@ const SurveyForm = ({ questions, onAnswered, companyId, nameStep, activeStepper 
       return defaultValues;
     }
   });
+  console.log(questions);
   const [apiOptions, setApiOptions] = useState({});
   const [activeStep, setActiveStep] = useState(0);
 
+  const [unansweredQuestions, setUnansweredQuestions] = useState([]);
+  const [inputRefs, setInputRefs] = useState([]);
+
+  const dispatch = useDispatch();
+
+  const [error, setError] = useState(formValues.map(() => false));
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (verifyCurrentStepAnswersSelected()) {
+      if (activeStep + 1 !== totalOfSteps()) {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        return;
+      }
+      handleNextAnswer();
+    }
   };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const [value, setValue] = useState([1]);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
   };
 
   /**
@@ -83,7 +120,7 @@ const SurveyForm = ({ questions, onAnswered, companyId, nameStep, activeStepper 
    * @param {string} typeQuestion
    * @returns {boolean}
    */
-  
+
   const isRadioFace = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
       /*
@@ -173,6 +210,21 @@ const SurveyForm = ({ questions, onAnswered, companyId, nameStep, activeStepper 
     }
   };
 
+    /**
+   * Returns true if the type of question is stepper.
+   *
+   * @param typeQuestion
+   * @returns {boolean}
+   */
+    const isSlider = (typeQuestion) => {
+      switch (typeQuestion) {
+        case 'E-NPS':
+          return true;
+        default:
+          return false;
+      }
+    };
+
   /**
    * Handles the change of the radio button.
    *
@@ -185,10 +237,44 @@ const SurveyForm = ({ questions, onAnswered, companyId, nameStep, activeStepper 
 
       newFormValues[index].value = event.target.value;
 
+      setUnansweredQuestions((prevUnanswered) =>
+        prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
+      );
+
       return newFormValues;
     });
   };
 
+  const verifyCurrentStepAnswersSelected = () => {
+    const currentStepAnswers = formValues.slice(
+      activeStep * 5,
+      (activeStep + 1) * 5
+    );
+    console.log(formValues);
+    const unansweredIndexes = currentStepAnswers
+      .map((formValue, i) => {
+        let isUnanswered;
+        if (formValue.questionType === 'Opción Múltiple') {
+          isUnanswered =
+            formValue.values === null ||
+            Object.keys(formValue.values).length === 0 ||
+            !Object.values(formValue.values).some((val) => val === true);
+        } else {
+          // Para otros tipos de preguntas, verifica si value es nulo o vacío
+          isUnanswered = formValue.value === null || formValue.value === '';
+        }
+
+        return isUnanswered ? i + activeStep * 5 : -1;
+      })
+      .filter((index) => index !== -1);
+    setUnansweredQuestions(unansweredIndexes);
+
+    return unansweredIndexes.length === 0;
+  };
+
+  useEffect(() => {
+    console.log(error);
+  }, [error]);
   /**
    * Handles the change of the checkbox.
    *
@@ -200,6 +286,9 @@ const SurveyForm = ({ questions, onAnswered, companyId, nameStep, activeStepper 
       const newFormValues = [...prevFormValues];
 
       newFormValues[index].values[event.target.value] = event.target.checked;
+      setUnansweredQuestions((prevUnanswered) =>
+        prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
+      );
 
       return newFormValues;
     });
@@ -216,6 +305,10 @@ const SurveyForm = ({ questions, onAnswered, companyId, nameStep, activeStepper 
       const newFormValues = [...prevFormValues];
 
       newFormValues[index].value = value.toString();
+
+      setUnansweredQuestions((prevUnanswered) =>
+        prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
+      );
 
       return newFormValues;
     });
@@ -276,7 +369,7 @@ const SurveyForm = ({ questions, onAnswered, companyId, nameStep, activeStepper 
         const { data } = await axios.get(url);
         setApiOptions((prevState) => ({
           ...prevState,
-          [question.questionId]: data.map(({id, value}) => ({
+          [question.questionId]: data.map(({ id, value }) => ({
             numberOption: id,
             optionName: value,
           })),
@@ -297,6 +390,16 @@ const SurveyForm = ({ questions, onAnswered, companyId, nameStep, activeStepper 
     return Math.ceil(totalOfQuestions / 5);
   };
 
+  useEffect(() => {
+    if (unansweredQuestions.length > 0) {
+      const firstUnansweredQuestionIndex = unansweredQuestions[0];
+      if (inputRefs[firstUnansweredQuestionIndex]) {
+        inputRefs[firstUnansweredQuestionIndex].scrollIntoView({
+          behavior: 'smooth',
+        });
+      }
+    }
+  }, [unansweredQuestions, inputRefs]);
   // component did mount
   useEffect(() => {
     const fetchApiOptions = async () => {
@@ -306,20 +409,26 @@ const SurveyForm = ({ questions, onAnswered, companyId, nameStep, activeStepper 
           const { data } = await axios.get(question.api);
           setApiOptions((prevState) => ({
             ...prevState,
-            [question.questionId]: data.map(({id, value}) => ({
+            [question.questionId]: data.map(({ id, value }) => ({
               numberOption: id,
               optionName: value,
             })),
           }));
-        }else if (question.api && question.api.includes('{CompanyId}') && (question.urlParam === null || question.urlParam === '') ){
+        } else if (
+          question.api &&
+          question.api.includes('{CompanyId}') &&
+          (question.urlParam === null || question.urlParam === '')
+        ) {
           let consumo = question.api.replace('{CompanyId}', companyId);
           const { data } = await axios.get(consumo);
           setApiOptions((prevState) => ({
             ...prevState,
-            [question.questionId]: Array.isArray(data) ? data.map(({id, value}) => ({
-              numberOption: id,
-              optionName: value,
-            })) : [],
+            [question.questionId]: Array.isArray(data)
+              ? data.map(({ id, value }) => ({
+                  numberOption: id,
+                  optionName: value,
+                }))
+              : [],
           }));
         }
       }
@@ -330,327 +439,476 @@ const SurveyForm = ({ questions, onAnswered, companyId, nameStep, activeStepper 
 
   // watch changes in form values
   useEffect(() => {
-    if(nameStep && nameStep[activeStepper] === 'Datos demográficos'){
+    if (nameStep && nameStep[activeStepper] === 'Datos demográficos') {
       localStorage.setItem('formValues', JSON.stringify(formValues));
     }
     onAnswered(formValues);
   }, [formValues]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Puedes definir estas variables dentro de tu componente, justo antes de tu return
+  let firstUncheckedIndex = -1;
+  let firstUnansweredQuestionIndex = unansweredQuestions[0];
+
+  // Estos bucles buscan el primer checkbox sin marcar
+  for (let i = 0; i < formValues.length; i++) {
+    const questionValues = formValues[i].values;
+    const uncheckedOptions = Object.keys(questionValues).filter(
+      (optionName) => !questionValues[optionName]
+    );
+
+    if (uncheckedOptions.length > 0) {
+      firstUncheckedIndex = i;
+      break;
+    }
+  }
   return (
     <div className={styles.SurveyForm}>
       {totalOfSteps() !== 1 && (
-      <MobileStepper
-        variant="text"
-        steps={totalOfSteps()}
-        position="static"
-        activeStep={activeStep}
-        sx={{
-          maxWidth : 400,
-          flexGrow: 1,
-          margin: '0 auto',
-        }}
-        nextButton={
-          <Button size="small" onClick={handleNext} disabled={(activeStep + 1) >= totalOfSteps()}>
-            Siguiente
-            {<KeyboardArrowRight />}
-          </Button>
-        }
-        backButton={
-          <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-            {<KeyboardArrowLeft />}
-            Atrás
-          </Button>
-        }
-      />)}
-      {questions.map(({ questionId, typeQuestion, questionName, options, score, urlParam, description }, index) => (
-        <FormControl
-          key={questionId}
-          style={{
-            marginBottom: '1.1em',
-            width: '100%',
-            display: (index + 1) >= ((activeStep + 1) * 5 - 5) && (index + 1) <= ((activeStep + 1) * 5) ? 'inherit' : 'none',
+        <MobileStepper
+          variant="text"
+          steps={totalOfSteps()}
+          position="static"
+          activeStep={activeStep}
+          sx={{
+            maxWidth: 400,
+            flexGrow: 1,
+            margin: '0 auto',
           }}
-        >
-          {isRadio(typeQuestion) && (
-            <Fragment>
-              <FormLabel
-                id={`${questionId}-${typeQuestion}`}
-                style={{
-                  fontSize: '1.1',
-                  fontWeight: 'bold',
-                  marginBottom: '0.8m',
-                }}
-              >
-                {questionName}
-              </FormLabel>
-              <Typography variant="caption" style={{ display:'block', fontStyle: 'italic' }}>
-                  {description}
-              </Typography>
-              <RadioGroup
-                name={`${questionId}-${typeQuestion}`}
-                onChange={(event) => handleRadioChange(event, index)}
-                row
-                style={{
-                  margin: '1.2em 0',
-                }}
-              >
-                {options.map(({ numberOption, optionName }) => (
-                  <FormControlLabel
-                    key={numberOption}
-                    value={optionName}
-                    control={<Radio/>}
-                    label={<Box
-                    >
-                      {optionName}
-                    </Box>}
-                    style={{
-                      fontSize: '0.5em !important',
-                      width: '100%',
-                    }}
-                  />
-                ))}
-              </RadioGroup>
-              <Divider variant="middle" />
-            </Fragment>
-          )}
-          {isRadioFace(typeQuestion) && (
-            <Fragment>
-              <FormLabel
-                id={`${questionId}-${typeQuestion}`}
-                style={{
-                  fontSize: '1.1',
-                  fontWeight: 'bold',
-                  marginBottom: '0.8m',
-                }}
-              >
-                {questionName}
-              </FormLabel>
-              <Typography variant="caption" style={{ display:'block', fontStyle: 'italic' }}>
-                  {description}
-              </Typography>
-              <RadioGroup
-                name={`${questionId}-${typeQuestion}`}
-                onChange={(event) => handleRadioChange(event, index)}
-                row
-                style={{
-                  justifyContent: 'center',
-                  margin: '1.2em 0',
-                }}
-              >
-                {options.map(({ numberOption, optionName }) => (
-                  <FormControlLabel
-                    key={numberOption}
-                    value={optionName}
-                    control={<Radio />}
-                    labelPlacement="bottom"
-                    label={<Box
-                      sx={{
-                        textAlign: 'center',
-                      }}
-                    >
-                      {getLikertIcon(optionName) &&
-                        <Tooltip title={optionName}>
-                          <img
-                            src={getLikertIcon(optionName)}
-                            alt={optionName}
-                            style={{
-                              width: '3em',
-                              verticalAlign: 'middle',
-                            }}
-                          />
-                        </Tooltip>
-                      }
-                    </Box>}
-                    style={{
-                      fontSize: '0.5em !important',
-                    }}
-                  />
-                ))}
-              </RadioGroup>
-              <Divider variant="middle" />
-            </Fragment>
-          )}
-          {isCheckbox(typeQuestion) && (
-            <Fragment>
-              <FormLabel
-                style={{
-                  fontSize: '1.1',
-                  fontWeight: 'bold',
-                  marginBottom: '1.1em',
-                }}
-              >
-                {questionName}
-              </FormLabel>
-              <Typography variant="caption" style={{ fontStyle: 'italic' }}>
+          nextButton={
+            <Button
+              size="small"
+              onClick={handleNext}
+              disabled={activeStep + 1 >= totalOfSteps()}
+            >
+              Siguiente
+              {<KeyboardArrowRight />}
+            </Button>
+          }
+          backButton={
+            <Button
+              size="small"
+              onClick={handleBack}
+              disabled={activeStep === 0}
+            >
+              {<KeyboardArrowLeft />}
+              Atrás
+            </Button>
+          }
+        />
+      )}
+      {questions.map(
+        (
+          {
+            questionId,
+            typeQuestion,
+            questionName,
+            options,
+            score,
+            urlParam,
+            description,
+          },
+          index
+        ) => (
+          <FormControl
+            key={questionId}
+            style={{
+              marginBottom: '1.1em',
+              width: '100%',
+              display:
+                index + 1 >= (activeStep + 1) * 5 - 5 &&
+                index + 1 <= (activeStep + 1) * 5
+                  ? 'inherit'
+                  : 'none',
+            }}
+          >
+            {isRadio(typeQuestion) && (
+              <Fragment>
+                <FormLabel
+                  id={`${questionId}-${typeQuestion}`}
+                  style={{
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '0.8m',
+                    color: unansweredQuestions.includes(index)
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
+                  }}
+                >
+                  {questionName}
+                </FormLabel>
+                <Typography
+                  variant="caption"
+                  style={{ display: 'block', fontStyle: 'italic' }}
+                >
                   {description}
                 </Typography>
-              <FormGroup>
-                {options.map(({ numberOption, optionName }) => (
-                  <FormControlLabel
-                    key={numberOption}
-                    control={
-                      <Checkbox
-                        checked={formValues[index].values[optionName] || false}
-                        name={optionName}
-                        value={optionName}
-                        onChange={(event) => handleCheckboxChange(event, index)}
-                      />
-                    }
-                    label={optionName}
-                  />
-                ))}
-              </FormGroup>
-              <Divider variant="middle" />
-            </Fragment>
-          )}
-          {isRange(typeQuestion) && (
-            <Fragment>
-              <FormLabel
-                style={{
-                  fontSize: '1.1',
-                  fontWeight: 'bold',
-                  marginBottom: '0.8m',
-                }}
-              >
-                {questionName}
-              </FormLabel>
-              <Typography variant="caption" style={{ display:'block', fontStyle: 'italic' }}>
+                <RadioGroup
+                  name={`${questionId}-${typeQuestion}`}
+                  onChange={(event) => handleRadioChange(event, index)}
+                  row
+                  style={{
+                    margin: '1.2em 0',
+                    color: unansweredQuestions.includes(index)
+                      ? 'red'
+                      : 'inherit',
+                  }}
+                >
+                  {options.map(({ numberOption, optionName }) => (
+                    <FormControlLabel
+                      key={numberOption}
+                      value={optionName}
+                      control={<Radio />}
+                      label={<Box>{optionName}</Box>}
+                      style={{
+                        fontSize: '0.5em !important',
+                        width: '100%',
+                      }}
+                    />
+                  ))}
+                </RadioGroup>
+                <Divider variant="middle" />
+              </Fragment>
+            )}
+            {isRadioFace(typeQuestion) && (
+              <Fragment>
+                <FormLabel
+                  id={`${questionId}-${typeQuestion}`}
+                  style={{
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '0.8m',
+                  }}
+                >
+                  {questionName}
+                </FormLabel>
+                <Typography
+                  variant="caption"
+                  style={{ display: 'block', fontStyle: 'italic' }}
+                >
                   {description}
-              </Typography>
-              <Box sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '1.1em 0',
-                overflow: 'auto',
-              }}>
-                {[...Array(score).keys()].map((value) => (
-                  <Box
-                    key={value}
-                  >
-                    <IconButton
-                      color="primary"
-                      component="label"
-                      onClick={() => handleRangeChange(value + 1, index)}
-                    >
-                      {formValues[index].value >= (value + 1)  ? <StarIcon /> : <StarBorderIcon />}
-                    </IconButton>
-                  </Box>
-                ))}
-              </Box>
-              <Typography
-                variant="caption"
-                display="block"
-                gutterBottom
-                style={{ textAlign: 'center' }}
-              >
-                {Number(formValues[index].value)} / {score}
-              </Typography>
-              <Divider variant="middle" />
-            </Fragment>
-          )}
-          {isText(typeQuestion) && (
-            <Fragment>
-              <FormLabel
-                style={{
-                  fontSize: '1.1',
-                  fontWeight: 'bold',
-                  marginBottom: '1.1em',
-                }}
-              >
-                {questionName}
-              </FormLabel>
-              <Typography variant="caption" style={{ display:'block', fontStyle: 'italic' }}>
+                </Typography>
+                <RadioGroup
+                  name={`${questionId}-${typeQuestion}`}
+                  onChange={(event) => handleRadioChange(event, index)}
+                  row
+                  style={{
+                    justifyContent: 'center',
+                    margin: '1.2em 0',
+                  }}
+                >
+                  {options.map(({ numberOption, optionName }) => (
+                    <FormControlLabel
+                      key={numberOption}
+                      value={optionName}
+                      control={<Radio />}
+                      labelPlacement="bottom"
+                      label={
+                        <Box
+                          sx={{
+                            textAlign: 'center',
+                          }}
+                        >
+                          {getLikertIcon(optionName) && (
+                            <Tooltip title={optionName}>
+                              <img
+                                src={getLikertIcon(optionName)}
+                                alt={optionName}
+                                style={{
+                                  width: '3em',
+                                  verticalAlign: 'middle',
+                                }}
+                              />
+                            </Tooltip>
+                          )}
+                        </Box>
+                      }
+                      style={{
+                        fontSize: '0.5em !important',
+                      }}
+                    />
+                  ))}
+                </RadioGroup>
+                <Divider variant="middle" />
+              </Fragment>
+            )}
+            {isCheckbox(typeQuestion) && (
+              <Fragment>
+                <FormLabel
+                  style={{
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '1.1em',
+                    color: unansweredQuestions.includes(index)
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
+                  }}
+                >
+                  {questionName}
+                </FormLabel>
+                <Typography
+                  variant="caption"
+                  style={{ display: 'block', fontStyle: 'italic' }}
+                >
                   {description}
-              </Typography>
-              <TextField
-                id={`${questionId}-${typeQuestion}`}
-                name={`${questionId}-${typeQuestion}`}
-                multiline
-                rows={4}
-                variant="outlined"
+                </Typography>
+                <FormGroup>
+                  {options.map(({ numberOption, optionName }) => (
+                    <FormControlLabel
+                      key={numberOption}
+                      control={
+                        <Checkbox
+                          checked={
+                            formValues[index].values[optionName] || false
+                          }
+                          name={optionName}
+                          value={optionName}
+                          onChange={(event) =>
+                            handleCheckboxChange(event, index)
+                          }
+                          style={{
+                            color: unansweredQuestions.includes(index)
+                              ? 'red'
+                              : '#03aae4',
+                          }}
+                        />
+                      }
+                      label={optionName}
+                    />
+                  ))}
+                </FormGroup>
+                <Divider variant="middle" />
+              </Fragment>
+            )}
+            {isRange(typeQuestion) && (
+              <Fragment>
+                <FormLabel
+                  style={{
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '0.8m',
+                    color: unansweredQuestions.includes(index)
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
+                  }}
+                >
+                  {questionName}
+                </FormLabel>
+                <Typography
+                  variant="caption"
+                  style={{ display: 'block', fontStyle: 'italic' }}
+                >
+                  {description}
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '1.1em 0',
+                    overflow: 'auto',
+                  }}
+                >
+                  {[...Array(score).keys()].map((value) => (
+                    <Box key={value}>
+                      <div>
+                        <IconButton
+                          color="primary"
+                          component="label"
+                          onClick={() => handleRangeChange(value + 1, index)}
+                          style={{
+                            color: unansweredQuestions.includes(index)
+                              ? 'red'
+                              : '#03aae4',
+                          }}
+                        >
+                          {formValues[index].value >= value + 1 ? (
+                            <StarIcon />
+                          ) : (
+                            <StarBorderIcon />
+                          )}
+                        </IconButton>
+                      </div>
+                    </Box>
+                  ))}
+                </Box>
+                <Typography
+                  variant="caption"
+                  display="block"
+                  gutterBottom
+                  style={{ textAlign: 'center' }}
+                >
+                  {Number(formValues[index].value)} / {score}
+                </Typography>
+                <Divider variant="middle" />
+              </Fragment>
+            )}
+            {isText(typeQuestion) && (
+              <Fragment>
+                <FormLabel
+                  style={{
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '1.1em',
+                    color: unansweredQuestions.includes(index)
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
+                  }}
+                >
+                  {questionName}
+                </FormLabel>
+                <Typography
+                  variant="caption"
+                  style={{ display: 'block', fontStyle: 'italic' }}
+                >
+                  {description}
+                </Typography>
+                <TextField
+                  id={`${questionId}-${typeQuestion}`}
+                  name={`${questionId}-${typeQuestion}`}
+                  multiline
+                  rows={4}
+                  variant="outlined"
+                  fullWidth
+                  onChange={(event) => handleRadioChange(event, index)}
+                  error={unansweredQuestions.includes(index)}
+                />
+                <Divider variant="middle" />
+              </Fragment>
+            )}
+            {isSlider(typeQuestion) &&(
+              <>
+                <FormLabel
+                  style={{
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '1.1em',
+                    color: unansweredQuestions.includes(index)
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
+                  }}
+                >
+                  {questionName}
+                </FormLabel>
+                <Typography
+                  variant="caption"
+                  style={{ display: 'block', fontStyle: 'italic' }}
+                >
+                  {description}
+                </Typography>
+                <Slider
+                  value={value}
+                  min={1}
+                  max={10}
+                  step={1}
+                  onChange={handleChange}
+                  valueLabelDisplay="auto"
+                  aria-labelledby="range-slider"
+                />
+              </>
+            )}
+            {isSelect(typeQuestion) && (
+              <FormControl
                 fullWidth
-                onChange={(event) => handleRadioChange(event, index)}
-              />
-              <Divider variant="middle" />
-            </Fragment>
-          )}
-          {isSelect(typeQuestion) && (
-            <FormControl fullWidth>
-              <InputLabel
-                id={`${questionId}-${typeQuestion}`}
+                error={unansweredQuestions.includes(index)}
               >
-                {questionName}
-              </InputLabel>
-              <Typography variant="caption" style={{ display:'block', fontStyle: 'italic' }}>
+                <InputLabel id={`${questionId}-${typeQuestion}`}>
+                  {questionName}
+                </InputLabel>
+                <Typography
+                  variant="caption"
+                  style={{ display: 'block', fontStyle: 'italic' }}
+                >
                   {description}
-              </Typography>
-              <Select
-                labelId={`${questionId}-${typeQuestion}`}
-                id={`${questionId}-${typeQuestion}`}
-                value={formValues[index].value}
-                label={questionName}
-                onChange={(event) => {
-                  handleRadioChange(event, index, urlParam);
-                  fetchApiOptionsByParamId(urlParam, event.target.value, getOptions(options, questionId));
-                }}
-                disabled={getOptions(options, questionId).length === 0}
-              >
-                {getOptions(options, questionId).map(({ numberOption, optionName }) => (
-                  <MenuItem
-                    key={numberOption}
-                    value={optionName}
-                  >
-                    {optionName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-        </FormControl>)
+                </Typography>
+                <Select
+                  labelId={`${questionId}-${typeQuestion}`}
+                  id={`${questionId}-${typeQuestion}`}
+                  value={formValues[index].value}
+                  label={questionName}
+                  onChange={(event) => {
+                    handleRadioChange(event, index, urlParam);
+                    fetchApiOptionsByParamId(
+                      urlParam,
+                      event.target.value,
+                      getOptions(options, questionId)
+                    );
+                  }}
+                  disabled={getOptions(options, questionId).length === 0}
+                  error={error[index]}
+                >
+                  {getOptions(options, questionId).map(
+                    ({ numberOption, optionName }) => (
+                      <MenuItem key={numberOption} value={optionName}>
+                        {optionName}
+                      </MenuItem>
+                    )
+                  )}
+                </Select>
+              </FormControl>
+            )}
+          </FormControl>
+        )
       )}
       {totalOfSteps() !== 1 && (
-      <MobileStepper
-        variant="text"
-        steps={totalOfSteps()}
-        position="static"
-        activeStep={activeStep}
-        sx={{
-          maxWidth : 400,
-          flexGrow: 1,
-          margin: '0 auto',
-        }}
-        nextButton={
-          <Button size="small" onClick={handleNext} disabled={(activeStep + 1) >= totalOfSteps()}>
-            Siguiente
-            {<KeyboardArrowRight />}
-          </Button>
-        }
-        backButton={
-          <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-            {<KeyboardArrowLeft />}
-            Atrás
-          </Button>
-        }
-      />)}
+        <MobileStepper
+          variant="text"
+          steps={totalOfSteps()}
+          position="static"
+          activeStep={activeStep}
+          sx={{
+            maxWidth: 400,
+            flexGrow: 1,
+            margin: '0 auto',
+          }}
+          nextButton={
+            <Button
+              size="small"
+              onClick={handleNext}
+              disabled={
+                activeStep + 1 >= totalOfSteps() 
+              }
+            >
+              {nameStep[activeStep] !== 'Encuesta' &&
+                activeStep + 1 === totalOfSteps()
+                  ? 'Finalizar'
+                  : 'Siguiente'}
+                {<KeyboardArrowRight />}
+              </Button>
+          }
+          backButton={
+            <Button
+              size="small"
+              onClick={handleBack}
+              disabled={activeStep === 0}
+            >
+              {<KeyboardArrowLeft />}
+              Atrás
+            </Button>
+          }
+        />
+      )}
     </div>
   );
 };
 
 SurveyForm.propTypes = {
-  questions: PropTypes.arrayOf(PropTypes.shape({
-    options: PropTypes.arrayOf(PropTypes.shape({
-      numberOption: PropTypes.number.isRequired,
-      optionName: PropTypes.string.isRequired,
-    })),
-    questionId: PropTypes.number.isRequired,
-    questionName: PropTypes.string.isRequired,
-    questionNumber: PropTypes.number.isRequired,
-    typeQuestion: PropTypes.string.isRequired,
-    api: PropTypes.string,
-    urlParam: PropTypes.string,
-  })),
+  questions: PropTypes.arrayOf(
+    PropTypes.shape({
+      options: PropTypes.arrayOf(
+        PropTypes.shape({
+          numberOption: PropTypes.number.isRequired,
+          optionName: PropTypes.string.isRequired,
+        })
+      ),
+      questionId: PropTypes.number.isRequired,
+      questionName: PropTypes.string.isRequired,
+      questionNumber: PropTypes.number.isRequired,
+      typeQuestion: PropTypes.string.isRequired,
+      api: PropTypes.string,
+      urlParam: PropTypes.string,
+    })
+  ),
   onAnswered: PropTypes.func.isRequired,
 };
 

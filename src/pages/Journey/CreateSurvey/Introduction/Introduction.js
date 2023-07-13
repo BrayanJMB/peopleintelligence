@@ -11,6 +11,7 @@ import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
 
 import client from '../../../../utils/axiosInstance';
+import { isJourney } from '../../../../utils/helpers';
 
 import styles from './Introduction.module.css';
 
@@ -21,7 +22,7 @@ import styles from './Introduction.module.css';
  * @returns {JSX.Element}
  * @constructor
  */
-const Introduction = ({ checkForm, onUpdated, previousData }) => {
+const Introduction = ({ checkForm, onUpdated, previousData, isUpdate }) => {
   const [maps, setMaps] = useState([]);
   const [map, setMap] = useState(null);
   const [isValidMap, setIsValidMap] = useState('');
@@ -31,13 +32,15 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
   const [isValidDescription, setIsValidDescription] = useState('');
   const [mailingMessage, setMailingMessage] = useState('');
   const [isValidMailingMessage, setIsValidMailingMessage] = useState('');
+  const [emailMask, setEmailMask] = useState('');
+  const [isValidEmailMask, setIsValidEmailMask] = useState('');
+  const [emailSubject, setEmailSubject] = useState('');
+  const [isValidEmailSubject, setIsValidEmailSubject] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [searchParams] = useSearchParams();
   const isMap = searchParams.get('isMap') === 'true';
   const [surveyOrMap, setSurveyOrMap] = useState(isMap ? 'map' : 'survey');
   const currentCompany = useSelector((state) => state.companies.currentCompany);
-
-
   /**
    * Handel change.
    *
@@ -50,6 +53,12 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
         break;
       case 'description':
         setDescription(event.target.value);
+        break;
+      case 'emailMask':
+        setEmailMask(event.target.value);
+        break;
+      case 'emailSubject':
+        setEmailSubject(event.target.value);
         break;
       case 'mailingMessage':
         setMailingMessage(event.target.value);
@@ -68,6 +77,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
    * @param newValue
    */
   const handleChangeMap = (newValue) => {
+    console.log(newValue);
     setMap(newValue);
   };
 
@@ -98,6 +108,8 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
     setIsValidTitle('');
     setIsValidDescription('');
     setIsValidMailingMessage('');
+    setIsValidEmailMask('');
+    setIsValidEmailSubject('');
     setIsValid(true);
 
     // check null for map
@@ -134,12 +146,37 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
       setIsValid(false);
     }
     // check length for mailing message min 5
-    if (mailingMessage.length < 5) {
-      setIsValidMailingMessage('Este campo debe tener al menos 5 caracteres');
-      setIsValid(false);
-    }else if (!mailingMessage.includes('@enlace')) {
-        setIsValidMailingMessage('El mensaje debe contener "@enlace".');
+    if((isTemplate() === false || isMap) && !isUpdate){
+      if (!emailMask) {
+        setIsValidEmailMask('La máscara de correo es requerido');
         setIsValid(false);
+      } else {
+        if (emailMask.length < 5) {
+          setIsValidEmailMask(
+            'La máscara debe tener al menos 5 carácteres'
+          );
+          setIsValid(false);
+        }else if (emailMask.length > 30) {
+          setIsValidEmailMask('La máscara debe tener máximo 30 carácteres');
+        }
+      }
+      if (!emailSubject) {
+        setIsValidEmailSubject('El asunto de correo es requerido');
+        setIsValid(false);
+      } else if (emailSubject.length < 5) {
+          setIsValidEmailSubject(
+            'El asunto de correo debe tener al menos 5 carácteres'
+          );
+          setIsValid(false);
+      } 
+
+      if (mailingMessage.length < 5) {
+        setIsValidMailingMessage('Este campo debe tener al menos 5 caracteres');
+        setIsValid(false);
+      }else if (!mailingMessage.includes('@enlace')) {
+          setIsValidMailingMessage('El mensaje debe contener "@enlace".');
+          setIsValid(false);
+      }
     }
   };
 
@@ -160,8 +197,10 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
     if (!previousData) {
       return;
     }
-    
+    console.log(previousData);
+    /*
     if (previousData.map) {
+      console.log(previousData.map)
       // if map is not number then find the map by name
       if (typeof previousData.map !== 'number') {
         const map = maps.find((item) => item.mapJourney === previousData.map);
@@ -172,12 +211,21 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
       } else {
         setMap(previousData.map);
       }
-    }
+    }*/
+    if (previousData.map) {
+        setMap(previousData.map);
+      }
     if (previousData.title) {
       setTitle(previousData.title);
     }
     if (previousData.description) {
       setDescription(previousData.description);
+    }
+    if (previousData.emailMask) {
+      setEmailMask(previousData.emailMask);
+    }
+    if (previousData.emailSubject) {
+      setEmailSubject(previousData.emailSubject);
     }
     if (previousData.mailingMessage) {
       setMailingMessage(previousData.mailingMessage);
@@ -186,7 +234,6 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
       setSurveyOrMap(previousData.surveyOrMap);
     }
   }, [previousData]); // eslint-disable-line react-hooks/exhaustive-deps
-
 
   // listen changes in touched form
   useEffect(() => {
@@ -202,14 +249,16 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
       surveyOrMap,
       title,
       description,
+      emailMask,
+      emailSubject,
       mailingMessage,
       isValid,
     });
 
-    if (checkForm || (map && title && description && mailingMessage)) {
+    if (checkForm || (map && title && description && mailingMessage && emailMask && emailSubject)) {
       validate();
     }
-  }, [map, title, description, mailingMessage, isValid, surveyOrMap]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [map, title, description, mailingMessage, emailMask, emailSubject, isValid, surveyOrMap]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={styles.form}>
@@ -258,7 +307,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
           clearOnEscape
           onChange={(event, newValue) => handleChangeMap(newValue)}
           value={map}
-          getOptionLabel={(option) => option.label}
+          getOptionLabel={(option) => option.label || ''}
           noOptionsText={'No hay mapas disponibles'}
           name={'map'}
           isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -310,6 +359,7 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
           onChange={handleChange}
         />
       </FormControl>
+      {isTemplate() === true && !isMap || isUpdate ? (
       <FormControl
         style={{
           marginBottom: '1.5em',
@@ -328,7 +378,67 @@ const Introduction = ({ checkForm, onUpdated, previousData }) => {
           rows={4}
           onChange={handleChange}
         />
-      </FormControl>
+      </FormControl>):
+      (<>
+        <FormLabel
+              id="survey-or-map"
+            >
+              Datos correo electrónico
+        </FormLabel>
+        <FormControl
+          style={{
+            marginBottom: '1.5em',
+          }}
+        >
+          <TextField
+            id="email-mask"
+            label="Máscara correo"
+            variant="outlined"
+            value={emailMask}
+            error={isValidEmailMask !== ''}
+            helperText={isValidEmailMask}
+            name="emailMask" 
+            fullWidth
+            onChange={handleChange}
+          />
+        </FormControl>
+        <FormControl
+          style={{
+            marginBottom: '1.5em',
+          }}
+        >
+          <TextField
+            id="email-subject"
+            label="Asunto correo electrónico"
+            variant="outlined"
+            value={emailSubject}
+            error={isValidEmailSubject !== ''}
+            helperText={isValidEmailSubject}
+            name="emailSubject"
+            fullWidth
+            onChange={handleChange}
+          />
+        </FormControl>
+        <FormControl
+          style={{
+            marginBottom: '1.5em',
+          }}
+        >
+          <TextField
+            id="mailing-message"
+            label="Mensaje de correo electrónico"
+            variant="outlined"
+            value={mailingMessage}
+            error={isValidMailingMessage !== ''}
+            helperText={isValidMailingMessage}
+            name="mailingMessage"
+            fullWidth
+            multiline
+            rows={4}
+            onChange={handleChange}
+          />
+        </FormControl>
+      </>)}
     </div>
   );
 };
