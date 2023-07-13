@@ -1,20 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef,useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import CancelIcon from '@mui/icons-material/Cancel';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 import LinkIcon from '@mui/icons-material/Link';
 import SendIcon from '@mui/icons-material/Send';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import FormControl from '@mui/material/FormControl';
-import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import Stack from '@mui/material/Stack';
+import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
@@ -23,6 +20,8 @@ import client from '../../../../utils/axiosInstance';
 
 import styles from './SendInvitationDialog.module.css';
 
+const defaultMessageMask = 'Hola, acá puedes colocar la máscara del correo.';
+const defaultMessageSubject = 'Hola, puede colocar el asunto del correo.';
 const defaultMessage = 'Hola, te invito a participar en la encuesta: @enlace';
 
 /**
@@ -31,19 +30,30 @@ const defaultMessage = 'Hola, te invito a participar en la encuesta: @enlace';
  * @returns {JSX.Element}
  * @constructor
  */
-const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => {
+const SendInvitationDialog = ({
+  isPersonal,
+  copyUrl,
+  isOpen,
+  mailMask,
+  mailSubject,
+  emailMessage,
+}) => {
   const [open, setOpen] = useState(false);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const { id: surveyId } = useParams();
   const [groups, setGroups] = useState([]);
+  const [emailMask, setEmailMask] = useState(defaultMessageMask);
+  const [emailSubject, setEmailSubject] = useState(defaultMessageSubject);
+  const [message, setMessage] = useState(defaultMessage);
   const [emails, setEmails] = useState('');
-  const [emailSubject, setEmailSubject] = useState('');
   const [isValidEmailSubject, setIsValidEmailSubject] = useState('');
   const [isValidEmails, setIsValidEmails] = useState('');
-  const [message, setMessage] = useState(defaultMessage);
   const [isValidMessage, setIsValidMessage] = useState('');
+  const [isValidEmailMask, setIsValidEmailMask] = useState('');
   const { enqueueSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
+  const [csvFile, setCsvFile] = useState('');
+  const [csvFileName, setCsvFileName] = useState('');
 
   /**
    * Handle click open.
@@ -56,12 +66,13 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
    * Handle close.
    */
   const handleClose = () => {
-    setOpen(false);
     setEmails('');
-    setEmailSubject('');
     setIsValidEmails('');
     setIsValidEmailSubject('');
-    setIsValidMessage('')
+    setIsValidMessage('');
+    setCsvFile(null);
+    setCsvFileName('');
+    setOpen(false);
   };
 
   /**
@@ -72,7 +83,7 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
     groupsCopy[index].value = event.target.value;
 
     setGroups(groupsCopy);
-  }; 
+  };
 
   const validateEmail = (email) => {
     if (!email || !email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
@@ -80,10 +91,11 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
       return;
     }
     return true;
-  }
+  };
 
   function validateEmailsStructure(emails) {
-    const regex = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4},)*([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})$/;
+    const regex =
+      /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4},)*([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})$/;
     return regex.test(emails);
   }
 
@@ -128,7 +140,7 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
     // validate message
     if (!event.target.value) {
       setIsValidMessage('El mensaje es requerido.');
-    }else{
+    } else {
       if (!event.target.value.includes('@enlace')) {
         setIsValidMessage('El mensaje debe contener "@enlace".');
       }
@@ -136,27 +148,49 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
     setIsLoading(false);
   };
 
+  /**
+   * Handle Email Mask change.
+   *
+   * @param event
+   */
+  const handleEmailMaskChange = (event) => {
+    setIsLoading(true);
+    setIsValidEmailMask('');
+    setEmailMask(event.target.value);
+    //validate email subject
+    if (!event.target.value) {
+      setIsValidEmailMask('La máscara del correo es requerido');
+    } else {
+      if (event.target.value.length < 5) {
+        setIsValidEmailMask('La máscara debe tener al menos 5 carácteres');
+      } else if (event.target.value.length > 30) {
+        setIsValidEmailMask('La máscara debe tener máximo 30 carácteres');
+      }
+    }
+    setIsLoading(false);
+  };
 
-    /**
+  /**
    * Handle Email Subject change.
    *
    * @param event
    */
-    const handleEmailSubjectChange = (event) => {
-      setIsLoading(true);
-      setIsValidEmailSubject(''); 
-      setEmailSubject(event.target.value);
-      //validate email subject
-      if(!event.target.value){
-        setIsValidEmailSubject('El asunto de correo es requerido');
-      }else{
-        if (event.target.value.length < 5) {
-          setIsValidEmailSubject('El asunto de correo debe tener al menos 10 carácteres');
-        }
-      }
-      setIsLoading(false);
-    };
-  
+  const handleEmailSubjectChange = (event) => {
+    setIsLoading(true);
+    setIsValidEmailSubject('');
+    setEmailSubject(event.target.value);
+    //validate email subject
+    if (!event.target.value) {
+      setIsValidEmailSubject('El asunto de correo es requerido');
+    } else {
+      if (event.target.value.length < 5) {
+        setIsValidEmailSubject(
+          'El asunto de correo debe tener al menos 5 carácteres'
+        );
+      } 
+    }
+    setIsLoading(false);
+  };
 
   /**
    * Get helper text.
@@ -193,14 +227,12 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
 
     for (let i = 0; i < groupsCopy.length; i++) {
       if (groupsCopy[i].url && !groupsCopy[i].url.match(/[{ }]/g)) {
-
         const { data } = await client.get(groupsCopy[i].url);
 
         groupsCopy[i].options = data.map((item) => ({
           value: item.value ?? item.ciudad,
           id: item.id,
         }));
-
       }
     }
 
@@ -245,14 +277,16 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
     setIsValidEmails('');
     setIsValidMessage('');
     setIsValidEmailSubject('');
+    setCsvFile(null);
+    setCsvFileName('');
 
     // validate emails
     const emailsArray = emails.split(',');
     let error = false;
-    if(!emails){
+    if (!csvFile && !emails) {
       setIsValidEmails('Debe colocar al menos 1 correo');
       error = true;
-    }else{
+    } else {
       emailsArray.forEach((email) => {
         // if is empty don't validate
         if (!email) {
@@ -265,19 +299,20 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
         if (trimmedEmail.includes(' ')) {
           setIsValidEmails('Los correos no debe contener espacios');
           error = true;
-        }else{
+        } else {
           validateEmail(trimmedEmail);
         }
-
       });
     }
     //validate email subject
-    if(!emailSubject){
+    if (!emailSubject) {
       setIsValidEmailSubject('El asunto de correo es requerido');
       error = true;
-    }else{
-      if (emailSubject.length < 10) {
-        setIsValidEmailSubject('El asunto de correo debe tener al menos 10 carácteres');
+    } else {
+      if (emailSubject.length < 5) {
+        setIsValidEmailSubject(
+          'El asunto de correo debe tener al menos 5 carácteres'
+        );
         error = true;
       }
     }
@@ -286,7 +321,7 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
     if (!message) {
       setIsValidMessage('El mensaje es requerido.');
       error = true;
-    }else{
+    } else {
       if (!message.includes('@enlace')) {
         setIsValidMessage('El mensaje debe contener "@enlace".');
         error = true;
@@ -310,26 +345,86 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
     }
 
     const { id: companyId } = currentCompany;
-    try{
-      await client.post('sendMailJourney', {
-        surveyId: parseInt(surveyId),
-        companyId,
-        message,
-        emails,
-        emailSubject,
-        groups,
-      });
-      enqueueSnackbar('Invitación enviada', {
-        variant: 'success',
-      });
-  
-    }catch(Exception){
-      enqueueSnackbar('Error al enviar la invitación', {
-        variant: 'error',
-      });
-    }
+
+    let bodyFormData = new FormData();
+    const informationMail = JSON.stringify({
+      surveyId: parseInt(surveyId),
+      companyId,
+      message,
+      emails,
+      emailMask,
+      emailSubject,
+      groups,
+    });
+    bodyFormData.append('data', csvFile);
+    bodyFormData.append('jmails', informationMail);
+
+    await fetch(
+      'https://peopleintelligenceapi.azurewebsites.net/api/sendMailJourney',
+      {
+        method: 'POST',
+        body: bodyFormData,
+      }
+    )
+      .then((response) => response.json())
+      .then((res) => {
+        enqueueSnackbar('Invitación enviada satisfactoriamente', {
+          variant: 'success',
+          autoHideDuration: 2000,
+        });
+      })
+      .catch((err) =>
+        enqueueSnackbar(
+          'Error al enviar la invitación. Intenta más tarde o comuníquese con HelpDesk',
+          {
+            variant: 'error',
+            autoHideDuration: 2000,
+          }
+        )
+      );
     setIsLoading(false);
     handleClose();
+  };
+
+  //Logic for CsvFile
+  const fileInputRef = useRef();
+
+  const hiddenFileInput = {
+    display: 'none',
+  };
+
+  const handleClickCsvFile = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleCsvFile = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const fileExtension = file.name.split('.').pop().toLowerCase();
+      if (fileExtension === 'csv') {
+        setCsvFile(e.target.files[0]);
+        setCsvFileName(e.target.files[0].name); 
+        enqueueSnackbar('Correos cargados satisfactoriamente.', {
+          variant: 'success',
+          autoHideDuration: 2500,
+        });
+      } else {
+        enqueueSnackbar('Solo se permiten archivos con formato .csv', {
+          variant: 'error',
+          autoHideDuration: 2500,
+        });
+      }
+    }else{
+      enqueueSnackbar('Hubo un error al cargar el archivo', {
+        variant: 'error',
+        autoHideDuration: 2500,
+      });
+    }
+  };
+
+  const handleDeleteFile = () => {
+    setCsvFile(null);
+    setCsvFileName('');
   };
 
   // watch open prop
@@ -342,13 +437,26 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
   }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // watch email message
+  /*
   useEffect(() => {
     if (!message) {
       return;
     }
-
     setMessage(emailMessage);
-  }, [emailMessage]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  }, [emailMessage]);*/
+
+  useEffect(() => {
+    if (emailMask) {
+      setEmailMask(mailMask);
+    }
+    if (emailSubject) {
+      setEmailSubject(mailSubject);
+    }
+    if (message) {
+      setMessage(emailMessage);
+    }
+  }, [emailMessage, mailMask, mailSubject]);
 
   // component did mount
   useEffect(() => {
@@ -364,14 +472,9 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
       >
         Enviar invitación
       </Button>
-      <Dialog
-        open={open}
-        maxWidth="md"
-        onClose={handleClose}
-      >
+      <Dialog open={open} maxWidth="md" onClose={handleClose}>
         <DialogTitle>Enviar invitación</DialogTitle>
         <DialogContent>
-
           <TextField
             id="emails"
             label="Para:"
@@ -384,25 +487,68 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
             }}
             helperText={getHelperText(
               isValidEmails,
-              'Coloque los correos de esta forma: correo1@example.com, correo2@example.com, correo3@example.com ...',
+              'Coloque los correos de esta forma: correo1@example.com, correo2@example.com, correo3@example.com ...'
             )}
             value={emails}
             error={isValidEmails !== ''}
             onChange={handleEmailsChange}
+          />
+          <Box>
+            <Button
+              variant="contained"
+              onClick={handleClickCsvFile}
+              startIcon={csvFileName ? '' : <FileUploadIcon />}
+              disabled={isLoading}
+            >
+              {csvFileName ? csvFileName : 'Carga Csv con correo'}
+            </Button>
+            {csvFileName && (
+              <Link
+                component="button"
+                variant="body2"
+                onClick={handleDeleteFile}
+                style={{ marginLeft: '10px' }}
+              >
+                Eliminar archivo
+              </Link>
+            )}
+            <input
+              ref={fileInputRef}
+              style={hiddenFileInput}
+              type="file"
+              onChange={handleCsvFile}
+              accept=".csv"
+              name="csv_file"
+            />
+          </Box>
+
+          <TextField
+            id="emailMask"
+            label="Máscara del correo:"
+            fullWidth
+            variant="outlined"
+            style={{
+              marginTop: '1.3em',
+            }}
+            helperText={getHelperText(
+              isValidEmailMask,
+              'Ingresa la máscara del correo.'
+            )}
+            value={emailMask}
+            error={isValidEmailMask !== ''}
+            onChange={handleEmailMaskChange}
           />
           <TextField
             id="emailSubject"
             label="Asunto del correo:"
             fullWidth
             variant="outlined"
-            multiline
-            rows={4}
             style={{
               marginTop: '1.3em',
             }}
             helperText={getHelperText(
               isValidEmailSubject,
-              'Ingresa el asunto que deseas utilizar para tu correo electrónico. Recuerda que este asunto se aplicará a todos los destinatarios a los que envíes el correo.',
+              'Ingresa el asunto que deseas utilizar para tu correo electrónico. Recuerda que este asunto se aplicará a todos los destinatarios a los que envíes el correo.'
             )}
             value={emailSubject}
             error={isValidEmailSubject !== ''}
@@ -420,7 +566,7 @@ const SendInvitationDialog = ({ isPersonal, copyUrl, isOpen, emailMessage }) => 
             }}
             helperText={getHelperText(
               isValidMessage,
-              'Cada usuario recibirá un mensaje personalizado y @enlace será reemplazado por el enlace de la encuesta.',
+              'Cada usuario recibirá un mensaje personalizado y @enlace será reemplazado por el enlace de la encuesta.'
             )}
             value={message}
             error={isValidMessage !== ''}

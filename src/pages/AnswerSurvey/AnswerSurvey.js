@@ -502,7 +502,7 @@ const AnswerSurvey = () => {
                           onClick={handleNext}
                           disabled={!stepsCompleted[activeStep] || surveyStatus === 'loading'}
                         >
-                          {activeStep === steps.length - 2 ? '' : 'Siguiente'}
+                          {activeStep === steps.length - 2 ? 'Finalizar' : 'Siguiente'}
                         </Button>
                       </Box>
                     </React.Fragment>

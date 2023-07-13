@@ -110,6 +110,11 @@ export default function App() {
                   exact
                 />
                 <Route
+                  path="/journey/edit-survey/:surveyId"
+                  element={<CreateSurvey />}
+                  exact
+                />
+                <Route
                   path="/journey/update-template/:id"
                   element={<CreateSurvey />}
                   exact

@@ -28,10 +28,12 @@ import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
+import { useSnackbar } from 'notistack';
 
 import DemographicDataForm from '../../components/DemographicDataForm/DemographicDataForm';
 import MyCard from '../../components/MyCard/MyCard';
 import MyPageHeader from '../../components/MyPageHeader/MyPageHeader';
+import { currentCompanySelected } from '../../features/companies/companiesSlice';
 import {
   fetchSurveyByIdAndCompanyId,
   selectCurrentSurvey,
@@ -45,16 +47,17 @@ import SendInvitationDialog from './components/SendInvitationDialog/SendInvitati
 
 import styles from './SurveyDetailPage.module.css';
 
+
 // survey options
 const options = [
   /*{
     option: "Editar",
-    icon: <EditIcon />, 
-  },
-  {
-    option: "Duplicar",
-    icon: <ContentCopyIcon />,
+    icon: <EditIcon />,
   },*/
+  {
+    option: 'Duplicar',
+    icon: <ContentCopyIcon />,
+  },
   {
     option: 'Borrar',
     icon: <DeleteIcon />,
@@ -73,12 +76,15 @@ const SurveyDetailPage = () => {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const { id: surveyId } = useParams();
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const surveysStatus = useSelector((state) => selectSurveysStatus(state));
   const currentSurvey = useSelector((state) => selectCurrentSurvey(state));
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [linkCopied, setLinkCopied] = useState(false);
   const [reminderSent, setReminderSent] = useState(false);
   const [showDemographicData, setShowDemographicData] = useState(false);
   const [alertType, setAlertType] = useState('');
+
   // flags, tags and counters.
   const [chips, setChips] = useState([
     {
@@ -127,7 +133,34 @@ const SurveyDetailPage = () => {
     if (option === 'Borrar') {
       handleDeleteSurvey(currentSurvey.response.surveyId);
     }
+    if (option === 'Editar'){
+      navigate(`/journey/edit-survey/${currentSurvey.response.surveyId}?isTemplate=true&isMap=true`);
+    }
+    if(option === 'Duplicar'){
+      handleEditSurvey(currentSurvey.response.surveyId);
+    }
     setAnchorEl(null);
+  };
+
+  const handleEditSurvey = async (idSurvey) => {
+    if (!currentSurvey) {
+      return;
+    }
+
+    try {
+      const response = await client.post(`CloneJourney/${idSurvey}/${currentCompany.id}`);
+      if (response.status === 200) {
+        enqueueSnackbar('Encuesta clonada satisfactoriamente', {
+          variant: 'success',
+          autoHideDuration: 2000,
+        });
+      }
+    } catch (error) {
+      enqueueSnackbar('Error al clonar la encuesta', {
+        variant: 'error',
+        autoHideDuration: 2000,
+      });
+    }
   };
 
   const handleDeleteSurvey = async (idSurvey) => {
@@ -136,7 +169,6 @@ const SurveyDetailPage = () => {
     }
 
     try {
-      debugger;
       const response = await client.delete(`deleteSurvey/${idSurvey}`);
       if (response.status === 200) {
         setSnackbarMessage('Encuesta eliminada satifactoriamente');
@@ -399,6 +431,8 @@ const SurveyDetailPage = () => {
                             isPersonal={currentSurvey.ispersonal}
                             copyUrl={handleClickCopyUrl}
                             isOpen={isOpenSendMail}
+                            mailMask={currentSurvey.response.emailMAsk}
+                            mailSubject={currentSurvey.response.emailSubject}
                             emailMessage={currentSurvey.response.emailMessage}
                           />
                         </Stack>
