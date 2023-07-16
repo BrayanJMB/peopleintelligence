@@ -73,6 +73,11 @@ export default function CreateSurvey() {
     ],
     customOptions: Array(2).fill(''),
     stars: Array(3).fill(''),
+    rangeOptions:[
+      'Rango 0-6',
+      'Rango 7-8',
+      'Rango 9-10'
+    ]
   });
   const dispatch = useDispatch();
   const [categories, setCategories] = useState([]);
@@ -848,7 +853,7 @@ export default function CreateSurvey() {
         return;
       }
       const {data:survey} = await client.get(`ShowQuestion/${surveyId}/${currentCompany.id}`);
-      console.log(survey);
+
       let dataCopy = {
         ...data,
       };
@@ -930,7 +935,6 @@ export default function CreateSurvey() {
    */
   const fetchTemplate = async (templateId) => {
     const { data: template } = await showTemplateAPI(templateId);
-    console.log(template);
     if (!template) {
       return;
     }
@@ -1087,14 +1091,17 @@ export default function CreateSurvey() {
             </div>
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} variant="outlined">
-            Cancelar
-          </Button>
-          <Button onClick={handleAgregar} variant="contained">
-            Agregar
-          </Button>
-        </DialogActions>
+        {type && type.id !== 10 &&(
+          <DialogActions>
+            <Button onClick={handleCloseModal} variant="outlined">
+              Cancelar
+            </Button>
+            <Button onClick={handleAgregar} variant="contained">
+              Agregar
+            </Button>
+          </DialogActions>
+        )}
+
       </Dialog>
       <Dialog maxWidth="md" onClose={handleCloseEditModal} open={edit}>
         <DialogTitle>Editar pregunta</DialogTitle>

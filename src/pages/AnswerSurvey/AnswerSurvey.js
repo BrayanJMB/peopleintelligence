@@ -18,6 +18,7 @@ import Typography from '@mui/material/Typography';
 import MyLoader from '../../components/MyLoader/MyLoader';
 import {
   fetchSurveyForAnswer,
+  fetchSurveyForAnswerPersonal,
   selectCurrentSurveyForAnswer,
   selectSurveysStatus, storeSurvey,
 } from '../../features/surveys/surveysSlice';
@@ -82,22 +83,39 @@ const AnswerSurvey = () => {
       return;
     }
 
-    const { data } = await client.get(`getMailPersonalSurvey/${surveyId}/${companyId}/${email}`);
-    setAnswerIdAPI(data.id);
-    // if exists, set answers and skip demographic step
-    if (data && data.demographics) {
-      setDemographicUserData(data.demographics);
-
-      setSteps((prevSteps) => {
-        const newSteps = [...prevSteps];
-
-        newSteps.splice(0, 1);
-
-        return newSteps;
-      });
+    try {
+      const response = await client.get(`getMailPersonalSurvey/${surveyId}/${companyId}/${email}`);
+      const { data } = response;
+    
+      setAnswerIdAPI(data.id);
+      // if exists, set answers and skip demographic step
+      if (data && data.demographics) {
+        setDemographicUserData(data.demographics);
+    
+        setSteps((prevSteps) => {
+          const newSteps = [...prevSteps];
+          newSteps.splice(0, 1);
+    
+          return newSteps;
+        });
+      }
+      setEmailSubmitted(true); 
+    } catch(error) {
+      // Verificar si la excepción tiene una respuesta y un código de estado
+      if(error.response && error.response.status === 409) {
+        setSteps((prevSteps) => {
+          const newSteps = [...prevSteps];
+          newSteps.splice(0, 1);
+    
+          return newSteps;
+        });
+        setEmailSubmitted(true); 
+      } else {
+        console.error('Se produjo un error al hacer la solicitud', error);
+      }
     }
 
-    setEmailSubmitted(true);
+
   };
 
   /**
@@ -273,8 +291,12 @@ const AnswerSurvey = () => {
 
   // watch surveyId and companyId changes
   useEffect(() => {
-    dispatch(fetchSurveyForAnswer({ surveyId, companyId }));
-  }, [surveyId, companyId]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (answerId){
+      dispatch(fetchSurveyForAnswerPersonal({ surveyId, companyId, answerId }));
+    }else{
+      dispatch(fetchSurveyForAnswer({ surveyId, companyId}));
+    }
+  }, [surveyId, companyId, answerId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // watch currentSurvey changes
   useEffect(() => {
@@ -308,17 +330,23 @@ const AnswerSurvey = () => {
         >
           <CardContent>
             {(surveyStatus === 'loading' || loading) && (<MyLoader />)}
-
-
-
             {surveyStatus === 'succeeded' && currentSurvey !== null && (
               <Fragment>
                 {/* company name */}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems:'center' }}>
+                <Typography
+                  variant="body1"
+                  gutterBottom
+                  style={{ flex: '1 0 65%' }}
+                >
+                  {currentSurvey.response.surveyName}
+                </Typography>
                 <Typography
                   variant="h5"
                   gutterBottom
                   style={{
-                    textAlign: 'center',
+                    textAlign: 'right',
+                    flex: '1 0 35%', // Asegura que este elemento siempre toma el 50% del espacio
                   }}
                 >
                   {currentSurvey.logo !== null && currentSurvey.logo.length !== 0 && (
@@ -343,21 +371,15 @@ const AnswerSurvey = () => {
                 {currentSurvey.empresa}
               </span>
                 </Typography>
+                {/* survey name */}
 
+                </Box>
                 <Divider
                   variant="middle"
                   style={{
                     margin: '1.3em 0',
                   }}
                 />
-
-                {/* survey name */}
-                <Typography
-                  variant="body1"
-                  gutterBottom
-                >
-                  {currentSurvey.response.surveyName}
-                </Typography>
 
                 {/* email */}
                 {emailSubmitted === false && !answerId && (
@@ -468,6 +490,7 @@ const AnswerSurvey = () => {
                         {isSurveyStep() && (
                           <SurveyForm
                             questions={currentSurvey.response.preguntas}
+                            descriptionSurvey={currentSurvey.response.descriptionSurvey}
                             handleNextAnswer={handleNext}
                             nameStep={steps}
                             onAnswered={(answers) => handleAnswered(answers, activeStep)}
@@ -496,8 +519,6 @@ const AnswerSurvey = () => {
                               Saltar
                             </Button>
                           )}
-
-
                         <Button
                           onClick={handleNext}
                           disabled={!stepsCompleted[activeStep] || surveyStatus === 'loading'}
