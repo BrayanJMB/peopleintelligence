@@ -4,21 +4,22 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
+import Paper  from '@mui/material/Paper';
 import Select from '@mui/material/Select';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 import TextField from '@mui/material/TextField';
 
 import styles from './Form.module.css';
 
-
 export default function Form(props) {
   const [categoryId, setCategoryId] = useState('');
-
+  console.log(props.information.rangeOptions);
   /**
    * Handle category id change.
-   * 
+   *
    * @param {object} event
    */
   const handleCategoryIdChange = ({ target }) => {
@@ -138,7 +139,9 @@ export default function Form(props) {
                       variant="standard"
                       placeholder="Añadir opción..."
                       value={props.information.options[key]}
-                      onChange={(event) => props.handleChangeOptions(event, key)}
+                      onChange={(event) =>
+                        props.handleChangeOptions(event, key)
+                      }
                       InputProps={{
                         disableUnderline: true,
                       }}
@@ -218,7 +221,11 @@ export default function Form(props) {
                       value={props.information.customOptions[key]}
                       onChange={props.handleinformationoptions(key)}
                       error={props.customOptionError[key]}
-                      helperText={props.customOptionError[key] ? 'La opción no puede estar vacía': ''}
+                      helperText={
+                        props.customOptionError[key]
+                          ? 'La opción no puede estar vacía'
+                          : ''
+                      }
                       InputProps={{
                         disableUnderline: true,
                       }}
@@ -287,10 +294,7 @@ export default function Form(props) {
             <div className={styles.options}>
               {props.information.customOptions.map((val, key) => {
                 return (
-                  <div
-                    className={styles.option}
-                    key={key}
-                  >
+                  <div className={styles.option} key={key}>
                     <div
                       style={{
                         padding: '3px 9px',
@@ -327,7 +331,7 @@ export default function Form(props) {
                   style={{
                     backgroundColor: '#F7F7F7',
                     width: '255px',
-                }}
+                  }}
                 >
                   Añadir opción
                 </Button>
@@ -441,8 +445,10 @@ export default function Form(props) {
             <sub>{props.starmsg}</sub>
           </div>
         );
-        case 9:
+      case 10:
+
         return (
+          <h4>Lo sentimos esta pregunta no esta disponible</h4>/*
           <div className={styles.top}>
             <div className={styles.question}>
               <div className={styles.number}>{`Q${props.questions}`}</div>
@@ -471,21 +477,21 @@ export default function Form(props) {
                   inputComponent: TextareaAutosize,
                   inputProps: {
                     style: {
-                      height: '80px',
+                      height: "80px",
                     },
                   },
                 }}
                 value={props.information.description}
                 style={{
-                  width: '100%',
-                  marginTop: '0.5rem',
+                  width: "100%",
+                  marginTop: "0.5rem",
                 }}
                 name="description"
                 onChange={props.handleInformation}
               />
             </div>
           </div>
-        );
+        */);
       default:
         return null;
     }
@@ -493,17 +499,16 @@ export default function Form(props) {
   return (
     <Fragment>
       <div className={styles.form}>
-        {props.type === '' || props.type === null ? null : renderForm(props.type)}
+        {props.type === '' || props.type === null
+          ? null
+          : renderForm(props.type)}
       </div>
-      <Box 
+      <Box
         sx={{
           mt: 2,
         }}
       >
-        <FormControl
-          fullWidth
-          error={props.categoryError.length > 0}
-        >
+        <FormControl fullWidth error={props.categoryError.length > 0}>
           <InputLabel
             id="category-id-label"
             sx={{
@@ -524,18 +529,13 @@ export default function Form(props) {
               <em>Seleccione</em>
             </MenuItem>
             {props.categories.map((category) => (
-              <MenuItem
-                key={category.id}
-                value={category.id}
-              >
+              <MenuItem key={category.id} value={category.id}>
                 {category.nameCatogory}
               </MenuItem>
             ))}
           </Select>
           {props.categoryError.length > 0 && (
-            <FormHelperText>
-              {props.categoryError}
-            </FormHelperText>
+            <FormHelperText>{props.categoryError}</FormHelperText>
           )}
         </FormControl>
       </Box>

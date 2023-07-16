@@ -27,6 +27,15 @@ export const fetchSurveyForAnswer = createAsyncThunk(
   }
 );
 
+export const fetchSurveyForAnswerPersonal = createAsyncThunk(
+  'surveys/fetchSurveyForAnswerPersonal',
+  async ({ surveyId, companyId, answerId }) => {
+    const { data } = await client.get(`ShowQuestionAnswer/${surveyId}/${companyId}/${answerId}`);
+
+    return data;
+  }
+);
+
 export const storeSurvey = createAsyncThunk(
   'surveys/storeSurvey',
   async (survey) => {
@@ -64,6 +73,19 @@ const surveysSlice = createSlice({
         state.currentSurveyForAnswer = action.payload;
       })
       .addCase(fetchSurveyForAnswer.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      });
+
+    builder
+      .addCase(fetchSurveyForAnswerPersonal.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchSurveyForAnswerPersonal.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.currentSurveyForAnswer = action.payload;
+      })
+      .addCase(fetchSurveyForAnswerPersonal.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
       });
