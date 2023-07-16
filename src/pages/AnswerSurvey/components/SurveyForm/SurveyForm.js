@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef,useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
@@ -35,6 +35,18 @@ import { storeSurvey } from '../../../../features/surveys/surveysSlice';
 
 import styles from './SurveyForm.module.css';
 
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return isMobile;
+};
+
 const SurveyForm = ({
   questions,
   onAnswered,
@@ -43,6 +55,7 @@ const SurveyForm = ({
   activeStepper,
   surveyId,
   handleNextAnswer,
+  descriptionSurvey,
 }) => {
   const [formValues, setFormValues] = useState(() => {
     const savedValues = localStorage.getItem('formValues');
@@ -62,7 +75,7 @@ const SurveyForm = ({
       value: '',
       values: {},
     }));
-    console.log(questions, surveyId);
+
     if (
       parsedValues &&
       Array.isArray(parsedValues) &&
@@ -84,16 +97,20 @@ const SurveyForm = ({
       return defaultValues;
     }
   });
-  console.log(questions);
   const [apiOptions, setApiOptions] = useState({});
   const [activeStep, setActiveStep] = useState(0);
-
   const [unansweredQuestions, setUnansweredQuestions] = useState([]);
   const [inputRefs, setInputRefs] = useState([]);
-
-  const dispatch = useDispatch();
-
   const [error, setError] = useState(formValues.map(() => false));
+  const [value, setValue] = useState([0]);
+  const [valores, setValores] = React.useState({});
+  const isMobile = useIsMobile();
+  const [verMas, setVerMas] = useState(false);
+  const textoAMostrar =
+    !isMobile || verMas || !descriptionSurvey
+      ? descriptionSurvey
+      : `${descriptionSurvey.substring(0, 30)}...`;
+
   const handleNext = () => {
     if (verifyCurrentStepAnswersSelected()) {
       if (activeStep + 1 !== totalOfSteps()) {
@@ -108,10 +125,52 @@ const SurveyForm = ({
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const [value, setValue] = useState([1]);
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+  /*
+  const handleChangeSlider = (indice, nuevoValor) => {
+    setValores({
+      ...valores,
+      [indice]: nuevoValor,
+    });
+  };*/
+
+  const handleChangeSlider = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const marks = [];
+
+  for (let i = 0; i <= 10; i++) {
+    marks.push({
+      value: i,
+      label: `${i}`,
+    });
+  }
+
+  function valueLabelFormat(value) {
+    if (value >= 0 && value <= 6) {
+      return 'No lo recomiendo';
+    } else if (value >= 7 && value <= 8) {
+      return 'Requiere mejora';
+    } else if (value >= 9 && value <= 10) {
+      return 'Lo recomiendo';
+    }
+  }
+  
+  function calculateValue(value) {
+    return value; // Ahora no necesitamos el cálculo de la potencia, solo devuelve el valor tal cual
+  }
+
+  const sliderColor = () => {
+    if (value >= 0 && value <= 6) {
+      return 'red';
+    } else if (value >= 7 && value <= 8) {
+      return 'yellow';
+    } else {
+      return 'green';
+    }
   };
 
   /**
@@ -210,20 +269,20 @@ const SurveyForm = ({
     }
   };
 
-    /**
+  /**
    * Returns true if the type of question is stepper.
    *
    * @param typeQuestion
    * @returns {boolean}
    */
-    const isSlider = (typeQuestion) => {
-      switch (typeQuestion) {
-        case 'E-NPS':
-          return true;
-        default:
-          return false;
-      }
-    };
+  const isSlider = (typeQuestion) => {
+    switch (typeQuestion) {
+      case 'E-NPS':
+        return true;
+      default:
+        return false;
+    }
+  };
 
   /**
    * Handles the change of the radio button.
@@ -250,7 +309,6 @@ const SurveyForm = ({
       activeStep * 5,
       (activeStep + 1) * 5
     );
-    console.log(formValues);
     const unansweredIndexes = currentStepAnswers
       .map((formValue, i) => {
         let isUnanswered;
@@ -272,9 +330,6 @@ const SurveyForm = ({
     return unansweredIndexes.length === 0;
   };
 
-  useEffect(() => {
-    console.log(error);
-  }, [error]);
   /**
    * Handles the change of the checkbox.
    *
@@ -461,8 +516,27 @@ const SurveyForm = ({
       break;
     }
   }
+
   return (
     <div className={styles.SurveyForm}>
+      <Typography
+        variant="h6"
+        style={{
+          textAlign: 'justify',
+          fontSize: '15px',
+          display: 'block',
+          fontStyle: 'italic',
+          marginBottom: '10px',
+        }}
+      >
+        {textoAMostrar}
+      </Typography>
+      {isMobile && (
+        <Button onClick={() => setVerMas(!verMas)}>
+          {verMas ? 'Ver menos' : 'Ver más'}
+        </Button>
+      )}
+
       {totalOfSteps() !== 1 && (
         <MobileStepper
           variant="text"
@@ -515,8 +589,7 @@ const SurveyForm = ({
               marginBottom: '1.1em',
               width: '100%',
               display:
-                index + 1 >= (activeStep + 1) * 5 - 5 &&
-                index + 1 <= (activeStep + 1) * 5
+                index >= activeStep * 5 && index < (activeStep + 1) * 5
                   ? 'inherit'
                   : 'none',
             }}
@@ -776,36 +849,31 @@ const SurveyForm = ({
                 <Divider variant="middle" />
               </Fragment>
             )}
-            {isSlider(typeQuestion) &&(
-              <>
-                <FormLabel
-                  style={{
-                    fontSize: '1.1',
-                    fontWeight: 'bold',
-                    marginBottom: '1.1em',
-                    color: unansweredQuestions.includes(index)
-                      ? 'red'
-                      : 'rgba(0, 0, 0, 0.6)',
-                  }}
-                >
-                  {questionName}
-                </FormLabel>
-                <Typography
-                  variant="caption"
-                  style={{ display: 'block', fontStyle: 'italic' }}
-                >
-                  {description}
-                </Typography>
+            {isSlider(typeQuestion) && (
+              <Box width={300}>
                 <Slider
                   value={value}
-                  min={1}
-                  max={10}
+                  min={0}
                   step={1}
+                  max={10}
+                  scale={calculateValue}
+                  getAriaValueText={valueLabelFormat}
+                  valueLabelFormat={valueLabelFormat}
                   onChange={handleChange}
                   valueLabelDisplay="auto"
-                  aria-labelledby="range-slider"
+                  aria-labelledby="non-linear-slider"
+                  marks={marks}
+                  style={{ color: sliderColor() }}
+                  sx={{
+                    '& .MuiSlider-track': {
+                      height: 10, // Cambia este valor para ajustar el tamaño del control deslizante
+                    },
+                    '& .MuiSlider-rail': {
+                      height: 10, // Cambia este valor para ajustar el tamaño del control deslizante
+                    },
+                  }}
                 />
-              </>
+              </Box>
             )}
             {isSelect(typeQuestion) && (
               <FormControl
@@ -865,16 +933,14 @@ const SurveyForm = ({
             <Button
               size="small"
               onClick={handleNext}
-              disabled={
-                activeStep + 1 >= totalOfSteps() 
-              }
+              disabled={activeStep + 1 >= totalOfSteps()}
             >
               {nameStep[activeStep] !== 'Encuesta' &&
-                activeStep + 1 === totalOfSteps()
-                  ? 'Finalizar'
-                  : 'Siguiente'}
-                {<KeyboardArrowRight />}
-              </Button>
+              activeStep + 1 === totalOfSteps()
+                ? 'Finalizar'
+                : 'Siguiente'}
+              {<KeyboardArrowRight />}
+            </Button>
           }
           backButton={
             <Button
