@@ -731,7 +731,7 @@ export default function CreateSurvey() {
         stars: information.stars,
       });
       
-    }else if (type.id === 9) {
+    }else if (type.id === 10) {
       handleAddQuestion({
         type: 'E-NPS',
         name: information.name,
@@ -1091,7 +1091,6 @@ export default function CreateSurvey() {
             </div>
           </Box>
         </DialogContent>
-        {type && type.id !== 10 &&(
           <DialogActions>
             <Button onClick={handleCloseModal} variant="outlined">
               Cancelar
@@ -1100,8 +1099,6 @@ export default function CreateSurvey() {
               Agregar
             </Button>
           </DialogActions>
-        )}
-
       </Dialog>
       <Dialog maxWidth="md" onClose={handleCloseEditModal} open={edit}>
         <DialogTitle>Editar pregunta</DialogTitle>

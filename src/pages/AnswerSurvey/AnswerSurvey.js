@@ -12,9 +12,8 @@ import FormLabel from '@mui/material/FormLabel';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-
+import TextField from '@mui/material/TextField';
 import MyLoader from '../../components/MyLoader/MyLoader';
 import {
   fetchSurveyForAnswer,
@@ -285,7 +284,7 @@ const AnswerSurvey = () => {
       setEmailSubmitted(true);
     }
     setIsPersonal(isPersonal);
-
+    console.log(isPersonal)
     setLoading(false);
   };
 
@@ -434,7 +433,7 @@ const AnswerSurvey = () => {
                 )}
 
                 {/* stepper */}
-                {(emailSubmitted === true || (answerId || !isPersonal)) && (
+                {(emailSubmitted === true || (answerId || !isPersonal)) &&  (
                   <Fragment>
                     <Stepper
                       style={{ marginTop: '2em' }}

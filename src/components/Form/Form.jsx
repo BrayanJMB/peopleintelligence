@@ -448,7 +448,6 @@ export default function Form(props) {
       case 10:
 
         return (
-          <h4>Lo sentimos esta pregunta no esta disponible</h4>/*
           <div className={styles.top}>
             <div className={styles.question}>
               <div className={styles.number}>{`Q${props.questions}`}</div>
@@ -491,7 +490,7 @@ export default function Form(props) {
               />
             </div>
           </div>
-        */);
+        );
       default:
         return null;
     }
