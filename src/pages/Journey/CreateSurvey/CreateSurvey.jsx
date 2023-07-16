@@ -76,8 +76,8 @@ export default function CreateSurvey() {
     rangeOptions:[
       'Rango 0-6',
       'Rango 7-8',
-      'Rango 9-10'
-    ]
+      'Rango 9-10',
+    ],
   });
   const dispatch = useDispatch();
   const [categories, setCategories] = useState([]);

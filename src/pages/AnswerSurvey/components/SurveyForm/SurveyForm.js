@@ -1,46 +1,47 @@
-import React, { Fragment, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import StarIcon from "@mui/icons-material/Star";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
-import Divider from "@mui/material/Divider";
-import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormGroup from "@mui/material/FormGroup";
-import FormLabel from "@mui/material/FormLabel";
-import IconButton from "@mui/material/IconButton";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import MobileStepper from "@mui/material/MobileStepper";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import Select from "@mui/material/Select";
-import Slider from "@mui/material/Slider";
-import TextField from "@mui/material/TextField";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
-import axios from "axios";
-import PropTypes from "prop-types";
-import Deacuerdo from "../../../../assets/icons/deacuerdo.svg";
-import EnDesacuerdo from "../../../../assets/icons/en desacuerdo.svg";
-import NiDeacuerdoNiEnDesacuerdo from "../../../../assets/icons/ni deacuerdo ni en desacuerdo.svg";
-import TotalmenteDeAcuerdo from "../../../../assets/icons/totalmente de acuerdo.svg";
-import TotalmenteEnDesacuerdo from "../../../../assets/icons/totalmente en desacuerdo.svg";
-import { storeSurvey } from "../../../../features/surveys/surveysSlice";
+import React, { Fragment, useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import FormLabel from '@mui/material/FormLabel';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import MobileStepper from '@mui/material/MobileStepper';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import Select from '@mui/material/Select';
+import Slider from '@mui/material/Slider';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import axios from 'axios';
+import PropTypes from 'prop-types';
 
-import styles from "./SurveyForm.module.css";
+import Deacuerdo from '../../../../assets/icons/deacuerdo.svg';
+import EnDesacuerdo from '../../../../assets/icons/en desacuerdo.svg';
+import NiDeacuerdoNiEnDesacuerdo from '../../../../assets/icons/ni deacuerdo ni en desacuerdo.svg';
+import TotalmenteDeAcuerdo from '../../../../assets/icons/totalmente de acuerdo.svg';
+import TotalmenteEnDesacuerdo from '../../../../assets/icons/totalmente en desacuerdo.svg';
+import { storeSurvey } from '../../../../features/surveys/surveysSlice';
+
+import styles from './SurveyForm.module.css';
 
 const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return isMobile;
@@ -57,21 +58,21 @@ const SurveyForm = ({
   descriptionSurvey,
 }) => {
   const [formValues, setFormValues] = useState(() => {
-    const savedValues = localStorage.getItem("formValues");
+    const savedValues = localStorage.getItem('formValues');
     let parsedValues = null;
 
     if (savedValues) {
       try {
         parsedValues = JSON.parse(savedValues);
       } catch (e) {
-        console.error("Error parsing saved values:", e);
+        console.error('Error parsing saved values:', e);
       }
     }
 
     const defaultValues = questions.map((question) => ({
       id: question.questionId,
       questionType: question.typeQuestion,
-      value: "",
+      value: '',
       values: {},
     }));
 
@@ -164,11 +165,11 @@ const SurveyForm = ({
 
   const sliderColor = () => {
     if (value >= 0 && value <= 6) {
-      return "red";
+      return 'red';
     } else if (value >= 7 && value <= 8) {
-      return "yellow";
+      return 'yellow';
     } else {
-      return "green";
+      return 'green';
     }
   };
 
@@ -198,8 +199,8 @@ const SurveyForm = ({
    */
   const isRadio = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case "selección":
-      case "escala likert":
+      case 'selección':
+      case 'escala likert':
         return true;
       default:
         return false;
@@ -214,9 +215,9 @@ const SurveyForm = ({
    */
   const isCheckbox = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case "opción múltiple":
+      case 'opción múltiple':
         return true;
-      case "opcion multiple con imagenes":
+      case 'opcion multiple con imagenes':
         return true;
       default:
         return false;
@@ -231,7 +232,7 @@ const SurveyForm = ({
    */
   const isRange = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case "calificaciones":
+      case 'calificaciones':
         return true;
       default:
         return false;
@@ -246,7 +247,7 @@ const SurveyForm = ({
    */
   const isText = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case "texto":
+      case 'texto':
         return true;
       default:
         return false;
@@ -261,7 +262,7 @@ const SurveyForm = ({
    */
   const isSelect = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case "select":
+      case 'select':
         return true;
       default:
         return false;
@@ -276,7 +277,7 @@ const SurveyForm = ({
    */
   const isSlider = (typeQuestion) => {
     switch (typeQuestion) {
-      case "E-NPS":
+      case 'E-NPS':
         return true;
       default:
         return false;
@@ -311,14 +312,14 @@ const SurveyForm = ({
     const unansweredIndexes = currentStepAnswers
       .map((formValue, i) => {
         let isUnanswered;
-        if (formValue.questionType === "Opción Múltiple") {
+        if (formValue.questionType === 'Opción Múltiple') {
           isUnanswered =
             formValue.values === null ||
             Object.keys(formValue.values).length === 0 ||
             !Object.values(formValue.values).some((val) => val === true);
         } else {
           // Para otros tipos de preguntas, verifica si value es nulo o vacío
-          isUnanswered = formValue.value === null || formValue.value === "";
+          isUnanswered = formValue.value === null || formValue.value === '';
         }
 
         return isUnanswered ? i + activeStep * 5 : -1;
@@ -375,19 +376,19 @@ const SurveyForm = ({
    * @returns {*|string}
    */
   const getLikertIcon = (value) => {
-    switch (value.toLowerCase().replace(/\s\s+/g, " ")) {
-      case "de acuerdo":
+    switch (value.toLowerCase().replace(/\s\s+/g, ' ')) {
+      case 'de acuerdo':
         return Deacuerdo;
-      case "en desacuerdo":
+      case 'en desacuerdo':
         return EnDesacuerdo;
-      case "ni de acuerdo ni en desacuerdo":
+      case 'ni de acuerdo ni en desacuerdo':
         return NiDeacuerdoNiEnDesacuerdo;
-      case "totalmente de acuerdo":
+      case 'totalmente de acuerdo':
         return TotalmenteDeAcuerdo;
-      case "totalmente en desacuerdo":
+      case 'totalmente en desacuerdo':
         return TotalmenteEnDesacuerdo;
       default:
-        return "";
+        return '';
     }
   };
 
@@ -416,7 +417,7 @@ const SurveyForm = ({
    */
   const fetchApiOptionsByParamId = async (paramName, paramId, options) => {
     for (const question of questions) {
-      const regex = new RegExp(`{${paramName}}`, "g");
+      const regex = new RegExp(`{${paramName}}`, 'g');
       const option = options.find((option) => option.optionName === paramId);
       if (question.api && question.api.match(regex)) {
         const url = question.api.replace(regex, option.numberOption);
@@ -449,7 +450,7 @@ const SurveyForm = ({
       const firstUnansweredQuestionIndex = unansweredQuestions[0];
       if (inputRefs[firstUnansweredQuestionIndex]) {
         inputRefs[firstUnansweredQuestionIndex].scrollIntoView({
-          behavior: "smooth",
+          behavior: 'smooth',
         });
       }
     }
@@ -470,10 +471,10 @@ const SurveyForm = ({
           }));
         } else if (
           question.api &&
-          question.api.includes("{CompanyId}") &&
-          (question.urlParam === null || question.urlParam === "")
+          question.api.includes('{CompanyId}') &&
+          (question.urlParam === null || question.urlParam === '')
         ) {
-          let consumo = question.api.replace("{CompanyId}", companyId);
+          let consumo = question.api.replace('{CompanyId}', companyId);
           const { data } = await axios.get(consumo);
           setApiOptions((prevState) => ({
             ...prevState,
@@ -493,8 +494,8 @@ const SurveyForm = ({
 
   // watch changes in form values
   useEffect(() => {
-    if (nameStep && nameStep[activeStepper] === "Datos demográficos") {
-      localStorage.setItem("formValues", JSON.stringify(formValues));
+    if (nameStep && nameStep[activeStepper] === 'Datos demográficos') {
+      localStorage.setItem('formValues', JSON.stringify(formValues));
     }
     onAnswered(formValues);
   }, [formValues]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -521,18 +522,18 @@ const SurveyForm = ({
       <Typography
         variant="h6"
         style={{
-          textAlign: "justify",
-          fontSize: "15px",
-          display: "block",
-          fontStyle: "italic",
-          marginBottom: "10px",
+          textAlign: 'justify',
+          fontSize: '15px',
+          display: 'block',
+          fontStyle: 'italic',
+          marginBottom: '10px',
         }}
       >
         {textoAMostrar}
       </Typography>
       {isMobile && (
         <Button onClick={() => setVerMas(!verMas)}>
-          {verMas ? "Ver menos" : "Ver más"}
+          {verMas ? 'Ver menos' : 'Ver más'}
         </Button>
       )}
 
@@ -545,7 +546,7 @@ const SurveyForm = ({
           sx={{
             maxWidth: 400,
             flexGrow: 1,
-            margin: "0 auto",
+            margin: '0 auto',
           }}
           nextButton={
             <Button
@@ -585,12 +586,12 @@ const SurveyForm = ({
           <FormControl
             key={questionId}
             style={{
-              marginBottom: "1.1em",
-              width: "100%",
+              marginBottom: '1.1em',
+              width: '100%',
               display:
                 index >= activeStep * 5 && index < (activeStep + 1) * 5
-                  ? "inherit"
-                  : "none",
+                  ? 'inherit'
+                  : 'none',
             }}
           >
             {isRadio(typeQuestion) && (
@@ -598,19 +599,19 @@ const SurveyForm = ({
                 <FormLabel
                   id={`${questionId}-${typeQuestion}`}
                   style={{
-                    fontSize: "1.1",
-                    fontWeight: "bold",
-                    marginBottom: "0.8m",
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '0.8m',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "rgba(0, 0, 0, 0.6)",
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
                   }}
                 >
                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
@@ -619,10 +620,10 @@ const SurveyForm = ({
                   onChange={(event) => handleRadioChange(event, index)}
                   row
                   style={{
-                    margin: "1.2em 0",
+                    margin: '1.2em 0',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "inherit",
+                      ? 'red'
+                      : 'inherit',
                   }}
                 >
                   {options.map(({ numberOption, optionName }) => (
@@ -632,8 +633,8 @@ const SurveyForm = ({
                       control={<Radio />}
                       label={<Box>{optionName}</Box>}
                       style={{
-                        fontSize: "0.5em !important",
-                        width: "100%",
+                        fontSize: '0.5em !important',
+                        width: '100%',
                       }}
                     />
                   ))}
@@ -646,16 +647,16 @@ const SurveyForm = ({
                 <FormLabel
                   id={`${questionId}-${typeQuestion}`}
                   style={{
-                    fontSize: "1.1",
-                    fontWeight: "bold",
-                    marginBottom: "0.8m",
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '0.8m',
                   }}
                 >
                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
@@ -664,8 +665,8 @@ const SurveyForm = ({
                   onChange={(event) => handleRadioChange(event, index)}
                   row
                   style={{
-                    justifyContent: "center",
-                    margin: "1.2em 0",
+                    justifyContent: 'center',
+                    margin: '1.2em 0',
                   }}
                 >
                   {options.map(({ numberOption, optionName }) => (
@@ -677,7 +678,7 @@ const SurveyForm = ({
                       label={
                         <Box
                           sx={{
-                            textAlign: "center",
+                            textAlign: 'center',
                           }}
                         >
                           {getLikertIcon(optionName) && (
@@ -686,8 +687,8 @@ const SurveyForm = ({
                                 src={getLikertIcon(optionName)}
                                 alt={optionName}
                                 style={{
-                                  width: "3em",
-                                  verticalAlign: "middle",
+                                  width: '3em',
+                                  verticalAlign: 'middle',
                                 }}
                               />
                             </Tooltip>
@@ -695,7 +696,7 @@ const SurveyForm = ({
                         </Box>
                       }
                       style={{
-                        fontSize: "0.5em !important",
+                        fontSize: '0.5em !important',
                       }}
                     />
                   ))}
@@ -707,19 +708,19 @@ const SurveyForm = ({
               <Fragment>
                 <FormLabel
                   style={{
-                    fontSize: "1.1",
-                    fontWeight: "bold",
-                    marginBottom: "1.1em",
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '1.1em',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "rgba(0, 0, 0, 0.6)",
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
                   }}
                 >
                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
@@ -739,8 +740,8 @@ const SurveyForm = ({
                           }
                           style={{
                             color: unansweredQuestions.includes(index)
-                              ? "red"
-                              : "#03aae4",
+                              ? 'red'
+                              : '#03aae4',
                           }}
                         />
                       }
@@ -755,30 +756,30 @@ const SurveyForm = ({
               <Fragment>
                 <FormLabel
                   style={{
-                    fontSize: "1.1",
-                    fontWeight: "bold",
-                    marginBottom: "0.8m",
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '0.8m',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "rgba(0, 0, 0, 0.6)",
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
                   }}
                 >
                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
                 <Box
                   sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    margin: "1.1em 0",
-                    overflow: "auto",
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '1.1em 0',
+                    overflow: 'auto',
                   }}
                 >
                   {[...Array(score).keys()].map((value) => (
@@ -790,8 +791,8 @@ const SurveyForm = ({
                           onClick={() => handleRangeChange(value + 1, index)}
                           style={{
                             color: unansweredQuestions.includes(index)
-                              ? "red"
-                              : "#03aae4",
+                              ? 'red'
+                              : '#03aae4',
                           }}
                         >
                           {formValues[index].value >= value + 1 ? (
@@ -808,7 +809,7 @@ const SurveyForm = ({
                   variant="caption"
                   display="block"
                   gutterBottom
-                  style={{ textAlign: "center" }}
+                  style={{ textAlign: 'center' }}
                 >
                   {Number(formValues[index].value)} / {score}
                 </Typography>
@@ -819,19 +820,19 @@ const SurveyForm = ({
               <Fragment>
                 <FormLabel
                   style={{
-                    fontSize: "1.1",
-                    fontWeight: "bold",
-                    marginBottom: "1.1em",
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '1.1em',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "rgba(0, 0, 0, 0.6)",
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
                   }}
                 >
                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
@@ -864,10 +865,10 @@ const SurveyForm = ({
                   marks={marks}
                   style={{ color: sliderColor() }}
                   sx={{
-                    "& .MuiSlider-track": {
+                    '& .MuiSlider-track': {
                       height: 10, // Cambia este valor para ajustar el tamaño del control deslizante
                     },
-                    "& .MuiSlider-rail": {
+                    '& .MuiSlider-rail': {
                       height: 10, // Cambia este valor para ajustar el tamaño del control deslizante
                     },
                   }}
@@ -884,7 +885,7 @@ const SurveyForm = ({
                 </InputLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
@@ -926,7 +927,7 @@ const SurveyForm = ({
           sx={{
             maxWidth: 400,
             flexGrow: 1,
-            margin: "0 auto",
+            margin: '0 auto',
           }}
           nextButton={
             <Button
@@ -934,10 +935,10 @@ const SurveyForm = ({
               onClick={handleNext}
               disabled={activeStep + 1 >= totalOfSteps()}
             >
-              {nameStep[activeStep] !== "Encuesta" &&
+              {nameStep[activeStep] !== 'Encuesta' &&
               activeStep + 1 === totalOfSteps()
-                ? "Finalizar"
-                : "Siguiente"}
+                ? 'Finalizar'
+                : 'Siguiente'}
               {<KeyboardArrowRight />}
             </Button>
           }
