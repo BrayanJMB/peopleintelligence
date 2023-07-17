@@ -49,7 +49,7 @@ export default function Discussion() {
   const handleOpenModaltemplate = () => setOpentemplate(true);
   const handleCloseModaltemplate = () => setOpentemplate(false);
   const handleTemplateModal = () => {
-    console.log('test');
+
     handleCloseModal();
     handleOpenModaltemplate();
   };

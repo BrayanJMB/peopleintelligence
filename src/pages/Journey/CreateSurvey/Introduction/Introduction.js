@@ -22,7 +22,7 @@ import styles from './Introduction.module.css';
  * @returns {JSX.Element}
  * @constructor
  */
-const Introduction = ({ checkForm, onUpdated, previousData, isUpdate }) => {
+const Introduction = ({ checkForm, onUpdated, previousData, isUpdate, mapsLoaded, setMapsLoaded }) => {
   const [maps, setMaps] = useState([]);
   const [map, setMap] = useState(null);
   const [isValidMap, setIsValidMap] = useState('');
@@ -77,7 +77,6 @@ const Introduction = ({ checkForm, onUpdated, previousData, isUpdate }) => {
    * @param newValue
    */
   const handleChangeMap = (newValue) => {
-    console.log(newValue);
     setMap(newValue);
   };
 
@@ -96,6 +95,7 @@ const Introduction = ({ checkForm, onUpdated, previousData, isUpdate }) => {
     }));
 
     setMaps(maps);
+    setMapsLoaded(true);
   };
 
   /**
@@ -111,7 +111,6 @@ const Introduction = ({ checkForm, onUpdated, previousData, isUpdate }) => {
     setIsValidEmailMask('');
     setIsValidEmailSubject('');
     setIsValid(true);
-
     // check null for map
     if (map === null) {
       setIsValidMap('Este campo es requerido');
@@ -141,9 +140,12 @@ const Introduction = ({ checkForm, onUpdated, previousData, isUpdate }) => {
     }
 
     // check empty for mailing message
-    if (mailingMessage === '') {
-      setIsValidMailingMessage('Este campo es requerido');
+    if (mailingMessage.length < 5) {
+      setIsValidMailingMessage('Este campo debe tener al menos 5 caracteres');
       setIsValid(false);
+    }else if (!mailingMessage.includes('@enlace')) {
+        setIsValidMailingMessage('El mensaje debe contener "@enlace".');
+        setIsValid(false);
     }
     // check length for mailing message min 5
     if((isTemplate() === false || isMap) && !isUpdate){
@@ -194,27 +196,23 @@ const Introduction = ({ checkForm, onUpdated, previousData, isUpdate }) => {
 
   // watch for changes in previous data
   useEffect(() => {
-    if (!previousData) {
+    if (!previousData || !mapsLoaded) {
       return;
     }
-    console.log(previousData);
-    /*
+    
     if (previousData.map) {
-      console.log(previousData.map)
       // if map is not number then find the map by name
-      if (typeof previousData.map !== 'number') {
-        const map = maps.find((item) => item.mapJourney === previousData.map);
-        
-        if (map !== undefined) {
-          setMap(map);
+      if (previousData.map) {
+        const matchingMap = maps.find((item) => item.label === previousData.map);
+        if (matchingMap) {
+          setMap(matchingMap);
         }
-      } else {
-        setMap(previousData.map);
+        else{
+          setMap(previousData.map);
+        }
       }
-    }*/
-    if (previousData.map) {
-        setMap(previousData.map);
-      }
+    }
+
     if (previousData.title) {
       setTitle(previousData.title);
     }
@@ -233,14 +231,16 @@ const Introduction = ({ checkForm, onUpdated, previousData, isUpdate }) => {
     if (previousData.surveyOrMap) {
       setSurveyOrMap(previousData.surveyOrMap);
     }
-  }, [previousData]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [previousData, mapsLoaded]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // listen changes in touched form
   useEffect(() => {
     if (checkForm) {
       validate();
     }
-  }, [checkForm]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [checkForm]);
+
+  // eslint-disable-line react-hooks/exhaustive-deps
 
   // listen changes in form values
   useEffect(() => {
@@ -254,7 +254,7 @@ const Introduction = ({ checkForm, onUpdated, previousData, isUpdate }) => {
       mailingMessage,
       isValid,
     });
-
+    
     if (checkForm || (map && title && description && mailingMessage && emailMask && emailSubject)) {
       validate();
     }
