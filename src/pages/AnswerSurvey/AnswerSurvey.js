@@ -12,8 +12,9 @@ import FormLabel from '@mui/material/FormLabel';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
-import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+
 import MyLoader from '../../components/MyLoader/MyLoader';
 import {
   fetchSurveyForAnswer,

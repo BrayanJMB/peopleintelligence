@@ -68,7 +68,7 @@ const SurveyForm = ({
         console.error('Error parsing saved values:', e);
       }
     }
-    console.log(questions)
+    console.log(questions);
     const defaultValues = questions.map((question) => ({
       id: question.questionId,
       questionType: question.typeQuestion,
@@ -139,7 +139,7 @@ const SurveyForm = ({
     });
     setValues(prevValues => ({
       ...prevValues,  // Copia los valores actuales
-      [index]: event.target.value  // Actualiza el valor para el Slider actual
+      [index]: event.target.value,  // Actualiza el valor para el Slider actual
   }));
     
   };

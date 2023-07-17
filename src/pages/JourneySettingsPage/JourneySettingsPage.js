@@ -416,7 +416,7 @@ const JourneySettingsPage = () => {
         'Categoría eliminada con éxito',
         {
           variant: 'success',
-          autoHideDuration:3000
+          autoHideDuration:3000,
         },
       );
     }catch(Exception){
@@ -424,7 +424,7 @@ const JourneySettingsPage = () => {
         'Hubo un error al eliminar la categoría',
         {
           variant: 'success',
-          autoHideDuration:3000
+          autoHideDuration:3000,
         },
       );
     }
@@ -449,7 +449,7 @@ const JourneySettingsPage = () => {
         'Mapa de viaje eliminado con éxito',
         {
           variant: 'success',
-          autoHideDuration:3000
+          autoHideDuration:3000,
         },
       );
     }catch(Exception){
@@ -457,7 +457,7 @@ const JourneySettingsPage = () => {
         'Hubo un error al eliminar mapa de viaje',
         {
           variant: 'error',
-          autoHideDuration:3000
+          autoHideDuration:3000,
         },
       );
     }
@@ -484,7 +484,7 @@ const JourneySettingsPage = () => {
         'Plantilla eliminada con éxito',
         {
           variant: 'success',
-          autoHideDuration:3000
+          autoHideDuration:3000,
         },
       );
     } catch (e) {
@@ -492,7 +492,7 @@ const JourneySettingsPage = () => {
         'Hubo un error al eliminar la plantilla',
         {
           variant: 'error',
-          autoHideDuration:3000
+          autoHideDuration:3000,
         },
       );
     }
@@ -519,7 +519,7 @@ const JourneySettingsPage = () => {
         'Encuesta de mapa eliminada con éxito',
         {
           variant: 'success',
-          autoHideDuration:3000
+          autoHideDuration:3000,
         },
       );
     } catch (e) {
@@ -527,7 +527,7 @@ const JourneySettingsPage = () => {
         'No se pudo eliminar la encuesta de mapa',
         {
           variant: 'error',
-          autoHideDuration:3000
+          autoHideDuration:3000,
         },
       );
     }

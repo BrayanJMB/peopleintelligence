@@ -475,14 +475,14 @@ export default function Form(props) {
                   inputComponent: TextareaAutosize,
                   inputProps: {
                     style: {
-                      height: "80px",
+                      height: '80px',
                     },
                   },
                 }}
                 value={props.information.description}
                 style={{
-                  width: "100%",
-                  marginTop: "0.5rem",
+                  width: '100%',
+                  marginTop: '0.5rem',
                 }}
                 name="description"
                 onChange={props.handleInformation}
