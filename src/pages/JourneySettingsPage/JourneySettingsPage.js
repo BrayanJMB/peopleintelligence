@@ -728,7 +728,7 @@ const JourneySettingsPage = () => {
       value: '',
       payload: {
         handleDelete: handleDeleteTemplate,
-        handleEdit: handleEditTemplate,
+        //handleEdit: handleEditTemplate,
         id: template.id,
       },
     },

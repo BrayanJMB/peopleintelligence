@@ -284,7 +284,6 @@ const AnswerSurvey = () => {
       setEmailSubmitted(true);
     }
     setIsPersonal(isPersonal);
-    console.log(isPersonal)
     setLoading(false);
   };
 

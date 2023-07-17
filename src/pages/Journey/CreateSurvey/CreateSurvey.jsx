@@ -91,6 +91,7 @@ export default function CreateSurvey() {
   const [newDemographics, setNewDemographics] = useState([]);
   const [loading, setLoading] = useState(false);
   const [templateDemographics, setTemplateDemographics] = useState([]);
+  const [mapsLoaded, setMapsLoaded] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const isTemplate =
     searchParams.get('isTemplate') === 'true' ||
@@ -264,15 +265,14 @@ export default function CreateSurvey() {
    * Handle next step.
    */
   const handleNextStep = async () => {
+    console.log(isTemplate, isUpdate, data.isValid)
     switch (activeStep) {
       case 0:
         setCheckForm(true);
-
         if (data.isValid && isTemplate && isUpdate) {
-          await updateTemplate();
+          //await updateTemplate();
           setActiveStep((val) => val + 1);
           setCheckForm(false);
-          
           return;
         }
 
@@ -283,9 +283,11 @@ export default function CreateSurvey() {
         break;
       case 1:
         if (isUpdate && isTemplate) {
+          await updateTemplate();
           navigate('/journey/survey-template');
           enqueueSnackbar('Plantilla actualizada con éxito', {
             variant: 'success',
+            autoHideDuration:3000
           });
 
           return;
@@ -311,6 +313,7 @@ export default function CreateSurvey() {
     if (activeStep === 0) {
       navigate('/journey');
     } else {
+      setMapsLoaded(true);
       setActiveStep((val) => val - 1);
     }
   };
@@ -569,6 +572,8 @@ export default function CreateSurvey() {
             checkForm={checkForm}
             previousData={data}
             isUpdate={isUpdate}
+            mapsLoaded={mapsLoaded}
+            setMapsLoaded={setMapsLoaded}
           />
         );
       case 1:
