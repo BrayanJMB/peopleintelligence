@@ -265,7 +265,7 @@ export default function CreateSurvey() {
    * Handle next step.
    */
   const handleNextStep = async () => {
-    console.log(isTemplate, isUpdate, data.isValid)
+    console.log(isTemplate, isUpdate, data.isValid);
     switch (activeStep) {
       case 0:
         setCheckForm(true);
@@ -287,7 +287,7 @@ export default function CreateSurvey() {
           navigate('/journey/survey-template');
           enqueueSnackbar('Plantilla actualizada con éxito', {
             variant: 'success',
-            autoHideDuration:3000
+            autoHideDuration:3000,
           });
 
           return;
