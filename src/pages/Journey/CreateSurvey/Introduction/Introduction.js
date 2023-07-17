@@ -111,7 +111,6 @@ const Introduction = ({ checkForm, onUpdated, previousData, isUpdate, mapsLoaded
     setIsValidEmailMask('');
     setIsValidEmailSubject('');
     setIsValid(true);
-    debugger;
     // check null for map
     if (map === null) {
       setIsValidMap('Este campo es requerido');

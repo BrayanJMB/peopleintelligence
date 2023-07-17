@@ -409,14 +409,25 @@ const JourneySettingsPage = () => {
       return;
     }
 
-    await deleteCategoryAPI(id, currentCompany.id);
-    setCategories((categories) => categories.filter((category) => category.id !== id));
-    enqueueSnackbar(
-      'Categoría eliminada con éxito',
-      {
-        variant: 'success',
-      },
-    );
+    try{
+      await deleteCategoryAPI(id, currentCompany.id);
+      setCategories((categories) => categories.filter((category) => category.id !== id));
+      enqueueSnackbar(
+        'Categoría eliminada con éxito',
+        {
+          variant: 'success',
+          autoHideDuration:3000
+        },
+      );
+    }catch(Exception){
+      enqueueSnackbar(
+        'Hubo un error al eliminar la categoría',
+        {
+          variant: 'success',
+          autoHideDuration:3000
+        },
+      );
+    }
   };
 
   /**
@@ -431,15 +442,26 @@ const JourneySettingsPage = () => {
     if (index === -1) {
       return;
     }
+    try{
+      await deleteJourneyMapAPI(id);
+      setJourneyMap((journeyMap) => journeyMap.filter((map) => map.id !== id));
+      enqueueSnackbar(
+        'Mapa de viaje eliminado con éxito',
+        {
+          variant: 'success',
+          autoHideDuration:3000
+        },
+      );
+    }catch(Exception){
+      enqueueSnackbar(
+        'Hubo un error al eliminar mapa de viaje',
+        {
+          variant: 'error',
+          autoHideDuration:3000
+        },
+      );
+    }
 
-    await deleteJourneyMapAPI(id);
-    setJourneyMap((journeyMap) => journeyMap.filter((map) => map.id !== id));
-    enqueueSnackbar(
-      'Mapa de viaje eliminado con éxito',
-      {
-        variant: 'success',
-      },
-    );
   };
 
   /**
@@ -457,13 +479,24 @@ const JourneySettingsPage = () => {
 
     try {
       await deleteTemplateAPI(id);
-    } catch (e) {}
-    enqueueSnackbar(
-      'Plantilla eliminada con éxito',
-      {
-        variant: 'success',
-      },
-    );
+      setTemplates((template) => templates.filter((template) => template.id !== id));
+      enqueueSnackbar(
+        'Plantilla eliminada con éxito',
+        {
+          variant: 'success',
+          autoHideDuration:3000
+        },
+      );
+    } catch (e) {
+      enqueueSnackbar(
+        'Hubo un error al eliminar la plantilla',
+        {
+          variant: 'error',
+          autoHideDuration:3000
+        },
+      );
+    }
+
   };
 
   /**
@@ -481,13 +514,24 @@ const JourneySettingsPage = () => {
 
     try {
       await deleteJourneyMapsAPI(id);
-    } catch (e) {}
-    enqueueSnackbar(
-      'Encuesta de mapa eliminada con éxito',
-      {
-        variant: 'success',
-      },
-    );
+      setMapSurveys((mapSurvey) => mapSurvey.filter((mapSurvey) => mapSurvey.id !== id));
+      enqueueSnackbar(
+        'Encuesta de mapa eliminada con éxito',
+        {
+          variant: 'success',
+          autoHideDuration:3000
+        },
+      );
+    } catch (e) {
+      enqueueSnackbar(
+        'No se pudo eliminar la encuesta de mapa',
+        {
+          variant: 'error',
+          autoHideDuration:3000
+        },
+      );
+    }
+
   };
 
   /**
