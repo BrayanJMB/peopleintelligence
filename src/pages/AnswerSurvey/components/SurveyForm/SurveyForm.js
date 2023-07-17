@@ -153,16 +153,6 @@ const SurveyForm = ({
     });
   }
 
-  function valueLabelFormat(value) {
-    if (value >= 0 && value <= 6) {
-      return 'No lo recomiendo';
-    } else if (value >= 7 && value <= 8) {
-      return 'Requiere mejora';
-    } else if (value >= 9 && value <= 10) {
-      return 'Lo recomiendo';
-    }
-  }
-  
   function calculateValue(value) {
     return value; // Ahora no necesitamos el cálculo de la potencia, solo devuelve el valor tal cual
   }
@@ -883,10 +873,8 @@ const SurveyForm = ({
                   step={1}
                   max={10}
                   scale={calculateValue}
-                  getAriaValueText={valueLabelFormat}
-                  valueLabelFormat={valueLabelFormat}
                   onChange={(event, newValue) => handleChangeSlider(event, newValue, index)}
-                  valueLabelDisplay="auto"
+                  valueLabelDisplay="off"
                   aria-labelledby="non-linear-slider"
                   marks={marks}
                   style={{ color: sliderColor(index) }}
