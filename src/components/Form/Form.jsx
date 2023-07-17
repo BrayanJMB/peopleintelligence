@@ -16,7 +16,6 @@ import styles from './Form.module.css';
 
 export default function Form(props) {
   const [categoryId, setCategoryId] = useState('');
-  console.log(props.information.rangeOptions);
   /**
    * Handle category id change.
    *
@@ -448,7 +447,6 @@ export default function Form(props) {
       case 10:
 
         return (
-          <h4>Lo sentimos esta pregunta no esta disponible</h4>/*
           <div className={styles.top}>
             <div className={styles.question}>
               <div className={styles.number}>{`Q${props.questions}`}</div>
@@ -491,7 +489,7 @@ export default function Form(props) {
               />
             </div>
           </div>
-        */);
+        );
       default:
         return null;
     }

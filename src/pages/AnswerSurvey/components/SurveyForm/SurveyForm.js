@@ -68,7 +68,7 @@ const SurveyForm = ({
         console.error('Error parsing saved values:', e);
       }
     }
-
+    console.log(questions)
     const defaultValues = questions.map((question) => ({
       id: question.questionId,
       questionType: question.typeQuestion,
@@ -102,7 +102,7 @@ const SurveyForm = ({
   const [unansweredQuestions, setUnansweredQuestions] = useState([]);
   const [inputRefs, setInputRefs] = useState([]);
   const [error, setError] = useState(formValues.map(() => false));
-  const [value, setValue] = useState([0]);
+  const [values, setValues] = useState({});
   const [valores, setValores] = React.useState({});
   const isMobile = useIsMobile();
   const [verMas, setVerMas] = useState(false);
@@ -125,19 +125,23 @@ const SurveyForm = ({
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-  /*
-  const handleChangeSlider = (indice, nuevoValor) => {
-    setValores({
-      ...valores,
-      [indice]: nuevoValor,
-    });
-  };*/
+  const handleChangeSlider = (event, newValue, index) => {
+    setFormValues((prevFormValues) => {
+      const newFormValues = [...prevFormValues];
 
-  const handleChangeSlider = (event, newValue) => {
-    setValue(newValue);
+      newFormValues[index].value = newValue.toString();
+
+      setUnansweredQuestions((prevUnanswered) =>
+        prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
+      );
+
+      return newFormValues;
+    });
+    setValues(prevValues => ({
+      ...prevValues,  // Copia los valores actuales
+      [index]: event.target.value  // Actualiza el valor para el Slider actual
+  }));
+    
   };
 
   const marks = [];
@@ -163,10 +167,10 @@ const SurveyForm = ({
     return value; // Ahora no necesitamos el cálculo de la potencia, solo devuelve el valor tal cual
   }
 
-  const sliderColor = () => {
-    if (value >= 0 && value <= 6) {
+  const sliderColor = (index) => {
+    if (values[index] === undefined || values[index] >= 0 && values[index] <= 6) {
       return 'red';
-    } else if (value >= 7 && value <= 8) {
+    } else if (values[index] >= 7 && values[index] <= 8) {
       return 'yellow';
     } else {
       return 'green';
@@ -850,20 +854,42 @@ const SurveyForm = ({
               </Fragment>
             )}
             {isSlider(typeQuestion) && (
-              <Box width={300}>
+              <>
+              <FormLabel
+              id={`${questionId}-${typeQuestion}`}
+              style={{
+                fontSize: '1.1',
+                fontWeight: 'bold',
+                marginBottom: '1.1m',
+                color: unansweredQuestions.includes(index)
+                  ? 'red'
+                  : 'rgba(0, 0, 0, 0.6)',
+              }}
+            >
+              {questionName}
+            </FormLabel>
+            <Typography
+              variant="caption"
+              style={{ display: 'block', fontStyle: 'italic' }}
+            >
+              {description}
+            </Typography>
+              <Box 
+                width="100%" 
+              >
                 <Slider
-                  value={value}
+                  value={values[index] || 0} 
                   min={0}
                   step={1}
                   max={10}
                   scale={calculateValue}
                   getAriaValueText={valueLabelFormat}
                   valueLabelFormat={valueLabelFormat}
-                  onChange={handleChange}
+                  onChange={(event, newValue) => handleChangeSlider(event, newValue, index)}
                   valueLabelDisplay="auto"
                   aria-labelledby="non-linear-slider"
                   marks={marks}
-                  style={{ color: sliderColor() }}
+                  style={{ color: sliderColor(index) }}
                   sx={{
                     '& .MuiSlider-track': {
                       height: 10, // Cambia este valor para ajustar el tamaño del control deslizante
@@ -874,6 +900,7 @@ const SurveyForm = ({
                   }}
                 />
               </Box>
+              </>
             )}
             {isSelect(typeQuestion) && (
               <FormControl

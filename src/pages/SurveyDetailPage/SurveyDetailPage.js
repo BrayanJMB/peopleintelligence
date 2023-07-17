@@ -53,11 +53,12 @@ const options = [
   /*{
     option: "Editar",
     icon: <EditIcon />,
-  },*/
+  },
   {
     option: 'Duplicar',
     icon: <ContentCopyIcon />,
   },
+  */
   {
     option: 'Borrar',
     icon: <DeleteIcon />,
