@@ -1,4 +1,5 @@
 import React, { useEffect, useRef,useState } from 'react';
+import dayjs from 'dayjs';
 import { Grid } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
@@ -59,7 +60,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
   const [showDeleteIcon, setShowDeleteIcon] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [maxWidth, setMaxWidth] = useState('80%');
-
+  const maxDate = dayjs().subtract(18, 'years');
   const createInitialValues = () => {
     const initialValues = {};
     if (type === 'employee'){
@@ -85,13 +86,28 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
     
     const { name, value } = event.target;
     const validationResult = validateField(name, value);
-
-    setValues((values) => ({
+    
+    let updatedValues = {
       ...values,
       [name]: value,
       [`${name}Error`]: validationResult.error,
       [`${name}HelperText`]: validationResult.helperText,
-    }));
+    };
+
+    if (name === 'dateBirth') {
+        const today = new Date();
+        const birthDate = new Date(value);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        updatedValues = {
+          ...updatedValues,
+          ageEmployee: age,
+        };
+    }
+    setValues(updatedValues);
 
     if (name === 'userRolChange') {
       setUserRol([]);
@@ -257,7 +273,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
                                 >
                                   <TextField
                                     fullWidth
-
+                                    disabled={field.isDisabled}
                                     id={field.name}
                                     label={field.label}
                                     name={field.name}
@@ -285,7 +301,13 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
                                 >
                                   <LocalizationProvider dateAdapter={AdapterDayjs} localeText={esES.components.MuiLocalizationProvider.defaultProps.localeText}>
                                     <DatePicker
-
+                                    maxDate={field.name === 'dateBirth' ? maxDate :undefined}
+                                    slotProps={{
+                                      textField: {
+                                        helperText: values[`${field.name}HelperText`] || '',
+                                        error:values[`${field.name}Error`]
+                                      },
+                                    }}
                                     sx={{
                                       marginBottom: 2,
                                       width: '100%',
@@ -294,23 +316,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
                                       label={field.label}
                                       value={values[field.name] || null}
                                       inputFormat="MM/dd/yyyy"
-                                      onChange={(date) => handleInputChange({ target: { name: field.name, value: date } })}
-                                      r
-                                      renderInput={(params) => (
-                                        <TextField
-                                          name={field.name}
-                                          id={field.name}
-                                          variant="outlined"
-                                          required={field.isRequired}
-                                          {...params}
-
-                                          error={values[`${field.name}Error`]}
-                                          helperText={values[`${field.name}HelperText`] || ''}
-                                          sx={{
-                                            marginBottom: 2,
-                                          }}
-                                        />
-                                      )}
+                                      onChange={(date) => handleInputChange({ target: { name: field.name, value: date } })}                                    
                                     />
                                   </LocalizationProvider>
                                 </Grid>

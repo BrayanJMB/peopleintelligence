@@ -191,9 +191,10 @@ export const useEmployee = (
             },
             {
               label: 'Edad',
-              name: 'age',
+              name: 'ageEmployee',
               type: 'text',
-              isRequired: true,
+              isRequired: false,
+              isDisabled:true
             },
             {
               label: 'Número Telefónico',
@@ -428,13 +429,14 @@ export const useEmployee = (
 
   const handleEditEmployee = async (id) => {
     const employee = employees.find((employee) => employee.id === id);
-    console.log(employee);
+    console.log(employee);  
     console.log(persons);
     const person = persons.find((person) => person.id === employee.IdPersona);
     console.log(person);
     const { data: segmentsData } = await getSegmentsAPI(
       person.IdSegmentos || 0
     );
+    console.log(segmentsData)
     const documentType = DocumentsTypes.find(
       (documentType) => documentType.documentTypeId === person.IdTipoDocumento
     );
@@ -479,7 +481,7 @@ export const useEmployee = (
     const WorkingDay = workingDays.find(
       (workingDay) => workingDay.id === segmentsData.IdJornada || null
     );
-    console.log(WorkingDay);
+
     const SalaryType = salaryTypes.find(
       (salaryType) => salaryType.id === segmentsData.IdSalaryType || null
     );
@@ -532,9 +534,10 @@ export const useEmployee = (
             },
             {
               label: 'Edad',
-              name: 'age',
+              name: 'ageEmployee',
               type: 'text',
-              isRequired: true,
+              isRequired: false,
+              isDisabled: true,
               value: person.edad,
             },
             {
@@ -557,14 +560,13 @@ export const useEmployee = (
               type: 'text',
               isRequired: true,
               value: person.correoElectronico,
-            },
-            /*
+            },    
             {
               label: 'Fecha Nacimiento',
               name: 'dateBirth',
               type: 'date',
               value: person.fechaNacimiento,
-            },*/
+            },
             {
               label: 'Género',
               name: 'gender',
@@ -633,6 +635,7 @@ export const useEmployee = (
               label: 'Antiguedad Trabajo',
               name: 'antiguedadTrabajo',
               type: 'text',
+              value: segmentsData.antiguedadEnElTrabajo || null,
               isRequired: false,
             },
             {
@@ -640,18 +643,21 @@ export const useEmployee = (
               name: 'parentalStatus',
               type: 'text',
               isRequired: false,
+              value: segmentsData.EstadoParental || null,
             },
             {
               label: 'Resultado Última Evaluación Desempeño',
               name: 'lastResult',
               type: 'text',
               isRequired: false,
+              value: segmentsData.ResultadoUltimaEvaluacionDesempeno || null,
             },
             {
               label: 'Número de Hijos',
               name: 'childNumber',
               type: 'text',
               isRequired: false,
+              value: segmentsData.NumerodeHijos || null,
             },
             {
               label: 'Nivel Organizacional',
@@ -852,7 +858,7 @@ export const useEmployee = (
           numeroDocumento: formValues.documentNumber,
           nombres: formValues.name,
           apellIdos: formValues.lastName,
-          edad: formValues.age,
+          edad: formValues.ageEmployee,
           numeroTelefonico: formValues.phoneNumber,
           direccion: formValues.address,
           correoElectronico: formValues.email,

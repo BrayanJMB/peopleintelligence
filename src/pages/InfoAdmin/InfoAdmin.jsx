@@ -232,7 +232,7 @@ export default function InfoAdmin() {
 
   const [values, setValues] = useState({
     isOpen: false,
-    message: '',
+    messageEmployee: '',
     severity: '',
   });
 
@@ -348,7 +348,7 @@ export default function InfoAdmin() {
         if (response) {
           urlLogo = response.data.urlLogo;
         } else {
-          console.error('Error al subir la imagen:', response.statusText);
+          console.error('Error al subir la imageEmployeen:', response.statusText);
         }
       } catch (error) {
         console.log(error);
@@ -400,7 +400,7 @@ export default function InfoAdmin() {
         numeroDocumento: formValues.documentNumber || null,
         nombres: formValues.name || null,
         apellIdos: formValues.lastName || null,
-        edad: formValues.age || null,
+        edad: formValues.ageEmployee || null,
         numeroTelefonico: formValues.phoneNumber || null,
         direccion: formValues.address || null,
         correoElectronico: formValues.email || null,
@@ -423,7 +423,7 @@ export default function InfoAdmin() {
         id: Person.IdSegmentos || 0,
         antiguedadEnElTrabajo: formValues.antiguedadTrabajo || null,
         EstadoParental: formValues.parentalStatus || null,
-        ResultadoUltimaEvaluacionDesempeno: formValues.childNumber || null,
+        ResultadoUltimaEvaluacionDesempeno: formValues.lastResult || null,
         NumerodeHijos: formValues.childNumber || null,
         IdNivelOrganizacional: formValues.organizationalLevel || null,
         IdTipodeContrato: formValues.contractType || null,
@@ -1940,6 +1940,7 @@ export default function InfoAdmin() {
         fetchCompanyRol,
         fetchDepartments,
         fetchPerson,
+        fetchOffice,
         () => fetchArea(currentCompany.id),
       ],
       'Otros campos': commonFetchFunctions,
