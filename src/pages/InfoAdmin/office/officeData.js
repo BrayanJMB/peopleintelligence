@@ -1,17 +1,17 @@
 // offices.js
 
-import { useEffect, useState } from "react";
-import { useSnackbar } from "notistack";
+import { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
 
 import {
   getAllCompaniesAPI,
   getCompaniesByIdAPI,
-} from "../../../services/getCompanies.service";
+} from '../../../services/getCompanies.service';
 import {
   deleteOfficeAPI,
   getOfficesAPI,
   storeOfficeAPI,
-} from "../../../services/getOffices.service";
+} from '../../../services/getOffices.service';
 
 const getAllCompanies = async () => {
   const { data } = await getAllCompaniesAPI();
@@ -20,8 +20,8 @@ const getAllCompanies = async () => {
 
 export const officesColumns = [
   {
-    id: "name",
-    label: "Sede",
+    id: 'name',
+    label: 'Sede',
     numeric: false,
   },
   /*
@@ -31,8 +31,8 @@ export const officesColumns = [
     numeric: false,
   },*/
   {
-    id: "options",
-    label: "Opciones",
+    id: 'options',
+    label: 'Opciones',
     numeric: false,
   },
 ];
@@ -40,13 +40,13 @@ export const officesColumns = [
 export const useCreateOffice = (setOpenCreateDialog, setCurrentCreate) => {
   const handleCreateOffice = () => {
     setCurrentCreate({
-      type: "office",
-      title: "Crear Oficina",
+      type: 'office',
+      title: 'Crear Oficina',
       fields: [
         {
-          label: "Sede",
-          name: "sede",
-          type: "text",
+          label: 'Sede',
+          name: 'sede',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -76,14 +76,14 @@ export const useOffice = (currentCompany) => {
     try {
       await deleteOfficeAPI(id);
       setOffices((office) => office.filter((office) => office.id !== id));
-      enqueueSnackbar("Oficina eliminada con éxito", {
-        variant: "success",
+      enqueueSnackbar('Oficina eliminada con éxito', {
+        variant: 'success',
         autoHideDuration: 3000,
       });
     } catch (e) {
       console.log(e);
-      enqueueSnackbar("Hubo un error al eliminar la oficina", {
-        variant: "error",
+      enqueueSnackbar('Hubo un error al eliminar la oficina', {
+        variant: 'error',
         autoHideDuration: 3000,
       });
     }
@@ -97,14 +97,14 @@ export const useOffice = (currentCompany) => {
     }
 
     setCurrentEdit({
-      type: "office",
+      type: 'office',
       id: office.id,
-      title: "Editar tipo de documento",
+      title: 'Editar tipo de documento',
       fields: [
         {
-          label: "Oficina",
-          name: "name",
-          type: "text",
+          label: 'Oficina',
+          name: 'name',
+          type: 'text',
           value: office.oficina,
         },
       ],
@@ -115,7 +115,7 @@ export const useOffice = (currentCompany) => {
   const mapOffice = (office) =>
     office.map((office) => [
       {
-        column: "name",
+        column: 'name',
         value: office.sede,
       },
       /*
@@ -124,8 +124,8 @@ export const useOffice = (currentCompany) => {
         value: office.nombreCompania,
     },*/
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteOffice,
           //handleEdit: handleEditOffice,
@@ -162,12 +162,12 @@ export const useOffice = (currentCompany) => {
         IdCompania: currentCompany.id,
       });
       await fetchOffice();
-      enqueueSnackbar("Oficina creada con éxito", {
-        variant: "success",
+      enqueueSnackbar('Oficina creada con éxito', {
+        variant: 'success',
       });
     } catch (e) {
-      enqueueSnackbar("Hubo un error al crear la oficina", {
-        variant: "error",
+      enqueueSnackbar('Hubo un error al crear la oficina', {
+        variant: 'error',
       });
     }
   };

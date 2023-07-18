@@ -1,132 +1,132 @@
-import { useEffect, useRef, useState } from "react";
-import { CSVLink } from "react-csv";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import AddIcon from "@mui/icons-material/Add";
-import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Stack from "@mui/material/Stack";
-import Switch from "@mui/material/Switch";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
-import { useSnackbar } from "notistack";
+import { useEffect, useRef, useState } from 'react';
+import { CSVLink } from 'react-csv';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import AddIcon from '@mui/icons-material/Add';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
+import Switch from '@mui/material/Switch';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import { useSnackbar } from 'notistack';
 
-import Building from "../../assets/Building.svg";
-import MyCard from "../../components/MyCard/MyCard";
-import MyCreateDialog2 from "../../components/MyCreateDialog2/MyCreateDialog2";
-import MyEditDialog2 from "../../components/MyEditDialog2/MyEditDialog2";
-import MyLoader from "../../components/MyLoader/MyLoader";
-import MyTable from "../../components/MyTable/MyTable";
-import Notification from "../../components/Notification";
-import { fetchCompanies } from "../../features/companies/companiesSlice";
-import { fetchActiveCompany, setDrop } from "../../features/employe/employe";
-import { fetchCompanyMultiUser } from "../../features/employe/employe";
-import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
-import Navbar from "../../Layout/Navbar/Navbar";
+import Building from '../../assets/Building.svg';
+import MyCard from '../../components/MyCard/MyCard';
+import MyCreateDialog2 from '../../components/MyCreateDialog2/MyCreateDialog2';
+import MyEditDialog2 from '../../components/MyEditDialog2/MyEditDialog2';
+import MyLoader from '../../components/MyLoader/MyLoader';
+import MyTable from '../../components/MyTable/MyTable';
+import Notification from '../../components/Notification';
+import { fetchCompanies } from '../../features/companies/companiesSlice';
+import { fetchActiveCompany, setDrop } from '../../features/employe/employe';
+import { fetchCompanyMultiUser } from '../../features/employe/employe';
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../Layout/Navbar/Navbar';
 import {
   deleteCompanyAPI,
   storeCompanyAPI,
   updateCompaniesAPI,
   updateStateCompanyAPI,
-} from "../../services/getCompanies.service";
+} from '../../services/getCompanies.service';
 import {
   deleteContractTypeAPI,
   fetchContractTypeByCompanyAPI,
   storeContractTypeAPI,
-} from "../../services/getContractType.service";
-import { getAllCountryAPI } from "../../services/getCountry.service";
+} from '../../services/getContractType.service';
+import { getAllCountryAPI } from '../../services/getCountry.service';
 import {
   deleteDisabilitiesAPI,
   fetchDisabilitiesByCompanyAPI,
   storeDisabilitiesAPI,
-} from "../../services/getDisabilities.service";
+} from '../../services/getDisabilities.service';
 import {
   fetchDocumentTypeAPI,
   storeDocumentTypeAPI,
-} from "../../services/getDocumentType.service";
+} from '../../services/getDocumentType.service';
 import {
   deleteEducationLevelAPI,
   fetchEducationLevelByCompanyAPI,
   storeEducationLevelAPI,
-} from "../../services/getEducationLevel.service";
-import { updateEmployeeAPI } from "../../services/getEmployees.service";
+} from '../../services/getEducationLevel.service';
+import { updateEmployeeAPI } from '../../services/getEmployees.service';
 import {
   deleteEnglishLevelAPI,
   fetchEnglishLevelByCompanyAPI,
   storeEnglishLevelAPI,
-} from "../../services/getEnglishLevel.service";
+} from '../../services/getEnglishLevel.service';
 import {
   deleteGenderAPI,
   fetchGenderByCompanyAPI,
   storeGenderAPI,
-} from "../../services/getGender.service";
+} from '../../services/getGender.service';
 import {
   deleteHiringTypeAPI,
   fetchHiringTypeByCompanyAPI,
   storeHiringTypeAPI,
-} from "../../services/getHiringType.service";
+} from '../../services/getHiringType.service';
 import {
   deleteMaritalStatusAPI,
   fetchMaritalStatusByCompanyAPI,
   storeMaritalStatusAPI,
-} from "../../services/getMaritalStatus.service";
+} from '../../services/getMaritalStatus.service';
 import {
   deleteOrganizationalLevelAPI,
   fetchOrganizationalLevelByCompanyAPI,
   storeOrganizationalLevelAPI,
-} from "../../services/getOrganizationalLevel.service";
+} from '../../services/getOrganizationalLevel.service';
 import {
   deleteProfessionAPI,
   fetchProfessionByCompanyAPI,
   storeProfessionAPI,
-} from "../../services/getProfession.service";
+} from '../../services/getProfession.service';
 import {
   deleteRolCompanyAPI,
   fetchRolCompanyAPI,
   storeRolCompanyAPI,
-} from "../../services/getRolCompany.service";
+} from '../../services/getRolCompany.service';
 import {
   deleteSalaryTypeAPI,
   fetchSalaryTypeByCompanyAPI,
   storeSalaryTypeAPI,
-} from "../../services/getSalaryType.service";
-import { fetchSectorAPI } from "../../services/getSector.service";
+} from '../../services/getSalaryType.service';
+import { fetchSectorAPI } from '../../services/getSector.service';
 import {
   deleteSexualPreferenceAPI,
   fetchSexualPreferenceByCompanyAPI,
   storeSexualPreferenceAPI,
-} from "../../services/getSexualPreference.service";
-import { fetchSizeCompanyAPI } from "../../services/getSizeCompany.service";
+} from '../../services/getSexualPreference.service';
+import { fetchSizeCompanyAPI } from '../../services/getSizeCompany.service';
 import {
   deleteWorkingDayAPI,
   fetchWorkingDayByCompanyAPI,
   storeWorkingDayAPI,
-} from "../../services/getWorkingDay.service";
-import axios from "../../utils/axiosInstance";
-import { createForm, handleDelete } from "../../utils/helpers";
-import Error from "../Error/Error";
+} from '../../services/getWorkingDay.service';
+import axios from '../../utils/axiosInstance';
+import { createForm, handleDelete } from '../../utils/helpers';
+import Error from '../Error/Error';
 
 import {
   departmentsColumns,
   useCreateDepartment,
   useDepartment,
-} from "./department/departmentData";
+} from './department/departmentData';
 import {
   employeesColumns,
   useCreateEmployee,
   useEmployee,
-} from "./employees/employeesData";
+} from './employees/employeesData';
 import {
   officesColumns,
   useCreateOffice,
   useOffice,
-} from "./office/officeData";
+} from './office/officeData';
 
-import styles from "./InfoAdmin.module.css";
+import styles from './InfoAdmin.module.css';
 
 export default function InfoAdmin() {
   const [contractTypes, setContractType] = useState([]);
@@ -162,7 +162,7 @@ export default function InfoAdmin() {
   const dispatch = useDispatch();
   const admin = useSelector((state) => state.admin);
 
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const { type } = useParams();
 
   const currentCompany = useSelector((state) => state.companies.currentCompany);
@@ -232,11 +232,11 @@ export default function InfoAdmin() {
 
   const [values, setValues] = useState({
     isOpen: false,
-    message: "",
-    severity: "",
+    message: '',
+    severity: '',
   });
 
-  const [employecsv, setEmployecsv] = useState("");
+  const [employecsv, setEmployecsv] = useState('');
 
   const handleCloseEditDialog = () => {
     setCurrentEdit(null);
@@ -275,7 +275,7 @@ export default function InfoAdmin() {
       formValues,
       enqueueSnackbar
     );
-    if (currentCreate.type === "company") {
+    if (currentCreate.type === 'company') {
       try {
         let urlLogo = await createLogotipo(formValues);
         await storeCompanyAPI({
@@ -289,39 +289,39 @@ export default function InfoAdmin() {
           SectorId: formValues.sector,
         });
         dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
-        enqueueSnackbar("Compañía creada con éxito", {
-          variant: "success",
+        enqueueSnackbar('Compañía creada con éxito', {
+          variant: 'success',
         });
       } catch (e) {
-        enqueueSnackbar("Hubo un error al crear la compañía", {
-          variant: "error",
+        enqueueSnackbar('Hubo un error al crear la compañía', {
+          variant: 'error',
         });
       }
     }
-    if (currentCreate.type === "office") {
+    if (currentCreate.type === 'office') {
       handleSubmittedCreateOffice(formValues);
     }
-    if (currentCreate.type === "department") {
+    if (currentCreate.type === 'department') {
       handleSubmittedCreateDepartment(formValues);
     }
 
-    if (currentCreate.type === "employee") {
+    if (currentCreate.type === 'employee') {
       handleSubmittedCreateEmployee(formValues);
     }
 
-    if (currentCreate.type === "companyRol") {
+    if (currentCreate.type === 'companyRol') {
       try {
         await storeRolCompanyAPI({
           idCompany: currentCompany.id,
           rol: formValues.rol,
         });
         fetchCompanyRol();
-        enqueueSnackbar("Rol creado con éxito", {
-          variant: "success",
+        enqueueSnackbar('Rol creado con éxito', {
+          variant: 'success',
         });
       } catch (e) {
-        enqueueSnackbar("Hubo un error al crear el rol", {
-          variant: "error",
+        enqueueSnackbar('Hubo un error al crear el rol', {
+          variant: 'error',
         });
       }
     }
@@ -333,14 +333,14 @@ export default function InfoAdmin() {
     let urlLogo = null;
     if (file) {
       const formData = new FormData();
-      formData.append("logoTipo", file);
+      formData.append('logoTipo', file);
       try {
         const response = await axios.post(
           `Autenticacion/LogoCompany?BussinesName=${formValues.companyName}`,
           formData,
           {
             headers: {
-              "Content-Type": "multipart/form-data",
+              'Content-Type': 'multipart/form-data',
             },
           }
         );
@@ -348,7 +348,7 @@ export default function InfoAdmin() {
         if (response) {
           urlLogo = response.data.urlLogo;
         } else {
-          console.error("Error al subir la imagen:", response.statusText);
+          console.error('Error al subir la imagen:', response.statusText);
         }
       } catch (error) {
         console.log(error);
@@ -358,7 +358,7 @@ export default function InfoAdmin() {
   };
 
   const handleSubmittedEditDialog = async (formValues) => {
-    if (currentEdit.type === "company") {
+    if (currentEdit.type === 'company') {
       try {
         let urlLogo = await createLogotipo(formValues);
         await updateCompaniesAPI({
@@ -374,16 +374,16 @@ export default function InfoAdmin() {
 
         dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
         dispatch(fetchCompanies({ idUser: userInfo.user }));
-        enqueueSnackbar("Compañía actualizada con éxito", {
-          variant: "success",
+        enqueueSnackbar('Compañía actualizada con éxito', {
+          variant: 'success',
         });
       } catch (e) {
-        enqueueSnackbar("Hubo un error al crear la compañía", {
-          variant: "error",
+        enqueueSnackbar('Hubo un error al crear la compañía', {
+          variant: 'error',
         });
       }
     }
-    if (currentEdit.type === "employee") {
+    if (currentEdit.type === 'employee') {
       // find category
       const employeeToEdit = employees.find(
         (employee) => employee.id === currentEdit.id
@@ -448,12 +448,12 @@ export default function InfoAdmin() {
       try {
         await updateEmployeeAPI(employeeData);
         fetchEmployee();
-        enqueueSnackbar("Empleado actualizado con éxito", {
-          variant: "success",
+        enqueueSnackbar('Empleado actualizado con éxito', {
+          variant: 'success',
         });
       } catch (e) {
-        enqueueSnackbar("Hubo un error al actualizar el Empleado", {
-          variant: "error",
+        enqueueSnackbar('Hubo un error al actualizar el Empleado', {
+          variant: 'error',
         });
       }
     }
@@ -466,41 +466,41 @@ export default function InfoAdmin() {
   const createCompanyColumns = (condition) => {
     const companyColumns = [
       {
-        id: "name",
-        label: "Nombre compañía",
+        id: 'name',
+        label: 'Nombre compañía',
         numeric: false,
       },
       {
-        id: "country",
-        label: "País",
+        id: 'country',
+        label: 'País',
         numeric: false,
       },
       {
-        id: "sede",
-        label: "Sede",
+        id: 'sede',
+        label: 'Sede',
         numeric: false,
       },
       {
-        id: "sizeCompany",
-        label: "Tamaño Empresa",
+        id: 'sizeCompany',
+        label: 'Tamaño Empresa',
         numeric: false,
       },
       {
-        id: "sector",
-        label: "Sector",
+        id: 'sector',
+        label: 'Sector',
         numeric: false,
       },
       {
-        id: "options",
-        label: "Opciones",
+        id: 'options',
+        label: 'Opciones',
         numeric: false,
       },
     ];
 
     if (condition) {
       companyColumns.push({
-        id: "active",
-        label: "Activar",
+        id: 'active',
+        label: 'Activar',
         numeric: false,
       });
     }
@@ -509,7 +509,7 @@ export default function InfoAdmin() {
   };
 
   const companyColumns = createCompanyColumns(
-    userInfo?.role.findIndex((p) => p === "Administrador") > 0
+    userInfo?.role.findIndex((p) => p === 'Administrador') > 0
   );
 
   const handleEditCompany = (id) => {
@@ -526,21 +526,21 @@ export default function InfoAdmin() {
     }
     setEditLogo(companyData.Logotipo);
     setCurrentEdit({
-      type: "company",
+      type: 'company',
       id: companyData.id,
-      title: "Editar Empresa",
+      title: 'Editar Empresa',
       fields: [
         {
-          label: "Nombre Compañía",
-          name: "companyName",
-          type: "text",
+          label: 'Nombre Compañía',
+          name: 'companyName',
+          type: 'text',
           isRequired: true,
           value: companyData.nombreCompania,
         },
         {
-          label: "País",
-          name: "country",
-          type: "select",
+          label: 'País',
+          name: 'country',
+          type: 'select',
           isRequired: true,
           value: (country && country.id) || null,
           options: countries.map((country) => ({
@@ -549,23 +549,23 @@ export default function InfoAdmin() {
           })),
         },
         {
-          label: "Dirección",
-          name: "address",
-          type: "text",
+          label: 'Dirección',
+          name: 'address',
+          type: 'text',
           value: companyData.direccion,
           isRequired: true,
         },
         {
-          label: "Sede",
-          name: "sede",
-          type: "text",
+          label: 'Sede',
+          name: 'sede',
+          type: 'text',
           value: companyData.Sede,
           isRequired: true,
         },
         {
-          label: "Tamaño Empresa",
-          name: "sizeCompany",
-          type: "select",
+          label: 'Tamaño Empresa',
+          name: 'sizeCompany',
+          type: 'select',
           isRequired: true,
           value: (sizeCompany && sizeCompany.id) || null,
           options: sizeCompanies.map((sizeCompany) => ({
@@ -574,9 +574,9 @@ export default function InfoAdmin() {
           })),
         },
         {
-          label: "Sector",
-          name: "sector",
-          type: "select",
+          label: 'Sector',
+          name: 'sector',
+          type: 'select',
           isRequired: true,
           value: (sector && sector.id) || null,
           options: sectors.map((sector) => ({
@@ -591,19 +591,19 @@ export default function InfoAdmin() {
 
   const handleCreateCompany = () => {
     setCurrentCreate({
-      type: "company",
-      title: "Crear Empresa",
+      type: 'company',
+      title: 'Crear Empresa',
       fields: [
         {
-          label: "Nombre Compañía",
-          name: "companyName",
-          type: "text",
+          label: 'Nombre Compañía',
+          name: 'companyName',
+          type: 'text',
           isRequired: true,
         },
         {
-          label: "País",
-          name: "country",
-          type: "select",
+          label: 'País',
+          name: 'country',
+          type: 'select',
           isRequired: true,
           options: countries.map((country) => ({
             value: country.id,
@@ -611,21 +611,21 @@ export default function InfoAdmin() {
           })),
         },
         {
-          label: "Dirección",
-          name: "address",
-          type: "text",
+          label: 'Dirección',
+          name: 'address',
+          type: 'text',
           isRequired: true,
         },
         {
-          label: "Sede",
-          name: "sede",
-          type: "text",
+          label: 'Sede',
+          name: 'sede',
+          type: 'text',
           isRequired: true,
         },
         {
-          label: "Tamaño Empresa",
-          name: "sizeCompany",
-          type: "select",
+          label: 'Tamaño Empresa',
+          name: 'sizeCompany',
+          type: 'select',
           isRequired: true,
           options: sizeCompanies.map((sizeCompany) => ({
             value: sizeCompany.id,
@@ -633,9 +633,9 @@ export default function InfoAdmin() {
           })),
         },
         {
-          label: "Sector",
-          name: "sector",
-          type: "select",
+          label: 'Sector',
+          name: 'sector',
+          type: 'select',
           isRequired: true,
           options: sectors.map((sector) => ({
             value: sector.id,
@@ -651,28 +651,28 @@ export default function InfoAdmin() {
     companies.map((company) => {
       const columns = [
         {
-          column: "name",
+          column: 'name',
           value: company.nombreCompania,
         },
         {
-          column: "country",
+          column: 'country',
           value: company.nombrePais,
         },
         {
-          column: "Sede",
+          column: 'Sede',
           value: company.Sede,
         },
         {
-          column: "sizeCompany",
+          column: 'sizeCompany',
           value: company.nombreTamañoCompañia,
         },
         {
-          column: "sector",
+          column: 'sector',
           value: company.nombreSector,
         },
         {
-          column: "options",
-          value: "",
+          column: 'options',
+          value: '',
           payload: {
             handleDelete: handleDeleteCompany,
             handleEdit: handleEditCompany,
@@ -681,9 +681,9 @@ export default function InfoAdmin() {
         },
       ];
 
-      if (userInfo?.role.findIndex((p) => p === "Administrador") > 0) {
+      if (userInfo?.role.findIndex((p) => p === 'Administrador') > 0) {
         columns.push({
-          column: "active",
+          column: 'active',
           value:
             company.id !== 1 ? (
               <Switch
@@ -695,7 +695,7 @@ export default function InfoAdmin() {
                 onChange={(event) => handleSwitchChange(company.id, event)}
                 color="primary"
                 name={`switchValue_${company.id}`}
-                inputProps={{ "aria-label": "primary checkbox" }}
+                inputProps={{ 'aria-label': 'primary checkbox' }}
               />
             ) : null,
         });
@@ -721,12 +721,12 @@ export default function InfoAdmin() {
     try {
       await deleteCompanyAPI(id);
       dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
-      enqueueSnackbar("Compañía eliminada con exito", {
-        variant: "success",
+      enqueueSnackbar('Compañía eliminada con exito', {
+        variant: 'success',
       });
     } catch (e) {
-      enqueueSnackbar("Error eliminar crear la compañía", {
-        variant: "error",
+      enqueueSnackbar('Error eliminar crear la compañía', {
+        variant: 'error',
       });
     }
   };
@@ -769,26 +769,26 @@ export default function InfoAdmin() {
   //Roles Company
   const companyRolsColumns = [
     {
-      id: "name",
-      label: "Rol",
+      id: 'name',
+      label: 'Rol',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
 
   const handleCreateCompanyRols = () => {
     setCurrentCreate({
-      type: "companyRol",
-      title: "Crear Rol",
+      type: 'companyRol',
+      title: 'Crear Rol',
       fields: [
         {
-          label: "Rol",
-          name: "rol",
-          type: "text",
+          label: 'Rol',
+          name: 'rol',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -799,12 +799,12 @@ export default function InfoAdmin() {
   const mapCompanyRols = (companyRol) =>
     companyRol.map((companyRol) => [
       {
-        column: "name",
+        column: 'name',
         value: companyRol.rol,
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteCompanyRols,
           //handleEdit: handleEditCompanyRols,
@@ -821,16 +821,16 @@ export default function InfoAdmin() {
 
     try {
       await deleteRolCompanyAPI(id, currentCompany.id);
-      enqueueSnackbar("Rol eliminado con exito", {
-        variant: "success",
+      enqueueSnackbar('Rol eliminado con exito', {
+        variant: 'success',
         autoHideDuration: 3000,
       });
       setCompanyRols((companyRol) =>
         companyRol.filter((companyRol) => companyRol.id !== id)
       );
     } catch (e) {
-      enqueueSnackbar("Error eliminar crear Rol", {
-        variant: "error",
+      enqueueSnackbar('Error eliminar crear Rol', {
+        variant: 'error',
         autoHideDuration: 3000,
       });
     }
@@ -850,13 +850,13 @@ export default function InfoAdmin() {
   //Contract Type
   const contractTypeColumns = [
     {
-      id: "name",
-      label: "Tipo Contrato",
+      id: 'name',
+      label: 'Tipo Contrato',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
@@ -864,12 +864,12 @@ export default function InfoAdmin() {
   const mapContractType = (contractType) =>
     contractType.map((contractType) => [
       {
-        column: "name",
+        column: 'name',
         value: contractType.tipoContrato,
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteContractType,
           //handleEdit: handleEditContractType,
@@ -889,13 +889,13 @@ export default function InfoAdmin() {
 
   const handleCreateContractType = () => {
     setCurrentCreate({
-      type: "contractType",
-      title: "Crear tipo contrato",
+      type: 'contractType',
+      title: 'Crear tipo contrato',
       fields: [
         {
-          label: "Tipo Contrato",
-          name: "tipoContrato",
-          type: "text",
+          label: 'Tipo Contrato',
+          name: 'tipoContrato',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -911,15 +911,15 @@ export default function InfoAdmin() {
       setContractType,
       deleteContractTypeAPI,
       enqueueSnackbar,
-      "Tipo Contrato"
+      'Tipo Contrato'
     );
   };
   // Document Type
 
   const documentTypeColumns = [
     {
-      id: "name",
-      label: "Tipo Documento",
+      id: 'name',
+      label: 'Tipo Documento',
       numeric: false,
     },
     /*
@@ -931,13 +931,13 @@ export default function InfoAdmin() {
   ];
   const handleCreateDocumentType = () => {
     setCurrentCreate({
-      type: "documentType",
-      title: "Crear tipo documento",
+      type: 'documentType',
+      title: 'Crear tipo documento',
       fields: [
         {
-          label: "Tipo documento",
-          name: "tipoDocumento",
-          type: "text",
+          label: 'Tipo documento',
+          name: 'tipoDocumento',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -947,12 +947,12 @@ export default function InfoAdmin() {
   const mapDocumentType = (documentType) =>
     documentType.map((documentType) => [
       {
-        column: "name",
+        column: 'name',
         value: documentType.tipoDocumento,
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           //handleDelete: handleDeleteDocumentType,
           //handleEdit: handleEditDocumentType,
@@ -970,25 +970,25 @@ export default function InfoAdmin() {
   //Nivel de ingles
   const englishLevelColumns = [
     {
-      id: "name",
-      label: "Nivel de inglés",
+      id: 'name',
+      label: 'Nivel de inglés',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
   const handleCreateEnglishLevel = () => {
     setCurrentCreate({
-      type: "englishLevel",
-      title: "Crear nivel de ingles",
+      type: 'englishLevel',
+      title: 'Crear nivel de ingles',
       fields: [
         {
-          label: "Nivel de inglés",
-          name: "nivelIngles",
-          type: "text",
+          label: 'Nivel de inglés',
+          name: 'nivelIngles',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -998,12 +998,12 @@ export default function InfoAdmin() {
   const mapEnglishLevel = (EnglishLevel) =>
     EnglishLevel.map((EnglishLevel) => [
       {
-        column: "name",
+        column: 'name',
         value: EnglishLevel.nivelIngles, //swagger
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteEnglishLevel,
           //handleEdit: handleEditEnglishLevel,
@@ -1020,7 +1020,7 @@ export default function InfoAdmin() {
       setNivelIngles,
       deleteEnglishLevelAPI,
       enqueueSnackbar,
-      "Nivel de inglés"
+      'Nivel de inglés'
     );
   };
 
@@ -1038,26 +1038,26 @@ export default function InfoAdmin() {
   //Nivel de educacion
   const educationLevelColumns = [
     {
-      id: "name",
-      label: "Nivel de educación",
+      id: 'name',
+      label: 'Nivel de educación',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
 
   const handleCreateEducationLevel = () => {
     setCurrentCreate({
-      type: "educationLevel",
-      title: "Crear nivel de educación",
+      type: 'educationLevel',
+      title: 'Crear nivel de educación',
       fields: [
         {
-          label: "Nivel de educación",
-          name: "nivelEducacion",
-          type: "text",
+          label: 'Nivel de educación',
+          name: 'nivelEducacion',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -1067,12 +1067,12 @@ export default function InfoAdmin() {
   const mapEducationLevel = (EducationLevel) =>
     EducationLevel.map((EducationLevel) => [
       {
-        column: "name",
+        column: 'name',
         value: EducationLevel.nivelEducacion, //swagger
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteEducationLevel,
           //handleEdit: handleEditEducationLevel,
@@ -1089,7 +1089,7 @@ export default function InfoAdmin() {
       seteducationLevels,
       deleteEducationLevelAPI,
       enqueueSnackbar,
-      "Nivel de educación"
+      'Nivel de educación'
     );
   };
 
@@ -1105,25 +1105,25 @@ export default function InfoAdmin() {
   //Disabilities
   const disabilitiesColumns = [
     {
-      id: "name",
-      label: "Discapacidades",
+      id: 'name',
+      label: 'Discapacidades',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
   const handleCreateDisabilities = () => {
     setCurrentCreate({
-      type: "disabilities",
-      title: "Crear discapacidad",
+      type: 'disabilities',
+      title: 'Crear discapacidad',
       fields: [
         {
-          label: "Discapacidad",
-          name: "discapacIdades",
-          type: "text",
+          label: 'Discapacidad',
+          name: 'discapacIdades',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -1133,12 +1133,12 @@ export default function InfoAdmin() {
   const mapDisabilities = (Disabilities) =>
     Disabilities.map((Disabilities) => [
       {
-        column: "name",
+        column: 'name',
         value: Disabilities.discapacIdades, //swagger
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteDisabilities,
           //handleEdit: handleEditDisabilities,
@@ -1154,7 +1154,7 @@ export default function InfoAdmin() {
       setDisabilities,
       deleteDisabilitiesAPI,
       enqueueSnackbar,
-      "Discapacidad"
+      'Discapacidad'
     );
   };
 
@@ -1170,25 +1170,25 @@ export default function InfoAdmin() {
   //Tipo de cotratacion
   const hiringTypeColumns = [
     {
-      id: "name",
-      label: "Tipo de contratación",
+      id: 'name',
+      label: 'Tipo de contratación',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
   const handleCreateHiringType = () => {
     setCurrentCreate({
-      type: "HiringType",
-      title: "Crear tipo de contratación",
+      type: 'HiringType',
+      title: 'Crear tipo de contratación',
       fields: [
         {
-          label: "Tipo de contratación",
-          name: "tipoContrato",
-          type: "text",
+          label: 'Tipo de contratación',
+          name: 'tipoContrato',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -1198,12 +1198,12 @@ export default function InfoAdmin() {
   const mapHiringType = (hiringType) =>
     hiringType.map((hiringType) => [
       {
-        column: "name",
+        column: 'name',
         value: hiringType.tipoContrato, //swagger
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteHiringType,
           //handleEdit: handleEditHiringType,
@@ -1219,7 +1219,7 @@ export default function InfoAdmin() {
       setHiringTypes,
       deleteHiringTypeAPI,
       enqueueSnackbar,
-      "Tipo de contratación"
+      'Tipo de contratación'
     );
   };
 
@@ -1236,25 +1236,25 @@ export default function InfoAdmin() {
   //Gender
   const genderColumns = [
     {
-      id: "name",
-      label: "Género",
+      id: 'name',
+      label: 'Género',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
   const handleCreateGender = () => {
     setCurrentCreate({
-      type: "gender",
-      title: "Crear género",
+      type: 'gender',
+      title: 'Crear género',
       fields: [
         {
-          label: "Género",
-          name: "genero",
-          type: "text",
+          label: 'Género',
+          name: 'genero',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -1264,12 +1264,12 @@ export default function InfoAdmin() {
   const mapGender = (gender) =>
     gender.map((gender) => [
       {
-        column: "name",
+        column: 'name',
         value: gender.genero, //swagger
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteGender,
           //handleEdit: handleEditGender,
@@ -1293,7 +1293,7 @@ export default function InfoAdmin() {
       setGenders,
       deleteGenderAPI,
       enqueueSnackbar,
-      "Género"
+      'Género'
     );
   };
 
@@ -1302,25 +1302,25 @@ export default function InfoAdmin() {
   //SalaryType
   const salaryTypeColumns = [
     {
-      id: "name",
-      label: "Tipo salario",
+      id: 'name',
+      label: 'Tipo salario',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
   const handleCreateSalaryType = () => {
     setCurrentCreate({
-      type: "salaryType",
-      title: "Crear tipo de salario",
+      type: 'salaryType',
+      title: 'Crear tipo de salario',
       fields: [
         {
-          label: "Tipo salario",
-          name: "tipoDeSalario",
-          type: "text",
+          label: 'Tipo salario',
+          name: 'tipoDeSalario',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -1330,12 +1330,12 @@ export default function InfoAdmin() {
   const mapSalaryType = (salaryType) =>
     salaryType.map((salaryType) => [
       {
-        column: "name",
+        column: 'name',
         value: salaryType.tipoDeSalario, //swagger
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteSalaryType,
           //handleEdit: handleEditSalaryType,
@@ -1351,7 +1351,7 @@ export default function InfoAdmin() {
       setSalaryTypes,
       deleteSalaryTypeAPI,
       enqueueSnackbar,
-      "Tipo Salario"
+      'Tipo Salario'
     );
   };
 
@@ -1368,26 +1368,26 @@ export default function InfoAdmin() {
   //Nivel de profession
   const professionColumns = [
     {
-      id: "name",
-      label: "Profesión",
+      id: 'name',
+      label: 'Profesión',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
 
   const handleCreateProfession = () => {
     setCurrentCreate({
-      type: "Profesion",
-      title: "Crear Profesión",
+      type: 'Profesion',
+      title: 'Crear Profesión',
       fields: [
         {
-          label: "Profesión",
-          name: "profesion",
-          type: "text",
+          label: 'Profesión',
+          name: 'profesion',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -1397,12 +1397,12 @@ export default function InfoAdmin() {
   const mapProfession = (profession) =>
     profession.map((profession) => [
       {
-        column: "name",
+        column: 'name',
         value: profession.profesion, //swagger
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteProfession,
           //handleEdit: handleEditProfession,
@@ -1427,7 +1427,7 @@ export default function InfoAdmin() {
       setProfessions,
       deleteProfessionAPI,
       enqueueSnackbar,
-      "Profesión"
+      'Profesión'
     );
   };
   // Fin Professions
@@ -1435,25 +1435,25 @@ export default function InfoAdmin() {
   //SexualPreference
   const sexualPreferenceColumns = [
     {
-      id: "name",
-      label: "Preferencias sexuales",
+      id: 'name',
+      label: 'Preferencias sexuales',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
   const handleCreateSexualPreference = () => {
     setCurrentCreate({
-      type: "preferenciaSexual",
-      title: "Crear preferencia Sexual",
+      type: 'preferenciaSexual',
+      title: 'Crear preferencia Sexual',
       fields: [
         {
-          label: "Preferencia Sexual",
-          name: "preferenciaSexual",
-          type: "text",
+          label: 'Preferencia Sexual',
+          name: 'preferenciaSexual',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -1463,12 +1463,12 @@ export default function InfoAdmin() {
   const mapSexualPreference = (sexualPreference) =>
     sexualPreference.map((sexualPreference) => [
       {
-        column: "name",
+        column: 'name',
         value: sexualPreference.preferenciaSexual, //swagger
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteSexualPreference,
           //handleEdit: handleEditSexualPreference,
@@ -1484,7 +1484,7 @@ export default function InfoAdmin() {
       setPreferenciaSexual,
       deleteSexualPreferenceAPI,
       enqueueSnackbar,
-      "Preferencia Sexual"
+      'Preferencia Sexual'
     );
   };
 
@@ -1500,26 +1500,26 @@ export default function InfoAdmin() {
   //Nivel de organizacion
   const organizationalLevelColumns = [
     {
-      id: "name",
-      label: "Nivel Organizacional",
+      id: 'name',
+      label: 'Nivel Organizacional',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
 
   const handleCreateOrganizationalLevel = () => {
     setCurrentCreate({
-      type: "OrganizationalLevel",
-      title: "Crear nivel organizacional",
+      type: 'OrganizationalLevel',
+      title: 'Crear nivel organizacional',
       fields: [
         {
-          label: "Nivel organizacional",
-          name: "nivelOrganizacional",
-          type: "text",
+          label: 'Nivel organizacional',
+          name: 'nivelOrganizacional',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -1530,12 +1530,12 @@ export default function InfoAdmin() {
   const mapOrganizationalLevel = (organizationalLevel) =>
     organizationalLevel.map((organizationalLevel) => [
       {
-        column: "name",
+        column: 'name',
         value: organizationalLevel.nivelOrganizacional, //swagger
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteOrganizationalLevel,
           //handleEdit: handleEditOrganizationalLevel,
@@ -1551,7 +1551,7 @@ export default function InfoAdmin() {
       setOrganizationalLevels,
       deleteOrganizationalLevelAPI,
       enqueueSnackbar,
-      "Nivel organizacional"
+      'Nivel organizacional'
     );
   };
 
@@ -1570,25 +1570,25 @@ export default function InfoAdmin() {
   //MaritalStatus
   const maritalStatusColumns = [
     {
-      id: "name",
-      label: "Estado Civil",
+      id: 'name',
+      label: 'Estado Civil',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
   const handleCreateMaritalStatus = () => {
     setCurrentCreate({
-      type: "estadoCivil",
-      title: "Crear estado civil",
+      type: 'estadoCivil',
+      title: 'Crear estado civil',
       fields: [
         {
-          label: "Estado Civil",
-          name: "estadoCivil",
-          type: "text",
+          label: 'Estado Civil',
+          name: 'estadoCivil',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -1598,12 +1598,12 @@ export default function InfoAdmin() {
   const mapMaritalStatus = (maritalStatus) =>
     maritalStatus.map((maritalStatus) => [
       {
-        column: "name",
+        column: 'name',
         value: maritalStatus.estadoCivil, //swagger
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteMaritalStatus,
           //handleEdit: handleEditMaritalStatus,
@@ -1619,7 +1619,7 @@ export default function InfoAdmin() {
       setEstadoCivil,
       deleteMaritalStatusAPI,
       enqueueSnackbar,
-      "EstadoCivil"
+      'EstadoCivil'
     );
   };
 
@@ -1636,26 +1636,26 @@ export default function InfoAdmin() {
   //Working Day
   const workingDayColumns = [
     {
-      id: "name",
-      label: "Jornada",
+      id: 'name',
+      label: 'Jornada',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
 
   const handleCreateWorkingDay = () => {
     setCurrentCreate({
-      type: "workingDay",
-      title: "Crear Jornada",
+      type: 'workingDay',
+      title: 'Crear Jornada',
       fields: [
         {
-          label: "Jornada",
-          name: "jornada",
-          type: "text",
+          label: 'Jornada',
+          name: 'jornada',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -1665,12 +1665,12 @@ export default function InfoAdmin() {
   const mapWorkingDay = (workingDay) =>
     workingDay.map((workingDay) => [
       {
-        column: "name",
+        column: 'name',
         value: workingDay.jornada, //swagger
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteWorkingDay,
           //handleEdit: handleEditProfession,
@@ -1687,7 +1687,7 @@ export default function InfoAdmin() {
       //fetchWorkingDay,
       deleteWorkingDayAPI,
       enqueueSnackbar,
-      "Jornada"
+      'Jornada'
     );
   };
 
@@ -1697,139 +1697,139 @@ export default function InfoAdmin() {
     }
 
     const { data } = await fetchWorkingDayByCompanyAPI(currentCompany.id);
-    console.log(data)
+    console.log(data);
     setWorkingDay(data);
   };
   //fin Working Day
   const createConfigs = [
     {
-      type: "contractType",
+      type: 'contractType',
       storeAPI: storeContractTypeAPI,
       fetchAPI: fetchContractType,
-      successMsg: "Tipo Contrato creado con éxito",
-      errorMsg: "Hubo un error al crear Tipo Contrato",
+      successMsg: 'Tipo Contrato creado con éxito',
+      errorMsg: 'Hubo un error al crear Tipo Contrato',
       formValues: {
-        field1: "tipoContrato",
+        field1: 'tipoContrato',
       },
     },
     {
-      type: "documentType",
+      type: 'documentType',
       storeAPI: storeDocumentTypeAPI,
       fetchAPI: fetchDocumentType,
-      successMsg: "Tipo Documento creado con éxito",
-      errorMsg: "Hubo un error al crear Tipo Documento",
+      successMsg: 'Tipo Documento creado con éxito',
+      errorMsg: 'Hubo un error al crear Tipo Documento',
       formValues: {
-        field1: "tipoDocumento",
+        field1: 'tipoDocumento',
       },
     },
     {
-      type: "englishLevel",
+      type: 'englishLevel',
       storeAPI: storeEnglishLevelAPI,
       fetchAPI: fetchEnglishLevel,
-      successMsg: "Nivel Inglés creado con éxito",
-      errorMsg: "Hubo un error al crear Nivel Inglés",
+      successMsg: 'Nivel Inglés creado con éxito',
+      errorMsg: 'Hubo un error al crear Nivel Inglés',
       formValues: {
-        field1: "nivelIngles",
+        field1: 'nivelIngles',
       },
     },
     {
-      type: "educationLevel",
+      type: 'educationLevel',
       storeAPI: storeEducationLevelAPI,
       fetchAPI: fetchEducationLevel,
-      successMsg: "Nivel Educación creado con éxito",
-      errorMsg: "Hubo un error al crear Nivel Educación",
+      successMsg: 'Nivel Educación creado con éxito',
+      errorMsg: 'Hubo un error al crear Nivel Educación',
       formValues: {
-        field1: "nivelEducacion",
+        field1: 'nivelEducacion',
       },
     },
     {
-      type: "disabilities",
+      type: 'disabilities',
       storeAPI: storeDisabilitiesAPI,
       fetchAPI: fetchDisabilities,
-      successMsg: "Discapacidad creado con éxito",
-      errorMsg: "Hubo un error al crear Discapacidad",
+      successMsg: 'Discapacidad creado con éxito',
+      errorMsg: 'Hubo un error al crear Discapacidad',
       formValues: {
-        field1: "discapacIdades",
+        field1: 'discapacIdades',
       },
     },
     {
-      type: "HiringType",
+      type: 'HiringType',
       storeAPI: storeHiringTypeAPI,
       fetchAPI: fetchHiringType,
-      successMsg: "Tipo Contratación creado con éxito",
-      errorMsg: "Hubo un error al crear Tipo Contratación",
+      successMsg: 'Tipo Contratación creado con éxito',
+      errorMsg: 'Hubo un error al crear Tipo Contratación',
       formValues: {
-        field1: "tipoContrato",
+        field1: 'tipoContrato',
       },
     },
     {
-      type: "gender",
+      type: 'gender',
       storeAPI: storeGenderAPI,
       fetchAPI: fetchGender,
-      successMsg: "Género creado con éxito",
-      errorMsg: "Hubo un error al crear Género",
+      successMsg: 'Género creado con éxito',
+      errorMsg: 'Hubo un error al crear Género',
       formValues: {
-        field1: "genero",
+        field1: 'genero',
       },
     },
     {
-      type: "salaryType",
+      type: 'salaryType',
       storeAPI: storeSalaryTypeAPI,
       fetchAPI: fetchSalaryType,
-      successMsg: "Tipo salario creado con éxito",
-      errorMsg: "Hubo un error al crear Tipo salario",
+      successMsg: 'Tipo salario creado con éxito',
+      errorMsg: 'Hubo un error al crear Tipo salario',
       formValues: {
-        field1: "tipoDeSalario",
+        field1: 'tipoDeSalario',
       },
     },
     {
-      type: "Profesion",
+      type: 'Profesion',
       storeAPI: storeProfessionAPI,
       fetchAPI: fetchProfessions,
-      successMsg: "Profesión creado con éxito",
-      errorMsg: "Hubo un error al crear Profesión",
+      successMsg: 'Profesión creado con éxito',
+      errorMsg: 'Hubo un error al crear Profesión',
       formValues: {
-        field1: "profesion",
+        field1: 'profesion',
       },
     },
     {
-      type: "preferenciaSexual",
+      type: 'preferenciaSexual',
       storeAPI: storeSexualPreferenceAPI,
       fetchAPI: fetchSexualPreference,
-      successMsg: "Preferencia Sexual creado con éxito",
-      errorMsg: "Hubo un error al crear Preferencia Sexual",
+      successMsg: 'Preferencia Sexual creado con éxito',
+      errorMsg: 'Hubo un error al crear Preferencia Sexual',
       formValues: {
-        field1: "preferenciaSexual",
+        field1: 'preferenciaSexual',
       },
     },
     {
-      type: "estadoCivil",
+      type: 'estadoCivil',
       storeAPI: storeMaritalStatusAPI,
       fetchAPI: fetchMaritalStatus,
-      successMsg: "Estado civil creado con éxito",
-      errorMsg: "Hubo un error al crear Estado civil",
+      successMsg: 'Estado civil creado con éxito',
+      errorMsg: 'Hubo un error al crear Estado civil',
       formValues: {
-        field1: "estadoCivil",
+        field1: 'estadoCivil',
       },
     },
     {
-      type: "OrganizationalLevel",
+      type: 'OrganizationalLevel',
       storeAPI: storeOrganizationalLevelAPI,
       fetchAPI: fetchOrganizationalLevel,
-      successMsg: "Nivel organizacional creada con éxito",
-      errorMsg: "Hubo un error al crear Nivel organizacional",
+      successMsg: 'Nivel organizacional creada con éxito',
+      errorMsg: 'Hubo un error al crear Nivel organizacional',
       formValues: {
-        field1: "nivelOrganizacional",
+        field1: 'nivelOrganizacional',
       },
     },
     {
-      type: "workingDay",
+      type: 'workingDay',
       storeAPI: storeWorkingDayAPI,
       fetchAPI: fetchWorkingDay,
-      successMsg: "Jornada creada con éxito",
-      errorMsg: "Hubo un error al crear Jornada",
+      successMsg: 'Jornada creada con éxito',
+      errorMsg: 'Hubo un error al crear Jornada',
       formValues: {
-        field1: "jornada",
+        field1: 'jornada',
       },
     },
   ];
@@ -1842,7 +1842,7 @@ export default function InfoAdmin() {
 
   const handleDownload = () => {
     axios
-      .get("Employee/DownloadCsvEmployee")
+      .get('Employee/DownloadCsvEmployee')
       .then((res) => setEmployecsv(res.data));
   };
 
@@ -1852,12 +1852,12 @@ export default function InfoAdmin() {
 
   const handleFile = async (event) => {
     let bodyFormData = new FormData();
-    bodyFormData.append("data", event.target.files[0]);
+    bodyFormData.append('data', event.target.files[0]);
 
     await fetch(
       `https://peopleintelligenceapi.azurewebsites.net/api/Employee/EmployeesCsv/${userInfo.Company}`,
       {
-        method: "POST",
+        method: 'POST',
         body: bodyFormData,
       }
     )
@@ -1867,7 +1867,7 @@ export default function InfoAdmin() {
           ...values,
           message: res.message,
           isOpen: true,
-          severity: "success",
+          severity: 'success',
         });
       })
       .catch((err) => console.log(err));
@@ -1888,11 +1888,11 @@ export default function InfoAdmin() {
 
   useEffect(() => {
     if (
-      userInfo?.role.findIndex((p) => p === "Management") < 0 &&
-      userInfo?.role.findIndex((p) => p === "Administrador") < 0
+      userInfo?.role.findIndex((p) => p === 'Management') < 0 &&
+      userInfo?.role.findIndex((p) => p === 'Administrador') < 0
     ) {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+      alert('No tiene permiso para acceder a esta funcionalidad');
+      navigate('/dashboard');
     }
   }, [type]);
 
@@ -1902,7 +1902,7 @@ export default function InfoAdmin() {
         setLoading(true);
         await Promise.all(fetchFunctions.map((fn) => fn()));
       } catch (error) {
-        console.error("An error occurred while fetching data: ", error);
+        console.error('An error occurred while fetching data: ', error);
         // Handle error accordingly
       } finally {
         setLoading(false);
@@ -1940,9 +1940,9 @@ export default function InfoAdmin() {
         fetchCompanyRol,
         fetchDepartments,
         fetchPerson,
-        () => fetchArea(currentCompany.id)
+        () => fetchArea(currentCompany.id),
       ],
-      "Otros campos": commonFetchFunctions,
+      'Otros campos': commonFetchFunctions,
     };
 
     if (!currentCompany) {
@@ -1968,41 +1968,41 @@ export default function InfoAdmin() {
   };
 
   const tabLabels = [
-    "Tipo Contrato",
-    "Tipos de documentos",
-    "Nivel de ingles",
-    "Nivel de educacion",
-    "Discapacidades",
-    "Tipo de contrataciones",
-    "Tipo generos",
-    "Tipo salarios",
-    "Profesion",
-    "Preferencia sexual",
-    "Estado civil",
-    "Nivel Organizacional",
-    "Jornada",
+    'Tipo Contrato',
+    'Tipos de documentos',
+    'Nivel de ingles',
+    'Nivel de educacion',
+    'Discapacidades',
+    'Tipo de contrataciones',
+    'Tipo generos',
+    'Tipo salarios',
+    'Profesion',
+    'Preferencia sexual',
+    'Estado civil',
+    'Nivel Organizacional',
+    'Jornada',
   ];
 
   const allowedRoutes = [
-    "Otros campos",
-    "Empleados",
-    "Departamentos",
-    "Empresas",
+    'Otros campos',
+    'Empleados',
+    'Departamentos',
+    'Empresas',
   ];
 
   return (
     <>
       <>
         {allowedRoutes.includes(type) ? (
-          <Box sx={{ display: "flex" }}>
+          <Box sx={{ display: 'flex' }}>
             <Navbar />
             <IconSidebar />
 
-            <div style={{ backgroundColor: "white" }}>
+            <div style={{ backgroundColor: 'white' }}>
               <CSVLink
                 data={employecsv}
-                filename={"Employees.csv"}
-                style={{ display: "none" }}
+                filename={'Employees.csv'}
+                style={{ display: 'none' }}
                 ref={csvLink}
                 target="_blank"
               />
@@ -2025,14 +2025,14 @@ export default function InfoAdmin() {
                       <h1>{type}</h1>
                     </div>
                     <div className={styles.new}>
-                      {type === "Empleados" ? (
+                      {type === 'Empleados' ? (
                         <div>
                           <Button
                             variant="contained"
                             style={{
-                              whiteSpace: "nowrap",
-                              padding: "1rem 1rem",
-                              color: "white",
+                              whiteSpace: 'nowrap',
+                              padding: '1rem 1rem',
+                              color: 'white',
                             }}
                             color="primary"
                             onClick={handleDownload}
@@ -2042,10 +2042,10 @@ export default function InfoAdmin() {
                           <Button
                             variant="contained"
                             style={{
-                              whiteSpace: "nowrap",
-                              padding: "1rem 1rem",
-                              color: "white",
-                              marginLeft: "1rem",
+                              whiteSpace: 'nowrap',
+                              padding: '1rem 1rem',
+                              color: 'white',
+                              marginLeft: '1rem',
                             }}
                             color="primary"
                             onClick={() => {
@@ -2067,23 +2067,23 @@ export default function InfoAdmin() {
                     </div>
                   </div>
 
-                  <Box sx={{ display: "flex" }}>
-                    <div style={{ backgroundColor: "white" }}>
+                  <Box sx={{ display: 'flex' }}>
+                    <div style={{ backgroundColor: 'white' }}>
                       <div className={styles.DataTable}>
                         <div className={styles.DataTable2}>
-                          {type === "Empresas" && (
+                          {type === 'Empresas' && (
                             <MyCard
                               sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "center",
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
                               }}
                             >
-                              <Box sx={{ width: "100%" }}>
+                              <Box sx={{ width: '100%' }}>
                                 <Box
                                   sx={{
                                     borderBottom: 1,
-                                    borderColor: "divider",
+                                    borderColor: 'divider',
                                   }}
                                 >
                                   {/* Companies */}
@@ -2111,7 +2111,7 @@ export default function InfoAdmin() {
                                       {loading === true && <MyLoader />}
                                       {loading === false && (
                                         <MyTable
-                                          title={"Empresas"}
+                                          title={'Empresas'}
                                           columns={companyColumns}
                                           rows={mapCompanies(companies)}
                                         />
@@ -2123,19 +2123,19 @@ export default function InfoAdmin() {
                             </MyCard>
                           )}
 
-                          {type === "Departamentos" && (
+                          {type === 'Departamentos' && (
                             <MyCard>
-                              <Box sx={{ width: "100%" }}>
+                              <Box sx={{ width: '100%' }}>
                                 <Box
                                   sx={{
                                     borderBottom: 1,
-                                    borderColor: "divider",
+                                    borderColor: 'divider',
                                   }}
                                 >
                                   <Tabs
                                     sx={{
-                                      width: "90%",
-                                      justifyContent: "center",
+                                      width: '90%',
+                                      justifyContent: 'center',
                                     }}
                                     value={currentTab}
                                     onChange={(event, newValue) =>
@@ -2179,7 +2179,7 @@ export default function InfoAdmin() {
                                         {loading === true && <MyLoader />}
                                         {loading === false && (
                                           <MyTable
-                                            title={"Departamentos"}
+                                            title={'Departamentos'}
                                             columns={departmentsColumns}
                                             rows={mapDepartment(departments)}
                                           />
@@ -2217,7 +2217,7 @@ export default function InfoAdmin() {
                                         {loading === true && <MyLoader />}
                                         {loading === false && (
                                           <MyTable
-                                            title={"Oficina"}
+                                            title={'Oficina'}
                                             columns={officesColumns}
                                             rows={mapOffice(offices)}
                                           />
@@ -2253,7 +2253,7 @@ export default function InfoAdmin() {
                                           </Button>
                                         </Stack>
                                         <MyTable
-                                          title={"Rol Compañia"}
+                                          title={'Rol Compañia'}
                                           columns={companyRolsColumns}
                                           rows={mapCompanyRols(companyRols)}
                                         />
@@ -2264,13 +2264,13 @@ export default function InfoAdmin() {
                               </Box>
                             </MyCard>
                           )}
-                          {type === "Empleados" && (
+                          {type === 'Empleados' && (
                             <MyCard>
-                              <Box sx={{ width: "100%" }}>
+                              <Box sx={{ width: '100%' }}>
                                 <Box
                                   sx={{
                                     borderBottom: 1,
-                                    borderColor: "divider",
+                                    borderColor: 'divider',
                                   }}
                                 >
                                   {/* departments */}
@@ -2298,7 +2298,7 @@ export default function InfoAdmin() {
                                       {loading === true && <MyLoader />}
                                       {loading === false && (
                                         <MyTable
-                                          title={"Empleados"}
+                                          title={'Empleados'}
                                           columns={employeesColumns}
                                           rows={mapEmployee(employees)}
                                         />
@@ -2309,25 +2309,25 @@ export default function InfoAdmin() {
                               </Box>
                             </MyCard>
                           )}
-                          {type === "Otros campos" && (
+                          {type === 'Otros campos' && (
                             <MyCard
                               sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "center",
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
                               }}
                             >
-                              <Box sx={{ width: "100%" }}>
+                              <Box sx={{ width: '100%' }}>
                                 <Box
                                   sx={{
                                     borderBottom: 1,
-                                    borderColor: "divider",
+                                    borderColor: 'divider',
                                   }}
                                 >
                                   <Box
                                     sx={{
-                                      display: "flex",
-                                      justifyContent: "between",
+                                      display: 'flex',
+                                      justifyContent: 'between',
                                     }}
                                   >
                                     <IconButton onClick={handleLeftButtonClick}>
@@ -2335,8 +2335,8 @@ export default function InfoAdmin() {
                                     </IconButton>
                                     <Tabs
                                       sx={{
-                                        width: "90%",
-                                        justifyContent: "center",
+                                        width: '90%',
+                                        justifyContent: 'center',
                                       }}
                                       value={currentTab}
                                       onChange={(event, newValue) =>
@@ -2387,7 +2387,7 @@ export default function InfoAdmin() {
                                         {loading === true && <MyLoader />}
                                         {loading === false && (
                                           <MyTable
-                                            title={"Tipo Contrato"}
+                                            title={'Tipo Contrato'}
                                             columns={contractTypeColumns}
                                             rows={mapContractType(
                                               contractTypes
@@ -2424,7 +2424,7 @@ export default function InfoAdmin() {
                                           </Button>
                                         </Stack>
                                         <MyTable
-                                          title={"Tipo Documento"}
+                                          title={'Tipo Documento'}
                                           columns={documentTypeColumns}
                                           rows={mapDocumentType(DocumentsTypes)}
                                         />
@@ -2458,7 +2458,7 @@ export default function InfoAdmin() {
                                           </Button>
                                         </Stack>
                                         <MyTable
-                                          title={"Nivel de inglés"}
+                                          title={'Nivel de inglés'}
                                           columns={englishLevelColumns}
                                           rows={mapEnglishLevel(englishLevels)}
                                         />
@@ -2492,7 +2492,7 @@ export default function InfoAdmin() {
                                           </Button>
                                         </Stack>
                                         <MyTable
-                                          title={"Nivel de educación"}
+                                          title={'Nivel de educación'}
                                           columns={educationLevelColumns}
                                           rows={mapEducationLevel(
                                             educationLevels
@@ -2528,7 +2528,7 @@ export default function InfoAdmin() {
                                           </Button>
                                         </Stack>
                                         <MyTable
-                                          title={"Discapacidades"}
+                                          title={'Discapacidades'}
                                           columns={disabilitiesColumns}
                                           rows={mapDisabilities(disabilities)}
                                         />
@@ -2562,7 +2562,7 @@ export default function InfoAdmin() {
                                           </Button>
                                         </Stack>
                                         <MyTable
-                                          title={"Tipo de contratación"}
+                                          title={'Tipo de contratación'}
                                           columns={hiringTypeColumns}
                                           rows={mapHiringType(hiringTypes)}
                                         />
@@ -2596,7 +2596,7 @@ export default function InfoAdmin() {
                                           </Button>
                                         </Stack>
                                         <MyTable
-                                          title={"Género"}
+                                          title={'Género'}
                                           columns={genderColumns}
                                           rows={mapGender(genders)}
                                         />
@@ -2630,7 +2630,7 @@ export default function InfoAdmin() {
                                           </Button>
                                         </Stack>
                                         <MyTable
-                                          title={"Tipo salario"}
+                                          title={'Tipo salario'}
                                           columns={salaryTypeColumns}
                                           rows={mapSalaryType(salaryTypes)}
                                         />
@@ -2664,7 +2664,7 @@ export default function InfoAdmin() {
                                           </Button>
                                         </Stack>
                                         <MyTable
-                                          title={"Profesión"}
+                                          title={'Profesión'}
                                           columns={professionColumns}
                                           rows={mapProfession(professions)}
                                         />
@@ -2701,7 +2701,7 @@ export default function InfoAdmin() {
                                           </Button>
                                         </Stack>
                                         <MyTable
-                                          title={"Preferencia sexual"}
+                                          title={'Preferencia sexual'}
                                           columns={sexualPreferenceColumns}
                                           rows={mapSexualPreference(
                                             sexualPreferences
@@ -2737,7 +2737,7 @@ export default function InfoAdmin() {
                                           </Button>
                                         </Stack>
                                         <MyTable
-                                          title={"Estado civil"}
+                                          title={'Estado civil'}
                                           columns={maritalStatusColumns}
                                           rows={mapMaritalStatus(
                                             maritalStatuses
@@ -2775,7 +2775,7 @@ export default function InfoAdmin() {
                                           </Button>
                                         </Stack>
                                         <MyTable
-                                          title={"Nivel Organizacional"}
+                                          title={'Nivel Organizacional'}
                                           columns={organizationalLevelColumns}
                                           rows={mapOrganizationalLevel(
                                             organizationalLevels
@@ -2811,7 +2811,7 @@ export default function InfoAdmin() {
                                           </Button>
                                         </Stack>
                                         <MyTable
-                                          title={"Jornada"}
+                                          title={'Jornada'}
                                           columns={workingDayColumns}
                                           rows={mapWorkingDay(workingDays)}
                                         />
