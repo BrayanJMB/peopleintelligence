@@ -90,12 +90,14 @@ export const handleDelete = async (id, currentCompany, stateData, fetchAPI, dele
     await deleteAPI(id, currentCompany.id);
     enqueueSnackbar(`${message} eliminado con éxito`, {
       variant: 'success',
+      autoHideDuration:3000,
     });
-    fetchAPI();
+    fetchAPI((data) => data.filter((data) => data.id !== id));
+    
   } catch (e) {
-    console.log(e);
     enqueueSnackbar(`Hubo un error al eliminar ${message}`, {
       variant: 'error',
+      autoHideDuration:3000,
     });
   }
 };

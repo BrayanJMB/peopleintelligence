@@ -1,63 +1,63 @@
 // employees.js
 
-import { useEffect, useState } from 'react';
-import { useSnackbar } from 'notistack';
+import { useEffect, useState } from "react";
+import { useSnackbar } from "notistack";
 
-import { fetchCityAPI } from '../../../services/getCity.service';
-import { getAllCompaniesAPI } from '../../../services/getCompanies.service';
-import { fetchContractTypeByCompanyAPI } from '../../../services/getContractType.service';
-import { fetchAreaByCompanyAPI } from '../../../services/getDepartments.service';
-import { fetchDisabilitiesByCompanyAPI } from '../../../services/getDisabilities.service';
-import { fetchDocumentTypeAPI } from '../../../services/getDocumentType.service';
-import { fetchEducationLevelByCompanyAPI } from '../../../services/getEducationLevel.service';
+import { fetchCityAPI } from "../../../services/getCity.service";
+import { getAllCompaniesAPI } from "../../../services/getCompanies.service";
+import { fetchContractTypeByCompanyAPI } from "../../../services/getContractType.service";
+import { fetchAreaByCompanyAPI } from "../../../services/getDepartments.service";
+import { fetchDisabilitiesByCompanyAPI } from "../../../services/getDisabilities.service";
+import { fetchDocumentTypeAPI } from "../../../services/getDocumentType.service";
+import { fetchEducationLevelByCompanyAPI } from "../../../services/getEducationLevel.service";
 import {
   deleteEmployeeAPI,
   fetchEmployeeAPI,
   storeEmployeeAPI,
-} from '../../../services/getEmployees.service';
-import { fetchEnglishLevelByCompanyAPI } from '../../../services/getEnglishLevel.service';
-import { fetchGenderByCompanyAPI } from '../../../services/getGender.service';
-import { fetchHiringTypeByCompanyAPI } from '../../../services/getHiringType.service';
-import { fetchMaritalStatusByCompanyAPI } from '../../../services/getMaritalStatus.service';
-import { getOfficesAPI } from '../../../services/getOffices.service';
-import { fetchOrganizationalLevelByCompanyAPI } from '../../../services/getOrganizationalLevel.service';
-import { fetchPersonAPI } from '../../../services/getPerson.service';
-import { fetchProfessionByCompanyAPI } from '../../../services/getProfession.service';
-import { fetchRolCompanyAPI } from '../../../services/getRolCompany.service';
-import { fetchSalaryTypeByCompanyAPI } from '../../../services/getSalaryType.service';
-import { getSegmentsAPI } from '../../../services/getSegments.service';
-import { fetchSexualPreferenceByCompanyAPI } from '../../../services/getSexualPreference.service';
-import { fetchWorkingDayByCompanyAPI } from '../../../services/getWorkingDay.service';
+} from "../../../services/getEmployees.service";
+import { fetchEnglishLevelByCompanyAPI } from "../../../services/getEnglishLevel.service";
+import { fetchGenderByCompanyAPI } from "../../../services/getGender.service";
+import { fetchHiringTypeByCompanyAPI } from "../../../services/getHiringType.service";
+import { fetchMaritalStatusByCompanyAPI } from "../../../services/getMaritalStatus.service";
+import { getOfficesAPI } from "../../../services/getOffices.service";
+import { fetchOrganizationalLevelByCompanyAPI } from "../../../services/getOrganizationalLevel.service";
+import { fetchPersonAPI } from "../../../services/getPerson.service";
+import { fetchProfessionByCompanyAPI } from "../../../services/getProfession.service";
+import { fetchRolCompanyAPI } from "../../../services/getRolCompany.service";
+import { fetchSalaryTypeByCompanyAPI } from "../../../services/getSalaryType.service";
+import { getSegmentsAPI } from "../../../services/getSegments.service";
+import { fetchSexualPreferenceByCompanyAPI } from "../../../services/getSexualPreference.service";
+import { fetchWorkingDayByCompanyAPI } from "../../../services/getWorkingDay.service";
 
 export const employeesColumns = [
   {
-    id: 'name',
-    label: 'Nombre',
+    id: "name",
+    label: "Nombre",
     numeric: false,
   },
   {
-    id: 'supervisor',
-    label: 'Supervisor',
+    id: "supervisor",
+    label: "Supervisor",
     numeric: false,
   },
   {
-    id: 'date',
-    label: 'Fecha Admisión',
+    id: "date",
+    label: "Fecha Admisión",
     numeric: false,
   },
   {
-    id: 'rol',
-    label: 'Cargo',
+    id: "rol",
+    label: "Cargo",
     numeric: false,
   },
   {
-    id: 'area',
-    label: 'Área',
+    id: "area",
+    label: "Área",
     numeric: false,
   },
   {
-    id: 'options',
-    label: 'Opciones',
+    id: "options",
+    label: "Opciones",
     numeric: false,
   },
 ];
@@ -98,6 +98,7 @@ export const useEmployee = (
     setLoading(true);
 
     const { data } = await fetchEmployeeAPI(currentCompany.id);
+    console.log(data)
     const { data: area } = await fetchAreaByCompanyAPI(currentCompany.id);
     const areasNames = area.reduce((acc, area) => {
       acc[area.id] = area.NombreArea;
@@ -132,9 +133,9 @@ export const useEmployee = (
     setCompany(companyData);
   };
 
-
   const fetchArea = async (idCompany) => {
     const { data: areaData } = await fetchAreaByCompanyAPI(idCompany);
+    console.log(areaData);
     setArea(areaData);
   };
 
@@ -155,15 +156,15 @@ export const useEmployee = (
 
   const handleCreateEmployee = () => {
     setCurrentCreate({
-      type: 'employee',
-      title: 'Crear Empleado',
+      type: "employee",
+      title: "Crear Empleado",
       fields: [
         {
           person: [
             {
-              label: 'Tipo Documento',
-              name: 'documentType',
-              type: 'select',
+              label: "Tipo Documento",
+              name: "documentType",
+              type: "select",
               isRequired: true,
               options: DocumentsTypes.map((company) => ({
                 value: company.documentTypeId,
@@ -171,57 +172,57 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Número Documento',
-              name: 'documentNumber',
-              type: 'text',
+              label: "Número Documento",
+              name: "documentNumber",
+              type: "text",
               isRequired: true,
             },
             {
-              label: 'Nombres',
-              name: 'name',
-              type: 'text',
+              label: "Nombres",
+              name: "name",
+              type: "text",
               isRequired: true,
             },
             {
-              label: 'Apellidos',
-              name: 'lastName',
-              type: 'text',
+              label: "Apellidos",
+              name: "lastName",
+              type: "text",
               isRequired: true,
             },
             {
-              label: 'Edad',
-              name: 'age',
-              type: 'text',
+              label: "Edad",
+              name: "age",
+              type: "text",
               isRequired: true,
             },
             {
-              label: 'Número Telefónico',
-              name: 'phoneNumber',
-              type: 'text',
+              label: "Número Telefónico",
+              name: "phoneNumber",
+              type: "text",
               isRequired: true,
             },
             {
-              label: 'Dirección',
-              name: 'address',
-              type: 'text',
+              label: "Dirección",
+              name: "address",
+              type: "text",
               isRequired: true,
             },
             {
-              label: 'Correo',
-              name: 'email',
-              type: 'text',
+              label: "Correo",
+              name: "email",
+              type: "text",
               isRequired: true,
             },
             {
-              label: 'Fecha Nacimiento',
-              name: 'dateBirth',
-              type: 'date',
+              label: "Fecha Nacimiento",
+              name: "dateBirth",
+              type: "date",
               isRequired: true,
             },
             {
-              label: 'Género',
-              name: 'gender',
-              type: 'select',
+              label: "Género",
+              name: "gender",
+              type: "select",
               isRequired: true,
               options: genders.map((gender) => ({
                 value: gender.id,
@@ -229,9 +230,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Ciudad',
-              name: 'city',
-              type: 'select',
+              label: "Ciudad",
+              name: "city",
+              type: "select",
               isRequired: true,
               options: cities.map((city) => ({
                 value: city.id,
@@ -241,21 +242,21 @@ export const useEmployee = (
           ],
           employee: [
             {
-              label: 'Fecha Admisión',
-              name: 'fechaAdmision',
-              type: 'date',
+              label: "Fecha Admisión",
+              name: "fechaAdmision",
+              type: "date",
               isRequired: false,
             },
             {
-              label: 'Supervisor',
-              name: 'supervisor',
-              type: 'text',
+              label: "Supervisor",
+              name: "supervisor",
+              type: "text",
               isRequired: false,
             },
             {
-              label: 'Rol',
-              name: 'rol',
-              type: 'select',
+              label: "Rol",
+              name: "rol",
+              type: "select",
               isRequired: false,
               options: companyRols.map((rol) => ({
                 value: rol.id,
@@ -263,9 +264,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Área',
-              name: 'area',
-              type: 'select',
+              label: "Área",
+              name: "area",
+              type: "select",
               isRequired: false,
               options: areas.map((area) => ({
                 value: area.id,
@@ -275,33 +276,33 @@ export const useEmployee = (
           ],
           segments: [
             {
-              label: 'Antiguedad Trabajo',
-              name: 'antiguedadTrabajo',
-              type: 'text',
+              label: "Antiguedad Trabajo",
+              name: "antiguedadTrabajo",
+              type: "text",
               isRequired: false,
             },
             {
-              label: 'Estado Parental',
-              name: 'parentalStatus',
-              type: 'text',
+              label: "Estado Parental",
+              name: "parentalStatus",
+              type: "text",
               isRequired: false,
             },
             {
-              label: 'Resultado Última Evaluación Desempeño',
-              name: 'resultadoEvaluacion',
-              type: 'text',
+              label: "Resultado Última Evaluación Desempeño",
+              name: "resultadoEvaluacion",
+              type: "text",
               isRequired: false,
             },
             {
-              label: 'Número de Hijos',
-              name: 'childNumber',
-              type: 'text',
+              label: "Número de Hijos",
+              name: "childNumber",
+              type: "text",
               isRequired: false,
             },
             {
-              label: 'Nivel Organizacional',
-              name: 'organizationalLevel',
-              type: 'select',
+              label: "Nivel Organizacional",
+              name: "organizationalLevel",
+              type: "select",
               isRequired: false,
               options: organizationalLevels.map((organizationalLevel) => ({
                 value: organizationalLevel.id,
@@ -309,9 +310,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Tipo de Contrato',
-              name: 'contractType',
-              type: 'select',
+              label: "Tipo de Contrato",
+              name: "contractType",
+              type: "select",
               isRequired: false,
               options: contractTypes.map((contractType) => ({
                 value: contractType.id,
@@ -319,9 +320,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Tipo de Contratacion',
-              name: 'hiringType',
-              type: 'select',
+              label: "Tipo de Contratacion",
+              name: "hiringType",
+              type: "select",
               isRequired: false,
               options: hiringTypes.map((hiringType) => ({
                 value: hiringType.id,
@@ -329,9 +330,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Discapacidades',
-              name: 'disabilities',
-              type: 'select',
+              label: "Discapacidades",
+              name: "disabilities",
+              type: "select",
               isRequired: false,
               options: disabilities.map((disabilities) => ({
                 value: disabilities.id,
@@ -339,9 +340,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Preferencia Sexual',
-              name: 'sexualPreference',
-              type: 'select',
+              label: "Preferencia Sexual",
+              name: "sexualPreference",
+              type: "select",
               isRequired: false,
               options: sexualPreferences.map((sexualPreference) => ({
                 value: sexualPreference.id,
@@ -349,9 +350,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Oficina',
-              name: 'campus',
-              type: 'select',
+              label: "Oficina",
+              name: "campus",
+              type: "select",
               isRequired: false,
               options: offices.map((campus) => ({
                 value: campus.id,
@@ -359,9 +360,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Nivel de Inglés',
-              name: 'englishLevel',
-              type: 'select',
+              label: "Nivel de Inglés",
+              name: "englishLevel",
+              type: "select",
               isRequired: false,
               options: englishLevels.map((englishLevel) => ({
                 value: englishLevel.id,
@@ -369,9 +370,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Nivel Educativo',
-              name: 'educationLevel',
-              type: 'select',
+              label: "Nivel Educativo",
+              name: "educationLevel",
+              type: "select",
               isRequired: false,
               options: educationLevels.map((educationLevel) => ({
                 value: educationLevel.id,
@@ -379,9 +380,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Profesión',
-              name: 'profession',
-              type: 'select',
+              label: "Profesión",
+              name: "profession",
+              type: "select",
               isRequired: false,
               options: professions.map((profession) => ({
                 value: profession.id,
@@ -389,9 +390,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Jornada',
-              name: 'workingDay',
-              type: 'select',
+              label: "Jornada",
+              name: "workingDay",
+              type: "select",
               isRequired: false,
               options: workingDays.map((workingDay) => ({
                 value: workingDay.id,
@@ -399,9 +400,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Tipo Salario',
-              name: 'salaryType',
-              type: 'select',
+              label: "Tipo Salario",
+              name: "salaryType",
+              type: "select",
               isRequired: false,
               options: salaryTypes.map((salaryType) => ({
                 value: salaryType.id,
@@ -409,9 +410,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Estado Civil',
-              name: 'maritalStatus',
-              type: 'select',
+              label: "Estado Civil",
+              name: "maritalStatus",
+              type: "select",
               isRequired: false,
               options: maritalStatuses.map((maritalStatus) => ({
                 value: maritalStatus.id,
@@ -427,9 +428,13 @@ export const useEmployee = (
 
   const handleEditEmployee = async (id) => {
     const employee = employees.find((employee) => employee.id === id);
+    console.log(employee)
+    console.log(persons)
     const person = persons.find((person) => person.id === employee.IdPersona);
-
-    const { data: segmentsData } = await getSegmentsAPI(person.IdSegmentos || 0); 
+    console.log(person)
+    const { data: segmentsData } = await getSegmentsAPI(
+      person.IdSegmentos || 0
+    );
     const documentType = DocumentsTypes.find(
       (documentType) => documentType.documentTypeId === person.IdTipoDocumento
     );
@@ -444,10 +449,12 @@ export const useEmployee = (
         organizationalLevel.id === segmentsData.IdNivelOrganizacional || null
     );
     const ContractType = contractTypes.find(
-      (contractType) => contractType.id === segmentsData.IdTipodeContrato || null
+      (contractType) =>
+        contractType.id === segmentsData.IdTipodeContrato || null
     );
     const HiringType = hiringTypes.find(
-      (hiringType) => hiringType.id === segmentsData.IdTipodeContratacion || null
+      (hiringType) =>
+        hiringType.id === segmentsData.IdTipodeContratacion || null
     );
     const Disabilities = disabilities.find(
       (disabilities) => disabilities.id === segmentsData.IdDisabilities || null
@@ -456,12 +463,15 @@ export const useEmployee = (
       (sexualPreference) =>
         sexualPreference.id === segmentsData.IdSexualPreference || null
     );
-    const Campus = offices.find((campus) => campus.id === segmentsData.IdCampus || null);
+    const Campus = offices.find(
+      (campus) => campus.id === segmentsData.IdCampus || null
+    );
     const EnglishLevel = englishLevels.find(
       (englishLevel) => englishLevel.id === segmentsData.IdEnglishLevel || null
     );
     const EducationLevel = educationLevels.find(
-      (educationLevel) => educationLevel.id === segmentsData.IdEducationLevel || null
+      (educationLevel) =>
+        educationLevel.id === segmentsData.IdEducationLevel || null
     );
     const Profesion = professions.find(
       (profession) => profession.id === segmentsData.IdProfession || null
@@ -469,6 +479,7 @@ export const useEmployee = (
     const WorkingDay = workingDays.find(
       (workingDay) => workingDay.id === segmentsData.IdJornada || null
     );
+    console.log(WorkingDay);
     const SalaryType = salaryTypes.find(
       (salaryType) => salaryType.id === segmentsData.IdSalaryType || null
     );
@@ -481,16 +492,16 @@ export const useEmployee = (
     }
 
     setCurrentEdit({
-      type: 'employee',
+      type: "employee",
       id: employee.id,
-      title: 'Editar Empleado',
+      title: "Editar Empleado",
       fields: [
         {
           person: [
             {
-              label: 'Tipo Documento',
-              name: 'documentType',
-              type: 'select',
+              label: "Tipo Documento",
+              name: "documentType",
+              type: "select",
               isRequired: true,
               value: (documentType && documentType.documentTypeId) || null,
               options: DocumentsTypes.map((company) => ({
@@ -499,51 +510,51 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Número Documento',
-              name: 'documentNumber',
-              type: 'text',
+              label: "Número Documento",
+              name: "documentNumber",
+              type: "text",
               isRequired: true,
               value: person.numeroDocumento,
             },
             {
-              label: 'Nombres',
-              name: 'name',
-              type: 'text',
+              label: "Nombres",
+              name: "name",
+              type: "text",
               isRequired: true,
               value: person.nombres,
             },
             {
-              label: 'Apellidos',
-              name: 'lastName',
-              type: 'text',
+              label: "Apellidos",
+              name: "lastName",
+              type: "text",
               isRequired: true,
               value: person.apellIdos,
             },
             {
-              label: 'Edad',
-              name: 'age',
-              type: 'text',
+              label: "Edad",
+              name: "age",
+              type: "text",
               isRequired: true,
               value: person.edad,
             },
             {
-              label: 'Número Telefónico',
-              name: 'phoneNumber',
-              type: 'text',
+              label: "Número Telefónico",
+              name: "phoneNumber",
+              type: "text",
               isRequired: true,
               value: person.numeroTelefonico,
             },
             {
-              label: 'Dirección',
-              name: 'address',
-              type: 'text',
+              label: "Dirección",
+              name: "address",
+              type: "text",
               isRequired: true,
               value: person.direccion,
             },
             {
-              label: 'Correo',
-              name: 'email',
-              type: 'text',
+              label: "Correo",
+              name: "email",
+              type: "text",
               isRequired: true,
               value: person.correoElectronico,
             },
@@ -555,9 +566,9 @@ export const useEmployee = (
               value: person.fechaNacimiento,
             },*/
             {
-              label: 'Género',
-              name: 'gender',
-              type: 'select',
+              label: "Género",
+              name: "gender",
+              type: "select",
               isRequired: true,
               value: (gender && gender.id) || null,
               options: genders.map((gender) => ({
@@ -566,9 +577,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Ciudad',
-              name: 'city',
-              type: 'select',
+              label: "Ciudad",
+              name: "city",
+              type: "select",
               isRequired: true,
               value: (city && city.id) || null,
               options: cities.map((city) => ({
@@ -587,16 +598,16 @@ export const useEmployee = (
               value: employee.fechaAdmision,
             },*/
             {
-              label: 'Supervisor',
-              name: 'supervisor',
-              type: 'text',
+              label: "Supervisor",
+              name: "supervisor",
+              type: "text",
               value: employee.supervisor,
               isRequired: false,
             },
             {
-              label: 'Rol',
-              name: 'rol',
-              type: 'select',
+              label: "Rol",
+              name: "rol",
+              type: "select",
               isRequired: false,
               value: (rol && rol.id) || null,
               options: companyRols.map((rol) => ({
@@ -605,9 +616,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Área',
-              name: 'area',
-              type: 'select',
+              label: "Área",
+              name: "area",
+              type: "select",
               isRequired: false,
               value: (area && area.id) || null,
               options: areas.map((area) => ({
@@ -619,33 +630,33 @@ export const useEmployee = (
 
           segments: [
             {
-              label: 'Antiguedad Trabajo',
-              name: 'antiguedadTrabajo',
-              type: 'text',
+              label: "Antiguedad Trabajo",
+              name: "antiguedadTrabajo",
+              type: "text",
               isRequired: false,
             },
             {
-              label: 'Estado Parental',
-              name: 'parentalStatus',
-              type: 'text',
+              label: "Estado Parental",
+              name: "parentalStatus",
+              type: "text",
               isRequired: false,
             },
             {
-              label: 'Resultado Última Evaluación Desempeño',
-              name: 'lastResult',
-              type: 'text',
+              label: "Resultado Última Evaluación Desempeño",
+              name: "lastResult",
+              type: "text",
               isRequired: false,
             },
             {
-              label: 'Número de Hijos',
-              name: 'childNumber',
-              type: 'text',
+              label: "Número de Hijos",
+              name: "childNumber",
+              type: "text",
               isRequired: false,
             },
             {
-              label: 'Nivel Organizacional',
-              name: 'organizationalLevel',
-              type: 'select',
+              label: "Nivel Organizacional",
+              name: "organizationalLevel",
+              type: "select",
               isRequired: false,
               value: (OrganizationalLevel && OrganizationalLevel.id) || null,
               options: organizationalLevels.map((organizationalLevel) => ({
@@ -654,9 +665,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Tipo de Contrato',
-              name: 'contractType',
-              type: 'select',
+              label: "Tipo de Contrato",
+              name: "contractType",
+              type: "select",
               isRequired: false,
               value: (ContractType && ContractType.id) || null,
               options: contractTypes.map((contractType) => ({
@@ -665,9 +676,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Tipo de Contratacion',
-              name: 'hiringType',
-              type: 'select',
+              label: "Tipo de Contratacion",
+              name: "hiringType",
+              type: "select",
               isRequired: false,
               value: (HiringType && HiringType.id) || null,
               options: hiringTypes.map((hiringType) => ({
@@ -676,9 +687,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Discapacidades',
-              name: 'disabilities',
-              type: 'select',
+              label: "Discapacidades",
+              name: "disabilities",
+              type: "select",
               isRequired: false,
               value: (Disabilities && Disabilities.id) || null,
               options: disabilities.map((disabilities) => ({
@@ -687,9 +698,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Preferencia Sexual',
-              name: 'sexualPreference',
-              type: 'select',
+              label: "Preferencia Sexual",
+              name: "sexualPreference",
+              type: "select",
               isRequired: false,
               value: (SexualPreference && SexualPreference.id) || null,
               options: sexualPreferences.map((sexualPreference) => ({
@@ -698,9 +709,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Oficina',
-              name: 'campus',
-              type: 'select',
+              label: "Oficina",
+              name: "campus",
+              type: "select",
               isRequired: false,
               value: (Campus && Campus.id) || null,
               options: offices.map((campus) => ({
@@ -709,9 +720,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Nivel de Inglés',
-              name: 'englishLevel',
-              type: 'select',
+              label: "Nivel de Inglés",
+              name: "englishLevel",
+              type: "select",
               isRequired: false,
               value: (EnglishLevel && EnglishLevel.id) || null,
               options: englishLevels.map((englishLevel) => ({
@@ -720,9 +731,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Nivel Educativo',
-              name: 'educationLevel',
-              type: 'select',
+              label: "Nivel Educativo",
+              name: "educationLevel",
+              type: "select",
               isRequired: false,
               value: (EducationLevel && EducationLevel.id) || null,
               options: educationLevels.map((educationLevel) => ({
@@ -731,9 +742,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Profesión',
-              name: 'profession',
-              type: 'select',
+              label: "Profesión",
+              name: "profession",
+              type: "select",
               isRequired: false,
               value: (Profesion && Profesion.id) || null,
               options: professions.map((profession) => ({
@@ -742,20 +753,20 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Jornada',
-              name: 'workingDay',
-              type: 'select',
+              label: "Jornada",
+              name: "workingDay",
+              type: "select",
               isRequired: false,
               value: (WorkingDay && WorkingDay.id) || null,
-              options: workingDays.map((company) => ({
-                value: company.id,
-                label: company.nombreCompania,
+              options: workingDays.map((workingDay) => ({
+                value: workingDay.id,
+                label: workingDay.jornada,
               })),
             },
             {
-              label: 'Tipo Salario',
-              name: 'salaryType',
-              type: 'select',
+              label: "Tipo Salario",
+              name: "salaryType",
+              type: "select",
               isRequired: false,
               value: (SalaryType && SalaryType.id) || null,
               options: salaryTypes.map((salaryType) => ({
@@ -764,9 +775,9 @@ export const useEmployee = (
               })),
             },
             {
-              label: 'Estado Civil',
-              name: 'maritalStatus',
-              type: 'select',
+              label: "Estado Civil",
+              name: "maritalStatus",
+              type: "select",
               isRequired: false,
               value: (MaritalStatus && MaritalStatus.id) || null,
               options: maritalStatuses.map((maritalStatus) => ({
@@ -790,14 +801,13 @@ export const useEmployee = (
 
     try {
       await deleteEmployeeAPI(id);
-      //getInformationOffices(setOffices);
-      enqueueSnackbar('Empleado eliminado con éxito', {
-        variant: 'success',
+      setEmployees((employee) => employee.filter((employee) => employee.id !== id));
+      enqueueSnackbar("Empleado eliminado con éxito", {
+        variant: "success",
       });
-      fetchEmployee();
     } catch (e) {
-      enqueueSnackbar('Hubo un error al eliminar el Empleado', {
-        variant: 'success',
+      enqueueSnackbar("Hubo un error al eliminar el Empleado", {
+        variant: "success",
       });
     }
   };
@@ -805,28 +815,28 @@ export const useEmployee = (
   const mapEmployee = (employee) =>
     employee.map((employee) => [
       {
-        column: 'Nombre',
+        column: "Nombre",
         value: employee.nombrePersona,
       },
       {
-        column: 'supervisor',
+        column: "supervisor",
         value: employee.supervisor,
       },
       {
-        column: 'date',
+        column: "date",
         value: employee.FechaAdmision,
       },
       {
-        column: 'rol',
+        column: "rol",
         value: employee.nombreRol,
       },
       {
-        column: 'area',
+        column: "area",
         value: employee.nombreArea,
       },
       {
-        column: 'options',
-        value: '',
+        column: "options",
+        value: "",
         payload: {
           handleDelete: handleDeleteEmployee,
           handleEdit: handleEditEmployee,
@@ -862,7 +872,7 @@ export const useEmployee = (
           antiguedadEnElTrabajo: formValues.antiguedadTrabajo || null,
           EstadoParental: formValues.parentalStatus || null,
           ResultadoUltimaEvaluacionDesempeno:
-            formValues.resultadoEvaluacion || null,
+          formValues.resultadoEvaluacion || null,
           NumerodeHijos: formValues.childNumber || null,
           IdNivelOrganizacional: formValues.organizationalLevel || null,
           IdTipodeContrato: formValues.contractType || null,
@@ -879,13 +889,15 @@ export const useEmployee = (
         },
       });
       setEmployees(employees);
+      setPersons(persons);
+      fetchPerson();
       fetchEmployee();
-      enqueueSnackbar('Empleado creado con éxito', {
-        variant: 'success',
+      enqueueSnackbar("Empleado creado con éxito", {
+        variant: "success",
       });
     } catch (e) {
-      enqueueSnackbar('Hubo un error al crear el Empleado', {
-        variant: 'error',
+      enqueueSnackbar("Hubo un error al crear el Empleado", {
+        variant: "error",
       });
     }
   };
@@ -909,5 +921,8 @@ export const useEmployee = (
     fetchPerson,
     fetchSegment,
     fetchArea,
+    setPersons,
+    setEmployees,
+    setSegments
   };
 };
