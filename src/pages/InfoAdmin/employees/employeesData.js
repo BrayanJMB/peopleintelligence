@@ -98,6 +98,7 @@ export const useEmployee = (
     setLoading(true);
 
     const { data } = await fetchEmployeeAPI(currentCompany.id);
+    console.log(data);
     const { data: area } = await fetchAreaByCompanyAPI(currentCompany.id);
     const areasNames = area.reduce((acc, area) => {
       acc[area.id] = area.NombreArea;
@@ -132,9 +133,9 @@ export const useEmployee = (
     setCompany(companyData);
   };
 
-
   const fetchArea = async (idCompany) => {
     const { data: areaData } = await fetchAreaByCompanyAPI(idCompany);
+    console.log(areaData);
     setArea(areaData);
   };
 
@@ -427,9 +428,13 @@ export const useEmployee = (
 
   const handleEditEmployee = async (id) => {
     const employee = employees.find((employee) => employee.id === id);
+    console.log(employee);
+    console.log(persons);
     const person = persons.find((person) => person.id === employee.IdPersona);
-
-    const { data: segmentsData } = await getSegmentsAPI(person.IdSegmentos || 0); 
+    console.log(person);
+    const { data: segmentsData } = await getSegmentsAPI(
+      person.IdSegmentos || 0
+    );
     const documentType = DocumentsTypes.find(
       (documentType) => documentType.documentTypeId === person.IdTipoDocumento
     );
@@ -444,10 +449,12 @@ export const useEmployee = (
         organizationalLevel.id === segmentsData.IdNivelOrganizacional || null
     );
     const ContractType = contractTypes.find(
-      (contractType) => contractType.id === segmentsData.IdTipodeContrato || null
+      (contractType) =>
+        contractType.id === segmentsData.IdTipodeContrato || null
     );
     const HiringType = hiringTypes.find(
-      (hiringType) => hiringType.id === segmentsData.IdTipodeContratacion || null
+      (hiringType) =>
+        hiringType.id === segmentsData.IdTipodeContratacion || null
     );
     const Disabilities = disabilities.find(
       (disabilities) => disabilities.id === segmentsData.IdDisabilities || null
@@ -456,12 +463,15 @@ export const useEmployee = (
       (sexualPreference) =>
         sexualPreference.id === segmentsData.IdSexualPreference || null
     );
-    const Campus = offices.find((campus) => campus.id === segmentsData.IdCampus || null);
+    const Campus = offices.find(
+      (campus) => campus.id === segmentsData.IdCampus || null
+    );
     const EnglishLevel = englishLevels.find(
       (englishLevel) => englishLevel.id === segmentsData.IdEnglishLevel || null
     );
     const EducationLevel = educationLevels.find(
-      (educationLevel) => educationLevel.id === segmentsData.IdEducationLevel || null
+      (educationLevel) =>
+        educationLevel.id === segmentsData.IdEducationLevel || null
     );
     const Profesion = professions.find(
       (profession) => profession.id === segmentsData.IdProfession || null
@@ -469,6 +479,7 @@ export const useEmployee = (
     const WorkingDay = workingDays.find(
       (workingDay) => workingDay.id === segmentsData.IdJornada || null
     );
+    console.log(WorkingDay);
     const SalaryType = salaryTypes.find(
       (salaryType) => salaryType.id === segmentsData.IdSalaryType || null
     );
@@ -747,9 +758,9 @@ export const useEmployee = (
               type: 'select',
               isRequired: false,
               value: (WorkingDay && WorkingDay.id) || null,
-              options: workingDays.map((company) => ({
-                value: company.id,
-                label: company.nombreCompania,
+              options: workingDays.map((workingDay) => ({
+                value: workingDay.id,
+                label: workingDay.jornada,
               })),
             },
             {
@@ -790,11 +801,10 @@ export const useEmployee = (
 
     try {
       await deleteEmployeeAPI(id);
-      //getInformationOffices(setOffices);
+      setEmployees((employee) => employee.filter((employee) => employee.id !== id));
       enqueueSnackbar('Empleado eliminado con éxito', {
         variant: 'success',
       });
-      fetchEmployee();
     } catch (e) {
       enqueueSnackbar('Hubo un error al eliminar el Empleado', {
         variant: 'success',
@@ -862,7 +872,7 @@ export const useEmployee = (
           antiguedadEnElTrabajo: formValues.antiguedadTrabajo || null,
           EstadoParental: formValues.parentalStatus || null,
           ResultadoUltimaEvaluacionDesempeno:
-            formValues.resultadoEvaluacion || null,
+          formValues.resultadoEvaluacion || null,
           NumerodeHijos: formValues.childNumber || null,
           IdNivelOrganizacional: formValues.organizationalLevel || null,
           IdTipodeContrato: formValues.contractType || null,
@@ -879,6 +889,8 @@ export const useEmployee = (
         },
       });
       setEmployees(employees);
+      setPersons(persons);
+      fetchPerson();
       fetchEmployee();
       enqueueSnackbar('Empleado creado con éxito', {
         variant: 'success',
@@ -909,5 +921,8 @@ export const useEmployee = (
     fetchPerson,
     fetchSegment,
     fetchArea,
+    setPersons,
+    setEmployees,
+    setSegments,
   };
 };

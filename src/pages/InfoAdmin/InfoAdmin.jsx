@@ -23,7 +23,7 @@ import MyLoader from '../../components/MyLoader/MyLoader';
 import MyTable from '../../components/MyTable/MyTable';
 import Notification from '../../components/Notification';
 import { fetchCompanies } from '../../features/companies/companiesSlice';
-import { fetchActiveCompany , setDrop} from '../../features/employe/employe';
+import { fetchActiveCompany, setDrop } from '../../features/employe/employe';
 import { fetchCompanyMultiUser } from '../../features/employe/employe';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
@@ -165,7 +165,6 @@ export default function InfoAdmin() {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const { type } = useParams();
 
-
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const currentMultiCompanies = useSelector(
     (state) => state.activeCompanies.companiesMultiUser
@@ -192,6 +191,9 @@ export default function InfoAdmin() {
   const {
     handleCreateEmployee,
     mapEmployee,
+    setEmployees,
+    setPersons,
+    setSegments,
     employees,
     persons,
     fetchEmployee,
@@ -445,6 +447,7 @@ export default function InfoAdmin() {
 
       try {
         await updateEmployeeAPI(employeeData);
+        fetchEmployee();
         enqueueSnackbar('Empleado actualizado con éxito', {
           variant: 'success',
         });
@@ -706,8 +709,7 @@ export default function InfoAdmin() {
     setSwitchValues({ ...switchValues, [id]: newValue });
     await updateStateCompanyAPI(id, newValue);
     dispatch(fetchActiveCompany({ idUser: userInfo.user }));
-    if (!newValue)
-      dispatch(setDrop(null));
+    if (!newValue) dispatch(setDrop(null));
   };
 
   const handleDeleteCompany = async (id) => {
@@ -721,8 +723,7 @@ export default function InfoAdmin() {
       dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
       enqueueSnackbar('Compañía eliminada con exito', {
         variant: 'success',
-      }); 
-      
+      });
     } catch (e) {
       enqueueSnackbar('Error eliminar crear la compañía', {
         variant: 'error',
@@ -754,8 +755,7 @@ export default function InfoAdmin() {
       return acc;
     }, {});
 
-    if (!currentMultiCompanies)
-        return;
+    if (!currentMultiCompanies) return;
     const company = currentMultiCompanies.map((company) => ({
       ...company,
       nombreSector: sectorNames[company.SectorId],
@@ -823,11 +823,15 @@ export default function InfoAdmin() {
       await deleteRolCompanyAPI(id, currentCompany.id);
       enqueueSnackbar('Rol eliminado con exito', {
         variant: 'success',
+        autoHideDuration: 3000,
       });
-      fetchCompanyRol();
+      setCompanyRols((companyRol) =>
+        companyRol.filter((companyRol) => companyRol.id !== id)
+      );
     } catch (e) {
       enqueueSnackbar('Error eliminar crear Rol', {
         variant: 'error',
+        autoHideDuration: 3000,
       });
     }
   };
@@ -839,7 +843,6 @@ export default function InfoAdmin() {
 
     const { data } = await fetchRolCompanyAPI(currentCompany.id);
     setCompanyRols(data);
-
   };
   //fin Roles Company
 
@@ -905,7 +908,7 @@ export default function InfoAdmin() {
       id,
       currentCompany,
       contractTypes,
-      fetchContractType,
+      setContractType,
       deleteContractTypeAPI,
       enqueueSnackbar,
       'Tipo Contrato'
@@ -959,11 +962,8 @@ export default function InfoAdmin() {
     ]);
 
   const fetchDocumentType = async () => {
-
-
     const { data } = await fetchDocumentTypeAPI();
     setDocumentos(data);
-
   };
   //Fin Document Type
 
@@ -1017,7 +1017,7 @@ export default function InfoAdmin() {
       id,
       currentCompany,
       englishLevels,
-      fetchEnglishLevel,
+      setNivelIngles,
       deleteEnglishLevelAPI,
       enqueueSnackbar,
       'Nivel de inglés'
@@ -1086,7 +1086,7 @@ export default function InfoAdmin() {
       id,
       currentCompany,
       educationLevels,
-      fetchEducationLevel,
+      seteducationLevels,
       deleteEducationLevelAPI,
       enqueueSnackbar,
       'Nivel de educación'
@@ -1099,7 +1099,6 @@ export default function InfoAdmin() {
     }
     const { data } = await fetchEducationLevelByCompanyAPI(currentCompany.id);
     seteducationLevels(data);
-
   };
   //fin de educacion
 
@@ -1152,7 +1151,7 @@ export default function InfoAdmin() {
       id,
       currentCompany,
       disabilities,
-      fetchDisabilities,
+      setDisabilities,
       deleteDisabilitiesAPI,
       enqueueSnackbar,
       'Discapacidad'
@@ -1165,7 +1164,6 @@ export default function InfoAdmin() {
     }
     const { data } = await fetchDisabilitiesByCompanyAPI(currentCompany.id);
     setDisabilities(data);
-
   };
   //fin discapacidades
 
@@ -1218,7 +1216,7 @@ export default function InfoAdmin() {
       id,
       currentCompany,
       hiringTypes,
-      fetchHiringType,
+      setHiringTypes,
       deleteHiringTypeAPI,
       enqueueSnackbar,
       'Tipo de contratación'
@@ -1232,7 +1230,6 @@ export default function InfoAdmin() {
 
     const { data } = await fetchHiringTypeByCompanyAPI(currentCompany.id);
     setHiringTypes(data);
-
   };
   //fin discapacidades HiringType
 
@@ -1287,14 +1284,13 @@ export default function InfoAdmin() {
 
     const { data } = await fetchGenderByCompanyAPI(currentCompany.id);
     setGenders(data);
-
   };
   const handleDeleteGender = async (id) => {
     handleDelete(
       id,
       currentCompany,
       genders,
-      fetchGender,
+      setGenders,
       deleteGenderAPI,
       enqueueSnackbar,
       'Género'
@@ -1352,7 +1348,7 @@ export default function InfoAdmin() {
       id,
       currentCompany,
       salaryTypes,
-      fetchSalaryType,
+      setSalaryTypes,
       deleteSalaryTypeAPI,
       enqueueSnackbar,
       'Tipo Salario'
@@ -1366,7 +1362,6 @@ export default function InfoAdmin() {
 
     const { data } = await fetchSalaryTypeByCompanyAPI(currentCompany.id);
     setSalaryTypes(data);
-
   };
   //fin  SalaryType
 
@@ -1421,17 +1416,15 @@ export default function InfoAdmin() {
       return;
     }
 
-
     const { data } = await fetchProfessionByCompanyAPI(currentCompany.id);
     setProfessions(data);
-
   };
   const handleDeleteProfession = async (id) => {
     handleDelete(
       id,
       currentCompany,
       professions,
-      fetchProfessions,
+      setProfessions,
       deleteProfessionAPI,
       enqueueSnackbar,
       'Profesión'
@@ -1488,7 +1481,7 @@ export default function InfoAdmin() {
       id,
       currentCompany,
       sexualPreferences,
-      fetchSexualPreference,
+      setPreferenciaSexual,
       deleteSexualPreferenceAPI,
       enqueueSnackbar,
       'Preferencia Sexual'
@@ -1500,10 +1493,8 @@ export default function InfoAdmin() {
       return;
     }
 
-
     const { data } = await fetchSexualPreferenceByCompanyAPI(currentCompany.id);
     setPreferenciaSexual(data);
-
   };
   //fin  SexualPreference
   //Nivel de organizacion
@@ -1557,7 +1548,7 @@ export default function InfoAdmin() {
       id,
       currentCompany,
       organizationalLevels,
-      fetchOrganizationalLevel,
+      setOrganizationalLevels,
       deleteOrganizationalLevelAPI,
       enqueueSnackbar,
       'Nivel organizacional'
@@ -1569,12 +1560,10 @@ export default function InfoAdmin() {
       return;
     }
 
-
     const { data } = await fetchOrganizationalLevelByCompanyAPI(
       currentCompany.id
     );
     setOrganizationalLevels(data);
-
   };
 
   //fin orgaizacion
@@ -1627,7 +1616,7 @@ export default function InfoAdmin() {
       id,
       currentCompany,
       maritalStatuses,
-      fetchMaritalStatus,
+      setEstadoCivil,
       deleteMaritalStatusAPI,
       enqueueSnackbar,
       'EstadoCivil'
@@ -1639,10 +1628,8 @@ export default function InfoAdmin() {
       return;
     }
 
-
     const { data } = await fetchMaritalStatusByCompanyAPI(currentCompany.id);
     setEstadoCivil(data);
-
   };
   //fin  MaritalStatus
 
@@ -1696,7 +1683,8 @@ export default function InfoAdmin() {
       id,
       currentCompany,
       workingDays,
-      fetchWorkingDay,
+      setWorkingDay,
+      //fetchWorkingDay,
       deleteWorkingDayAPI,
       enqueueSnackbar,
       'Jornada'
@@ -1708,10 +1696,9 @@ export default function InfoAdmin() {
       return;
     }
 
-
     const { data } = await fetchWorkingDayByCompanyAPI(currentCompany.id);
+    console.log(data);
     setWorkingDay(data);
-
   };
   //fin Working Day
   const createConfigs = [
@@ -1859,7 +1846,6 @@ export default function InfoAdmin() {
       .then((res) => setEmployecsv(res.data));
   };
 
-
   const handleClose = () => {
     setValues({ ...values, isOpen: false });
   };
@@ -1888,7 +1874,7 @@ export default function InfoAdmin() {
   };
 
   useEffect(() => {
-    if ( !currentMultiCompanies) {
+    if (!currentMultiCompanies) {
       return;
     }
     dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
@@ -1911,37 +1897,64 @@ export default function InfoAdmin() {
   }, [type]);
 
   useEffect(() => {
-    if (!currentCompany ) {
+    const fetchData = async (fetchFunctions) => {
+      try {
+        setLoading(true);
+        await Promise.all(fetchFunctions.map((fn) => fn()));
+      } catch (error) {
+        console.error('An error occurred while fetching data: ', error);
+        // Handle error accordingly
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const commonFetchFunctions = [
+      fetchContractType,
+      fetchDocumentType,
+      fetchEnglishLevel,
+      fetchEducationLevel,
+      fetchDisabilities,
+      fetchHiringType,
+      fetchGender,
+      fetchSalaryType,
+      fetchProfessions,
+      fetchSexualPreference,
+      fetchMaritalStatus,
+      fetchOrganizationalLevel,
+      fetchWorkingDay,
+    ];
+
+    const typeToFunctionsMap = {
+      Empresas: [
+        ...(currentMultiCompanies.length > 0 ? [fetchCompany] : []),
+        fetchSector,
+        fetchSizeCompany,
+        fetchCountry,
+      ],
+      Departamentos: [fetchCompanyRol, fetchDepartments, fetchOffice],
+      Empleados: [
+        ...commonFetchFunctions,
+        fetchCity,
+        fetchEmployee,
+        fetchCompanyRol,
+        fetchDepartments,
+        fetchPerson,
+        () => fetchArea(currentCompany.id),
+      ],
+      'Otros campos': commonFetchFunctions,
+    };
+
+    if (!currentCompany) {
       return;
     }
-    setLoading(true);
-    if (currentMultiCompanies.length > 0) {
-      fetchCompany();
+
+    const fetchFunctions = typeToFunctionsMap[type];
+
+    if (fetchFunctions) {
+      fetchData(fetchFunctions);
     }
-    fetchDepartments();
-    fetchSector();
-    fetchSizeCompany();
-    fetchCountry();
-    fetchOffice();
-    fetchEmployee();
-    fetchGender();
-    fetchDocumentType();
-    fetchCompanies();
-    fetchMaritalStatus();
-    fetchSalaryType();
-    fetchProfessions();
-    fetchEducationLevel();
-    fetchEnglishLevel();
-    fetchWorkingDay();
-    fetchSexualPreference();
-    fetchDisabilities();
-    fetchHiringType();
-    fetchContractType();
-    fetchOrganizationalLevel();
-    fetchPerson();
-    fetchCompanyRol();
-    setLoading(false);
-  }, [currentCompany, currentMultiCompanies]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentCompany, currentMultiCompanies, type]); // eslint-disable-line react-hooks/exhaustive-deps
 
   //Tabs Logic
   const handleLeftButtonClick = () => {
@@ -1979,339 +1992,146 @@ export default function InfoAdmin() {
 
   return (
     <>
-      {loading === true && <MyLoader />}
-      {loading === false && (
       <>
-      {allowedRoutes.includes(type) ? (
-        
-        <Box sx={{ display: 'flex' }}>
-          
-          <Navbar />
-          <IconSidebar />
+        {allowedRoutes.includes(type) ? (
+          <Box sx={{ display: 'flex' }}>
+            <Navbar />
+            <IconSidebar />
 
-          <div style={{ backgroundColor: 'white' }}>
-            <CSVLink
-              data={employecsv}
-              filename={'Employees.csv'}
-              style={{ display: 'none' }}
-              ref={csvLink}
-              target="_blank"
-            />
-            <Notification
-              severity={values.severity}
-              message={values.message}
-              isOpen={values.isOpen}
-              onClose={handleClose}
-            />
-            <div className={styles.content}>
-              <div className={styles.crud}>
-                <div className={styles.top}>
-                  <div className={styles.type}>
-                    <Box
-                      component="img"
-                      alt="Your logo."
-                      src={Building}
-                      className={styles.icontype}
-                    />
-                    <h1>{type}</h1>
-                  </div>
-                  <div className={styles.new}>
-                    {type === 'Empleados' ? (
-                      <div>
-                        <Button
-                          variant="contained"
-                          style={{
-                            whiteSpace: 'nowrap',
-                            padding: '1rem 1rem',
-                            color: 'white',
-                          }}
-                          color="primary"
-                          onClick={handleDownload}
-                        >
-                          Descargar csv empleados
-                        </Button>
-                        <Button
-                          variant="contained"
-                          style={{
-                            whiteSpace: 'nowrap',
-                            padding: '1rem 1rem',
-                            color: 'white',
-                            marginLeft: '1rem',
-                          }}
-                          color="primary"
-                          onClick={() => {
-                            importcsv.current.click();
-                          }}
-                        >
-                          Subir empleados
-                        </Button>
-                      </div>
-                    ) : null}
-                    <input
-                      type="file"
-                      onChange={handleFile}
-                      accept=".csv"
-                      name="file"
-                      ref={importcsv}
-                      hidden
-                    />
-                  </div>
-                </div>
-
-                <Box sx={{ display: 'flex' }}>
-                  <div style={{ backgroundColor: 'white' }}>
-                    <div className={styles.DataTable}>
-                      <div className={styles.DataTable2}>
-                        
-                        { type === 'Empresas' && (
-                          <MyCard
-                            sx={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                              justifyContent: 'center',
+            <div style={{ backgroundColor: 'white' }}>
+              <CSVLink
+                data={employecsv}
+                filename={'Employees.csv'}
+                style={{ display: 'none' }}
+                ref={csvLink}
+                target="_blank"
+              />
+              <Notification
+                severity={values.severity}
+                message={values.message}
+                isOpen={values.isOpen}
+                onClose={handleClose}
+              />
+              <div className={styles.content}>
+                <div className={styles.crud}>
+                  <div className={styles.top}>
+                    <div className={styles.type}>
+                      <Box
+                        component="img"
+                        alt="Your logo."
+                        src={Building}
+                        className={styles.icontype}
+                      />
+                      <h1>{type}</h1>
+                    </div>
+                    <div className={styles.new}>
+                      {type === 'Empleados' ? (
+                        <div>
+                          <Button
+                            variant="contained"
+                            style={{
+                              whiteSpace: 'nowrap',
+                              padding: '1rem 1rem',
+                              color: 'white',
+                            }}
+                            color="primary"
+                            onClick={handleDownload}
+                          >
+                            Descargar csv empleados
+                          </Button>
+                          <Button
+                            variant="contained"
+                            style={{
+                              whiteSpace: 'nowrap',
+                              padding: '1rem 1rem',
+                              color: 'white',
+                              marginLeft: '1rem',
+                            }}
+                            color="primary"
+                            onClick={() => {
+                              importcsv.current.click();
                             }}
                           >
-                            <Box sx={{ width: '100%' }}>
-                              <Box
-                                sx={{
-                                  borderBottom: 1,
-                                  borderColor: 'divider',
-                                }}
-                              >
-                                {/* Companies */}
-                                <div id="settings-tabpanel-0">
-                                  <Box
-                                    sx={{
-                                      p: 3,
-                                    }}
-                                  >
-                                    <Stack
-                                      spacing={2}
-                                      direction="row-reverse"
-                                      sx={{
-                                        mb: 2,
-                                      }}
-                                    >
-                                      <Button
-                                        variant="outlined"
-                                        startIcon={<AddIcon />}
-                                        onClick={handleCreateCompany}
-                                      >
-                                        Crear Empresa
-                                      </Button>
-                                    </Stack>
-                                    <MyTable
-                                      title={'Empresas'}
-                                      columns={companyColumns}
-                                      rows={mapCompanies(companies)}
-                                    />
-                                  </Box>
-                                </div>
-                              </Box>
-                            </Box>
-                          </MyCard>
-                        )}
-                        {loading === false && type === 'Departamentos' && (
-                          <MyCard>
-                            <Box sx={{ width: '100%' }}>
-                              <Box
-                                sx={{
-                                  borderBottom: 1,
-                                  borderColor: 'divider',
-                                }}
-                              >
-                                <Tabs
-                                  sx={{
-                                    width: '90%',
-                                    justifyContent: 'center',
-                                  }}
-                                  value={currentTab}
-                                  onChange={(event, newValue) =>
-                                    handleTabChange(event, newValue)
-                                  }
-                                >
-                                  <Tab
-                                    label="Departamento"
-                                    id="settings-tab-0"
-                                  />
-                                  <Tab label="Oficina" id="settings-tab-1" />
-                                  <Tab label="Cargo" id="settings-tab-2" />
-                                </Tabs>
+                            Subir empleados
+                          </Button>
+                        </div>
+                      ) : null}
+                      <input
+                        type="file"
+                        onChange={handleFile}
+                        accept=".csv"
+                        name="file"
+                        ref={importcsv}
+                        hidden
+                      />
+                    </div>
+                  </div>
 
-                                {/* departments */}
-                                <div
-                                  hidden={currentTab !== 0}
-                                  id="settings-tabpanel-0"
-                                >
-                                  {currentTab === 0 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={handleCreateDepartment}
-                                        >
-                                          Crear Departamento
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Departamentos'}
-                                        columns={departmentsColumns}
-                                        rows={mapDepartment(departments)}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
-
-                                {/* offices */}
-                                <div
-                                  hidden={currentTab !== 1}
-                                  id="settings-tabpanel-1"
-                                >
-                                  {currentTab === 1 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={handleCreateOffice}
-                                        >
-                                          Crear Oficina
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Oficina'}
-                                        columns={officesColumns}
-                                        rows={mapOffice(offices)}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
-
-                                {/* rol company */}
-                                <div
-                                  hidden={currentTab !== 2}
-                                  id="settings-tabpanel-2"
-                                >
-                                  {currentTab === 2 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={handleCreateCompanyRols}
-                                        >
-                                          Crear Rol
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Rol Compañia'}
-                                        columns={companyRolsColumns}
-                                        rows={mapCompanyRols(companyRols)}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
-                              </Box>
-                            </Box>
-                          </MyCard>
-                        )}
-                        {loading === false && type === 'Empleados' && (
-                          <MyCard>
-                            <Box sx={{ width: '100%' }}>
-                              <Box
-                                sx={{
-                                  borderBottom: 1,
-                                  borderColor: 'divider',
-                                }}
-                              >
-                                {/* departments */}
-                                <div id="settings-tabpanel-0">
-                                  <Box
-                                    sx={{
-                                      p: 3,
-                                    }}
-                                  >
-                                    <Stack
-                                      spacing={2}
-                                      direction="row-reverse"
-                                      sx={{
-                                        mb: 2,
-                                      }}
-                                    >
-                                      <Button
-                                        variant="outlined"
-                                        startIcon={<AddIcon />}
-                                        onClick={handleCreateEmployee}
-                                      >
-                                        Crear Empleado
-                                      </Button>
-                                    </Stack>
-                                    <MyTable
-                                      title={'Empleados'}
-                                      columns={employeesColumns}
-                                      rows={mapEmployee(employees)}
-                                    />
-                                  </Box>
-                                </div>
-                              </Box>
-                            </Box>
-                          </MyCard>
-                        )}
-                        {loading === false && type === 'Otros campos' && (
-                          <MyCard
-                            sx={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                              justifyContent: 'center',
-                            }}
-                          >
-                            <Box sx={{ width: '100%' }}>
-                              <Box
-                                sx={{
-                                  borderBottom: 1,
-                                  borderColor: 'divider',
-                                }}
-                              >
+                  <Box sx={{ display: 'flex' }}>
+                    <div style={{ backgroundColor: 'white' }}>
+                      <div className={styles.DataTable}>
+                        <div className={styles.DataTable2}>
+                          {type === 'Empresas' && (
+                            <MyCard
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                              }}
+                            >
+                              <Box sx={{ width: '100%' }}>
                                 <Box
                                   sx={{
-                                    display: 'flex',
-                                    justifyContent: 'between',
+                                    borderBottom: 1,
+                                    borderColor: 'divider',
                                   }}
                                 >
-                                  <IconButton onClick={handleLeftButtonClick}>
-                                    <ArrowLeftIcon />
-                                  </IconButton>
+                                  {/* Companies */}
+                                  <div id="settings-tabpanel-0">
+                                    <Box
+                                      sx={{
+                                        p: 3,
+                                      }}
+                                    >
+                                      <Stack
+                                        spacing={2}
+                                        direction="row-reverse"
+                                        sx={{
+                                          mb: 2,
+                                        }}
+                                      >
+                                        <Button
+                                          variant="outlined"
+                                          startIcon={<AddIcon />}
+                                          onClick={handleCreateCompany}
+                                        >
+                                          Crear Empresa
+                                        </Button>
+                                      </Stack>
+                                      {loading === true && <MyLoader />}
+                                      {loading === false && (
+                                        <MyTable
+                                          title={'Empresas'}
+                                          columns={companyColumns}
+                                          rows={mapCompanies(companies)}
+                                        />
+                                      )}
+                                    </Box>
+                                  </div>
+                                </Box>
+                              </Box>
+                            </MyCard>
+                          )}
+
+                          {type === 'Departamentos' && (
+                            <MyCard>
+                              <Box sx={{ width: '100%' }}>
+                                <Box
+                                  sx={{
+                                    borderBottom: 1,
+                                    borderColor: 'divider',
+                                  }}
+                                >
                                   <Tabs
                                     sx={{
                                       width: '90%',
@@ -2322,510 +2142,725 @@ export default function InfoAdmin() {
                                       handleTabChange(event, newValue)
                                     }
                                   >
-                                    {tabLabels.map((label, index ) => (
-                                      <Tab label={label} key={label} id={`settings-tab-${index}`}/>
-                                    ))}
+                                    <Tab
+                                      label="Departamento"
+                                      id="settings-tab-0"
+                                    />
+                                    <Tab label="Oficina" id="settings-tab-1" />
+                                    <Tab label="Cargo" id="settings-tab-2" />
                                   </Tabs>
-                                  <IconButton onClick={handleRightButtonClick}>
-                                    <ArrowRightIcon />
-                                  </IconButton>
+
+                                  {/* departments */}
+                                  <div
+                                    hidden={currentTab !== 0}
+                                    id="settings-tabpanel-0"
+                                  >
+                                    {currentTab === 0 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleCreateDepartment}
+                                          >
+                                            Crear Departamento
+                                          </Button>
+                                        </Stack>
+                                        {loading === true && <MyLoader />}
+                                        {loading === false && (
+                                          <MyTable
+                                            title={'Departamentos'}
+                                            columns={departmentsColumns}
+                                            rows={mapDepartment(departments)}
+                                          />
+                                        )}
+                                      </Box>
+                                    )}
+                                  </div>
+
+                                  {/* offices */}
+                                  <div
+                                    hidden={currentTab !== 1}
+                                    id="settings-tabpanel-1"
+                                  >
+                                    {currentTab === 1 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleCreateOffice}
+                                          >
+                                            Crear Oficina
+                                          </Button>
+                                        </Stack>
+                                        {loading === true && <MyLoader />}
+                                        {loading === false && (
+                                          <MyTable
+                                            title={'Oficina'}
+                                            columns={officesColumns}
+                                            rows={mapOffice(offices)}
+                                          />
+                                        )}
+                                      </Box>
+                                    )}
+                                  </div>
+
+                                  {/* rol company */}
+                                  <div
+                                    hidden={currentTab !== 2}
+                                    id="settings-tabpanel-2"
+                                  >
+                                    {currentTab === 2 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleCreateCompanyRols}
+                                          >
+                                            Crear Rol
+                                          </Button>
+                                        </Stack>
+                                        <MyTable
+                                          title={'Rol Compañia'}
+                                          columns={companyRolsColumns}
+                                          rows={mapCompanyRols(companyRols)}
+                                        />
+                                      </Box>
+                                    )}
+                                  </div>
                                 </Box>
-
-                                {/* Contract Type */}
-                                <div
-                                  hidden={currentTab !== 0}
-                                  id="settings-tabpanel-0"
-                                >
-                                  {currentTab === 0 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={handleCreateContractType}
-                                        >
-                                          Crear Tipo Contrato
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Tipo Contrato'}
-                                        columns={contractTypeColumns}
-                                        rows={mapContractType(contractTypes)}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
-                                {/* Documento Type*/}
-                                <div
-                                  hidden={currentTab !== 1}
-                                  id="settings-tabpanel-1"
-                                >
-                                  {currentTab === 1 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={handleCreateDocumentType}
-                                        >
-                                          Crear tipo de documento
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Tipo Documento'}
-                                        columns={documentTypeColumns}
-                                        rows={mapDocumentType(DocumentsTypes)}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
-                                {/* Nivel de ingles*/}
-                                <div
-                                  hidden={currentTab !== 2}
-                                  id="settings-tabpanel-0"
-                                >
-                                  {currentTab === 2 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={handleCreateEnglishLevel}
-                                        >
-                                          Crear nivel de inglés
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Nivel de inglés'}
-                                        columns={englishLevelColumns}
-                                        rows={mapEnglishLevel(englishLevels)}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
-                                {/* Nivel de educacion*/}
-                                <div
-                                  hidden={currentTab !== 3}
-                                  id="settings-tabpanel-0"
-                                >
-                                  {currentTab === 3 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={handleCreateEducationLevel}
-                                        >
-                                          Crear nivel de educación
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Nivel de educación'}
-                                        columns={educationLevelColumns}
-                                        rows={mapEducationLevel(
-                                          educationLevels
-                                        )}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
-                                {/* Discapacidades*/}
-                                <div
-                                  hidden={currentTab !== 4}
-                                  id="settings-tabpanel-0"
-                                >
-                                  {currentTab === 4 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={handleCreateDisabilities}
-                                        >
-                                          Crear discapacidad
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Discapacidades'}
-                                        columns={disabilitiesColumns}
-                                        rows={mapDisabilities(disabilities)}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
-                                {/* Tipo de contratacion*/}
-                                <div
-                                  hidden={currentTab !== 5}
-                                  id="settings-tabpanel-0"
-                                >
-                                  {currentTab === 5 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={handleCreateHiringType}
-                                        >
-                                          Crear tipo de contratación
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Tipo de contratación'}
-                                        columns={hiringTypeColumns}
-                                        rows={mapHiringType(hiringTypes)}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
-                                {/* Genero*/}
-                                <div
-                                  hidden={currentTab !== 6}
-                                  id="settings-tabpanel-0"
-                                >
-                                  {currentTab === 6 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={handleCreateGender}
-                                        >
-                                          Crear género
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Género'}
-                                        columns={genderColumns}
-                                        rows={mapGender(genders)}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
-                                {/* Tipo salario*/}
-                                <div
-                                  hidden={currentTab !== 7}
-                                  id="settings-tabpanel-0"
-                                >
-                                  {currentTab === 7 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={handleCreateSalaryType}
-                                        >
-                                          Crear Tipo salario
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Tipo salario'}
-                                        columns={salaryTypeColumns}
-                                        rows={mapSalaryType(salaryTypes)}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
-                                {/* Nivel de profesion*/}
-                                <div
-                                  hidden={currentTab !== 8}
-                                  id="settings-tabpanel-0"
-                                >
-                                  {currentTab === 8 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={handleCreateProfession}
-                                        >
-                                          Crear profesión
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Profesión'}
-                                        columns={professionColumns}
-                                        rows={mapProfession(professions)}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
-
-                                {/* Prferencia sexual*/}
-                                <div
-                                  hidden={currentTab !== 9}
-                                  id="settings-tabpanel-0"
-                                >
-                                  {currentTab === 9 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={handleCreateSexualPreference}
-                                        >
-                                          Crear Preferencia sexual
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Preferencia sexual'}
-                                        columns={sexualPreferenceColumns}
-                                        rows={mapSexualPreference(
-                                          sexualPreferences
-                                        )}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
-                                {/* Marital Status*/}
-                                <div
-                                  hidden={currentTab !== 10}
-                                  id="settings-tabpanel-0"
-                                >
-                                  {currentTab === 10 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={handleCreateMaritalStatus}
-                                        >
-                                          Crear Estado civil
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Estado civil'}
-                                        columns={maritalStatusColumns}
-                                        rows={mapMaritalStatus(maritalStatuses)}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
-                                {/* Nivel de Organizacion*/}
-                                <div
-                                  hidden={currentTab !== 11}
-                                  id="settings-tabpanel-0"
-                                >
-                                  {currentTab === 11 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={
-                                            handleCreateOrganizationalLevel
-                                          }
-                                        >
-                                          Crear Nivel Organizacional
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Nivel Organizacional'}
-                                        columns={organizationalLevelColumns}
-                                        rows={mapOrganizationalLevel(
-                                          organizationalLevels
-                                        )}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
-                                {/* Jornada */}
-                                <div
-                                  hidden={currentTab !== 12}
-                                  id="settings-tabpanel-0"
-                                >
-                                  {currentTab === 12 && (
-                                    <Box
-                                      sx={{
-                                        p: 3,
-                                      }}
-                                    >
-                                      <Stack
-                                        spacing={2}
-                                        direction="row-reverse"
-                                        sx={{
-                                          mb: 2,
-                                        }}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          startIcon={<AddIcon />}
-                                          onClick={handleCreateWorkingDay}
-                                        >
-                                          Crear Jornada
-                                        </Button>
-                                      </Stack>
-                                      <MyTable
-                                        title={'Jornada'}
-                                        columns={workingDayColumns}
-                                        rows={mapWorkingDay(workingDays)}
-                                      />
-                                    </Box>
-                                  )}
-                                </div>
                               </Box>
-                            </Box>
-                          </MyCard>
-                        )}
+                            </MyCard>
+                          )}
+                          {type === 'Empleados' && (
+                            <MyCard>
+                              <Box sx={{ width: '100%' }}>
+                                <Box
+                                  sx={{
+                                    borderBottom: 1,
+                                    borderColor: 'divider',
+                                  }}
+                                >
+                                  {/* departments */}
+                                  <div id="settings-tabpanel-0">
+                                    <Box
+                                      sx={{
+                                        p: 3,
+                                      }}
+                                    >
+                                      <Stack
+                                        spacing={2}
+                                        direction="row-reverse"
+                                        sx={{
+                                          mb: 2,
+                                        }}
+                                      >
+                                        <Button
+                                          variant="outlined"
+                                          startIcon={<AddIcon />}
+                                          onClick={handleCreateEmployee}
+                                        >
+                                          Crear Empleado
+                                        </Button>
+                                      </Stack>
+                                      {loading === true && <MyLoader />}
+                                      {loading === false && (
+                                        <MyTable
+                                          title={'Empleados'}
+                                          columns={employeesColumns}
+                                          rows={mapEmployee(employees)}
+                                        />
+                                      )}
+                                    </Box>
+                                  </div>
+                                </Box>
+                              </Box>
+                            </MyCard>
+                          )}
+                          {type === 'Otros campos' && (
+                            <MyCard
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                              }}
+                            >
+                              <Box sx={{ width: '100%' }}>
+                                <Box
+                                  sx={{
+                                    borderBottom: 1,
+                                    borderColor: 'divider',
+                                  }}
+                                >
+                                  <Box
+                                    sx={{
+                                      display: 'flex',
+                                      justifyContent: 'between',
+                                    }}
+                                  >
+                                    <IconButton onClick={handleLeftButtonClick}>
+                                      <ArrowLeftIcon />
+                                    </IconButton>
+                                    <Tabs
+                                      sx={{
+                                        width: '90%',
+                                        justifyContent: 'center',
+                                      }}
+                                      value={currentTab}
+                                      onChange={(event, newValue) =>
+                                        handleTabChange(event, newValue)
+                                      }
+                                    >
+                                      {tabLabels.map((label, index) => (
+                                        <Tab
+                                          label={label}
+                                          key={label}
+                                          id={`settings-tab-${index}`}
+                                        />
+                                      ))}
+                                    </Tabs>
+                                    <IconButton
+                                      onClick={handleRightButtonClick}
+                                    >
+                                      <ArrowRightIcon />
+                                    </IconButton>
+                                  </Box>
+
+                                  {/* Contract Type */}
+                                  <div
+                                    hidden={currentTab !== 0}
+                                    id="settings-tabpanel-0"
+                                  >
+                                    {currentTab === 0 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleCreateContractType}
+                                          >
+                                            Crear Tipo Contrato
+                                          </Button>
+                                        </Stack>
+                                        {loading === true && <MyLoader />}
+                                        {loading === false && (
+                                          <MyTable
+                                            title={'Tipo Contrato'}
+                                            columns={contractTypeColumns}
+                                            rows={mapContractType(
+                                              contractTypes
+                                            )}
+                                          />
+                                        )}
+                                      </Box>
+                                    )}
+                                  </div>
+                                  {/* Documento Type*/}
+                                  <div
+                                    hidden={currentTab !== 1}
+                                    id="settings-tabpanel-1"
+                                  >
+                                    {currentTab === 1 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleCreateDocumentType}
+                                          >
+                                            Crear tipo de documento
+                                          </Button>
+                                        </Stack>
+                                        <MyTable
+                                          title={'Tipo Documento'}
+                                          columns={documentTypeColumns}
+                                          rows={mapDocumentType(DocumentsTypes)}
+                                        />
+                                      </Box>
+                                    )}
+                                  </div>
+                                  {/* Nivel de ingles*/}
+                                  <div
+                                    hidden={currentTab !== 2}
+                                    id="settings-tabpanel-0"
+                                  >
+                                    {currentTab === 2 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleCreateEnglishLevel}
+                                          >
+                                            Crear nivel de inglés
+                                          </Button>
+                                        </Stack>
+                                        <MyTable
+                                          title={'Nivel de inglés'}
+                                          columns={englishLevelColumns}
+                                          rows={mapEnglishLevel(englishLevels)}
+                                        />
+                                      </Box>
+                                    )}
+                                  </div>
+                                  {/* Nivel de educacion*/}
+                                  <div
+                                    hidden={currentTab !== 3}
+                                    id="settings-tabpanel-0"
+                                  >
+                                    {currentTab === 3 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleCreateEducationLevel}
+                                          >
+                                            Crear nivel de educación
+                                          </Button>
+                                        </Stack>
+                                        <MyTable
+                                          title={'Nivel de educación'}
+                                          columns={educationLevelColumns}
+                                          rows={mapEducationLevel(
+                                            educationLevels
+                                          )}
+                                        />
+                                      </Box>
+                                    )}
+                                  </div>
+                                  {/* Discapacidades*/}
+                                  <div
+                                    hidden={currentTab !== 4}
+                                    id="settings-tabpanel-0"
+                                  >
+                                    {currentTab === 4 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleCreateDisabilities}
+                                          >
+                                            Crear discapacidad
+                                          </Button>
+                                        </Stack>
+                                        <MyTable
+                                          title={'Discapacidades'}
+                                          columns={disabilitiesColumns}
+                                          rows={mapDisabilities(disabilities)}
+                                        />
+                                      </Box>
+                                    )}
+                                  </div>
+                                  {/* Tipo de contratacion*/}
+                                  <div
+                                    hidden={currentTab !== 5}
+                                    id="settings-tabpanel-0"
+                                  >
+                                    {currentTab === 5 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleCreateHiringType}
+                                          >
+                                            Crear tipo de contratación
+                                          </Button>
+                                        </Stack>
+                                        <MyTable
+                                          title={'Tipo de contratación'}
+                                          columns={hiringTypeColumns}
+                                          rows={mapHiringType(hiringTypes)}
+                                        />
+                                      </Box>
+                                    )}
+                                  </div>
+                                  {/* Genero*/}
+                                  <div
+                                    hidden={currentTab !== 6}
+                                    id="settings-tabpanel-0"
+                                  >
+                                    {currentTab === 6 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleCreateGender}
+                                          >
+                                            Crear género
+                                          </Button>
+                                        </Stack>
+                                        <MyTable
+                                          title={'Género'}
+                                          columns={genderColumns}
+                                          rows={mapGender(genders)}
+                                        />
+                                      </Box>
+                                    )}
+                                  </div>
+                                  {/* Tipo salario*/}
+                                  <div
+                                    hidden={currentTab !== 7}
+                                    id="settings-tabpanel-0"
+                                  >
+                                    {currentTab === 7 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleCreateSalaryType}
+                                          >
+                                            Crear Tipo salario
+                                          </Button>
+                                        </Stack>
+                                        <MyTable
+                                          title={'Tipo salario'}
+                                          columns={salaryTypeColumns}
+                                          rows={mapSalaryType(salaryTypes)}
+                                        />
+                                      </Box>
+                                    )}
+                                  </div>
+                                  {/* Nivel de profesion*/}
+                                  <div
+                                    hidden={currentTab !== 8}
+                                    id="settings-tabpanel-0"
+                                  >
+                                    {currentTab === 8 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleCreateProfession}
+                                          >
+                                            Crear profesión
+                                          </Button>
+                                        </Stack>
+                                        <MyTable
+                                          title={'Profesión'}
+                                          columns={professionColumns}
+                                          rows={mapProfession(professions)}
+                                        />
+                                      </Box>
+                                    )}
+                                  </div>
+
+                                  {/* Prferencia sexual*/}
+                                  <div
+                                    hidden={currentTab !== 9}
+                                    id="settings-tabpanel-0"
+                                  >
+                                    {currentTab === 9 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={
+                                              handleCreateSexualPreference
+                                            }
+                                          >
+                                            Crear Preferencia sexual
+                                          </Button>
+                                        </Stack>
+                                        <MyTable
+                                          title={'Preferencia sexual'}
+                                          columns={sexualPreferenceColumns}
+                                          rows={mapSexualPreference(
+                                            sexualPreferences
+                                          )}
+                                        />
+                                      </Box>
+                                    )}
+                                  </div>
+                                  {/* Marital Status*/}
+                                  <div
+                                    hidden={currentTab !== 10}
+                                    id="settings-tabpanel-0"
+                                  >
+                                    {currentTab === 10 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleCreateMaritalStatus}
+                                          >
+                                            Crear Estado civil
+                                          </Button>
+                                        </Stack>
+                                        <MyTable
+                                          title={'Estado civil'}
+                                          columns={maritalStatusColumns}
+                                          rows={mapMaritalStatus(
+                                            maritalStatuses
+                                          )}
+                                        />
+                                      </Box>
+                                    )}
+                                  </div>
+                                  {/* Nivel de Organizacion*/}
+                                  <div
+                                    hidden={currentTab !== 11}
+                                    id="settings-tabpanel-0"
+                                  >
+                                    {currentTab === 11 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={
+                                              handleCreateOrganizationalLevel
+                                            }
+                                          >
+                                            Crear Nivel Organizacional
+                                          </Button>
+                                        </Stack>
+                                        <MyTable
+                                          title={'Nivel Organizacional'}
+                                          columns={organizationalLevelColumns}
+                                          rows={mapOrganizationalLevel(
+                                            organizationalLevels
+                                          )}
+                                        />
+                                      </Box>
+                                    )}
+                                  </div>
+                                  {/* Jornada */}
+                                  <div
+                                    hidden={currentTab !== 12}
+                                    id="settings-tabpanel-0"
+                                  >
+                                    {currentTab === 12 && (
+                                      <Box
+                                        sx={{
+                                          p: 3,
+                                        }}
+                                      >
+                                        <Stack
+                                          spacing={2}
+                                          direction="row-reverse"
+                                          sx={{
+                                            mb: 2,
+                                          }}
+                                        >
+                                          <Button
+                                            variant="outlined"
+                                            startIcon={<AddIcon />}
+                                            onClick={handleCreateWorkingDay}
+                                          >
+                                            Crear Jornada
+                                          </Button>
+                                        </Stack>
+                                        <MyTable
+                                          title={'Jornada'}
+                                          columns={workingDayColumns}
+                                          rows={mapWorkingDay(workingDays)}
+                                        />
+                                      </Box>
+                                    )}
+                                  </div>
+                                </Box>
+                              </Box>
+                            </MyCard>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  {/* create form */}
-                  {currentCreate !== null && (
-                    <MyCreateDialog2
-                      onClose={handleCloseCreateDialog}
-                      onSubmit={handleSubmittedCreateDialog}
-                      title={currentCreate.title}
-                      open={openCreateDialog}
-                      fields={currentCreate.fields}
-                      type={currentCreate.type}
-                      file={file}
-                      setFile={setFile}
-                    />
-                  )}
-                  {currentEdit !== null && (
-                    <MyEditDialog2
-                      onClose={handleCloseEditDialog}
-                      onSubmit={handleSubmittedEditDialog}
-                      title={currentEdit.title}
-                      open={openEditDialog}
-                      fields={currentEdit.fields}
-                      type={currentEdit.type}
-                      file={file}
-                      setFile={setFile}
-                      logo={editLogo}
-                      setLogo={setEditLogo}
-                    />
-                  )}
-                </Box>
+                    {/* create form */}
+                    {currentCreate !== null && (
+                      <MyCreateDialog2
+                        onClose={handleCloseCreateDialog}
+                        onSubmit={handleSubmittedCreateDialog}
+                        title={currentCreate.title}
+                        open={openCreateDialog}
+                        fields={currentCreate.fields}
+                        type={currentCreate.type}
+                        file={file}
+                        setFile={setFile}
+                      />
+                    )}
+                    {currentEdit !== null && (
+                      <MyEditDialog2
+                        onClose={handleCloseEditDialog}
+                        onSubmit={handleSubmittedEditDialog}
+                        title={currentEdit.title}
+                        open={openEditDialog}
+                        fields={currentEdit.fields}
+                        type={currentEdit.type}
+                        file={file}
+                        setFile={setFile}
+                        logo={editLogo}
+                        setLogo={setEditLogo}
+                      />
+                    )}
+                  </Box>
+                </div>
               </div>
             </div>
-          </div>
-        </Box>
-      ) : (
-        <Error />
-      )}
+          </Box>
+        ) : (
+          <Error />
+        )}
       </>
-      )}
     </>
   );
 }
