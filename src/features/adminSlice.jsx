@@ -1,12 +1,13 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const adminSlice = createSlice({
-  name: 'admin',
+  name: "admin",
   initialState: {
     Empresas: [],
     Empleados: [],
     Departamentos: [],
-    //Oficinas: [],
+    formValues: [],
+    formValuesByStep: {},
   },
   reducers: {
     addItem: (state, action) => {
@@ -31,9 +32,16 @@ const adminSlice = createSlice({
       let type = action.payload.type;
       state[type] = action.payload.data;
     },
+    updateFormValues: (state, action) => {
+      state.formValues=[]
+      state.formValues = action.payload;
+    },
+    storeFormValuesForStep: (state, action) => {
+      state.formValuesByStep[action.payload.step] = action.payload.values;
+    },
   },
 });
 
-export const { addItem, removeItem, updateItem, storeItems } =
+export const { addItem, removeItem, updateItem, storeItems, updateFormValues, storeFormValuesForStep } =
   adminSlice.actions;
 export default adminSlice.reducer;

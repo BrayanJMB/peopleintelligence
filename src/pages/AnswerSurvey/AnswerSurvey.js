@@ -497,6 +497,7 @@ const AnswerSurvey = () => {
                             handleNextAnswer={handleNext}
                             nameStep={steps}
                             onAnswered={(answers) => handleAnswered(answers, activeStep)}
+                            activeStepper={activeStep}
                           />
                         )}
                         {/* success message */}
@@ -506,7 +507,7 @@ const AnswerSurvey = () => {
                       </div>
 
                       <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                        {activeStep !== 0 && activeStep +1 !== steps.length && (
+                        {/*activeStep !== 0 && activeStep +1 !== steps.length && (
                           <Button
                             color="inherit"
                             disabled={activeStep === 0 || activeStep + 1 === steps.length}
@@ -515,7 +516,7 @@ const AnswerSurvey = () => {
                           >
                             Atrás
                           </Button>
-                        )}
+                        )*/}
                           <Box sx={{ flex: '1 1 auto' }} />
                           {isStepOptional(activeStep) && (
                             <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
@@ -526,7 +527,7 @@ const AnswerSurvey = () => {
                           onClick={handleNext}
                           disabled={!stepsCompleted[activeStep] || surveyStatus === 'loading'}
                         >
-                          {activeStep === steps.length - 2 ? 'Finalizar' : 'Siguiente'}
+                          {activeStep === steps.length - 2 ? '' : ''}
                         </Button>
                       </Box>
                     </React.Fragment>

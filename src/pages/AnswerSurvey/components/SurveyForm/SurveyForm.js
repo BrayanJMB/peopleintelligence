@@ -58,52 +58,18 @@ const SurveyForm = ({
   descriptionSurvey,
 }) => {
   const [formValues, setFormValues] = useState(() => {
-    const savedValues = localStorage.getItem('formValues');
-    let parsedValues = null;
-
-    if (savedValues) {
-      try {
-        parsedValues = JSON.parse(savedValues);
-      } catch (e) {
-        console.error('Error parsing saved values:', e);
-      }
-    }
-    console.log(questions);
-    const defaultValues = questions.map((question) => ({
+    return (questions.map((question) => ({
       id: question.questionId,
       questionType: question.typeQuestion,
       value: '',
       values: {},
-    }));
-
-    if (
-      parsedValues &&
-      Array.isArray(parsedValues) &&
-      parsedValues.length > 0
-    ) {
-      // Si hay valores guardados, los fusionamos con los valores por defecto
-      return defaultValues.map((defaultValue) => {
-        // Buscamos el valor guardado para esta pregunta
-        const savedValue = parsedValues.find(
-          (value) => value.id === defaultValue.id
-        );
-
-        // Si encontramos un valor guardado, lo fusionamos con el valor por defecto
-        // Si no, simplemente devolvemos el valor por defecto
-        return savedValue ? { ...defaultValue, ...savedValue } : defaultValue;
-      });
-    } else {
-      // Si no hay valores guardados, simplemente devolvemos los valores por defecto
-      return defaultValues;
-    }
+    })));
   });
   const [apiOptions, setApiOptions] = useState({});
   const [activeStep, setActiveStep] = useState(0);
   const [unansweredQuestions, setUnansweredQuestions] = useState([]);
-  const [inputRefs, setInputRefs] = useState([]);
   const [error, setError] = useState(formValues.map(() => false));
   const [values, setValues] = useState({});
-  const [valores, setValores] = React.useState({});
   const isMobile = useIsMobile();
   const [verMas, setVerMas] = useState(false);
   const textoSinBr = descriptionSurvey ? descriptionSurvey.replace(/<br\/>/g, '\n') : '';
@@ -111,6 +77,8 @@ const SurveyForm = ({
   !isMobile || verMas || !descriptionSurvey
     ? textoSinBr
     : `${textoSinBr.substring(0, 30)}...`;
+
+    const [questionRefs, setQuestionRefs] = useState({});
 
   const handleNext = () => {
     if (verifyCurrentStepAnswersSelected()) {
@@ -322,6 +290,10 @@ const SurveyForm = ({
       .filter((index) => index !== -1);
     setUnansweredQuestions(unansweredIndexes);
 
+    if (unansweredIndexes.length > 0) {
+      questionRefs[questions[unansweredIndexes[0]].questionId].current.scrollIntoView({behavior: 'smooth',  block: 'center'});
+    }
+
     return unansweredIndexes.length === 0;
   };
 
@@ -441,15 +413,15 @@ const SurveyForm = ({
   };
 
   useEffect(() => {
-    if (unansweredQuestions.length > 0) {
-      const firstUnansweredQuestionIndex = unansweredQuestions[0];
-      if (inputRefs[firstUnansweredQuestionIndex]) {
-        inputRefs[firstUnansweredQuestionIndex].scrollIntoView({
-          behavior: 'smooth',
-        });
-      }
-    }
-  }, [unansweredQuestions, inputRefs]);
+      // Establecer refs para cada pregunta en la primera renderización
+      const newRefs = questions.reduce((acc, { questionId }) => {
+          acc[questionId] = React.createRef();
+          return acc;
+      }, {});
+
+      setQuestionRefs(newRefs);
+  }, []);
+
   // component did mount
   useEffect(() => {
     const fetchApiOptions = async () => {
@@ -495,9 +467,6 @@ const SurveyForm = ({
     onAnswered(formValues);
   }, [formValues]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Puedes definir estas variables dentro de tu componente, justo antes de tu return
-  let firstUncheckedIndex = -1;
-  let firstUnansweredQuestionIndex = unansweredQuestions[0];
 
   // Estos bucles buscan el primer checkbox sin marcar
   for (let i = 0; i < formValues.length; i++) {
@@ -531,40 +500,6 @@ const SurveyForm = ({
         <Button onClick={() => setVerMas(!verMas)}>
           {verMas ? 'Ver menos' : 'Ver más'}
         </Button>
-      )}
-
-      {totalOfSteps() !== 1 && (
-        <MobileStepper
-          variant="text"
-          steps={totalOfSteps()}
-          position="static"
-          activeStep={activeStep}
-          sx={{
-            maxWidth: 400,
-            flexGrow: 1,
-            margin: '0 auto',
-          }}
-          nextButton={
-            <Button
-              size="small"
-              onClick={handleNext}
-              disabled={activeStep + 1 >= totalOfSteps()}
-            >
-              Siguiente
-              {<KeyboardArrowRight />}
-            </Button>
-          }
-          backButton={
-            <Button
-              size="small"
-              onClick={handleBack}
-              disabled={activeStep === 0}
-            >
-              {<KeyboardArrowLeft />}
-              Atrás
-            </Button>
-          }
-        />
       )}
       {questions.map(
         (
@@ -622,8 +557,9 @@ const SurveyForm = ({
                       : 'inherit',
                   }}
                 >
-                  {options.map(({ numberOption, optionName }) => (
+                  {options.map(({ numberOption, optionName }, indexOption) => (
                     <FormControlLabel
+                      ref={ indexOption === 0 ? questionRefs[questionId] : null}
                       key={numberOption}
                       value={optionName}
                       control={<Radio />}
@@ -721,8 +657,9 @@ const SurveyForm = ({
                   {description}
                 </Typography>
                 <FormGroup>
-                  {options.map(({ numberOption, optionName }) => (
+                  {options.map(({ numberOption, optionName }, optionIndex) => (
                     <FormControlLabel
+                      ref={optionIndex === 0 ? questionRefs[questionId] : null}
                       key={numberOption}
                       control={
                         <Checkbox
@@ -778,10 +715,11 @@ const SurveyForm = ({
                     overflow: 'auto',
                   }}
                 >
-                  {[...Array(score).keys()].map((value) => (
+                  {[...Array(score).keys()].map((value, scoreIndex) => (
                     <Box key={value}>
                       <div>
                         <IconButton
+                          ref={scoreIndex === 0 ? questionRefs[questionId] : null}
                           color="primary"
                           component="label"
                           onClick={() => handleRangeChange(value + 1, index)}
@@ -833,6 +771,7 @@ const SurveyForm = ({
                   {description}
                 </Typography>
                 <TextField
+                  inputRef={questionRefs[questionId]} 
                   id={`${questionId}-${typeQuestion}`}
                   name={`${questionId}-${typeQuestion}`}
                   multiline
@@ -867,9 +806,11 @@ const SurveyForm = ({
               {description}
             </Typography>
               <Box 
-                width="100%" 
+                width="100%"
+                ref={questionRefs[questionId]} 
               >
                 <Slider
+                  ref={questionRefs[questionId]} 
                   value={values[index] || 0} 
                   min={0}
                   step={1}
@@ -896,6 +837,7 @@ const SurveyForm = ({
               <FormControl
                 fullWidth
                 error={unansweredQuestions.includes(index)}
+                ref={questionRefs[questionId]} 
               >
                 <InputLabel id={`${questionId}-${typeQuestion}`}>
                   {questionName}
@@ -935,7 +877,7 @@ const SurveyForm = ({
           </FormControl>
         )
       )}
-      {totalOfSteps() !== 1 && (
+
         <MobileStepper
           variant="text"
           steps={totalOfSteps()}
@@ -950,7 +892,6 @@ const SurveyForm = ({
             <Button
               size="small"
               onClick={handleNext}
-              disabled={activeStep + 1 >= totalOfSteps()}
             >
               {nameStep[activeStep] !== 'Encuesta' &&
               activeStep + 1 === totalOfSteps()
@@ -970,7 +911,7 @@ const SurveyForm = ({
             </Button>
           }
         />
-      )}
+
     </div>
   );
 };
