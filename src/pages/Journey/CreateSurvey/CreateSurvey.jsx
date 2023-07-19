@@ -93,6 +93,7 @@ export default function CreateSurvey() {
   const [templateDemographics, setTemplateDemographics] = useState([]);
   const [mapsLoaded, setMapsLoaded] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const isMap = searchParams.get('isMap') === 'true';
   const isTemplate =
     searchParams.get('isTemplate') === 'true' ||
     location.pathname.indexOf('journey/update-template') !== -1;
@@ -869,7 +870,9 @@ export default function CreateSurvey() {
    * @returns {string}
    */
   const getHeaderTitle = () => {
-    if (isTemplate) {
+    if (isTemplate && isMap) {
+      return 'Crear encuesta de mapa';
+    }else if (isTemplate) {
       return 'Crear plantilla';
     }
 
