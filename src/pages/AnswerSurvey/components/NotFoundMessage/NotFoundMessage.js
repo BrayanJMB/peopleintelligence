@@ -1,0 +1,43 @@
+import React from 'react';
+import Typography from '@mui/material/Typography';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import styles from './NotFoundMessage.module.css';
+import CancelIcon from '@mui/icons-material/Cancel';
+
+/**
+ * SuccessMessage component for AnswerSurvey page.
+ *
+ * @returns {JSX.Element}
+ * @constructor
+ */
+
+
+
+const NotFoundMessage = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  return(
+  <div className={styles.ErrorMessage}>
+    <CancelIcon style={{ fontSize: 200, color: 'red' }} />
+    <Typography
+      variant="h2"
+      gutterBottom
+    >
+      404
+    </Typography>
+
+    <Typography
+      variant={isMobile ? "h5" : "h2"}
+      gutterBottom
+    >
+      Lo sentimos esta encuesta no esta disponible :{"("}
+    </Typography>
+  </div>
+)};
+
+NotFoundMessage.propTypes = {};
+
+NotFoundMessage.defaultProps = {};
+
+export default NotFoundMessage;

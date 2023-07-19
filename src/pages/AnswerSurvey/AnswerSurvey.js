@@ -25,6 +25,7 @@ import {
 import client from '../../utils/axiosInstance';
 
 import SuccessMessage from './components/SuccessMessage/SuccessMessage';
+import NotFoundMessage from './components/NotFoundMessage/NotFoundMessage';
 import SurveyForm from './components/SurveyForm/SurveyForm';
 
 import styles from './AnswerSurvey.module.css';
@@ -55,6 +56,7 @@ const AnswerSurvey = () => {
   const surveyStatus = useSelector((state) => selectSurveysStatus(state));
   const currentSurvey = useSelector((state) => selectCurrentSurveyForAnswer(state));
   const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(true);
   const dispatch = useDispatch();
 
   /**
@@ -108,7 +110,8 @@ const AnswerSurvey = () => {
           newSteps.splice(0, 1);
     
           return newSteps;
-        });
+      });
+        setNotFound(false);
         setEmailSubmitted(true); 
       } else {
         console.error('Se produjo un error al hacer la solicitud', error);
@@ -329,7 +332,7 @@ const AnswerSurvey = () => {
         >
           <CardContent>
             {(surveyStatus === 'loading' || loading) && (<MyLoader />)}
-            {(surveyStatus === 'failed') && (<SuccessMessage /> )}
+            {(surveyStatus === 'failed' && notFound ) && (<NotFoundMessage/> )}
             {surveyStatus === 'succeeded' && currentSurvey !== null && (
               <Fragment>
                 {/* company name */}
