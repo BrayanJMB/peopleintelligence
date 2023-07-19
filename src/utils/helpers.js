@@ -118,7 +118,8 @@ export const validateForm = (fields, values, type) => {
           if (isRequired && (!value || (typeof value === 'string' && value.trim() === ''))) {
             validationErrors[`${name}Error`] = true;
             validationErrors[`${name}HelperText`] = 'Este campo es obligatorio';
-          } else if (error) {
+          }
+          else if (error) {
             validationErrors[`${name}Error`] = error;
             validationErrors[`${name}HelperText`] = helperText;
           }
@@ -180,7 +181,7 @@ export const validateField = (name, value) => {
     validationResult.helperText = validationResult.error
       ? (isNaN(value) ? 'El tipo documento debe ser un número' : 'Por favor ingrese un número documento válido')
       : '';
-  } else if (name === 'age') {
+  } else if (name.includes('age')) {
     validationResult.error = !validateAge(value);
     validationResult.helperText = validationResult.error
       ? (isNaN(value) ? 'La edad debe ser un número' : 'La edad debe ser un número entre 0 y 99')

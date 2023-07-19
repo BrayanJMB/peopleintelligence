@@ -106,10 +106,11 @@ const SurveyForm = ({
   const [valores, setValores] = React.useState({});
   const isMobile = useIsMobile();
   const [verMas, setVerMas] = useState(false);
+  const textoSinBr = descriptionSurvey.replace(/<br\/>/g, '\n');
   const textoAMostrar =
-    !isMobile || verMas || !descriptionSurvey
-      ? descriptionSurvey
-      : `${descriptionSurvey.substring(0, 30)}...`;
+  !isMobile || verMas || !descriptionSurvey
+    ? textoSinBr
+    : `${textoSinBr.substring(0, 30)}...`;
 
   const handleNext = () => {
     if (verifyCurrentStepAnswersSelected()) {
@@ -516,6 +517,7 @@ const SurveyForm = ({
       <Typography
         variant="h6"
         style={{
+          whiteSpace: 'pre-line',
           textAlign: 'justify',
           fontSize: '15px',
           display: 'block',
