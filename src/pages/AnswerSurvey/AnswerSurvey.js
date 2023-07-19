@@ -24,8 +24,8 @@ import {
 } from '../../features/surveys/surveysSlice';
 import client from '../../utils/axiosInstance';
 
-import SuccessMessage from './components/SuccessMessage/SuccessMessage';
 import NotFoundMessage from './components/NotFoundMessage/NotFoundMessage';
+import SuccessMessage from './components/SuccessMessage/SuccessMessage';
 import SurveyForm from './components/SurveyForm/SurveyForm';
 
 import styles from './AnswerSurvey.module.css';

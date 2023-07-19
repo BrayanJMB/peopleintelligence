@@ -1,9 +1,10 @@
 import React from 'react';
-import Typography from '@mui/material/Typography';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import styles from './NotFoundMessage.module.css';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { useTheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
+
+import styles from './NotFoundMessage.module.css';
 
 /**
  * SuccessMessage component for AnswerSurvey page.
@@ -28,13 +29,13 @@ const NotFoundMessage = () => {
     </Typography>
 
     <Typography
-      variant={isMobile ? "h5" : "h2"}
+      variant={isMobile ? 'h5' : 'h2'}
       gutterBottom
     >
-      Lo sentimos esta encuesta no esta disponible :{"("}
+      Lo sentimos esta encuesta no esta disponible :{'('}
     </Typography>
   </div>
-)};
+);};
 
 NotFoundMessage.propTypes = {};
 
