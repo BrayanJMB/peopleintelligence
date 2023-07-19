@@ -1,5 +1,5 @@
 import React from 'react';
-import CancelIcon from '@mui/icons-material/Cancel';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -20,7 +20,7 @@ const NotFoundMessage = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   return(
   <div className={styles.ErrorMessage}>
-    <CancelIcon style={{ fontSize: 200, color: 'red' }} />
+    <HighlightOffIcon style={{ fontSize: 200, color: 'red' }} />
     <Typography
       variant="h2"
       gutterBottom
