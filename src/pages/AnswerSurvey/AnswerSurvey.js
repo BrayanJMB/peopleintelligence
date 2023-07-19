@@ -329,7 +329,8 @@ const AnswerSurvey = () => {
         >
           <CardContent>
             {(surveyStatus === 'loading' || loading) && (<MyLoader />)}
-            {surveyStatus === 'succeeded' && currentSurvey !== null ? (
+            {(surveyStatus === 'failed') && (<SuccessMessage /> )}
+            {surveyStatus === 'succeeded' && currentSurvey !== null && (
               <Fragment>
                 {/* company name */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems:'center' }}>
@@ -529,7 +530,7 @@ const AnswerSurvey = () => {
                   </Fragment>
                 )}
               </Fragment>
-            ): (<SuccessMessage />)}
+            )}
           </CardContent>
         </Card>
       </div>
