@@ -106,7 +106,7 @@ const SurveyForm = ({
   const [valores, setValores] = React.useState({});
   const isMobile = useIsMobile();
   const [verMas, setVerMas] = useState(false);
-  const textoSinBr = descriptionSurvey.replace(/<br\/>/g, '\n');
+  const textoSinBr = descriptionSurvey ? descriptionSurvey.replace(/<br\/>/g, '\n') : '';
   const textoAMostrar =
   !isMobile || verMas || !descriptionSurvey
     ? textoSinBr
