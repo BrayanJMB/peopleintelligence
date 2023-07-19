@@ -467,7 +467,8 @@ const SurveyForm = ({
     onAnswered(formValues);
   }, [formValues]); // eslint-disable-line react-hooks/exhaustive-deps
 
-
+  let firstUncheckedIndex = -1;
+  let firstUnansweredQuestionIndex = unansweredQuestions[0];
   // Estos bucles buscan el primer checkbox sin marcar
   for (let i = 0; i < formValues.length; i++) {
     const questionValues = formValues[i].values;
