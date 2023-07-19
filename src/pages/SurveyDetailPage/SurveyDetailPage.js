@@ -32,6 +32,7 @@ import { useSnackbar } from 'notistack';
 
 import DemographicDataForm from '../../components/DemographicDataForm/DemographicDataForm';
 import MyCard from '../../components/MyCard/MyCard';
+import MyLoader from '../../components/MyLoader/MyLoader';
 import MyPageHeader from '../../components/MyPageHeader/MyPageHeader';
 import { currentCompanySelected } from '../../features/companies/companiesSlice';
 import {
@@ -42,6 +43,7 @@ import {
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import client, { API } from '../../utils/axiosInstance';
+import NotFoundMessage from '../AnswerSurvey/components/NotFoundMessage/NotFoundMessage';
 
 import SendInvitationDialog from './components/SendInvitationDialog/SendInvitationDialog';
 
@@ -304,6 +306,8 @@ const SurveyDetailPage = () => {
       <div style={{ backgroundColor: 'white' }}>
         <div className={styles.SurveyDetailPage}>
           <div className={styles.SurveyDetailPage__content}>
+            {surveysStatus === 'loading' && (<MyLoader />)}
+            {surveysStatus === 'failed' && (<NotFoundMessage />)}
             {currentSurvey !== null && surveysStatus === 'succeeded' && (
               <Box sx={{ flexGrow: 1 }}>
                 {/* header */}

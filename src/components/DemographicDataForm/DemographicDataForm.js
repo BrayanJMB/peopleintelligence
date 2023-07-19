@@ -178,14 +178,14 @@ const DemographicDataForm = ({
   const handleCheckboxChange = (event) => {
     const { checked, value } = event.target;
     let updatedDemographicChecked = [...demographicChecked];
-
+  
     if (checked) {
       if (value === 'País' || value === 'Ciudad' || value === 'Departamento') {
         // Si 'País', 'Ciudad' o 'Departamento' se han seleccionado, entonces también selecciona las demás.
         const additionalValues = ['País', 'Ciudad', 'Departamento'].filter(
           (item) => !demographicChecked.includes(item)
         );
-
+  
         // Ahora, combinamos el array original con el nuevo array para crear la lista actualizada.
         updatedDemographicChecked = [
           ...updatedDemographicChecked,
@@ -196,16 +196,25 @@ const DemographicDataForm = ({
         updatedDemographicChecked = [...updatedDemographicChecked, value];
       }
     } else {
-      // Quita el valor en cuestión.
-      updatedDemographicChecked = updatedDemographicChecked.filter(
-        (item) => item !== value
-      );
+      if (value === 'País' || value === 'Ciudad' || value === 'Departamento') {
+        // Si 'País', 'Ciudad' o 'Departamento' se han deseleccionado, entonces también deselecciona las demás.
+        const removeValues = ['País', 'Ciudad', 'Departamento'];
+        updatedDemographicChecked = updatedDemographicChecked.filter(
+          (item) => !removeValues.includes(item)
+        );
+      } else {
+        // Quita el valor en cuestión.
+        updatedDemographicChecked = updatedDemographicChecked.filter(
+          (item) => item !== value
+        );
+      }
     }
-
+  
     setDemographicChecked(updatedDemographicChecked);
-    // emit change event (callback prop) for new survey or template
     onChange(updatedDemographicChecked);
   };
+  
+
 
   /**
    * Handle dialog open.
