@@ -331,7 +331,7 @@ const AnswerSurvey = () => {
           }}
         >
           <CardContent>
-            {(surveyStatus === 'loading' || loading) && (<MyLoader />)}
+            {(surveyStatus === 'loading' ) && (<MyLoader />)}
             {(surveyStatus === 'failed' && notFound ) && (<NotFoundMessage/> )}
             {surveyStatus === 'succeeded' && currentSurvey !== null && (
               <Fragment>
