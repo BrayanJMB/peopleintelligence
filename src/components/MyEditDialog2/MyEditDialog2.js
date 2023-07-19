@@ -60,7 +60,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
     return initialValues;
   };
   const [values, setValues] = useState(createInitialValues());
-  console.log(values)
+  console.log(values);
   /**
    * Handle input change.
    *
@@ -290,7 +290,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                     slotProps={{
                                       textField: {
                                         helperText: values[`${field.name}HelperText`] || '',
-                                        error:values[`${field.name}Error`]
+                                        error:values[`${field.name}Error`],
                                       },
                                     }}
                                       sx={{

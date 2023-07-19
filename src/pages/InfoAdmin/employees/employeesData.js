@@ -194,7 +194,7 @@ export const useEmployee = (
               name: 'ageEmployee',
               type: 'text',
               isRequired: false,
-              isDisabled:true
+              isDisabled:true,
             },
             {
               label: 'Número Telefónico',
@@ -436,7 +436,7 @@ export const useEmployee = (
     const { data: segmentsData } = await getSegmentsAPI(
       person.IdSegmentos || 0
     );
-    console.log(segmentsData)
+    console.log(segmentsData);
     const documentType = DocumentsTypes.find(
       (documentType) => documentType.documentTypeId === person.IdTipoDocumento
     );
