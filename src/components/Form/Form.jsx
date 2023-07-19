@@ -46,6 +46,9 @@ export default function Form(props) {
                   helperText={props.helperText.name}
                   fullWidth
                   size="small"
+                  InputProps={{
+                    inputComponent: TextareaAutosize,
+                  }}
                 />
               </div>
             </div>
@@ -234,7 +237,9 @@ export default function Form(props) {
                   </div>
                 );
               })}
-              {props.information.customOptions.length < 10 ? (
+              
+            </div>
+            {props.information.customOptions.length < 10 ? (
                 <Button
                   variant="text"
                   startIcon={<AddCircleOutlineIcon />}
@@ -244,7 +249,16 @@ export default function Form(props) {
                   Añadir opción
                 </Button>
               ) : null}
-            </div>
+            {props.information.customOptions.length >= 3 ? (
+                <Button
+                  variant="text"
+                  startIcon={<AddCircleOutlineIcon />}
+                  onClick={() => props.handleRemoveOption(props.information.customOptions.length - 1)}
+                  style={{ backgroundColor: '#F7F7F7', width: '255px' }}
+                >
+                  Eliminar opción
+                </Button>
+              ) : null}
           </div>
         );
       case 8:
@@ -445,7 +459,6 @@ export default function Form(props) {
           </div>
         );
       case 10:
-
         return (
           <div className={styles.top}>
             <div className={styles.question}>

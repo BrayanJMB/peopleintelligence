@@ -38,6 +38,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
   const [showDeleteIcon, setShowDeleteIcon] = useState(true);
   const [currentTab, setCurrentTab] = useState(0);
   const [maxWidth, setMaxWidth] = useState('80%');
+  const maxDate = dayjs().subtract(18, 'years');
 
   const createInitialValues = () => {
     const initialValues = {};
@@ -59,7 +60,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
     return initialValues;
   };
   const [values, setValues] = useState(createInitialValues());
-
+  console.log(values);
   /**
    * Handle input change.
    *
@@ -69,12 +70,27 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
     const { name, value } = event.target;
     const validationResult = validateField(name, value);
 
-    setValues((values) => ({
+    let updatedValues = {
       ...values,
       [name]: value,
       [`${name}Error`]: validationResult.error,
       [`${name}HelperText`]: validationResult.helperText,
-    }));
+    };
+
+    if (name === 'dateBirth') {
+        const today = new Date();
+        const birthDate = new Date(value);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        updatedValues = {
+          ...updatedValues,
+          ageEmployee: age,
+        };
+    }
+    setValues(updatedValues);
   };
 
   /**
@@ -230,6 +246,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                   key={`${field.name}-${index}`}
                                 >
                                   <TextField
+                                    disabled={field.isDisabled}
                                     fullWidth
                                     id={field.name}
                                     label={field.label}
@@ -269,6 +286,13 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                     }
                                   >
                                     <DatePicker
+                                    maxDate={field.name === 'dateBirth' ? maxDate :undefined}
+                                    slotProps={{
+                                      textField: {
+                                        helperText: values[`${field.name}HelperText`] || '',
+                                        error:values[`${field.name}Error`],
+                                      },
+                                    }}
                                       sx={{
                                         marginBottom: 2,
                                         width: '100%',

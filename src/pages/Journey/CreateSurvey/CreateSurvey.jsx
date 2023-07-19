@@ -324,6 +324,7 @@ export default function CreateSurvey() {
    * @param {object} event
    */
   const handleInformation = (event) => {
+    //handleAgregar();
     setInformation({
       ...information,
       [event.target.name]: event.target.value,
@@ -455,6 +456,12 @@ export default function CreateSurvey() {
   const handleaddoption = () => {
     let holder = [...information.customOptions];
     holder.push('');
+    setInformation({ ...information, customOptions: holder });
+  };
+
+  const handleRemoveOption = (index) => {
+    let holder = [...information.customOptions];
+    holder.splice(index, 1);
     setInformation({ ...information, customOptions: holder });
   };
   const handleeditaddoption = () => {
@@ -632,6 +639,8 @@ export default function CreateSurvey() {
 
   const handleAgregar = () => {
     setCategoryError('');
+    setErrorMessage({});
+    setHelperText({});
 
     if (edit) {
       if (question.name.length < 5) {
@@ -645,6 +654,28 @@ export default function CreateSurvey() {
         });
 
         return;
+      }else if((information.name.length > 150)){
+        setErrorMessage({
+          ...errorMessage,
+          name: true,
+        });
+        setHelperText({
+          ...helperText,
+          name: 'El número máximo de carácteres de 150.',
+        });
+        return;
+      }
+  
+      if((information.description.length > 400)){
+        setErrorMessage({
+          ...errorMessage,
+          name: true,
+        });
+        setHelperText({
+          ...helperText,
+          name: 'El número máximo de carácteres de 400.',
+        });
+  
       }
 
       if (
@@ -673,10 +704,32 @@ export default function CreateSurvey() {
       });
       setHelperText({
         ...helperText,
-        name: 'Se requiere un mínimo de 5 caracteres.',
+        name: 'Se requiere un mínimo de 5 carácteres.',
       });
 
       return;
+    }else if((information.name.length > 150)){
+      setErrorMessage({
+        ...errorMessage,
+        name: true,
+      });
+      setHelperText({
+        ...helperText,
+        name: 'El número máximo de carácteres de 150.',
+      });
+      return;
+    }
+
+    if((information.description.length > 400)){
+      setErrorMessage({
+        ...errorMessage,
+        name: true,
+      });
+      setHelperText({
+        ...helperText,
+        name: 'El número máximo de carácteres de 400.',
+      });
+
     }
     if (
       !information.customOptions.every((elemento) => elemento !== '') &&
@@ -1043,7 +1096,7 @@ export default function CreateSurvey() {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <Dialog maxWidth="md" open={open} onClose={handleCloseModal}>
+      <Dialog maxWidth="lg" open={open} onClose={handleCloseModal}>
         <DialogTitle>Agregar pregunta</DialogTitle>
         <DialogContent>
           <Box className={styles.modal}>
@@ -1083,6 +1136,7 @@ export default function CreateSurvey() {
                   handleinformationoptions={handleinformationoptions}
                   handleChangeOptions={handleChangeOptions}
                   handleaddoption={handleaddoption}
+                  handleRemoveOption={handleRemoveOption}
                   handleaddstars={handleaddstars}
                   handledeletestars={handledeletestars}
                   starmsg={starmsg}
@@ -1105,7 +1159,7 @@ export default function CreateSurvey() {
             </Button>
           </DialogActions>
       </Dialog>
-      <Dialog maxWidth="md" onClose={handleCloseEditModal} open={edit}>
+      <Dialog maxWidth="lg" onClose={handleCloseEditModal} open={edit}>
         <DialogTitle>Editar pregunta</DialogTitle>
         <DialogContent>
           <Box className={styles.modal}>
