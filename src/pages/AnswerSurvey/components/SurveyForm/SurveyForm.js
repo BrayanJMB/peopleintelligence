@@ -775,6 +775,11 @@ const SurveyForm = ({
                   inputRef={questionRefs[questionId]} 
                   id={`${questionId}-${typeQuestion}`}
                   name={`${questionId}-${typeQuestion}`}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                    }
+                  }}
                   multiline
                   rows={4}
                   variant="outlined"
