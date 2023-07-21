@@ -57,6 +57,7 @@ const AnswerSurvey = () => {
   const currentSurvey = useSelector((state) => selectCurrentSurveyForAnswer(state));
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(true);
+  const [isAlreadyResponse, setIsAlreadyResponse] = useState(false);
   const dispatch = useDispatch();
 
   /**
@@ -113,6 +114,7 @@ const AnswerSurvey = () => {
       });
         setNotFound(false);
         setEmailSubmitted(true); 
+        setIsAlreadyResponse(true);
       } else {
         console.error('Se produjo un error al hacer la solicitud', error);
       }
@@ -294,7 +296,14 @@ const AnswerSurvey = () => {
   // watch surveyId and companyId changes
   useEffect(() => {
     if (answerId){
-      dispatch(fetchSurveyForAnswerPersonal({ surveyId, companyId, answerId }));
+      dispatch(fetchSurveyForAnswerPersonal({ surveyId, companyId, answerId }))
+      .then(result => {
+          if (result.error.message.includes("409")){
+            console.log("si entro papae")
+            setIsAlreadyResponse(true); 
+            setNotFound(false);
+        }
+      });
     }else{
       dispatch(fetchSurveyForAnswer({ surveyId, companyId}));
     }
@@ -318,7 +327,6 @@ const AnswerSurvey = () => {
   useEffect(() => {
     checkIfIsPersonal();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   return (
     <div className={styles.AnswerSurvey}>
       <div className={styles.AnswerSurvey__Background}>
@@ -332,6 +340,7 @@ const AnswerSurvey = () => {
         >
           <CardContent>
             {(surveyStatus === 'loading' ) && (<MyLoader />)}
+            {(surveyStatus === 'failed' ) && isAlreadyResponse && (<SuccessMessage isAlreadyResponse={isAlreadyResponse}/>)}
             {(surveyStatus === 'failed' && notFound ) && (<NotFoundMessage/> )}
             {surveyStatus === 'succeeded' && currentSurvey !== null && (
               <Fragment>
@@ -502,7 +511,7 @@ const AnswerSurvey = () => {
                         )}
                         {/* success message */}
                         {isFinalStep() && (
-                          <SuccessMessage />
+                          <SuccessMessage isAlreadyResponse={isAlreadyResponse}/>
                         )}
                       </div>
 
