@@ -1,24 +1,25 @@
-import { useState } from "react";
+import { useState } from 'react';
+import { useSnackbar } from 'notistack';
+
 import {
-  storeContractTypeAPI,
   deleteContractTypeAPI,
   fetchContractTypeByCompanyAPI,
-} from "../../../services/getContractType.service";
-import { useSnackbar } from "notistack";
-import { handleDelete } from "../../../utils/helpers";
+  storeContractTypeAPI,
+} from '../../../services/getContractType.service';
+import { handleDelete } from '../../../utils/helpers';
 
-export const useContractType = (currentCompany, setCurrentCreate, setOpenCreateDialog) => {
+export const useContractType = ({currentCompany, setCurrentCreate, setOpenCreateDialog}) => {
   const { enqueueSnackbar } = useSnackbar();
   const [contractTypes, setContractType] = useState([]);
   const contractTypeColumns = [
     {
-      id: "name",
-      label: "Tipo Contrato",
+      id: 'name',
+      label: 'Tipo Contrato',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
@@ -26,12 +27,12 @@ export const useContractType = (currentCompany, setCurrentCreate, setOpenCreateD
   const mapContractType = (contractType) =>
     contractType.map((contractType) => [
       {
-        column: "name",
+        column: 'name',
         value: contractType.tipoContrato,
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteContractType,
           //handleEdit: handleEditContractType,
@@ -51,13 +52,13 @@ export const useContractType = (currentCompany, setCurrentCreate, setOpenCreateD
 
   const handleCreateContractType = () => {
     setCurrentCreate({
-      type: "contractType",
-      title: "Crear tipo contrato",
+      type: 'contractType',
+      title: 'Crear tipo contrato',
       fields: [
         {
-          label: "Tipo Contrato",
-          name: "tipoContrato",
-          type: "text",
+          label: 'Tipo Contrato',
+          name: 'tipoContrato',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -73,7 +74,7 @@ export const useContractType = (currentCompany, setCurrentCreate, setOpenCreateD
       setContractType,
       deleteContractTypeAPI,
       enqueueSnackbar,
-      "Tipo Contrato"
+      'Tipo Contrato'
     );
   };
   return {

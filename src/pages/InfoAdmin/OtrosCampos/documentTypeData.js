@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { fetchDocumentTypeAPI } from "../../../services/getDocumentType.service";
 
-export const useDocumentType = () => {
+import { fetchDocumentTypeAPI } from '../../../services/getDocumentType.service';
+
+export const useDocumentType = ({setCurrentCreate, setOpenCreateDialog}) => {
   const [DocumentsTypes, setDocumentos] = useState([]);
   const documentTypeColumns = [
     {
-      id: "name",
-      label: "Tipo Documento",
+      id: 'name',
+      label: 'Tipo Documento',
       numeric: false,
     },
     /*
@@ -19,13 +20,13 @@ export const useDocumentType = () => {
 
   const handleCreateDocumentType = () => {
     setCurrentCreate({
-      type: "documentType",
-      title: "Crear tipo documento",
+      type: 'documentType',
+      title: 'Crear tipo documento',
       fields: [
         {
-          label: "Tipo documento",
-          name: "tipoDocumento",
-          type: "text",
+          label: 'Tipo documento',
+          name: 'tipoDocumento',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -36,12 +37,12 @@ export const useDocumentType = () => {
   const mapDocumentType = (documentType) =>
     documentType.map((documentType) => [
       {
-        column: "name",
+        column: 'name',
         value: documentType.tipoDocumento,
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           //handleDelete: handleDeleteDocumentType,
           //handleEdit: handleEditDocumentType,

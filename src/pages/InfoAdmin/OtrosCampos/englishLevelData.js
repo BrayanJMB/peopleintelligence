@@ -1,10 +1,11 @@
-import { useState } from "react";
+/*import { useState } from 'react';
+import { useSnackbar } from 'notistack';
+
 import {
   deleteEnglishLevelAPI,
   fetchEnglishLevelByCompanyAPI,
-} from "../../../services/getEnglishLevel.service";
-import { useSnackbar } from "notistack";
-import { handleDelete } from "../../../utils/helpers";
+} from '../../../services/getEnglishLevel.service';
+import { handleDelete } from '../../../utils/helpers';
 
 export const useEnglishLevel = (
   currentCompany,
@@ -15,25 +16,25 @@ export const useEnglishLevel = (
   const [englishLevels, setEnglishLevel] = useState([]);
   const englishLevelColumns = [
     {
-      id: "name",
-      label: "Nivel de inglés",
+      id: 'name',
+      label: 'Nivel de inglés',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
   const handleCreateEnglishLevel = () => {
     setCurrentCreate({
-      type: "englishLevel",
-      title: "Crear nivel de ingles",
+      type: 'englishLevel',
+      title: 'Crear nivel de ingles',
       fields: [
         {
-          label: "Nivel de inglés",
-          name: "nivelIngles",
-          type: "text",
+          label: 'Nivel de inglés',
+          name: 'nivelIngles',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -43,12 +44,12 @@ export const useEnglishLevel = (
   const mapEnglishLevel = (EnglishLevel) =>
     EnglishLevel.map((EnglishLevel) => [
       {
-        column: "name",
+        column: 'name',
         value: EnglishLevel.nivelIngles, //swagger
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleDelete: handleDeleteEnglishLevel,
           //handleEdit: handleEditEnglishLevel,
@@ -65,7 +66,7 @@ export const useEnglishLevel = (
       setNivelIngles,
       deleteEnglishLevelAPI,
       enqueueSnackbar,
-      "Nivel de inglés"
+      'Nivel de inglés'
     );
   };
 
@@ -85,4 +86,4 @@ export const useEnglishLevel = (
     fetchEnglishLevel,
     handleCreateEnglishLevel,
   };
-};
+};*/

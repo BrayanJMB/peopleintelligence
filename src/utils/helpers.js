@@ -1,5 +1,5 @@
-const ADMIN_ROLE = "Administrador";
-const JOURNEY_ROLE = "Journey";
+const ADMIN_ROLE = 'Administrador';
+const JOURNEY_ROLE = 'Journey';
 
 /**
  * Returns true if the user is an admin.
@@ -73,11 +73,11 @@ export const createForm = async (
           });
         }
         enqueueSnackbar(config.successMsg, {
-          variant: "success",
+          variant: 'success',
         });
       } catch (e) {
         enqueueSnackbar(config.errorMsg, {
-          variant: "error",
+          variant: 'error',
         });
       }
     }
@@ -102,13 +102,13 @@ export const handleDelete = async (
   try {
     await deleteAPI(id, currentCompany.id);
     enqueueSnackbar(`${message} eliminado con éxito`, {
-      variant: "success",
+      variant: 'success',
       autoHideDuration: 3000,
     });
     setState((data) => data.filter((data) => data.id !== id));
   } catch (e) {
     enqueueSnackbar(`Hubo un error al eliminar ${message}`, {
-      variant: "error",
+      variant: 'error',
       autoHideDuration: 3000,
     });
   }
@@ -120,19 +120,19 @@ export const handleDelete = async (
 
 export const validateForm = (fields, values, type) => {
   const validationErrors = {};
-  if (type === "employee") {
+  if (type === 'employee') {
     fields.forEach((sectionObj) =>
       Object.keys(sectionObj).forEach((section) =>
         sectionObj[section].forEach((field) => {
           const { name, isRequired } = field;
-          const value = values[name] || "";
+          const value = values[name] || '';
           const { error, helperText } = validateField(name, value);
           if (
             isRequired &&
-            (!value || (typeof value === "string" && value.trim() === ""))
+            (!value || (typeof value === 'string' && value.trim() === ''))
           ) {
             validationErrors[`${name}Error`] = true;
-            validationErrors[`${name}HelperText`] = "Este campo es obligatorio";
+            validationErrors[`${name}HelperText`] = 'Este campo es obligatorio';
           } else if (error) {
             validationErrors[`${name}Error`] = error;
             validationErrors[`${name}HelperText`] = helperText;
@@ -143,14 +143,14 @@ export const validateForm = (fields, values, type) => {
   } else {
     fields.forEach((field) => {
       const { name, isRequired } = field;
-      const value = values[name] || "";
+      const value = values[name] || '';
       const { error, helperText } = validateField(name, value);
       if (
         isRequired &&
-        (!value || (typeof value === "string" && value.trim() === ""))
+        (!value || (typeof value === 'string' && value.trim() === ''))
       ) {
         validationErrors[`${name}Error`] = true;
-        validationErrors[`${name}HelperText`] = "Este campo es obligatorio";
+        validationErrors[`${name}HelperText`] = 'Este campo es obligatorio';
       } else if (error) {
         validationErrors[`${name}Error`] = error;
         validationErrors[`${name}HelperText`] = helperText;
@@ -182,37 +182,37 @@ const validatePhoneNumber = (phoneNumber) => {
 };
 
 export const validateField = (name, value) => {
-  const validationResult = { error: false, helperText: "" };
-  if (value === "") {
+  const validationResult = { error: false, helperText: '' };
+  if (value === '') {
     return validationResult;
   }
 
-  if (name === "email") {
+  if (name === 'email') {
     validationResult.error = !validateEmail(value);
     validationResult.helperText = validationResult.error
-      ? "Ingrese un correo válido"
-      : "";
-  } else if (name === "documentNumber") {
+      ? 'Ingrese un correo válido'
+      : '';
+  } else if (name === 'documentNumber') {
     validationResult.error = !validateDocumentNumber(value);
     validationResult.helperText = validationResult.error
       ? isNaN(value)
-        ? "El tipo documento debe ser un número"
-        : "Por favor ingrese un número documento válido"
-      : "";
-  } else if (name.includes("age")) {
+        ? 'El tipo documento debe ser un número'
+        : 'Por favor ingrese un número documento válido'
+      : '';
+  } else if (name.includes('age')) {
     validationResult.error = !validateAge(value);
     validationResult.helperText = validationResult.error
       ? isNaN(value)
-        ? "La edad debe ser un número"
-        : "La edad debe ser un número entre 0 y 99"
-      : "";
-  } else if (name === "phoneNumber") {
+        ? 'La edad debe ser un número'
+        : 'La edad debe ser un número entre 0 y 99'
+      : '';
+  } else if (name === 'phoneNumber') {
     validationResult.error = !validatePhoneNumber(value);
     validationResult.helperText = validationResult.error
       ? isNaN(value)
-        ? "El celular debe ser un número"
-        : "Por favor ingrese un número de celular válido"
-      : "";
+        ? 'El celular debe ser un número'
+        : 'Por favor ingrese un número de celular válido'
+      : '';
   }
   return validationResult;
 };
