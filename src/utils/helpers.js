@@ -1,5 +1,5 @@
-const ADMIN_ROLE = 'Administrador';
-const JOURNEY_ROLE = 'Journey';
+const ADMIN_ROLE = "Administrador";
+const JOURNEY_ROLE = "Journey";
 
 /**
  * Returns true if the user is an admin.
@@ -36,7 +36,7 @@ export const isJourney = (user) => {
  * @param chunkSize
  * @returns {*}
  */
-export const  chunkArray = (arr, chunkSize) => {
+export const chunkArray = (arr, chunkSize) => {
   return arr.reduce((result, item, index) => {
     const chunkIndex = Math.floor(index / chunkSize);
 
@@ -49,7 +49,13 @@ export const  chunkArray = (arr, chunkSize) => {
   }, []);
 };
 
-export const createForm = async (createConfigs, currentCreate, currentCompany, formValues, enqueueSnackbar) => {
+export const createForm = async (
+  createConfigs,
+  currentCreate,
+  currentCompany,
+  formValues,
+  enqueueSnackbar
+) => {
   for (const config of createConfigs) {
     if (currentCreate.type === config.type) {
       try {
@@ -57,30 +63,37 @@ export const createForm = async (createConfigs, currentCreate, currentCompany, f
         for (const value of Object.values(config.formValues)) {
           formData[value] = formValues[value];
         }
-        await config.storeAPI({
+        const {data} = await config.storeAPI({
           idCompany: currentCompany.id,
           ...formData,
         });
-        if (config.fetchAPI) {
-          config.fetchAPI();
+        if (config.setNewState) {
+          config.setNewState((prevState)=>{
+            return [...prevState, data];
+          });
         }
         enqueueSnackbar(config.successMsg, {
-          variant: 'success',
-        }); 
+          variant: "success",
+        });
       } catch (e) {
-        console.log(e);
         enqueueSnackbar(config.errorMsg, {
-          variant: 'error',
+          variant: "error",
         });
       }
     }
   }
 };
 
-export const handleDelete = async (id, currentCompany, stateData, fetchAPI, deleteAPI, enqueueSnackbar, message) =>{
-  const data = stateData.find(
-    (data) => data.id === id
-  );
+export const handleDelete = async (
+  id,
+  currentCompany,
+  stateData,
+  setState,
+  deleteAPI,
+  enqueueSnackbar,
+  message
+) => {
+  const data = stateData.find((data) => data.id === id);
 
   if (data === undefined) {
     return;
@@ -89,62 +102,64 @@ export const handleDelete = async (id, currentCompany, stateData, fetchAPI, dele
   try {
     await deleteAPI(id, currentCompany.id);
     enqueueSnackbar(`${message} eliminado con éxito`, {
-      variant: 'success',
-      autoHideDuration:3000,
+      variant: "success",
+      autoHideDuration: 3000,
     });
-    fetchAPI((data) => data.filter((data) => data.id !== id));
-    
+    setState((data) => data.filter((data) => data.id !== id));
   } catch (e) {
     enqueueSnackbar(`Hubo un error al eliminar ${message}`, {
-      variant: 'error',
-      autoHideDuration:3000,
+      variant: "error",
+      autoHideDuration: 3000,
     });
   }
 };
 
 /**
  * Validations
-*/
+ */
 
 export const validateForm = (fields, values, type) => {
   const validationErrors = {};
-  if (type === 'employee'){
+  if (type === "employee") {
     fields.forEach((sectionObj) =>
       Object.keys(sectionObj).forEach((section) =>
         sectionObj[section].forEach((field) => {
           const { name, isRequired } = field;
-          const value = values[name] || '';
+          const value = values[name] || "";
           const { error, helperText } = validateField(name, value);
-          if (isRequired && (!value || (typeof value === 'string' && value.trim() === ''))) {
+          if (
+            isRequired &&
+            (!value || (typeof value === "string" && value.trim() === ""))
+          ) {
             validationErrors[`${name}Error`] = true;
-            validationErrors[`${name}HelperText`] = 'Este campo es obligatorio';
-          }
-          else if (error) {
+            validationErrors[`${name}HelperText`] = "Este campo es obligatorio";
+          } else if (error) {
             validationErrors[`${name}Error`] = error;
             validationErrors[`${name}HelperText`] = helperText;
           }
         })
       )
     );
-  }else{
-    fields.forEach((field) =>{
-        const { name, isRequired } = field;
-        const value = values[name] || '';
-        const { error, helperText } = validateField(name, value);
-        if (isRequired && (!value || (typeof value === 'string' && value.trim() === ''))) {
-          validationErrors[`${name}Error`] = true;
-          validationErrors[`${name}HelperText`] = 'Este campo es obligatorio';
-        } else if (error) {
-          validationErrors[`${name}Error`] = error;
-          validationErrors[`${name}HelperText`] = helperText;
-        }
-      });
-    }
-
+  } else {
+    fields.forEach((field) => {
+      const { name, isRequired } = field;
+      const value = values[name] || "";
+      const { error, helperText } = validateField(name, value);
+      if (
+        isRequired &&
+        (!value || (typeof value === "string" && value.trim() === ""))
+      ) {
+        validationErrors[`${name}Error`] = true;
+        validationErrors[`${name}HelperText`] = "Este campo es obligatorio";
+      } else if (error) {
+        validationErrors[`${name}Error`] = error;
+        validationErrors[`${name}HelperText`] = helperText;
+      }
+    });
+  }
 
   return validationErrors;
 };
-
 
 const validateDocumentNumber = (documentNumber) => {
   const regex = /^[0-9]{6,17}?$/;
@@ -161,37 +176,43 @@ const validateAge = (age) => {
 };
 
 const validatePhoneNumber = (phoneNumber) => {
-  const regex = /^(\(\+?\d{2,3}\)[\|\s|\-|\.]?(([\d][\|\s|\-|\.]?){6})(([\d][\s|\-|\.]?){2})?|(\+?[\d][\s|\-|\.]?){8}(([\d][\s|\-|\.]?){2}(([\d][\s|\-|\.]?){2})?)?)$/;
+  const regex =
+    /^(\(\+?\d{2,3}\)[\|\s|\-|\.]?(([\d][\|\s|\-|\.]?){6})(([\d][\s|\-|\.]?){2})?|(\+?[\d][\s|\-|\.]?){8}(([\d][\s|\-|\.]?){2}(([\d][\s|\-|\.]?){2})?)?)$/;
   return regex.test(phoneNumber);
 };
 
 export const validateField = (name, value) => {
-  const validationResult = { error: false, helperText: '' };
-  if (value === '') {
+  const validationResult = { error: false, helperText: "" };
+  if (value === "") {
     return validationResult;
   }
-  
-  if (name === 'email') {
+
+  if (name === "email") {
     validationResult.error = !validateEmail(value);
     validationResult.helperText = validationResult.error
-      ? 'Ingrese un correo válido'
-      : '';
-  } else if (name === 'documentNumber') {
+      ? "Ingrese un correo válido"
+      : "";
+  } else if (name === "documentNumber") {
     validationResult.error = !validateDocumentNumber(value);
     validationResult.helperText = validationResult.error
-      ? (isNaN(value) ? 'El tipo documento debe ser un número' : 'Por favor ingrese un número documento válido')
-      : '';
-  } else if (name.includes('age')) {
+      ? isNaN(value)
+        ? "El tipo documento debe ser un número"
+        : "Por favor ingrese un número documento válido"
+      : "";
+  } else if (name.includes("age")) {
     validationResult.error = !validateAge(value);
     validationResult.helperText = validationResult.error
-      ? (isNaN(value) ? 'La edad debe ser un número' : 'La edad debe ser un número entre 0 y 99')
-      : '';
-  }
-  else if (name === 'phoneNumber') {
+      ? isNaN(value)
+        ? "La edad debe ser un número"
+        : "La edad debe ser un número entre 0 y 99"
+      : "";
+  } else if (name === "phoneNumber") {
     validationResult.error = !validatePhoneNumber(value);
     validationResult.helperText = validationResult.error
-      ? (isNaN(value) ? 'El celular debe ser un número' : 'Por favor ingrese un número de celular válido')
-      : '';
+      ? isNaN(value)
+        ? "El celular debe ser un número"
+        : "Por favor ingrese un número de celular válido"
+      : "";
   }
   return validationResult;
 };
