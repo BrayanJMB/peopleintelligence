@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Switch from '@mui/material/Switch';
 import { useSnackbar } from 'notistack';
+import IconSidebarNavBar from '../../Layout/IconSideBarNavBar/IconSideBarNavBar';
 
 import Building from '../../assets/Building.svg';
 import MyCreateDialog2 from '../../components/MyCreateDialog2/MyCreateDialog2';
@@ -175,7 +176,7 @@ export default function InfoAdmin() {
     mapContractType,
     fetchContractType,
     handleCreateContractType,
-  } = useContractType(currentCompany, setCurrentCreate, setOpenCreateDialog);
+  } = useContractType({currentCompany, setCurrentCreate, setOpenCreateDialog});
 
   const { offices, mapOffice, fetchOffice, handleSubmittedCreateOffice } =
     useOffice(currentCompany);
@@ -2022,11 +2023,9 @@ export default function InfoAdmin() {
   return (
     <>
       <>
+        <IconSidebarNavBar>
         {allowedRoutes.includes(type) ? (
           <Box sx={{ display: 'flex' }}>
-            <Navbar />
-            <IconSidebar />
-
             <div style={{ backgroundColor: 'white' }}>
               <CSVLink
                 data={employecsv}
@@ -2143,6 +2142,7 @@ export default function InfoAdmin() {
         ) : (
           <Error />
         )}
+        </IconSidebarNavBar>
       </>
     </>
   );

@@ -132,24 +132,19 @@ export default function IconSidebar() {
   return (
     <Box
       sx={{
-        width: { md: 220, lg: drawerWidth, sm: 180 },
-        flexShrink: { sm: 0 },
+        backgroundColor:'white',
+        height: '100vh' ,
+        overflow: 'auto',
+        '&::-webkit-scrollbar': {
+          display: 'none',
+        },
+        '-ms-overflow-style': 'none',
+        scrollbarWidth: 'none',
+        display: { xs: 'none', sm: 'block' },
       }}
       aria-label="mailbox folders"
-    >
-      <Drawer
-        variant="permanent"
-        sx={{
-          display: { sm: 'block' },
-          '& .MuiDrawer-paper': {
-            width: { md: 220, lg: drawerWidth, sm: 180 },
-            overflow: 'hidden',
-            border: 'none',
-          },
-        }}
-        open
-      >
-        <Toolbar style={{ marginTop: '1.5em' }}>
+    > 
+        <Toolbar>
         <img
           src={
             userInfo?.role.findIndex((p) => p === 'MultiCompania') < 0
@@ -230,7 +225,6 @@ export default function IconSidebar() {
             </ListItem>
           ))}
         </List>
-      </Drawer>
     </Box>
   );
 }
