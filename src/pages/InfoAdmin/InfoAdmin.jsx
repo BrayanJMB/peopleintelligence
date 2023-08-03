@@ -175,7 +175,7 @@ export default function InfoAdmin() {
     mapContractType,
     fetchContractType,
     handleCreateContractType,
-  } = useContractType(currentCompany, setCurrentCreate, setOpenCreateDialog);
+  } = useContractType({currentCompany, setCurrentCreate, setOpenCreateDialog});
 
   const { offices, mapOffice, fetchOffice, handleSubmittedCreateOffice } =
     useOffice(currentCompany);

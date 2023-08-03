@@ -1,4 +1,5 @@
 const ADMIN_ROLE = 'Administrador';
+const ADMINISTRATION_ROLE = 'Admin';
 const JOURNEY_ROLE = 'Journey';
 
 /**
@@ -14,6 +15,15 @@ export const isAdmin = (user) => {
 
   return user.role.some((role) => role === ADMIN_ROLE);
 };
+
+export const isAdminJourney = (user) => {
+  if (!user || !user.role) {
+    return false;
+  }
+
+  return user.role.some((role) => role === ADMINISTRATION_ROLE);
+};
+
 
 /**
  * Returns true if the user is a journey.

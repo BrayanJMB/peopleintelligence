@@ -15,7 +15,7 @@ import useNavigateSearch from '../../../hooks/useNavigateSearch';
 import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../../Layout/Navbar/Navbar';
 import { fetchTemplatesAPI } from '../../../services/templates.service';
-import { isAdmin, isJourney } from '../../../utils/helpers';
+import { isAdmin, isAdminJourney, isJourney } from '../../../utils/helpers';
 
 import styles from './Template.module.css';
 
@@ -61,7 +61,7 @@ const Template = () => {
    * @param isTemplate
    */
   const handleCreateSurvey = (isTemplate = false, templateId = null) => {
-    if (!isAdmin(userInfo)) {
+    if (!isAdmin(userInfo) && !isAdminJourney(userInfo)) {
       return;
     }
 
