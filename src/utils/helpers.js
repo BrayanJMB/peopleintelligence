@@ -1,5 +1,5 @@
 const ADMIN_ROLE = 'Administrador';
-const ADMINISTRATION_ROLE = "Admin"
+const ADMINISTRATION_ROLE = 'Admin';
 const JOURNEY_ROLE = 'Journey';
 
 /**
