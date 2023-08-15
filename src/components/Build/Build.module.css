@@ -9,3 +9,7 @@
   flex-direction: column;
   width: 100%;
 }
+
+.stepper{
+  margin-top: 15px;
+}

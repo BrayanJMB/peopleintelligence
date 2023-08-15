@@ -1,6 +1,7 @@
 .basic {
   width: 100%;
-  height: 85%;
+  height: 100%;
+  background-color: white;
 }
 .info {
   display: flex;
@@ -12,8 +13,8 @@
 }
 .left {
   width: 48%;
-  overflow-y: auto;
-  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .general {

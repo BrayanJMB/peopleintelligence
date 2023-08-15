@@ -60,7 +60,11 @@ export default function DataAdministration(props) {
                   }
                 >
                   {value.tabsInformation.map((label, labelIndex) => (
-                    <Tab label={label.tabLabel} id={`settings-tab-${labelIndex}`} key={labelIndex}/>
+                    <Tab
+                      label={label.tabLabel}
+                      id={`settings-tab-${labelIndex}`}
+                      key={labelIndex}
+                    />
                   ))}
                 </Tabs>
                 {value.needMoveTabs && (
@@ -85,21 +89,23 @@ export default function DataAdministration(props) {
                         p: 3,
                       }}
                     >
-                      <Stack
-                        spacing={2}
-                        direction="row-reverse"
-                        sx={{
-                          mb: 2,
-                        }}
-                      >
-                        <Button
-                          variant="outlined"
-                          startIcon={<AddIcon />}
-                          onClick={tabValue.eventButton}
+                      {value.buttonCreateName !== null && (
+                        <Stack
+                          spacing={2}
+                          direction="row-reverse"
+                          sx={{
+                            mb: 2,
+                          }}
                         >
-                          {tabValue.buttonCreateName}
-                        </Button>
-                      </Stack>
+                          <Button
+                            variant="outlined"
+                            startIcon={<AddIcon />}
+                            onClick={tabValue.eventButton}
+                          >
+                            {tabValue.buttonCreateName}
+                          </Button>
+                        </Stack>
+                      )}
                       {props.loading === true && <MyLoader />}
                       {props.loading === false && (
                         <MyTable
@@ -122,21 +128,23 @@ export default function DataAdministration(props) {
                       p: 3,
                     }}
                   >
-                    <Stack
-                      spacing={2}
-                      direction="row-reverse"
-                      sx={{
-                        mb: 2,
-                      }}
-                    >
-                      <Button
-                        variant="outlined"
-                        startIcon={<AddIcon />}
-                        onClick={value.tableInformation.eventButton}
+                    {value.tableInformation.buttonCreateName !== null && (
+                      <Stack
+                        spacing={2}
+                        direction="row-reverse"
+                        sx={{
+                          mb: 2,
+                        }}
                       >
-                        {value.tableInformation.buttonCreateName}
-                      </Button>
-                    </Stack>
+                        <Button
+                          variant="outlined"
+                          startIcon={<AddIcon />}
+                          onClick={value.tableInformation.eventButton}
+                        >
+                          {value.tableInformation.buttonCreateName}
+                        </Button>
+                      </Stack>
+                    )}
                     {props.loading === true && <MyLoader />}
                     {props.loading === false && (
                       <MyTable
