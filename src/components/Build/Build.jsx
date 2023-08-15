@@ -147,9 +147,9 @@ export default function Build({ stage, handleMove }) {
     }
 
     const { data } = await fecthSurveyChatAPI(currentCompany.id);
-    console.log(data)
+    console.log(data);
     const currentSurvey = id ? data.find((element) => element.id === id) : data;
-    console.log(currentSurvey)
+    console.log(currentSurvey);
     setSurveyChat(currentSurvey);
   };
 
