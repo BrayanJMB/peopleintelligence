@@ -1,19 +1,25 @@
-import { useState } from 'react';
-import ClassIcon from '@mui/icons-material/Class';
+import { createRef,useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ClearIcon from '@mui/icons-material/Clear';
-import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
-import Avatar from '@mui/material/Avatar';
-import AvatarGroup from '@mui/material/AvatarGroup';
+import { List, ListItem, ListItemText } from '@mui/material';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Typography from '@mui/material/Typography';
+import axios from 'axios';
+
+import { storeSurveyChatAPI } from '../../../services/ChatLive/storeSurveyChat.service';
+import { updateSurveyChatAPI } from '../../../services/ChatLive/updateSurveyChat.service';
+
+import AccordionDiscussion from './AccordionDicussion/AccordionDiscussion';
 
 import styles from './Discussion.module.css';
-
 function stringToColor(string) {
   let hash = 0;
   let i;
@@ -41,28 +47,261 @@ function stringAvatar(name) {
   };
 }
 
-export default function Discussion() {
+export default function Discussion({
+  moderator,
+  survey,
+  questions,
+  demographics,
+  setQuestions,
+  setDemographics,
+  handleMove,
+  handleBack,
+  surveyImage,
+  avatarImage,
+  setSurvey,
+  setModerator,
+  surveyChat,
+  isUpdate,
+}) {
+  console.log(moderator);
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [opentemplate, setOpentemplate] = useState(false);
+  const [accordionOpen, setAccordionOpen] = useState(false);
   const handleOpenModal = () => setOpen(true);
   const handleCloseModal = () => setOpen(false);
   const handleOpenModaltemplate = () => setOpentemplate(true);
   const handleCloseModaltemplate = () => setOpentemplate(false);
   const handleTemplateModal = () => {
-
     handleCloseModal();
     handleOpenModaltemplate();
   };
-
   const [toogle, setToggle] = useState('edit');
+  const [errors, setErrors] = useState([]);
+  const [isDemographicsAccordionOpen, setIsDemographicsAccordionOpen] =
+    useState(false);
+  const [isConversationAccordionOpen, setIsConversationAccordionOpen] =
+    useState(false);
+
+  const demographicRefs = useRef([]);
+
+  const handleOpenAccordion = () => {
+    setAccordionOpen(true);
+  };
+
+  const handleCloseAccordion = () => {
+    setAccordionOpen(false);
+  };
+  const handleSubmit = async () => {
+    if (validate()) {
+      let urls = null;
+      if (!isUpdate || (surveyImage && avatarImage )) {
+        urls = await storeAvatarAndSurveyImage();
+      }
+      const payload = {
+        moderator: {
+          ...moderator,
+          avatarUrl: urls ? urls.data.files[1] : '',
+        },
+        survey: {
+          ...survey,
+          imageUrl: urls ? urls.data.files[0] : '',
+          questions: questions.map((q, index) => ({
+            ...q,
+            orderNumber: index + 1,
+            options: q.options.map((option) => {
+              const { id, ...rest } = option;
+              return rest;
+            }),
+          })),
+          demographic: demographics.map((demo) => ({
+            ...demo,
+            demographicDetails: demo.demographicDetails.map((detail) => {
+              const { id, ...rest } = detail;
+              return rest;
+            }),
+          })),
+        },
+      };
+      console.log(payload);
+      if (!isUpdate) {
+        const response = await storeSurveyChatAPI(payload);
+        if (response.status === 200) {
+          alert('Chat Live creado satisfactoriamente');
+          handleMove('/conversation/Live', 'basic');
+        } else {
+          alert('Hubo un error al crear la encuesta de chat');
+        }
+      } else {
+        const response = await updateSurveyChatAPI(payload.survey);
+        if (response.status === 200) {
+          alert('Chat Live actualizado satisfactoriamente');
+          handleMove('/conversation/Live', 'basic');
+        } else {
+          alert('Hubo un error al crear la encuesta de chat');
+        }
+      }
+    }
+  };
+
+  const storeAvatarAndSurveyImage = async () => {
+    const formData = new FormData();
+    formData.append('surveyImage', surveyImage);
+    formData.append('moderatorAvatar', avatarImage);
+    formData.append('companyId', '1');
+    formData.append('surveyId', survey.id);
+    try {
+      const response = await axios.post(
+        'https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImages',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      if (response) {
+        return response;
+      } else {
+        console.error('Error al subir la imagen:', response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const validate = () => {
+    let allErrors = {
+      demographics: [],
+      questions: [],
+    };
+
+    demographics.forEach((demographic, demoIndex) => {
+      let currentErrors = {};
+
+      // Validar si el nombre del demográfico está vacío
+      if (!demographic.name.trim()) {
+        currentErrors.name = 'El nombre demográfico no puede estar vacío.';
+      } else {
+        // Validar si hay al menos 2 opciones
+        if (demographic.demographicDetails.length < 1) {
+          currentErrors.name = 'Debe haber al menos 1 opcion.';
+        }
+      }
+
+      // Validar si las opciones están vacías
+      demographic.demographicDetails.forEach((opcion, index) => {
+        if (!opcion.value.trim()) {
+          currentErrors[`option${index}`] = 'Esta opción no puede estar vacía.';
+        }
+      });
+
+      allErrors.demographics[demoIndex] = currentErrors;
+    });
+
+    questions.forEach((question, questionIndex) => {
+      let currentQuestionErrors = {};
+
+      // Validar si el nombre de la pregunta está vacío
+      if (!question.name.trim()) {
+        currentQuestionErrors.name =
+          'El nombre de la pregunta no puede estar vacío.';
+      } else {
+        // Validar si hay al menos 2 opciones
+        if (
+          question.options.length < 2 &&
+          question.type !== 'texto' &&
+          question.type !== 'Opinión'
+        ) {
+          currentQuestionErrors.name = 'Debe haber al menos 2 opciones.';
+        }
+      }
+
+      // Validar si el timeLimit es nulo
+      if (!question.timeLimit && question.type !== 'texto') {
+        currentQuestionErrors.timeLimit = 'Debe seleccionar un tiempo';
+      }
+
+      // Validar si las opciones están vacías
+      question.options.forEach((option, index) => {
+        if (option.value && !option.value.trim()) {
+          currentQuestionErrors[`option${index}`] =
+            'Esta opción no puede estar vacía.';
+        }
+        if (option.ExperienceQuestion && !option.ExperienceQuestion.trim()) {
+          currentQuestionErrors[`ExperienceQuestion${index}`] =
+            'Esta opción no puede estar vacía.';
+        }
+      });
+
+      allErrors.questions[questionIndex] = currentQuestionErrors;
+    });
+
+    setErrors(allErrors);
+
+    const hasErrorsInDemographics = allErrors.demographics.some(
+      (errorObj) => Object.keys(errorObj).length > 0
+    );
+    const hasErrorsInQuestions = allErrors.questions.some(
+      (errorObj) => Object.keys(errorObj).length > 0
+    );
+    const hasErrors = hasErrorsInDemographics || hasErrorsInQuestions;
+
+    if (hasErrors) {
+      //setIsAccordionOpen(true);
+      const firstErrorIndex = allErrors.demographics.findIndex(
+        (errorObj) => Object.keys(errorObj).length > 0
+      );
+      demographicRefs.current[firstErrorIndex]?.current?.focus();
+    }
+
+    // Si no hay errores en ningún demográfico o pregunta, devuelve true. De lo contrario, devuelve false.
+    return !hasErrors;
+  };
 
   const handletoggle = (event, newAlignment) => {
     setToggle(newAlignment);
   };
 
+  useEffect(() => {
+    // Si hay más demográficos que referencias, agregamos las referencias faltantes
+    while (demographicRefs.current.length < demographics.length) {
+      demographicRefs.current.push(createRef());
+    }
+
+    // Si hay menos demográficos que referencias, recortamos las referencias sobrantes
+    demographicRefs.current = demographicRefs.current.slice(
+      0,
+      demographics.length
+    );
+  }, [demographics]);
+
   return (
     <div className={styles.discussion}>
+      <Button
+        onClick={() => {
+          handleMove('', 'basic');
+          handleBack();
+        }}
+      >
+        Atrás
+      </Button>
       <div className={styles.content}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+          }}
+        >
+          <p> Nombre encuesta </p>
+          <div>
+            <Button>Compartir</Button>
+            <Button onClick={handleSubmit}>
+              {isUpdate ? 'Editar' : 'Publicar'}
+            </Button>
+          </div>
+        </div>
         <div className={styles.header}>
           <div className={styles.left}>
             <div>
@@ -73,42 +312,8 @@ export default function Discussion() {
                   fontSize: '1.2rem',
                 }}
               >
-                Discussion Guide
+                Guía de discusión
               </span>
-            </div>
-            <div>
-              <AvatarGroup max={6} className={styles.group}>
-                <Avatar {...stringAvatar('Kent Kevin')} />
-                <Avatar {...stringAvatar('Davis Samuel')} />
-                <Avatar {...stringAvatar('Samuel Kent')} />
-                <Avatar {...stringAvatar('Ben Dodds')} />
-                <Avatar {...stringAvatar('Richard Dadid')} />
-                <Avatar {...stringAvatar('Kevin Davis')} />
-                <Avatar {...stringAvatar('Dadid Ben')} />
-              </AvatarGroup>
-            </div>
-          </div>
-          <div className={styles.right}>
-            <div style={{ marginRight: '1rem' }}>
-              <p style={{ color: 'grey' }}>Unsaved Changes</p>
-            </div>
-            <div>
-              <ToggleButtonGroup
-                color="blue"
-                value={toogle}
-                exclusive
-                onChange={handletoggle}
-                aria-label="Platform"
-                size="small"
-                style={{ width: '100%', padding: '0 0.5rem' }}
-              >
-                <ToggleButton value="edit" style={{ width: '100%' }}>
-                  Edit
-                </ToggleButton>
-                <ToggleButton value="review" style={{ width: '50%' }}>
-                  Review
-                </ToggleButton>
-              </ToggleButtonGroup>
             </div>
           </div>
         </div>
@@ -133,12 +338,10 @@ export default function Discussion() {
             </div>
           </div>
         </div>
+
         <div className={styles.impexp}>
           <Button variant="text" size="small" onClick={handleOpenModal}>
-            Import
-          </Button>
-          <Button variant="text" size="small">
-            Export
+            Importar
           </Button>
           <Modal
             open={open}
@@ -149,7 +352,7 @@ export default function Discussion() {
             <Box className={styles.modal}>
               <div className={styles.modaltop}>
                 <p style={{ fontWeight: 'bold', marginTop: '0.8rem' }}>
-                  Select how you would to import:
+                  Acá puedes usar/importar una conversacion existente
                 </p>
                 <div>
                   <IconButton onClick={handleCloseModal}>
@@ -158,175 +361,69 @@ export default function Discussion() {
                 </div>
               </div>
               <div className={styles.modalbuttom}>
-                <div className={styles.blocks} onClick={handleTemplateModal}>
-                  <ClassIcon sx={{ fontSize: '40px' }} />
-                  <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
-                    Template
-                  </p>
-                  <p
+                {!accordionOpen ? (
+                  <div className={styles.blocks} onClick={handleOpenAccordion}>
+                    <ForumOutlinedIcon sx={{ fontSize: '40px' }} />
+                    <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
+                      Conversación existente
+                    </p>
+                    <p style={{ color: 'grey', fontSize: '0.8rem' }}>
+                      Grab the discussion guide from another conversation
+                    </p>
+                  </div>
+                ) : (
+                  <div
                     style={{
-                      color: 'grey',
-                      fontSize: '0.8rem',
+                      maxWidth: '600px',
+                      maxHeight: '300px',
+                      overflowY: 'auto',
                     }}
                   >
-                    Use an available template
-                  </p>
-                </div>
-                <div className={styles.blocks}>
-                  <ForumOutlinedIcon sx={{ fontSize: '40px' }} />
-                  <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
-                    Existing Conversation
-                  </p>
-                  <p
-                    style={{
-                      color: 'grey',
-                      fontSize: '0.8rem',
-                    }}
-                  >
-                    Grab the discussion guide from another conversation
-                  </p>
-                </div>
-                <div className={styles.blocks}>
-                  <DescriptionOutlinedIcon sx={{ fontSize: '40px' }} />
-                  <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
-                    Excel file
-                  </p>
-                  <p
-                    style={{
-                      color: 'grey',
-                      fontSize: '0.8rem',
-                    }}
-                  >
-                    Import an axcel file from your computer
-                  </p>
-                </div>
-              </div>
-            </Box>
-          </Modal>
-          <Modal
-            open={opentemplate}
-            onClose={handleCloseModaltemplate}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box className={styles.templatemodal}>
-              <div className={styles.modaltop}>
-                <p style={{ fontWeight: 'bold', marginTop: '0.8rem' }}>
-                  Choose Template
-                </p>
-                <div>
-                  <IconButton onClick={handleCloseModaltemplate}>
-                    <ClearIcon sx={{ fontSize: '40px' }} />
-                  </IconButton>
-                </div>
-              </div>
-              <div className={styles.templatemodalbuttom}>
-                <div className={styles.templateblocks}>
-                  <div className={styles.templatelayout}>
-                    <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKSHmKbYqNH4C6moYAK585TIJwLGSPNUl79A&usqp=CAU"
-                      alt="profile"
-                      className={styles.templatephoto}
-                    />
-                    <div className={styles.templatecontent}>
-                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
-                        Concept Test (Single)
-                      </p>
-                      <p style={{ color: 'grey', fontSize: '0.8rem' }}>
-                        Evaluate consumer reactions to a single product concept
-                      </p>
-                    </div>
+                    <Accordion expanded={true}>
+                      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography>Conversaciones</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <List>
+                          {surveyChat.map((opcion, index) => (
+                            <ListItem key={index}>
+                              <ListItemText primary={opcion.title} />
+                            </ListItem>
+                          ))}
+                        </List>
+                      </AccordionDetails>
+                    </Accordion>
+                    <Button onClick={handleCloseAccordion}>Atrás</Button>
                   </div>
-                </div>
-                <div className={styles.templateblocks}>
-                  <div className={styles.templatelayout}>
-                    <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKSHmKbYqNH4C6moYAK585TIJwLGSPNUl79A&usqp=CAU"
-                      alt="profile"
-                      className={styles.templatephoto}
-                    />
-                    <div className={styles.templatecontent}>
-                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
-                        Concept Test (Single)
-                      </p>
-                      <p style={{ color: 'grey', fontSize: '0.8rem' }}>
-                        Evaluate consumer reactions to a single product concept
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className={styles.templateblocks}>
-                  <div className={styles.templatelayout}>
-                    <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKSHmKbYqNH4C6moYAK585TIJwLGSPNUl79A&usqp=CAU"
-                      alt="profile"
-                      className={styles.templatephoto}
-                    />
-                    <div className={styles.templatecontent}>
-                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
-                        Concept Test (Single)
-                      </p>
-                      <p style={{ color: 'grey', fontSize: '0.8rem' }}>
-                        Evaluate consumer reactions to a single product concept
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className={styles.templateblocks}>
-                  <div className={styles.templatelayout}>
-                    <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKSHmKbYqNH4C6moYAK585TIJwLGSPNUl79A&usqp=CAU"
-                      alt="profile"
-                      className={styles.templatephoto}
-                    />
-                    <div className={styles.templatecontent}>
-                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
-                        Concept Test (Single)
-                      </p>
-                      <p style={{ color: 'grey', fontSize: '0.8rem' }}>
-                        Evaluate consumer reactions to a single product concept
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className={styles.templateblocks}>
-                  <div className={styles.templatelayout}>
-                    <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKSHmKbYqNH4C6moYAK585TIJwLGSPNUl79A&usqp=CAU"
-                      alt="profile"
-                      className={styles.templatephoto}
-                    />
-                    <div className={styles.templatecontent}>
-                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
-                        Concept Test (Single)
-                      </p>
-                      <p style={{ color: 'grey', fontSize: '0.8rem' }}>
-                        Evaluate consumer reactions to a single product concept
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className={styles.templateblocks}>
-                  <div className={styles.templatelayout}>
-                    <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKSHmKbYqNH4C6moYAK585TIJwLGSPNUl79A&usqp=CAU"
-                      alt="profile"
-                      className={styles.templatephoto}
-                    />
-                    <div className={styles.templatecontent}>
-                      <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
-                        Concept Test (Single)
-                      </p>
-                      <p style={{ color: 'grey', fontSize: '0.8rem' }}>
-                        Evaluate consumer reactions to a single product concept
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             </Box>
           </Modal>
         </div>
+        <AccordionDiscussion
+          isConversation={false}
+          questions={questions}
+          setQuestions={setQuestions}
+          demographics={demographics}
+          setDemographics={setDemographics}
+          errors={errors}
+          setErrors={setErrors}
+          isAccordionOpen={isDemographicsAccordionOpen}
+          setIsAccordionOpen={setIsDemographicsAccordionOpen}
+          demographicRefs={demographicRefs}
+        />
+        <AccordionDiscussion
+          isConversation={true}
+          questions={questions}
+          setQuestions={setQuestions}
+          demographics={demographics}
+          setDemographics={setDemographics}
+          demographicRefs={demographicRefs}
+          errors={errors}
+          setErrors={setErrors}
+          isAccordionOpen={isConversationAccordionOpen}
+          setIsAccordionOpen={setIsConversationAccordionOpen}
+        />
       </div>
     </div>
   );

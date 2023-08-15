@@ -1,15 +1,18 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import Build from '../../components/Build/Build';
-import Live from '../../components/Live/Live';
+import { Moderator } from '../../components/Build/Moderator/Moderator';
+import { SurveyChat } from '../../components/Build/SurveysChats/SurveyChat';
 import ConSidebar from '../../Layout/ConSidebar/ConSidebar';
+import IconSidebarNavBar from '../../Layout/IconSideBarNavBar/IconSideBarNavBar';
 
 export default function Conversation() {
   const { type } = useParams();
+  const [stage, setStage] = useState('basic');
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const theme = createTheme({
@@ -23,12 +26,19 @@ export default function Conversation() {
     },
   });
 
+  const handleMove = (path, val) => {
+    navigate(path);
+    setStage(val);
+  };
+  console.log(type);
   const renderSwitch = () => {
     switch (type) {
       case 'Build':
-        return <Build />;
+        return <Build stage={stage} handleMove={handleMove} />;
       case 'Live':
-        return <Live />;
+        return <SurveyChat handleMove={handleMove}/>;
+      case 'moderator':
+        return <Moderator />;
       default:
         return null;
     }
@@ -47,8 +57,10 @@ export default function Conversation() {
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex' }}>
-        <ConSidebar type={type} />
-        {renderSwitch(type)}
+        <IconSidebarNavBar>
+          <ConSidebar handleMove={handleMove} type={type} />
+          {renderSwitch(type)}
+        </IconSidebarNavBar>
       </Box>
     </ThemeProvider>
   );

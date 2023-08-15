@@ -1,18 +1,20 @@
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import DonutSmallRoundedIcon from '@mui/icons-material/DonutSmallRounded';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
-import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
-import Avatar from '@mui/material/Avatar';
+import { Divider,Toolbar, Typography } from '@mui/material';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Toolbar from '@mui/material/Toolbar';
+
+import { selectCompanyById } from '../../features/companies/companiesSlice';
 
 import styles from './ConSidebar.module.css';
 
@@ -47,95 +49,107 @@ function stringAvatar(name) {
 
 export default function ConSidebar(props) {
   const navigate = useNavigate();
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
+  const company = useSelector((state) =>
+    currentCompany ? selectCompanyById(state, currentCompany.id) : null
+  );
+  const [expanded, setExpanded] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
 
-  const handleRedirect = (type) => {
-    navigate('/conversation/' + type);
+  const handleChange = (panel) => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
   };
 
+  useEffect(() => {
+    console.log(selectedOption);
+  }, [selectedOption]);
+
+  const options = [
+    {
+      key: 'panel1',
+      title: 'Crea tu sala',
+      icon: <RateReviewOutlinedIcon />,
+      path:'/conversation/Build',
+      subOptions: [
+        {
+          key: 'datos_encuesta',
+          label: 'Información encuesta',
+          pathRedirect: 'basic',
+        },
+      ],
+    },
+    {
+      key: 'panel2',
+      title: 'Discussion',
+      path:'/conversation/Live',
+      icon: <ForumOutlinedIcon />,
+      subOptions: [
+        {
+          key: 'lista_encuestas',
+          label: 'Lista encuestas',
+          pathRedirect: 'basic',
+        },
+      ],
+    },
+  ];
+
   return (
-    <Box sx={{ width: '60px' }} aria-label="mailbox folders">
-      <Drawer
-        variant="permanent"
-        sx={{
-          '& .MuiDrawer-paper': {
-            width: '60px',
-            overflow: 'hidden',
-            border: 'none',
-          },
-        }}
-        open
-      >
-        <Toolbar style={{ padding: 0 }}>
-          <img
-            src="https://media.glassdoor.com/sqll/2135917/remesh-squarelogo-1547826220454.png"
-            alt="profile"
-            className={styles.photo}
-          />
-        </Toolbar>
-        <Divider variant="middle" />
-        <List>
-          <ListItem disablePadding style={{ margin: '0.5rem 0' }}>
-            <ListItemButton
-              id={'demo-positioned-button'}
-              onClick={() => handleRedirect('Build')}
-              selected={props.type === 'Build' ? true : false}
-            >
-              <ListItemIcon style={{ position: 'relative' }}>
-                <RateReviewOutlinedIcon
-                  color={props.type === 'Build' ? 'blue' : 'inherit'}
-                />
-              </ListItemIcon>
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding style={{ margin: '1rem 0' }}>
-            <ListItemButton
-              id={'demo-positioned-button'}
-              onClick={() => handleRedirect('Live')}
-              selected={props.type === 'Live' ? true : false}
-            >
-              <ListItemIcon style={{ position: 'relative' }}>
-                <ForumOutlinedIcon
-                  color={props.type === 'Live' ? 'blue' : 'inherit'}
-                />
-              </ListItemIcon>
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding style={{ margin: '1rem 0' }}>
-            <ListItemButton
-              id={'demo-positioned-button'}
-              onClick={() => handleRedirect('Analysis')}
-              selected={props.type === 'Analysis' ? true : false}
-            >
-              <ListItemIcon style={{ position: 'relative' }}>
-                <DonutSmallRoundedIcon
-                  color={props.type === 'Analysis' ? 'blue' : 'inherit'}
-                />
-              </ListItemIcon>
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding style={{ marginTop: '45vh' }}>
-            <ListItemButton
-              id={'demo-positioned-button'}
-              style={{ margin: '0 auto', padding: 0 }}
-            >
-              <ListItemAvatar style={{ margin: '0 auto' }}>
-                <Avatar
-                  alt="Remy Sharp"
-                  {...stringAvatar('Cii Baa')}
-                  style={{ margin: '0 auto' }}
-                />
-              </ListItemAvatar>
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding style={{ margin: '1rem 0' }}>
-            <ListItemButton id={'demo-positioned-button'}>
-              <ListItemIcon style={{ position: 'relative' }}>
-                <HelpOutlineOutlinedIcon />
-              </ListItemIcon>
-            </ListItemButton>
-          </ListItem>
-        </List>
-      </Drawer>
+    <Box sx={{ backgroundColor: 'white' }} aria-label="mailbox folders">
+      <Toolbar style={{ padding: 0 }}>
+        <img
+          src={company?.Logotipo ?? null}
+          alt="profile"
+          className={styles.photo}
+        />
+      </Toolbar>
+      <Divider variant="middle" />
+      <List sx={{ height: '100%', backgroundColor: '#cce7ff' }}>
+        {options.map((option) => (
+          <Accordion
+            key={option.key}
+            expanded={expanded === option.key}
+            onChange={handleChange(option.key)}
+          >
+            <AccordionSummary expandIcon={option.icon}>
+              <Typography
+                sx={{
+                  color: option.subOptions.some(
+                    (sub) => sub.key === selectedOption
+                  )
+                    ? '#0000ff' // color azul cuando está seleccionado
+                    : 'inherit', // color por defecto
+                }}
+              >
+                {option.title}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <List>
+                {option.subOptions.map((subOption) => (
+                  <ListItem key={subOption.key}>
+                    <ListItemButton
+                      onClick={() => {
+                        setSelectedOption(subOption.key);
+                        props.handleMove(option.path, subOption.pathRedirect);
+                      }}
+                      sx={{
+                        backgroundColor:
+                          selectedOption === subOption.key
+                            ? '#b3d4fc'
+                            : 'transparent',
+                      }}
+                    >
+                      {subOption.label}
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </AccordionDetails>
+          </Accordion>
+        ))}
+      </List>
     </Box>
   );
 }
+
+
