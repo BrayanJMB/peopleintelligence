@@ -1,28 +1,28 @@
-import { useEffect,useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
-import Alert from '@mui/material/Alert';
-import Button from '@mui/material/Button';
-import Snackbar from '@mui/material/Snackbar';
-import Step from '@mui/material/Step';
-import StepButton from '@mui/material/StepButton';
-import Stepper from '@mui/material/Stepper';
-import { v4 as uuidv4 } from 'uuid';
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import Alert from "@mui/material/Alert";
+import Button from "@mui/material/Button";
+import Snackbar from "@mui/material/Snackbar";
+import Step from "@mui/material/Step";
+import StepButton from "@mui/material/StepButton";
+import Stepper from "@mui/material/Stepper";
+import { v4 as uuidv4 } from "uuid";
 
-import ConSidebar from '../../Layout/ConSidebar/ConSidebar';
-import { fecthSurveyChatAPI } from '../../services/ChatLive/fetchSurveyChat.service';
+import ConSidebar from "../../Layout/ConSidebar/ConSidebar";
+import { fecthSurveyChatAPI } from "../../services/ChatLive/fetchSurveyChat.service";
 
-import Basic from './Basic/Basic';
-import Discussion from './Discussion/Discussion';
-import Quota from './Quota/Quota';
-import Segment from './Segment/Segment';
-import { SurveyChat } from './SurveysChats/SurveyChat';
+import Basic from "./Basic/Basic";
+import Discussion from "./Discussion/Discussion";
+import Quota from "./Quota/Quota";
+import Segment from "./Segment/Segment";
+import { SurveyChat } from "./SurveysChats/SurveyChat";
 
-import styles from './Build.module.css';
+import styles from "./Build.module.css";
 const list = [
-  'Detalles básicos',
-  'Guía conversación',
+  "Detalles básicos",
+  "Guía conversación",
   /*
   'Audience',
   'Discussion Guide',
@@ -31,41 +31,41 @@ const list = [
 ];
 
 const root = [
-  'basic',
-  'schedule',
-  'audience',
-  'discussion',
-  'segments',
-  'quota',
+  "basic",
+  "schedule",
+  "audience",
+  "discussion",
+  "segments",
+  "quota",
 ];
 
-const steps = ['Detalles básicos', 'Preguntas y demográficos'];
+const steps = ["Detalles básicos", "Preguntas y demográficos"];
 
 export default function Build({ stage, handleMove }) {
   const { id } = useParams();
   const location = useLocation();
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
-  const isUpdate = location.pathname.indexOf('Build/update-survey-chat') !== -1;
+  const isUpdate = location.pathname.indexOf("Build/update-survey-chat") !== -1;
   const [surveyImage, setSurveyImage] = useState(null);
   const [avatarImage, setAvatarImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [surveyChat, setSurveyChat] = useState([]);
   const [moderator, setModerator] = useState({
-    moderatorId: '123',
-    name: '',
-    avatarUrl: '',
+    moderatorId: "123",
+    name: "",
+    avatarUrl: "",
   });
   const [survey, setSurvey] = useState({
     id: uuidv4(),
-    title: '',
+    title: "",
     timeDemographics: 300,
     companyId: currentCompany?.id,
-    description: '',
-    imageUrl: '',
+    description: "",
+    imageUrl: "",
   });
   const [demographics, setDemographics] = useState([]);
   const [questions, setQuestions] = useState([]);
@@ -74,11 +74,11 @@ export default function Build({ stage, handleMove }) {
     if (event.target.files && event.target.files[0]) {
       if (event.target.files[0].size > 500000) {
         setSnackbarMessage(
-          'El tamaño de la imagen no puede ser mayor a 500kB.'
+          "El tamaño de la imagen no puede ser mayor a 500kB."
         );
         setOpenSnackbar(true);
       } else {
-        if (event.target.name.includes('avatar')) {
+        if (event.target.name.includes("avatar")) {
           const url = URL.createObjectURL(event.target.files[0]);
           setAvatarImage(event.target.files[0]);
           setModerator({ ...moderator, [event.target.name]: url });
@@ -92,13 +92,15 @@ export default function Build({ stage, handleMove }) {
   };
 
   const handleReset = (name) => {
-    setModerator({ ...moderator, [name]: '' });
+    console.log(name)
+    if (name.includes("avatar")) setAvatarImage(null);
+    else setSurveyImage(null);
   };
 
   const handleChange = (event, type) => {
-    if (type === 'moderator')
+    if (type === "moderator")
       setModerator({ ...moderator, [event.target.name]: event.target.value });
-    if (type === 'survey')
+    if (type === "survey")
       setSurvey({ ...survey, [event.target.name]: event.target.value });
   };
 
@@ -152,20 +154,20 @@ export default function Build({ stage, handleMove }) {
 
   const resetModerator = () => {
     setModerator({
-      moderatorId: '123',
-      name: '',
-      avatarUrl: '',
+      moderatorId: "123",
+      name: "",
+      avatarUrl: "",
     });
   };
 
   const resetSurvey = () => {
     setSurvey({
       id: uuidv4(),
-      title: '',
+      title: "",
       timeDemographics: 300,
       companyId: currentCompany?.id,
-      description: '',
-      imageUrl: '',
+      description: "",
+      imageUrl: "",
     });
     setQuestions([]);
     setDemographics([]);
@@ -174,7 +176,7 @@ export default function Build({ stage, handleMove }) {
     // Actualizar el estado del moderador
     setModerator((prevState) => ({
       ...prevState,
-      moderatorId: '123', // Nota: parece que esto está hardcodeado, asegúrate de que es lo que deseas
+      moderatorId: "123", // Nota: parece que esto está hardcodeado, asegúrate de que es lo que deseas
     }));
 
     // Actualizar el estado de la encuesta
@@ -203,7 +205,7 @@ export default function Build({ stage, handleMove }) {
 
   const renderSwitch = (type) => {
     switch (type.toLowerCase()) {
-      case 'basic':
+      case "basic":
         return (
           <Basic
             moderator={moderator}
@@ -216,7 +218,7 @@ export default function Build({ stage, handleMove }) {
             loading={loading}
           />
         );
-      case 'discussion':
+      case "discussion":
         return (
           <Discussion
             moderator={moderator}
@@ -235,7 +237,7 @@ export default function Build({ stage, handleMove }) {
             isUpdate={isUpdate}
           />
         );
-      case 'quota':
+      case "quota":
         return <Quota moderator={moderator} />;
       default:
         return null;
@@ -248,7 +250,7 @@ export default function Build({ stage, handleMove }) {
         open={openSnackbar}
         autoHideDuration={3000}
         onClose={() => setOpenSnackbar(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <Alert onClose={() => setOpenSnackbar(false)} severity="warning">
           {snackbarMessage}
@@ -261,7 +263,7 @@ export default function Build({ stage, handleMove }) {
             <Stepper activeStep={activeStep}>
               {steps.map((label, index) => (
                 <Step key={label} completed={completed[index]}>
-                  <StepButton color="inherit" style={{ pointerEvents: 'none' }}>
+                  <StepButton color="inherit" style={{ pointerEvents: "none" }}>
                     {label}
                   </StepButton>
                 </Step>
@@ -270,17 +272,17 @@ export default function Build({ stage, handleMove }) {
           </div>
           <div
             style={{
-              width: '100%',
-              display: 'flex',
-              marginTop: '0.5rem',
+              width: "100%",
+              display: "flex",
+              marginTop: "0.5rem",
             }}
           >
             <div
               style={{
                 flexGrow: 1,
-                display: 'flex',
-                justifyContent: 'flex-start',
-                marginLeft: '2rem',
+                display: "flex",
+                justifyContent: "flex-start",
+                marginLeft: "2rem",
               }}
             >
               {moderator.open ? <p>{moderator.title}</p> : null}
