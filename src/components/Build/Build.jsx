@@ -72,7 +72,7 @@ export default function Build({ stage, handleMove }) {
 
   const handlePhoto = (event) => {
     if (event.target.files && event.target.files[0]) {
-      if (event.target.files[0].size < 500000) {
+      if (event.target.files[0].size > 500000) {
         setSnackbarMessage(
           'El tamaño de la imagen no puede ser mayor a 500kB.'
         );
