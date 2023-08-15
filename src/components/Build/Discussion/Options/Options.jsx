@@ -27,7 +27,6 @@ function Options({
   handleRemoveConversation,
   errors,
 }) {
-  console.log(errors);
   const isText = (item) => {
     switch (item.toLowerCase()) {
       case 'texto':
@@ -76,7 +75,7 @@ function Options({
     if (!isConversation) {
       debugger;
       const updatedOpciones = demographic.demographicDetails.map((opcion) =>
-        opcion.demographicId === id ? { ...opcion, value } : opcion
+        opcion.id === id ? { ...opcion, value } : opcion
       );
       const newDemographic = {
         ...demographic,
@@ -109,7 +108,7 @@ function Options({
         ...demographic,
         demographicDetails: [
           ...demographic.demographicDetails,
-          { demographicId: newId, value: '' },
+          { id: newId, value: '' },
         ],
       };
       setDemographics((prevState) => {
@@ -146,7 +145,7 @@ function Options({
   const handleDeleteOption = (id) => {
     if (!isConversation) {
       const newOpciones = demographic.demographicDetails.filter(
-        (opcion) => opcion.demographicId !== id
+        (opcion) => opcion.id !== id
       );
       const newDemographic = {
         ...demographic,
@@ -160,13 +159,13 @@ function Options({
       });
     } else {
       // Filtramos las opciones que no coincidan con el ID proporcionado
-      const newOpciones = question.options.filter(
-        (opcion) => opcion.id !== id
-      ).map((option, index) => ({
-        // reajustamos el valor de statisticvalue aquí
-        ...option,
-        statisticvalue: index + 1,
-      }));
+      const newOpciones = question.options
+        .filter((opcion) => opcion.id !== id)
+        .map((option, index) => ({
+          // reajustamos el valor de statisticvalue aquí
+          ...option,
+          statisticvalue: index + 1,
+        }));
 
       // Creamos la nueva conversación con las opciones actualizadas
       const newConversation = { ...question, options: newOpciones };
@@ -197,7 +196,7 @@ function Options({
     console.log(newConversation);
     setQuestion((prevState) => {
       const newConversations = [...prevState];
-      const index = newConversations.findIndex((d) => d === question); 
+      const index = newConversations.findIndex((d) => d === question);
       console.log(index);
 
       if (index !== -1) {
@@ -272,7 +271,7 @@ function Options({
                   </Typography>
                   {demographic.demographicDetails.map((opcion, index) => (
                     <div
-                      key={opcion.demographicId}
+                      key={opcion.id}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -281,14 +280,14 @@ function Options({
                     >
                       <TextField
                         fullWidth
-                        label={`Opción ${opcion.demographicId}`}
+                        label={`Opción ${opcion.id}`}
                         id="outlined-size-small"
                         defaultvalue="Small"
                         size="small"
                         value={opcion.value}
                         onChange={(e) =>
                           handleOptionChange(
-                            opcion.demographicId,
+                            opcion.id,
                             e.target.value
                           )
                         }
@@ -305,7 +304,7 @@ function Options({
                         }
                       />
                       <IconButton
-                        onClick={() => handleDeleteOption(opcion.demographicId)}
+                        onClick={() => handleDeleteOption(opcion.id)}
                         color="secondary"
                       >
                         <DeleteOutlineIcon />
@@ -397,7 +396,7 @@ function Options({
                       <Select
                         labelId="demo-simple-select-helper-label"
                         id="demo-simple-select-helper"
-                        value={question.timeLimit}
+                        value={Math.round(question.timeLimit / 60)}
                         onChange={handleChangeTimeLimit}
                       >
                         {tiempoPregunta.map((value, index) => (
@@ -459,7 +458,11 @@ function Options({
                       <Select
                         labelId="demo-simple-select-helper-label"
                         id="demo-simple-select-helper"
-                        value={question.timeLimit}
+                        value={
+                          question.timeLimit < 60
+                            ? question.timeLimit
+                            : question.timeLimit / 60
+                        }
                         onChange={handleChangeTimeLimit}
                       >
                         {tiempoPregunta.map((value, index) => (

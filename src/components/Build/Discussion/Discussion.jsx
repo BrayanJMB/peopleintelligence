@@ -63,7 +63,7 @@ export default function Discussion({
   surveyChat,
   isUpdate,
 }) {
-  console.log(moderator);
+  console.log(questions);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [opentemplate, setOpentemplate] = useState(false);
@@ -110,14 +110,14 @@ export default function Discussion({
             ...q,
             orderNumber: index + 1,
             options: q.options.map((option) => {
-              const { id, ...rest } = option;
+              const {rest } = option;
               return rest;
             }),
           })),
           demographic: demographics.map((demo) => ({
             ...demo,
             demographicDetails: demo.demographicDetails.map((detail) => {
-              const { id, ...rest } = detail;
+              const {...rest } = detail;
               return rest;
             }),
           })),
