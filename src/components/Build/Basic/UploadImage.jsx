@@ -47,7 +47,6 @@ export default function UploadImage({informationConversation, handlePhoto, text,
             }
             style={{ marginTop: '0.5rem' }}
             color="blue"
-            onClick={handleClick}
           >
             Subir Imagen
             <input
