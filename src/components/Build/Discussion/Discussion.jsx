@@ -228,8 +228,8 @@ export default function Discussion({
           currentQuestionErrors[`option${index}`] =
             'Esta opción no puede estar vacía.';
         }
-        if (option.ExperienceQuestion && !option.ExperienceQuestion.trim()) {
-          currentQuestionErrors[`ExperienceQuestion${index}`] =
+        if (option.experienceQuestion && !option.experienceQuestion.trim()) {
+          currentQuestionErrors[`experienceQuestion${index}`] =
             'Esta opción no puede estar vacía.';
         }
       });
