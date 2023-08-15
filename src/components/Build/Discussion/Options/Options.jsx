@@ -1,18 +1,18 @@
-import { useState } from "react";
-import { useEffect } from "react";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { Button, TextField } from "@mui/material";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Chip from "@mui/material/Chip";
-import FormControl from "@mui/material/FormControl";
-import FormHelperText from "@mui/material/FormHelperText";
-import IconButton from "@mui/material/IconButton";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import Typography from "@mui/material/Typography";
+import { useState } from 'react';
+import { useEffect } from 'react';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { Button, TextField } from '@mui/material';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
 
 const tiempoPregunta = [1, 2, 3, 4, 5];
 function Options({
@@ -29,21 +29,21 @@ function Options({
 }) {
   const isText = (item) => {
     switch (item.toLowerCase()) {
-      case "texto":
+      case 'texto':
         return true;
       default:
         return false;
     }
   };
   const isOpinion = () => {
-    return "Opinión";
+    return 'Opinión';
   };
   const isExperience = () => {
-    return "experiencia";
+    return 'experiencia';
   };
   const isSelecionSimple = (item) => {
     switch (item.toLowerCase()) {
-      case "seleccionsimple":
+      case 'seleccionsimple':
         return true;
       default:
         return false;
@@ -108,7 +108,7 @@ function Options({
         ...demographic,
         demographicDetails: [
           ...demographic.demographicDetails,
-          { id: newId, value: "" },
+          { id: newId, value: '' },
         ],
       };
       setDemographics((prevState) => {
@@ -121,12 +121,12 @@ function Options({
       const newId = Date.now();
       const newOption = {
         id: newId,
-        value: "",
+        value: '',
         statisticvalue: question.options.length + 1,
       };
 
-      if (item === "experiencia") {
-        newOption.ExperienceQuestion = "";
+      if (item === 'experiencia') {
+        newOption.ExperienceQuestion = '';
       }
 
       const newConversation = {
@@ -208,24 +208,24 @@ function Options({
   };
 
   return (
-    <div style={{ marginBottom: "20px" }}>
+    <div style={{ marginBottom: '20px' }}>
       {!isConversation ? (
         <>
           <Card
             style={{
-              padding: "20px",
-              marginBottom: "20px",
+              padding: '20px',
+              marginBottom: '20px',
             }}
           >
             <CardContent>
               <div
                 style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  justifyContent: "space-between",
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  justifyContent: 'space-between',
                 }}
               >
-                <Typography variant="h5" style={{ marginBottom: "15px" }}>
+                <Typography variant="h5" style={{ marginBottom: '15px' }}>
                   Demográfico {currentIndex + 1}
                 </Typography>
                 <Button
@@ -239,7 +239,7 @@ function Options({
               </div>
               <div
                 style={{
-                  marginBottom: "20px",
+                  marginBottom: '20px',
                 }}
               >
                 <TextField
@@ -247,7 +247,7 @@ function Options({
                   label="Nombre Demográfico"
                   value={demographic.name}
                   onChange={handleDemographicNameChange}
-                  style={{ marginRight: "20px" }}
+                  style={{ marginRight: '20px' }}
                   error={!!errors.demographics?.[currentIndex]?.name}
                   helperText={errors.demographics?.[currentIndex]?.name}
                   size="small"
@@ -262,9 +262,9 @@ function Options({
                   <Typography
                     variant="h6"
                     style={{
-                      marginBottom: "10px",
-                      borderBottom: "1px solid #ddd",
-                      paddingBottom: "10px",
+                      marginBottom: '10px',
+                      borderBottom: '1px solid #ddd',
+                      paddingBottom: '10px',
                     }}
                   >
                     Opciones demográfico
@@ -273,9 +273,9 @@ function Options({
                     <div
                       key={opcion.id}
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        marginBottom: "10px",
+                        display: 'flex',
+                        alignItems: 'center',
+                        marginBottom: '10px',
                       }}
                     >
                       <TextField
@@ -291,7 +291,7 @@ function Options({
                             e.target.value
                           )
                         }
-                        style={{ marginRight: "20px" }}
+                        style={{ marginRight: '20px' }}
                         error={
                           !!errors.demographics?.[currentIndex]?.[
                             `option${index}`
@@ -321,16 +321,16 @@ function Options({
           {isText(item) && (
             <Card
               style={{
-                padding: "20px",
-                marginBottom: "20px",
+                padding: '20px',
+                marginBottom: '20px',
               }}
             >
               <CardContent>
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    marginBottom: "10px",
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginBottom: '10px',
                   }}
                 >
                   <Chip
@@ -338,7 +338,7 @@ function Options({
                     color="primary"
                     size="small"
                     variant="outlined"
-                    style={{ marginBottom: "5px" }}
+                    style={{ marginBottom: '5px' }}
                   />
                   <TextField
                     size="small"
@@ -358,8 +358,8 @@ function Options({
               <CardContent>
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
+                    display: 'flex',
+                    flexDirection: 'column',
                   }}
                 >
                   <Chip
@@ -367,13 +367,13 @@ function Options({
                     color="primary"
                     size="small"
                     variant="outlined"
-                    style={{ marginBottom: "5px" }}
+                    style={{ marginBottom: '5px' }}
                   />
                   <div
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                   >
                     <TextField
@@ -401,7 +401,7 @@ function Options({
                       >
                         {tiempoPregunta.map((value, index) => (
                           <MenuItem key={index} value={value}>
-                            {`${value} ${value === 1 ? "minuto" : "minutos"}`}
+                            {`${value} ${value === 1 ? 'minuto' : 'minutos'}`}
                           </MenuItem>
                         ))}
                       </Select>
@@ -420,9 +420,9 @@ function Options({
               <CardContent>
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    marginBottom: "10px",
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginBottom: '10px',
                   }}
                 >
                   <Chip
@@ -430,12 +430,12 @@ function Options({
                     color="primary"
                     size="small"
                     variant="outlined"
-                    style={{ marginBottom: "5px" }}
+                    style={{ marginBottom: '5px' }}
                   />
                   <div
                     style={{
-                      display: "flex",
-                      alignItems: "center",
+                      display: 'flex',
+                      alignItems: 'center',
                     }}
                   >
                     <TextField
@@ -467,7 +467,7 @@ function Options({
                       >
                         {tiempoPregunta.map((value, index) => (
                           <MenuItem key={index} value={value}>
-                            {`${value} ${value === 1 ? "minuto" : "minutos"}`}
+                            {`${value} ${value === 1 ? 'minuto' : 'minutos'}`}
                           </MenuItem>
                         ))}
                       </Select>
@@ -484,9 +484,9 @@ function Options({
                       <Typography
                         variant="h6"
                         style={{
-                          marginBottom: "10px",
-                          borderBottom: "1px solid #ddd",
-                          paddingBottom: "10px",
+                          marginBottom: '10px',
+                          borderBottom: '1px solid #ddd',
+                          paddingBottom: '10px',
                         }}
                       >
                         Opciones
@@ -495,9 +495,9 @@ function Options({
                         <div
                           key={opcion.id}
                           style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            marginBottom: "5px",
+                            display: 'flex',
+                            flexDirection: 'column',
+                            marginBottom: '5px',
                           }}
                         >
                           <TextField
@@ -521,7 +521,7 @@ function Options({
                                 `option${index}`
                               ]
                             }
-                            style={{ marginRight: "10px" }}
+                            style={{ marginRight: '10px' }}
                           />
                           <p>Por favor ingresa la pregunta para esta opción</p>
                           <TextField
@@ -545,7 +545,7 @@ function Options({
                                 `ExperienceQuestion${index}`
                               ]
                             }
-                            style={{ marginRight: "10px" }}
+                            style={{ marginRight: '10px' }}
                           />
                           <Button onClick={() => handleDeleteOption(opcion.id)}>
                             <DeleteOutlineIcon />
@@ -564,9 +564,9 @@ function Options({
               <CardContent>
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    marginBottom: "10px",
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginBottom: '10px',
                   }}
                 >
                   <Chip
@@ -574,12 +574,12 @@ function Options({
                     color="primary"
                     size="small"
                     variant="outlined"
-                    style={{ marginBottom: "5px" }}
+                    style={{ marginBottom: '5px' }}
                   />
                   <div
                     style={{
-                      display: "flex",
-                      alignItems: "center",
+                      display: 'flex',
+                      alignItems: 'center',
                     }}
                   >
                     <TextField
@@ -611,7 +611,7 @@ function Options({
                       >
                         {tiempoPregunta.map((value, index) => (
                           <MenuItem key={index} value={value}>
-                            {`${value} ${value === 1 ? "minuto" : "minutos"}`}
+                            {`${value} ${value === 1 ? 'minuto' : 'minutos'}`}
                           </MenuItem>
                         ))}
                       </Select>
@@ -624,7 +624,7 @@ function Options({
                     onClick={handleAddOption}
                     color="primary"
                     size="small"
-                    style={{ minWidth: "fit-content" }}
+                    style={{ minWidth: 'fit-content' }}
                   >
                     Añadir opción <AddCircleOutlineIcon />
                   </Button>
@@ -633,9 +633,9 @@ function Options({
                       <Typography
                         variant="h6"
                         style={{
-                          marginBottom: "10px",
-                          borderBottom: "1px solid #ddd",
-                          paddingBottom: "10px",
+                          marginBottom: '10px',
+                          borderBottom: '1px solid #ddd',
+                          paddingBottom: '10px',
                         }}
                       >
                         Opciones
@@ -644,9 +644,9 @@ function Options({
                         <div
                           key={opcion.id}
                           style={{
-                            display: "flex",
-                            alignItems: "center",
-                            marginBottom: "5px",
+                            display: 'flex',
+                            alignItems: 'center',
+                            marginBottom: '5px',
                           }}
                         >
                           <TextField
@@ -655,7 +655,7 @@ function Options({
                             onChange={(e) =>
                               handleOptionChange(opcion.id, e.target.value)
                             }
-                            style={{ marginRight: "10px" }}
+                            style={{ marginRight: '10px' }}
                             error={
                               !!errors.questions?.[currentIndex]?.[
                                 `option${index}`
