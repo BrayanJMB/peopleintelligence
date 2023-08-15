@@ -39,13 +39,13 @@ export default function UploadImage({informationConversation, handlePhoto, text,
             startIcon={
               <FileUploadOutlinedIcon
                 sx={{
-                  position: "absolute",
+                  position: 'absolute',
                   left: 15,
                   top: 6,
                 }}
               />
             }
-            style={{ marginTop: "0.5rem" }}
+            style={{ marginTop: '0.5rem' }}
             color="blue"
             onClick={handleClick}
           >

@@ -1,14 +1,16 @@
-import { useState, useEffect } from "react";
-import { Box } from "@mui/material";
-import DataAdministration from "../../../pages/InfoAdmin/components/DataAdministration";
-import { useSelector } from "react-redux";
-import styles from "./SurveyChat.module.css";
-import { useNavigate } from "react-router-dom";
-import { fecthSurveyChatAPI } from "../../../services/ChatLive/fetchSurveyChat.service";
-import { deleteSurveyChatAPI } from "../../../services/ChatLive/deleteSurveyChat.service";
-import MyLoader from "../../MyLoader/MyLoader";
+import { useEffect,useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { handleDelete } from "../../../utils/helpers";
+
+import DataAdministration from '../../../pages/InfoAdmin/components/DataAdministration';
+import { deleteSurveyChatAPI } from '../../../services/ChatLive/deleteSurveyChat.service';
+import { fecthSurveyChatAPI } from '../../../services/ChatLive/fetchSurveyChat.service';
+import { handleDelete } from '../../../utils/helpers';
+import MyLoader from '../../MyLoader/MyLoader';
+
+import styles from './SurveyChat.module.css';
 export const SurveyChat = ({ handleMove }) => {
   const navigate = useNavigate();
   // Usar estos datos ficticios en tu estado:
@@ -18,18 +20,18 @@ export const SurveyChat = ({ handleMove }) => {
   const { enqueueSnackbar } = useSnackbar();
   const surveyChatColumns = [
     {
-      id: "name",
-      label: "Nombre encuesta",
+      id: 'name',
+      label: 'Nombre encuesta',
       numeric: false,
     },
     {
-      id: "name",
-      label: "moderador",
+      id: 'name',
+      label: 'moderador',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
@@ -37,16 +39,16 @@ export const SurveyChat = ({ handleMove }) => {
   const mapSurveyChat = (surveyChat) =>
     surveyChat.map((surveyChat) => [
       {
-        column: "name",
+        column: 'name',
         value: surveyChat.title,
       },
       {
-        column: "moderator",
+        column: 'moderator',
         value: surveyChat.title,
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleView: handleView,
           handleDelete: handleDeleteSurveyChat,
@@ -61,7 +63,7 @@ export const SurveyChat = ({ handleMove }) => {
   };
 
   const handleView = async (id) => {
-    handleMove(`/conversation/moderator/${id}`, "moderator");
+    handleMove(`/conversation/moderator/${id}`, 'moderator');
   };
 
   const handleDeleteSurveyChat = async (id) => {
@@ -92,11 +94,11 @@ export const SurveyChat = ({ handleMove }) => {
 
   const some = [
     {
-      nameAdministration: "Encuestas",
+      nameAdministration: 'Encuestas',
       tableInformation: {
-        title: "Encuestas",
+        title: 'Encuestas',
         buttonCreateName: null,
-        eventButton: "",
+        eventButton: '',
         columns: surveyChatColumns,
         rows: mapSurveyChat(surveyChat),
       },
@@ -106,8 +108,8 @@ export const SurveyChat = ({ handleMove }) => {
   return (
     <div className={styles.content}>
       <div className={styles.crud}>
-        <Box sx={{ display: "flex" }}>
-          <div style={{ backgroundColor: "white" }}>
+        <Box sx={{ display: 'flex' }}>
+          <div style={{ backgroundColor: 'white' }}>
             <div className={styles.DataTable}>
               {loading && <MyLoader />}
               <div className={styles.DataTable2}>

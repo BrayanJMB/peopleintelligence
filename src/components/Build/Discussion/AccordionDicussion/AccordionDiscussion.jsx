@@ -1,18 +1,19 @@
-import { useState, useEffect, useRef } from "react";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Button } from "@mui/material";
-import Options from "../Options/Options";
-import Select from "@mui/material/Select";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Grid from "@mui/material/Grid";
+import { useEffect, useRef,useState } from 'react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Button } from '@mui/material';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
 
-const questionTypes = ["texto", "seleccionsimple", "Opinión", "experiencia"];
+import Options from '../Options/Options';
+
+const questionTypes = ['texto', 'seleccionsimple', 'Opinión', 'experiencia'];
 export default function AccordionDiscussion({
   isConversation,
   demographics,
@@ -25,16 +26,16 @@ export default function AccordionDiscussion({
   setIsAccordionOpen,
   demographicRefs,
 }) {
-  console.log(questions)
-  console.log(demographics)
-  const [item, setItem] = useState("");
+  console.log(questions);
+  console.log(demographics);
+  const [item, setItem] = useState('');
 
   const handleAddDemographic = () => {
     setDemographics((prevState) => [
       ...prevState,
       {
-        name: "",
-        description: "",
+        name: '',
+        description: '',
         demographicDetails: [],
       },
     ]);
@@ -57,10 +58,10 @@ export default function AccordionDiscussion({
       ...prevState,
       {
         orderNumber: null,
-        name: "",
+        name: '',
         timeLimit: null,
         type: valor,
-        urlMedia: "",
+        urlMedia: '',
         options: [],
       },
     ]);
@@ -98,7 +99,7 @@ export default function AccordionDiscussion({
         >
           <Typography>Accordion 1</Typography>
         </AccordionSummary>
-        <AccordionDetails style={{ overflow: "auto", maxHeight: "400px" }}>
+        <AccordionDetails style={{ overflow: 'auto', maxHeight: '400px' }}>
           {isConversation ? (
             <>
               <FormControl sx={{ m: 1, minWidth: 120 }}>

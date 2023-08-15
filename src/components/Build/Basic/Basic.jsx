@@ -1,16 +1,19 @@
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import InterestsOutlinedIcon from "@mui/icons-material/InterestsOutlined";
-import NotesIcon from "@mui/icons-material/Notes";
-import TagFacesIcon from "@mui/icons-material/TagFaces";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import TextField from "@mui/material/TextField";
-import { selectCompanyById } from "../../../features/companies/companiesSlice";
-import UploadImage from "./UploadImage";
-import styles from "./Basic.module.css";
-import MyLoader from "../../MyLoader/MyLoader";
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import InterestsOutlinedIcon from '@mui/icons-material/InterestsOutlined';
+import NotesIcon from '@mui/icons-material/Notes';
+import TagFacesIcon from '@mui/icons-material/TagFaces';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
+
+import { selectCompanyById } from '../../../features/companies/companiesSlice';
+import MyLoader from '../../MyLoader/MyLoader';
+
+import UploadImage from './UploadImage';
+
+import styles from './Basic.module.css';
 
 
 
@@ -23,8 +26,8 @@ export default function Basic(props) {
   );
   const handleNext = () => {
     if (fieldsValidation()) {
-      props.handleNextStepper()
-      props.handleMove("", "discussion")
+      props.handleNextStepper();
+      props.handleMove('', 'discussion');
     }
 
     else return;
@@ -36,28 +39,28 @@ export default function Basic(props) {
     setHelperText({});
     setError({});
 
-    if (props.survey.title === "") {
+    if (props.survey.title === '') {
       setHelperText((prevHelperText) => ({
         ...prevHelperText,
-        title: "Este campo es requerido",
+        title: 'Este campo es requerido',
       }));
       setError((prevError) => ({ ...prevError, title: true }));
       hasNotErrors = false;
     }
 
-    if (props.moderator.name === "") {
+    if (props.moderator.name === '') {
       setHelperText((prevHelperText) => ({
         ...prevHelperText,
-        name: "Este campo es requerido",
+        name: 'Este campo es requerido',
       }));
       setError((prevError) => ({ ...prevError, name: true }));
       hasNotErrors = false;
     }
 
-    if (props.survey.description === "") {
+    if (props.survey.description === '') {
       setHelperText((prevHelperText) => ({
         ...prevHelperText,
-        description: "Este campo es requerido",
+        description: 'Este campo es requerido',
       }));
       setError((prevError) => ({ ...prevError, description: true }));
       hasNotErrors = false;
@@ -70,9 +73,9 @@ export default function Basic(props) {
     <div className={styles.basic}>
       <span
         style={{
-          marginLeft: "2rem",
-          fontWeight: "bold",
-          fontSize: "1.2rem",
+          marginLeft: '2rem',
+          fontWeight: 'bold',
+          fontSize: '1.2rem',
         }}
       >
         Detalles básicos
@@ -82,7 +85,7 @@ export default function Basic(props) {
           <div>
             {props.loading && <MyLoader/>}
             <div className={styles.general}>
-              <NotesIcon color="blue" style={{ marginRight: "1rem" }} />
+              <NotesIcon color="blue" style={{ marginRight: '1rem' }} />
               <p>Título Conversación (Requerido)</p>
             </div>
             <div className={styles.required}>
@@ -92,9 +95,9 @@ export default function Basic(props) {
                   label="Título encuesta"
                   value={props.survey.title}
                   name="title"
-                  onChange={(event) => props.handleChange(event, "survey")}
+                  onChange={(event) => props.handleChange(event, 'survey')}
                   size="small"
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                   error={error.title}
                   helperText={helperText.title}
                 />
@@ -105,9 +108,9 @@ export default function Basic(props) {
                   label="Nombre moderador"
                   value={props.moderator.name} 
                   name="name"
-                  onChange={(event) => props.handleChange(event, "moderator")}
+                  onChange={(event) => props.handleChange(event, 'moderator')}
                   size="small"
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                   error={error.name}
                   helperText={helperText.name}
                 />
@@ -118,7 +121,7 @@ export default function Basic(props) {
             <div className={styles.optional}>
               <InterestsOutlinedIcon
                 color="blue"
-                style={{ marginRight: "1rem" }}
+                style={{ marginRight: '1rem' }}
               />
 
               <p>Personalizar (Opcional)</p>
@@ -147,13 +150,13 @@ export default function Basic(props) {
 
               <div>
                 <span>Introducción</span>
-                <div style={{ marginTop: "0.2rem" }}>
+                <div style={{ marginTop: '0.2rem' }}>
                   <span
                     style={{
-                      color: "grey",
-                      fontSize: "0.8rem",
-                      fontWeight: "500",
-                      resize: "none",
+                      color: 'grey',
+                      fontSize: '0.8rem',
+                      fontWeight: '500',
+                      resize: 'none',
                     }}
                   >
                     Los participantes verán esto antes de los onboarding polls
@@ -167,21 +170,21 @@ export default function Basic(props) {
                     minRows={6}
                     maxRows={8}
                     style={{
-                      width: "100%",
-                      marginTop: "0.5rem",
+                      width: '100%',
+                      marginTop: '0.5rem',
                     }}
                     name="description"
                     value={props.survey.description}
-                    onChange={(event) => props.handleChange(event, "survey")}
+                    onChange={(event) => props.handleChange(event, 'survey')}
                     
                   />
                 </div>
-                <div style={{ marginTop: "1rem" }}>
+                <div style={{ marginTop: '1rem' }}>
                   <Button
                     fullWidth
                     variant="contained"
                     onClick={handleNext}
-                    style={{ color: "white" }}
+                    style={{ color: 'white' }}
                     color="blue"
                   >
                     Continuar
@@ -197,32 +200,32 @@ export default function Basic(props) {
               <div className={styles.inside}>
                 <div
                   style={{
-                    backgroundColor: "grey",
-                    width: "24%",
-                    height: "4px",
-                    borderRadius: "1rem",
-                    marginTop: "0.5rem",
+                    backgroundColor: 'grey',
+                    width: '24%',
+                    height: '4px',
+                    borderRadius: '1rem',
+                    marginTop: '0.5rem',
                   }}
                 ></div>
                 <div
                   style={{
-                    backgroundColor: "grey",
-                    width: "90%",
-                    height: "2px",
-                    borderRadius: "1rem",
-                    marginTop: "1rem",
-                    marginBottom: "1rem",
+                    backgroundColor: 'grey',
+                    width: '90%',
+                    height: '2px',
+                    borderRadius: '1rem',
+                    marginTop: '1rem',
+                    marginBottom: '1rem',
                   }}
                 ></div>
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "flex-start",
-                    width: "100%",
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                    width: '100%',
                   }}
                 >
-                  <div style={{ marginBottom: "0.2rem", marginLeft: "0.5rem" }}>
+                  <div style={{ marginBottom: '0.2rem', marginLeft: '0.5rem' }}>
                     <img
                       src={company?.Logotipo ?? null}
                       alt="logotipo"
@@ -230,9 +233,9 @@ export default function Basic(props) {
                     />
                     <span
                       style={{
-                        color: "grey",
-                        fontSize: "0.7rem",
-                        marginLeft: "0.8rem",
+                        color: 'grey',
+                        fontSize: '0.7rem',
+                        marginLeft: '0.8rem',
                       }}
                     >
                       {company?.nombreCompania}
@@ -243,13 +246,13 @@ export default function Basic(props) {
                       src={
                         props.survey.imageUrl
                           ? props.survey.imageUrl
-                          : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlNXd9tJhoyJMieolHXk9y6MmWuT7Y2bBv7ftTIS0U7Q&s"
+                          : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlNXd9tJhoyJMieolHXk9y6MmWuT7Y2bBv7ftTIS0U7Q&s'
                       }
                       alt="profildde"
                       className={styles.coverright}
                     />
                   </div>
-                  <h2 style={{ marginLeft: "0.8rem" }}>{props.survey.title}</h2>
+                  <h2 style={{ marginLeft: '0.8rem' }}>{props.survey.title}</h2>
                   <div className={styles.bottom}>
                     <div className={styles.avatarright}>
                       <div>
@@ -268,7 +271,7 @@ export default function Basic(props) {
                       <div>
                         {props.moderator.name
                           ? props.moderator.name
-                          : "Moderator"}
+                          : 'Moderator'}
                       </div>
                     </div>
                   </div>

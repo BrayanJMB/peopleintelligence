@@ -1,22 +1,25 @@
-import { useState, useRef, useEffect, createRef } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import ClearIcon from "@mui/icons-material/Clear";
-import ForumOutlinedIcon from "@mui/icons-material/ForumOutlined";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Modal from "@mui/material/Modal";
-import styles from "./Discussion.module.css";
-import AccordionDiscussion from "./AccordionDicussion/AccordionDiscussion";
-import { storeSurveyChatAPI } from "../../../services/ChatLive/storeSurveyChat.service";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { List, ListItem, ListItemText } from "@mui/material";
-import { updateSurveyChatAPI } from "../../../services/ChatLive/updateSurveyChat.service";
+import { createRef,useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ClearIcon from '@mui/icons-material/Clear';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
+import { List, ListItem, ListItemText } from '@mui/material';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Modal from '@mui/material/Modal';
+import Typography from '@mui/material/Typography';
+import axios from 'axios';
+
+import { storeSurveyChatAPI } from '../../../services/ChatLive/storeSurveyChat.service';
+import { updateSurveyChatAPI } from '../../../services/ChatLive/updateSurveyChat.service';
+
+import AccordionDiscussion from './AccordionDicussion/AccordionDiscussion';
+
+import styles from './Discussion.module.css';
 function stringToColor(string) {
   let hash = 0;
   let i;
@@ -26,7 +29,7 @@ function stringToColor(string) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }
 
-  let color = "#";
+  let color = '#';
 
   for (i = 0; i < 3; i += 1) {
     const value = (hash >> (i * 8)) & 0xff;
@@ -40,7 +43,7 @@ function stringToColor(string) {
 function stringAvatar(name) {
   return {
     style: { backgroundColor: stringToColor(name) },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+    children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
   };
 }
 
@@ -73,7 +76,7 @@ export default function Discussion({
     handleCloseModal();
     handleOpenModaltemplate();
   };
-  const [toogle, setToggle] = useState("edit");
+  const [toogle, setToggle] = useState('edit');
   const [errors, setErrors] = useState([]);
   const [isDemographicsAccordionOpen, setIsDemographicsAccordionOpen] =
     useState(false);
@@ -98,11 +101,11 @@ export default function Discussion({
       const payload = {
         moderator: {
           ...moderator,
-          avatarUrl: urls ? urls.data.files[1] : "",
+          avatarUrl: urls ? urls.data.files[1] : '',
         },
         survey: {
           ...survey,
-          imageUrl: urls ? urls.data.files[0] : "",
+          imageUrl: urls ? urls.data.files[0] : '',
           questions: questions.map((q, index) => ({
             ...q,
             orderNumber: index + 1,
@@ -124,18 +127,18 @@ export default function Discussion({
       if (!isUpdate) {
         const response = await storeSurveyChatAPI(payload);
         if (response.status === 200) {
-          alert("Chat Live creado satisfactoriamente");
-          handleMove("/conversation/Live", "basic");
+          alert('Chat Live creado satisfactoriamente');
+          handleMove('/conversation/Live', 'basic');
         } else {
-          alert("Hubo un error al crear la encuesta de chat");
+          alert('Hubo un error al crear la encuesta de chat');
         }
       } else {
         const response = await updateSurveyChatAPI(payload.survey);
         if (response.status === 200) {
-          alert("Chat Live actualizado satisfactoriamente");
-          handleMove("/conversation/Live", "basic");
+          alert('Chat Live actualizado satisfactoriamente');
+          handleMove('/conversation/Live', 'basic');
         } else {
-          alert("Hubo un error al crear la encuesta de chat");
+          alert('Hubo un error al crear la encuesta de chat');
         }
       }
     }
@@ -143,24 +146,24 @@ export default function Discussion({
 
   const storeAvatarAndSurveyImage = async () => {
     const formData = new FormData();
-    formData.append("surveyImage", surveyImage);
-    formData.append("moderatorAvatar", avatarImage);
-    formData.append("companyId", "1");
-    formData.append("surveyId", survey.id);
+    formData.append('surveyImage', surveyImage);
+    formData.append('moderatorAvatar', avatarImage);
+    formData.append('companyId', '1');
+    formData.append('surveyId', survey.id);
     try {
       const response = await axios.post(
-        `https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImages`,
+        'https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImages',
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
           },
         }
       );
       if (response) {
         return response;
       } else {
-        console.error("Error al subir la imagen:", response);
+        console.error('Error al subir la imagen:', response);
       }
     } catch (error) {
       console.log(error);
@@ -178,18 +181,18 @@ export default function Discussion({
 
       // Validar si el nombre del demográfico está vacío
       if (!demographic.name.trim()) {
-        currentErrors.name = "El nombre demográfico no puede estar vacío.";
+        currentErrors.name = 'El nombre demográfico no puede estar vacío.';
       } else {
         // Validar si hay al menos 2 opciones
         if (demographic.demographicDetails.length < 1) {
-          currentErrors.name = "Debe haber al menos 1 opcion.";
+          currentErrors.name = 'Debe haber al menos 1 opcion.';
         }
       }
 
       // Validar si las opciones están vacías
       demographic.demographicDetails.forEach((opcion, index) => {
         if (!opcion.value.trim()) {
-          currentErrors[`option${index}`] = "Esta opción no puede estar vacía.";
+          currentErrors[`option${index}`] = 'Esta opción no puede estar vacía.';
         }
       });
 
@@ -202,32 +205,32 @@ export default function Discussion({
       // Validar si el nombre de la pregunta está vacío
       if (!question.name.trim()) {
         currentQuestionErrors.name =
-          "El nombre de la pregunta no puede estar vacío.";
+          'El nombre de la pregunta no puede estar vacío.';
       } else {
         // Validar si hay al menos 2 opciones
         if (
           question.options.length < 2 &&
-          question.type !== "texto" &&
-          question.type !== "Opinión"
+          question.type !== 'texto' &&
+          question.type !== 'Opinión'
         ) {
-          currentQuestionErrors.name = "Debe haber al menos 2 opciones.";
+          currentQuestionErrors.name = 'Debe haber al menos 2 opciones.';
         }
       }
 
       // Validar si el timeLimit es nulo
-      if (!question.timeLimit && question.type !== "texto") {
-        currentQuestionErrors.timeLimit = "Debe seleccionar un tiempo";
+      if (!question.timeLimit && question.type !== 'texto') {
+        currentQuestionErrors.timeLimit = 'Debe seleccionar un tiempo';
       }
 
       // Validar si las opciones están vacías
       question.options.forEach((option, index) => {
         if (option.value && !option.value.trim()) {
           currentQuestionErrors[`option${index}`] =
-            "Esta opción no puede estar vacía.";
+            'Esta opción no puede estar vacía.';
         }
         if (option.ExperienceQuestion && !option.ExperienceQuestion.trim()) {
           currentQuestionErrors[`ExperienceQuestion${index}`] =
-            "Esta opción no puede estar vacía.";
+            'Esta opción no puede estar vacía.';
         }
       });
 
@@ -277,7 +280,7 @@ export default function Discussion({
     <div className={styles.discussion}>
       <Button
         onClick={() => {
-          handleMove("", "basic");
+          handleMove('', 'basic');
           handleBack();
         }}
       >
@@ -286,16 +289,16 @@ export default function Discussion({
       <div className={styles.content}>
         <div
           style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-around",
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
           }}
         >
           <p> Nombre encuesta </p>
           <div>
             <Button>Compartir</Button>
             <Button onClick={handleSubmit}>
-              {isUpdate ? "Editar" : "Publicar"}
+              {isUpdate ? 'Editar' : 'Publicar'}
             </Button>
           </div>
         </div>
@@ -304,9 +307,9 @@ export default function Discussion({
             <div>
               <span
                 style={{
-                  marginLeft: "2rem",
-                  fontWeight: "bold",
-                  fontSize: "1.2rem",
+                  marginLeft: '2rem',
+                  fontWeight: 'bold',
+                  fontSize: '1.2rem',
                 }}
               >
                 Guía de discusión
@@ -324,11 +327,11 @@ export default function Discussion({
               />
             </div>
             <div className={styles.rightbox}>
-              <p style={{ width: "60%" }}>
+              <p style={{ width: '60%' }}>
                 Prepare messages and questions you will ask participants during
                 this Conversation.
               </p>
-              <p style={{ width: "60%" }}>
+              <p style={{ width: '60%' }}>
                 Not sur where to start? Try a free template crafted by your
                 Remesh Research Team
               </p>
@@ -348,32 +351,32 @@ export default function Discussion({
           >
             <Box className={styles.modal}>
               <div className={styles.modaltop}>
-                <p style={{ fontWeight: "bold", marginTop: "0.8rem" }}>
+                <p style={{ fontWeight: 'bold', marginTop: '0.8rem' }}>
                   Acá puedes usar/importar una conversacion existente
                 </p>
                 <div>
                   <IconButton onClick={handleCloseModal}>
-                    <ClearIcon sx={{ fontSize: "40px" }} />
+                    <ClearIcon sx={{ fontSize: '40px' }} />
                   </IconButton>
                 </div>
               </div>
               <div className={styles.modalbuttom}>
                 {!accordionOpen ? (
                   <div className={styles.blocks} onClick={handleOpenAccordion}>
-                    <ForumOutlinedIcon sx={{ fontSize: "40px" }} />
-                    <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                    <ForumOutlinedIcon sx={{ fontSize: '40px' }} />
+                    <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
                       Conversación existente
                     </p>
-                    <p style={{ color: "grey", fontSize: "0.8rem" }}>
+                    <p style={{ color: 'grey', fontSize: '0.8rem' }}>
                       Grab the discussion guide from another conversation
                     </p>
                   </div>
                 ) : (
                   <div
                     style={{
-                      maxWidth: "600px",
-                      maxHeight: "300px",
-                      overflowY: "auto",
+                      maxWidth: '600px',
+                      maxHeight: '300px',
+                      overflowY: 'auto',
                     }}
                   >
                     <Accordion expanded={true}>

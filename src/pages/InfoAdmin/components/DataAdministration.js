@@ -1,17 +1,17 @@
-import { useState } from "react";
-import AddIcon from "@mui/icons-material/Add";
-import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Stack from "@mui/material/Stack";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
+import { useState } from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 
-import MyCard from "../../../components/MyCard/MyCard";
-import MyLoader from "../../../components/MyLoader/MyLoader";
-import MyTable from "../../../components/MyTable/MyTable";
+import MyCard from '../../../components/MyCard/MyCard';
+import MyLoader from '../../../components/MyLoader/MyLoader';
+import MyTable from '../../../components/MyTable/MyTable';
 
 export default function DataAdministration(props) {
   const [currentTab, setCurrentTab] = useState(0);
@@ -30,16 +30,16 @@ export default function DataAdministration(props) {
     setCurrentTab(newTab);
   };
   return (
-    <MyCard sx={{ width: "100%" }}>
+    <MyCard sx={{ width: '100%' }}>
       {props.dataAdministration.map((value, adminIndex) => (
-        <Box sx={{ width: "100%" }} key={adminIndex}>
+        <Box sx={{ width: '100%' }} key={adminIndex}>
           {value.nameAdministration === props.type &&
           value.tabsInformation.length > 0 ? (
             <>
               <Box
                 sx={{
-                  display: "flex",
-                  justifyContent: "between",
+                  display: 'flex',
+                  justifyContent: 'between',
                 }}
               >
                 {value.needMoveTabs && (
@@ -51,8 +51,8 @@ export default function DataAdministration(props) {
                 )}
                 <Tabs
                   sx={{
-                    width: "90%",
-                    justifyContent: "center",
+                    width: '90%',
+                    justifyContent: 'center',
                   }}
                   value={currentTab}
                   onChange={(event, newValue) =>
