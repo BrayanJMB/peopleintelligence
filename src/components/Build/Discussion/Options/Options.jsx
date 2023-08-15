@@ -27,6 +27,7 @@ function Options({
   handleRemoveConversation,
   errors,
 }) {
+  console.log(question);
   const isText = (item) => {
     switch (item.toLowerCase()) {
       case 'texto':

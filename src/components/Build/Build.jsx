@@ -147,7 +147,9 @@ export default function Build({ stage, handleMove }) {
     }
 
     const { data } = await fecthSurveyChatAPI(currentCompany.id);
+    console.log(data);
     const currentSurvey = id ? data.find((element) => element.id === id) : data;
+    console.log(currentSurvey);
     setSurveyChat(currentSurvey);
   };
 
@@ -191,7 +193,6 @@ export default function Build({ stage, handleMove }) {
       description: surveyChat.description,
       imageUrl: surveyChat.imageUrl,
     }));
-
     // Actualizar el estado de las preguntas y demográficos
     setQuestions(surveyChat.questions);
     setDemographics(surveyChat.demographic);
