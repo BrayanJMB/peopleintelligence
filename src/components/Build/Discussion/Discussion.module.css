@@ -1,6 +1,7 @@
 .discussion {
   width: 100%;
   height: 85%;
+  background-color: white;
 }
 .content {
   display: flex;
@@ -9,7 +10,7 @@
 }
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 .left {
   display: flex;

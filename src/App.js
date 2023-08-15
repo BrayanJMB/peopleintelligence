@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Route,Routes } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
-
+import { Moderator } from './components/Build/Moderator/Moderator';
 import AnswerSurvey from './pages/AnswerSurvey/AnswerSurvey';
 import Conversation from './pages/Conversation/Conversation';
 import Dashboard from './pages/Dashboard/Dashboard';
@@ -92,6 +92,10 @@ export default function App() {
                   element={<Conversation />}
                   exact
                 />
+                <Route path="/conversation/:type/:id" element={<Conversation />} exact/>
+                <Route path="/conversation/:type/update-survey-chat/:id" element={<Conversation />} exact/>
+                
+
                 <Route path="/journey" element={<Journey />} exact />
                 <Route path="/journey/survey/:id/detail" element={<SurveyDetailPage />} />
                 <Route
