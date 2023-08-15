@@ -1,4 +1,4 @@
-import { useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
@@ -92,7 +92,9 @@ export default function Build({ stage, handleMove }) {
   };
 
   const handleReset = (name) => {
-    setModerator({ ...moderator, [name]: '' });
+    console.log(name);
+    if (name.includes('avatar')) setAvatarImage(null);
+    else setSurveyImage(null);
   };
 
   const handleChange = (event, type) => {

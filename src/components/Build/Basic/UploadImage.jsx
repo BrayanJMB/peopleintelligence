@@ -9,9 +9,6 @@ export default function UploadImage({informationConversation, handlePhoto, text,
     display: 'none',
   };
 
-  const handleClick = () => {
-    fileInputRef.current.click();
-  };
   return (
     <>
       <span>Imagen {text} (optional)</span>
