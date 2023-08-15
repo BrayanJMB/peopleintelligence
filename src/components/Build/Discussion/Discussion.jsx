@@ -110,7 +110,7 @@ export default function Discussion({
             ...q,
             orderNumber: index + 1,
             options: q.options.map((option) => {
-              const {rest } = option;
+              const {...rest } = option;
               return rest;
             }),
           })),
