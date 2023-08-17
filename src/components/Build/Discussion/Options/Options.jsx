@@ -42,6 +42,12 @@ function Options({
   const isExperience = () => {
     return 'experiencia';
   };
+  const isImage = () => {
+    return 'imagen';
+  };
+  const isVideo = () => {
+    return 'video';
+  };
   const isSelecionSimple = (item) => {
     switch (item.toLowerCase()) {
       case 'seleccionsimple':
@@ -72,7 +78,7 @@ function Options({
     }
   };
 
-  const handleOptionChange = (id, value, ExperienceQuestion) => {
+  const handleOptionChange = (id, value, experienceQuestion) => {
     if (!isConversation) {
       debugger;
       const updatedOpciones = demographic.demographicDetails.map((opcion) =>
@@ -90,7 +96,7 @@ function Options({
       });
     } else {
       const updatedOpciones = question.options.map((opcion) =>
-        opcion.id === id ? { ...opcion, value, ExperienceQuestion } : opcion
+        opcion.id === id ? { ...opcion, value, experienceQuestion } : opcion
       );
       const newConversation = { ...question, options: updatedOpciones };
       setQuestion((prevState) => {
@@ -119,7 +125,7 @@ function Options({
         return newDemographics;
       });
     } else {
-      const newId = Date.now();
+      const newId = Date.now().toString();
       const newOption = {
         id: newId,
         value: '',
@@ -127,7 +133,7 @@ function Options({
       };
 
       if (item === 'experiencia') {
-        newOption.ExperienceQuestion = '';
+        newOption.experienceQuestion = '';
       }
 
       const newConversation = {
@@ -287,10 +293,7 @@ function Options({
                         size="small"
                         value={opcion.value}
                         onChange={(e) =>
-                          handleOptionChange(
-                            opcion.id,
-                            e.target.value
-                          )
+                          handleOptionChange(opcion.id, e.target.value)
                         }
                         style={{ marginRight: '20px' }}
                         error={
@@ -334,13 +337,16 @@ function Options({
                     marginBottom: '10px',
                   }}
                 >
-                  <Chip
-                    label="Pregunta de texto"
-                    color="primary"
-                    size="small"
-                    variant="outlined"
-                    style={{ marginBottom: '5px' }}
-                  />
+                  <div>
+                    <Chip
+                      label="Pregunta de texto"
+                      color="primary"
+                      size="small"
+                      variant="outlined"
+                      style={{ marginBottom: '5px' }}
+                    />
+                    <Button onClick={handleRemoveConversation}>Eliminar</Button>
+                  </div>
                   <TextField
                     size="small"
                     label="Nombre Demográfico"
@@ -349,7 +355,6 @@ function Options({
                     error={!!errors.questions?.[currentIndex]?.name}
                     helperText={errors.questions?.[currentIndex]?.name}
                   />
-                  <Button onClick={handleRemoveConversation}>Eliminar</Button>
                 </div>
               </CardContent>
             </Card>
@@ -363,13 +368,16 @@ function Options({
                     flexDirection: 'column',
                   }}
                 >
-                  <Chip
-                    label="Opinion"
-                    color="primary"
-                    size="small"
-                    variant="outlined"
-                    style={{ marginBottom: '5px' }}
-                  />
+                  <div>
+                    <Chip
+                      label="Opinion"
+                      color="primary"
+                      size="small"
+                      variant="outlined"
+                      style={{ marginBottom: '5px' }}
+                    />
+                    <Button onClick={handleRemoveConversation}>Eliminar</Button>
+                  </div>
                   <div
                     style={{
                       display: 'flex',
@@ -411,7 +419,6 @@ function Options({
                       </FormHelperText>
                     </FormControl>
                   </div>
-                  <Button onClick={handleRemoveConversation}>Eliminar</Button>
                 </div>
               </CardContent>
             </Card>
@@ -426,13 +433,17 @@ function Options({
                     marginBottom: '10px',
                   }}
                 >
-                  <Chip
-                    label="Experiencia"
-                    color="primary"
-                    size="small"
-                    variant="outlined"
-                    style={{ marginBottom: '5px' }}
-                  />
+                  <div>
+                    <Chip
+                      label="Experiencia"
+                      color="primary"
+                      size="small"
+                      variant="outlined"
+                      style={{ marginBottom: '5px' }}
+                    />
+                    <Button onClick={handleRemoveConversation}>Eliminar</Button>
+                  </div>
+
                   <div
                     style={{
                       display: 'flex',
@@ -509,7 +520,7 @@ function Options({
                               handleOptionChange(
                                 opcion.id,
                                 e.target.value,
-                                opcion.ExperienceQuestion
+                                opcion.experienceQuestion
                               )
                             }
                             error={
@@ -528,7 +539,7 @@ function Options({
                           <TextField
                             size="small"
                             label={`Opción ${opcion.id}`}
-                            value={opcion.ExperienceQuestion}
+                            value={opcion.experienceQuestion}
                             onChange={(e) =>
                               handleOptionChange(
                                 opcion.id,
@@ -538,12 +549,12 @@ function Options({
                             }
                             error={
                               !!errors.questions?.[currentIndex]?.[
-                                `ExperienceQuestion${index}`
+                                `experienceQuestion${index}`
                               ]
                             }
                             helperText={
                               errors.questions?.[currentIndex]?.[
-                                `ExperienceQuestion${index}`
+                                `experienceQuestion${index}`
                               ]
                             }
                             style={{ marginRight: '10px' }}
@@ -555,7 +566,6 @@ function Options({
                       ))}
                     </>
                   )}
-                  <Button onClick={handleRemoveConversation}>Eliminar</Button>
                 </div>
               </CardContent>
             </Card>
@@ -570,13 +580,16 @@ function Options({
                     marginBottom: '10px',
                   }}
                 >
-                  <Chip
-                    label="Seleccion simple"
-                    color="primary"
-                    size="small"
-                    variant="outlined"
-                    style={{ marginBottom: '5px' }}
-                  />
+                  <div>
+                    <Chip
+                      label="Seleccion simple"
+                      color="primary"
+                      size="small"
+                      variant="outlined"
+                      style={{ marginBottom: '5px' }}
+                    />
+                    <Button onClick={handleRemoveConversation}>Eliminar</Button>
+                  </div>
                   <div
                     style={{
                       display: 'flex',
@@ -675,7 +688,6 @@ function Options({
                       ))}
                     </>
                   )}
-                  <Button onClick={handleRemoveConversation}>Eliminar</Button>
                 </div>
               </CardContent>
             </Card>
