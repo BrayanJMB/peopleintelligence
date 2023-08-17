@@ -44,6 +44,7 @@ const steps = ['Detalles básicos', 'Preguntas y demográficos'];
 export default function Build({ stage, handleMove }) {
   const { id } = useParams();
   const location = useLocation();
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const currentCompany = useSelector((state) => state.companies.currentCompany);
@@ -159,7 +160,7 @@ export default function Build({ stage, handleMove }) {
 
   const resetModerator = () => {
     setModerator({
-      moderatorId: '123',
+      moderatorId: userInfo.user,
       name: '',
       avatarUrl: '',
     });
