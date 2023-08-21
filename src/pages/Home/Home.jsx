@@ -188,7 +188,7 @@ export default function Home() {
         .post('Aut/', { bearer: `Bearer ${access_token}` }, config)
         .then((res) => {
           console.log('AUTNETI');
-          console.log(process.env.REACT_APP_API_URL)
+          console.log(process.env.REACT_APP_API_URL);
           let token = res.data.token;
           let decodedToken = decodeToken(token);
           if (!Array.isArray(decodedToken.role)) {
