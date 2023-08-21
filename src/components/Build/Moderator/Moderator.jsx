@@ -1,17 +1,34 @@
-import { useEffect,useState } from 'react';
+import { useCallback,useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import * as signalR from '@microsoft/signalr';
+import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
+import InsertPhotoOutlinedIcon from '@mui/icons-material/InsertPhotoOutlined';
+import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
 import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
-import { Paper } from '@mui/material';
-import { Divider, Icon,Toolbar, Typography } from '@mui/material';
+import SmartDisplayOutlinedIcon from '@mui/icons-material/SmartDisplayOutlined';
+import { Card, CardContent, Grid,Paper } from '@mui/material';
+import { Divider, Icon, Toolbar, Typography } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
+
+import { ChatBox } from './ChatBox';
+
+import styles from './ChatBox.module.css';
+
 export const Moderator = ({ id }) => {
+  function detectURL(message) {
+    var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
+    return message.replace(urlRegex, function (urlMatch) {
+      return '<a href="' + urlMatch + '">' + urlMatch + '</a>';
+    });
+  }
+
   const currentSurvey = {
     id: 'bf4c398f-fb3d-46c1-9df6-b3b2a9c9ecd1',
     Title: 'Encuesta 1',
@@ -74,48 +91,221 @@ export const Moderator = ({ id }) => {
       },
     ],
   };
-  const [startTime, setStartTime] = useState(new Date());
-  const [questionActual, setQuestionActual] = useState(0);
-  const [connectedUsers, setConnectedUsers] = useState(0);
-  console.log(currentSurvey);
-  return (
-    <Box sx={{ height: '100vh', backgroundColor: 'white' }} aria-label="mailbox folders">
-      <div>
-        <p>{currentSurvey.Title}</p>
-      </div>
-      <p>Datos demográficos</p>
-      <List sx={{  backgroundColor: '#cce7ff' }}>
-        {currentSurvey.Demographic.map((demographic) => (
-          <Accordion key={demographic.Name}>
-            <AccordionSummary>
-              <Typography>{demographic.Name}</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              {demographic.DemographicDetails.map((detail)=>(
-                <p>{detail.Value}</p>
-              ))}
-              <List>
 
-              </List>
-            </AccordionDetails>
-          </Accordion>
-        ))}
-      </List>
-      <p>Preguntas</p>
-      <List sx={{  backgroundColor: '#cce7ff' }}>
-        {currentSurvey.Questions.map((option) => (
-          <Accordion key={option.id}>
-            <AccordionSummary>
-              <Typography>{option.Name}</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <List>
-                <p>dsa</p>
-              </List>
-            </AccordionDetails>
-          </Accordion>
-        ))}
-      </List>
+  const questionIcons = [
+    {
+      tipoPregunta: 'texto',
+      icono: <ChatOutlinedIcon />,
+    },
+    {
+      tipoPregunta: 'seleccionsimple',
+      icono: <ListOutlinedIcon />,
+    },
+  ];
+
+  const [messages, setMessages] = useState([]);
+  const [isTyping, setIsTyping] = useState({});
+
+  const sendMessage = (sender, senderAvatar, message) => {
+    setTimeout(() => {
+      let messageFormat = detectURL(message);
+      let newMessageItem = {
+        id: messages.length + 1,
+        sender: sender,
+        senderAvatar: senderAvatar,
+        message: messageFormat,
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+      resetTyping(sender);
+    }, 400);
+  };
+
+  const typing = (writer) => {
+    if (!isTyping[writer]) {
+      setIsTyping((prevIsTyping) => ({ ...prevIsTyping, [writer]: true }));
+    }
+  };
+
+  const resetTyping = (writer) => {
+    setIsTyping((prevIsTyping) => ({ ...prevIsTyping, [writer]: false }));
+  };
+
+  const users = {
+    0: { name: 'Shun', avatar: 'https://i.pravatar.cc/150?img=32' },
+  };
+  return (
+    <Box
+      sx={{
+        height: '100vh',
+        backgroundColor: 'white',
+        display: 'flex',
+        flex: '1',
+      }}
+      aria-label="mailbox folders"
+    >
+      <Grid container>
+        <Grid item xs={4}>
+          <div
+            style={{
+              padding: '2rem',
+              backgroundColor: '#f5f5f5',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              height: '100%',
+            }}
+          >
+            <Card
+              variant="outlined"
+              style={{ width: '100%', marginBottom: '1rem' }}
+            >
+              <CardContent>
+                <Typography variant="h5" component="div">
+                  {currentSurvey.Title}
+                </Typography>
+              </CardContent>
+            </Card>
+
+            <Card
+              variant="outlined"
+              style={{
+                width: '100%',
+                marginBottom: '1rem',
+                backgroundColor: '#cce7ff',
+              }}
+            >
+              <CardContent>
+                <Typography variant="h6" component="div" gutterBottom>
+                  Datos demográficos
+                </Typography>
+                <List>
+                  {currentSurvey.Demographic.map((demographic) => (
+                    <Accordion key={demographic.Name}>
+                      <AccordionSummary>
+                        <Typography>{demographic.Name}</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        {demographic.DemographicDetails.map((detail) => (
+                          <p>{detail.Value}</p>
+                        ))}
+                      </AccordionDetails>
+                    </Accordion>
+                  ))}
+                </List>
+              </CardContent>
+            </Card>
+
+            <Card
+              variant="outlined"
+              style={{ width: '100%', backgroundColor: '#cce7ff' }}
+            >
+              <CardContent>
+                <Typography variant="h6" component="div" gutterBottom>
+                  Preguntas
+                </Typography>
+                <List>
+                  {currentSurvey.Questions.map((option) => {
+                    const iconObject = questionIcons.find(
+                      (d) => d.tipoPregunta === option.Type
+                    );
+                    const iconToDisplay = iconObject ? iconObject.icono : null;
+                    console.log(option.Options);
+                    return (
+                      <>
+                        <div
+                          style={{
+                            backgroundColor: 'white',
+                            heightMin: '100px',
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: 'flex',
+                              padding: '1rem',
+                            }}
+                          >
+                            <Typography>{option.OrderNumber}</Typography>
+                            <div style={{ marginLeft: '2rem' }}>
+                              <span
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                }}
+                              >
+                                <Typography style={{ color: 'blue' }}>
+                                  {iconToDisplay}
+                                </Typography>
+                                <Typography>{option.Type}</Typography>
+
+                                <Typography>
+                                  {option.TimeLimit
+                                    ? ` | ${option.TimeLimit}`
+                                    : null}
+                                </Typography>
+                              </span>
+
+                              <Typography>{option.Name}</Typography>
+                            </div>
+                          </div>
+
+                          {option.Options && option.Options.length > 0 && (
+                            <>
+                              <Accordion
+                                key={option.id}
+                                style={{ boxShadow: 'none', border: 'none' }}
+                              >
+                                <AccordionSummary>
+                                  <Typography>Mostar opciones</Typography>
+                                </AccordionSummary>
+
+                                <AccordionDetails>
+                                  <List>
+                                    <p>dsa</p>
+                                    <p>dsa</p>
+                                    <p>dsa</p>
+                                    <p>dsa</p>
+                                    <p>dsa</p>
+                                    <p>dsa</p>
+                                  </List>
+                                </AccordionDetails>
+                              </Accordion>
+                            </>
+                          )}
+                        </div>
+                        <Divider />
+                      </>
+                    );
+                  })}
+                </List>
+              </CardContent>
+            </Card>
+          </div>
+        </Grid>
+        <Grid item xs={8}>
+          <div
+            style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+          >
+            <p>Hola soy uan prueba</p>
+            <div className={styles.chatApp__room}>
+              {Object.keys(users).map((key) => {
+                const user = users[key];
+                return (
+                  <ChatBox
+                    key={key}
+                    owner={user.name}
+                    ownerAvatar={user.avatar}
+                    sendMessage={sendMessage}
+                    typing={typing}
+                    resetTyping={resetTyping}
+                    messages={messages}
+                    isTyping={isTyping}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </Grid>
+      </Grid>
     </Box>
   );
 };
