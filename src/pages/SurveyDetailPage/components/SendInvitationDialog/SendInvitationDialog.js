@@ -360,7 +360,7 @@ const SendInvitationDialog = ({
     bodyFormData.append('jmails', informationMail);
 
     await fetch(
-      'https://peopleintelligenceapi.azurewebsites.net/api/sendMailJourney',
+      '${REACT_APP_API_URL}sendMailJourney',
       {
         method: 'POST',
         body: bodyFormData,
