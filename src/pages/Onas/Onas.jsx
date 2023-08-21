@@ -124,7 +124,7 @@ export default function Onas() {
       await axios
         .create({
           baseURL:
-            '${process.env.REACT_APP_API_URL}OnasSurvey/EnvioMAilOnas/',
+            `${process.env.REACT_APP_API_URL}OnasSurvey/EnvioMAilOnas/`,
         })
         .get(versionget, config)
         .then((res) => {

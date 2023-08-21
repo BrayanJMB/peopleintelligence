@@ -15,7 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     env: # Aquí defines tus variables de entorno
-      REACT_APP_API_URL: 'https://peopleintelligence-api-test.azurewebsites.net/api/'
+      REACT_APP_API_URL: "https://peopleintelligence-api-test.azurewebsites.net/api/"
+      DOMAINB2C: "test"
     steps:
       - uses: actions/checkout@v3
         with:

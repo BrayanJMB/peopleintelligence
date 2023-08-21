@@ -360,7 +360,7 @@ const SendInvitationDialog = ({
     bodyFormData.append('jmails', informationMail);
 
     await fetch(
-      '${process.env.REACT_APP_API_URL}sendMailJourney',
+      `${REACT_APP_API_URL}sendMailJourney`,
       {
         method: 'POST',
         body: bodyFormData,
