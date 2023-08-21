@@ -143,7 +143,7 @@ export default function One(props) {
       bodyFormData.append('logoTipo', props.info.Compania.Logotipo);
 
       await fetch(
-        `${REACT_APP_API_URL}Autenticacion/LogoCompany?BussinesName=${props.info.Compania.nombreCompania}`,
+        `${process.env.REACT_APP_API_URL}Autenticacion/LogoCompany?BussinesName=${props.info.Compania.nombreCompania}`,
         {
           method: 'POST',
           body: bodyFormData,
