@@ -1,6 +1,7 @@
-import { useRef } from "react";
-import SendIcon from "@mui/icons-material/Send";
-import styles from "./ChatBox.module.css";
+import { useRef } from 'react';
+import SendIcon from '@mui/icons-material/Send';
+
+import styles from './ChatBox.module.css';
 
 export const InputMessage = (props) => {
   const ownerInput = useRef(null);
@@ -15,7 +16,7 @@ export const InputMessage = (props) => {
         ownerAvatarInput.current.value,
         messageInput.current.value
       );
-      messageInput.current.value = "";
+      messageInput.current.value = '';
     }
   };
 
@@ -27,7 +28,7 @@ export const InputMessage = (props) => {
     }
   };
 
-  let loadingClass = props.isLoading ? "chatApp__convButton--loading" : "";
+  let loadingClass = props.isLoading ? 'chatApp__convButton--loading' : '';
 
   return (
     <form onSubmit={handleSendMessage}>

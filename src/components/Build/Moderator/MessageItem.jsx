@@ -1,4 +1,4 @@
-import styles from "./ChatBox.module.css";
+import styles from './ChatBox.module.css';
 
 export const MessageItem = ({ owner, sender, senderAvatar, message }) => {
     let messagePosition = (owner === sender) ? styles.chatApp__convMessageItemRight : styles.chatApp__convMessageItemLeft;

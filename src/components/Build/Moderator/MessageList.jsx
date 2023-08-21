@@ -1,6 +1,8 @@
-import React from 'react'
+import React from 'react';
+
 import { MessageItem } from './MessageItem';
-import styles from "./ChatBox.module.css";
+
+import styles from './ChatBox.module.css';
 
 export const MessageList = ({ owner, messages }) => {
 	return (

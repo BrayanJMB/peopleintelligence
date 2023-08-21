@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { MessageList } from "./MessageList";
-import { InputMessage } from "./InputMessage";
-import styles from "./ChatBox.module.css";
+import { useState } from 'react';
+
+import { InputMessage } from './InputMessage';
+import { MessageList } from './MessageList';
+
+import styles from './ChatBox.module.css';
 
 export const ChatBox = (props) => {
   const [isLoading, setIsLoading] = useState(false);
