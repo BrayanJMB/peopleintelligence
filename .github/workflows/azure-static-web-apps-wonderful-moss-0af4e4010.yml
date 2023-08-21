@@ -16,7 +16,7 @@ jobs:
     name: Build and Deploy Job
     env: # Aquí defines tus variables de entorno
       REACT_APP_API_URL: "https://peopleintelligence-api-test.azurewebsites.net/api/"
-      DOMAINB2C: "test"
+      REACT_APP_DOMAIN_B2C: "test"
     steps:
       - uses: actions/checkout@v3
         with:

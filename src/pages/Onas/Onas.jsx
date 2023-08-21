@@ -88,7 +88,7 @@ export default function Onas() {
       await axios
         .create({
           baseURL:
-            '${process.env.REACT_APP_API_URL}OnasSurvey/',
+            `${process.env.REACT_APP_API_URL}OnasSurvey/`,
         })
         .post('' + userInfo.Company + '/' + version, { data: file }, config2)
         .then((res) => {
