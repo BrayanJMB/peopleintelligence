@@ -1745,7 +1745,7 @@ export default function InfoAdmin() {
     bodyFormData.append('data', event.target.files[0]);
 
     await fetch(
-      `https://peopleintelligenceapi.azurewebsites.net/api/Employee/EmployeesCsv/${userInfo.Company}`,
+      `${process.env.REACT_APP_API_URL}Employee/EmployeesCsv/${userInfo.Company}`,
       {
         method: 'POST',
         body: bodyFormData,

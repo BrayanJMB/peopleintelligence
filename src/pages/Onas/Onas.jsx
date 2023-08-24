@@ -88,7 +88,7 @@ export default function Onas() {
       await axios
         .create({
           baseURL:
-            'https://peopleintelligenceapi.azurewebsites.net/api/OnasSurvey/',
+            `${process.env.REACT_APP_API_URL}OnasSurvey/`,
         })
         .post('' + userInfo.Company + '/' + version, { data: file }, config2)
         .then((res) => {
@@ -124,7 +124,7 @@ export default function Onas() {
       await axios
         .create({
           baseURL:
-            'https://peopleintelligenceapi.azurewebsites.net/api/OnasSurvey/EnvioMAilOnas/',
+            `${process.env.REACT_APP_API_URL}OnasSurvey/EnvioMAilOnas/`,
         })
         .get(versionget, config)
         .then((res) => {
