@@ -12,6 +12,8 @@ import Navbar from '../../Layout/Navbar/Navbar';
 import { getOnasDetailsAPI } from '../../services/getOnasDetails.service';
 
 import styles from './OnasDetails.module.css';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 export default function OnasDetails() {
   const navigate = useNavigate();
@@ -65,11 +67,11 @@ export default function OnasDetails() {
   const getTableData = () => {
     getOnasDetailsAPI(state)
       .then((res) => {
-        console.log(res.data.personResponse);
         let data = [];
         res.data.personResponse.forEach((val) => {
           let id = uuid.v4();
           if (!data.includes(val)) {
+            val.respondio = val.respondio ? <CheckCircleOutlineIcon/> : <HighlightOffIcon/>;
             let holder = val;
             holder._id = id;
             data.push(val);

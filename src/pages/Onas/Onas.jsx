@@ -17,7 +17,7 @@ import Navbar from '../../Layout/Navbar/Navbar';
 import axios from '../../utils/axiosInstance';
 
 import styles from './Onas.module.css';
-
+import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 const config = {
   headers: { 'Content-type': 'application/csv' },
 };
@@ -120,6 +120,16 @@ export default function Onas() {
   };
 
   const handleLink = async () => {
+    if (!versionget){
+      setValues({
+        ...values,
+        message: 'Recuerda importar la plantilla con los correos para hacer el envío',
+        isOpen: true,
+        severity: 'warning',
+      });
+      return;
+    }
+
     try {
       await axios
         .create({
@@ -291,7 +301,7 @@ export default function Onas() {
                       <div className={styles.button}>
                         <Button
                           variant="contained"
-                          startIcon={<ContentCopyIcon />}
+                          startIcon={<ForwardToInboxIcon />}
                           style={{
                             whiteSpace: 'nowrap',
                             padding: '0.5rem 1rem',
