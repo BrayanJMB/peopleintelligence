@@ -1,29 +1,31 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { CSVLink } from "react-csv";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import DownloadIcon from "@mui/icons-material/Download";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import { grey } from "@mui/material/colors";
-import IconButton from "@mui/material/IconButton";
-import { DataGrid, gridClasses } from "@mui/x-data-grid";
-import * as uuid from "uuid";
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { CSVLink } from 'react-csv';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import DownloadIcon from '@mui/icons-material/Download';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { grey } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import moment from 'moment';
-import 'moment/locale/es';  
-moment.locale('es');
+import { useSnackbar } from 'notistack';
+import * as uuid from 'uuid';
 
-import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
-import Navbar from "../../Layout/Navbar/Navbar";
-import { downloadOnasAPI } from "../../services/downloadonas.service";
-import { getOnasAPI } from "../../services/getOnas.service";
-import { useSnackbar } from "notistack";
-import styles from "./OnasTable.module.css";
-import MyLoader from "../../components/MyLoader/MyLoader";
-import DataAdministration from "../InfoAdmin/components/DataAdministration";
+import 'moment/locale/es';
+
+import MyLoader from '../../components/MyLoader/MyLoader';
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../Layout/Navbar/Navbar';
+import { downloadOnasAPI } from '../../services/downloadonas.service';
+import { getOnasAPI } from '../../services/getOnas.service';
+import DataAdministration from '../InfoAdmin/components/DataAdministration';
+
+import styles from './OnasTable.module.css';  
+moment.locale('es');
 function padTo2Digits(num) {
-  return num.toString().padStart(2, "0");
+  return num.toString().padStart(2, '0');
 }
 function formatDate(date) {
   return (
@@ -31,13 +33,13 @@ function formatDate(date) {
       date.getFullYear(),
       padTo2Digits(date.getMonth() + 1),
       padTo2Digits(date.getDate()),
-    ].join("_") +
-    "&" +
+    ].join('_') +
+    '&' +
     [
       padTo2Digits(date.getHours()),
       padTo2Digits(date.getMinutes()),
       padTo2Digits(date.getSeconds()),
-    ].join("_")
+    ].join('_')
   );
 }
 
@@ -45,8 +47,8 @@ export default function OnasTable() {
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const [transactionData, setTransactionData] = useState("");
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  const [transactionData, setTransactionData] = useState('');
   const [datetime, setDatetime] = useState(formatDate(new Date()));
   const csvLink = useRef();
   const [onas, setOnas] = useState([]);
@@ -54,23 +56,23 @@ export default function OnasTable() {
 
   const onasColumns = [
     {
-      id: "name",
-      label: "Nombre encuesta",
+      id: 'name',
+      label: 'Nombre encuesta',
       numeric: false,
     },
     {
-      id: "name",
-      label: "Fecha creación",
+      id: 'name',
+      label: 'Fecha creación',
       numeric: false,
     },
     {
-      id: "name",
-      label: "Fecha Límite",
+      id: 'name',
+      label: 'Fecha Límite',
       numeric: false,
     },
     {
-      id: "options",
-      label: "Opciones",
+      id: 'options',
+      label: 'Opciones',
       numeric: false,
     },
   ];
@@ -78,20 +80,20 @@ export default function OnasTable() {
   const mapOnas = (onas) =>
     onas.map((onas) => [
       {
-        column: "name",
+        column: 'name',
         value: onas.onasName,
       },
       {
-        column: "moderator",
+        column: 'moderator',
         value: moment(onas.creatinDate).format('MMMM DD, YYYY, h:mm a'),
       },
       {
-        column: "moderator",
+        column: 'moderator',
         value: moment(onas.limitDate).format('MMMM DD, YYYY, h:mm a'),
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleView: handleOnasDetails,
           handleDownload: handleDownload,
@@ -124,19 +126,19 @@ export default function OnasTable() {
   };
 
   const handleOnasDetails = (id) => {
-    navigate("/onas/details", { state: id });
+    navigate('/onas/details', { state: id });
   };
 
   const handleRedirect = (company, id) => {
-    navigate("/onas/" + company + "/" + id);
+    navigate('/onas/' + company + '/' + id);
   };
   useEffect(() => {
     if (
-      userInfo?.role.findIndex((p) => p === "Onas") < 0 &&
-      userInfo?.role.findIndex((p) => p === "Administrador") < 0
+      userInfo?.role.findIndex((p) => p === 'Onas') < 0 &&
+      userInfo?.role.findIndex((p) => p === 'Administrador') < 0
     ) {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+      alert('No tiene permiso para acceder a esta funcionalidad');
+      navigate('/dashboard');
     }
     if (!currentCompany) return;
     if (transactionData) {
@@ -146,11 +148,11 @@ export default function OnasTable() {
 
   const some = [
     {
-      nameAdministration: "Onas",
+      nameAdministration: 'Onas',
       tableInformation: {
-        title: "Listado de Onas",
+        title: 'Listado de Onas',
         buttonCreateName: null,
-        eventButton: "",
+        eventButton: '',
         columns: onasColumns,
         rows: mapOnas(onas),
       },
@@ -159,21 +161,21 @@ export default function OnasTable() {
   ];
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Navbar />
       <IconSidebar />
       <CSVLink
         data={transactionData}
-        filename={"ResultadoOnas" + datetime + ".csv"}
-        style={{ display: "none" }}
+        filename={'ResultadoOnas' + datetime + '.csv'}
+        style={{ display: 'none' }}
         ref={csvLink}
         target="_blank"
       />
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: 'white' }}>
         <div className={styles.content}>
           <div className={styles.crud}>
-            <Box sx={{ display: "flex" }}>
-              <div style={{ backgroundColor: "white" }}>
+            <Box sx={{ display: 'flex' }}>
+              <div style={{ backgroundColor: 'white' }}>
                 <div className={styles.DataTable}>
                   {loading && <MyLoader />}
                   <div className={styles.DataTable2}>

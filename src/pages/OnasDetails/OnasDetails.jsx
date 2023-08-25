@@ -1,6 +1,8 @@
 import { useEffect, useMemo,useState } from 'react';
 import { useLocation,useNavigate } from 'react-router-dom';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
@@ -12,8 +14,6 @@ import Navbar from '../../Layout/Navbar/Navbar';
 import { getOnasDetailsAPI } from '../../services/getOnasDetails.service';
 
 import styles from './OnasDetails.module.css';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 export default function OnasDetails() {
   const navigate = useNavigate();
