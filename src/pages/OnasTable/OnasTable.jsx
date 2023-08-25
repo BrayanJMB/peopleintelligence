@@ -1,32 +1,24 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CSVLink } from 'react-csv';
+import Snackbar from '@mui/material/Snackbar';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import DownloadIcon from '@mui/icons-material/Download';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import { grey } from '@mui/material/colors';
-import IconButton from '@mui/material/IconButton';
-import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import moment from 'moment';
-import { useSnackbar } from 'notistack';
-import * as uuid from 'uuid';
-
 import 'moment/locale/es';
-
 import MyLoader from '../../components/MyLoader/MyLoader';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import { downloadOnasAPI } from '../../services/downloadonas.service';
 import { getOnasAPI } from '../../services/getOnas.service';
 import DataAdministration from '../InfoAdmin/components/DataAdministration';
-
 import styles from './OnasTable.module.css';  
 moment.locale('es');
+
 function padTo2Digits(num) {
   return num.toString().padStart(2, '0');
 }
+
 function formatDate(date) {
   return (
     [
@@ -45,7 +37,6 @@ function formatDate(date) {
 
 export default function OnasTable() {
   const navigate = useNavigate();
-  const auth = useSelector((state) => state.auth);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [transactionData, setTransactionData] = useState('');
@@ -85,10 +76,12 @@ export default function OnasTable() {
       },
       {
         column: 'moderator',
+        isEditable: true,
         value: moment(onas.creatinDate).format('MMMM DD, YYYY, h:mm a'),
       },
       {
         column: 'moderator',
+        isEditable: true,
         value: moment(onas.limitDate).format('MMMM DD, YYYY, h:mm a'),
       },
       {
@@ -118,6 +111,8 @@ export default function OnasTable() {
     fetchOnas();
   }, [currentCompany]);
 
+
+
   const handleDownload = (company, id) => {
     downloadOnasAPI(company, id).then((res) => {
       setDatetime(formatDate(new Date()));
@@ -140,7 +135,6 @@ export default function OnasTable() {
       alert('No tiene permiso para acceder a esta funcionalidad');
       navigate('/dashboard');
     }
-    if (!currentCompany) return;
     if (transactionData) {
       csvLink.current.link.click();
     }
