@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import ImportContactsIcon from '@mui/icons-material/ImportContacts';
 import TipsAndUpdatesOutlinedIcon from '@mui/icons-material/TipsAndUpdatesOutlined';
 import Box from '@mui/material/Box';
@@ -17,7 +18,6 @@ import Navbar from '../../Layout/Navbar/Navbar';
 import axios from '../../utils/axiosInstance';
 
 import styles from './Onas.module.css';
-import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 const config = {
   headers: { 'Content-type': 'application/csv' },
 };
