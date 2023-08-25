@@ -1,17 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { CSVLink } from 'react-csv';
-import Snackbar from '@mui/material/Snackbar';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
+import Snackbar from '@mui/material/Snackbar';
 import moment from 'moment';
+
 import 'moment/locale/es';
+
 import MyLoader from '../../components/MyLoader/MyLoader';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import { downloadOnasAPI } from '../../services/downloadonas.service';
 import { getOnasAPI } from '../../services/getOnas.service';
 import DataAdministration from '../InfoAdmin/components/DataAdministration';
+
 import styles from './OnasTable.module.css';  
 moment.locale('es');
 

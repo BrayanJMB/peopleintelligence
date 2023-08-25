@@ -1,69 +1,72 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import Snackbar from "@mui/material/Snackbar";
-import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
-import Navbar from "../../Layout/Navbar/Navbar";
-import { getOnasDetailsAPI } from "../../services/getOnasDetails.service";
-import moment from "moment";
-import "moment/locale/es";
-import MyLoader from "../../components/MyLoader/MyLoader";
-import styles from "./OnasDetails.module.css";
-import DataAdministration from "../InfoAdmin/components/DataAdministration";
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Snackbar from '@mui/material/Snackbar';
+import moment from 'moment';
+
+import 'moment/locale/es';
+
+import MyLoader from '../../components/MyLoader/MyLoader';
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../Layout/Navbar/Navbar';
+import { getOnasDetailsAPI } from '../../services/getOnasDetails.service';
+import DataAdministration from '../InfoAdmin/components/DataAdministration';
+
+import styles from './OnasDetails.module.css';
 export default function OnasDetails() {
   const navigate = useNavigate();
   const { state } = useLocation();
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [onasDetail, setOnasDetail] = useState([]);
   const [loading, setLoading] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
 
   const onasDetailColumns = [
     {
-      id: "employeename",
-      label: "Nombre empleado",
+      id: 'employeename',
+      label: 'Nombre empleado',
       numeric: false,
     },
     {
-      id: "limitDate",
-      label: "Fecha máxima repuesta",
+      id: 'limitDate',
+      label: 'Fecha máxima repuesta',
       numeric: false,
     },
     {
-      id: "isAnswer",
-      label: "Respondió?",
+      id: 'isAnswer',
+      label: 'Respondió?',
       numeric: false,
     },
     {
-      id: "linkAnswer",
-      label: "Link Encuesta",
+      id: 'linkAnswer',
+      label: 'Link Encuesta',
       numeric: false,
     },
   ];
   const mapOnasDetail = (onasDetail) =>
     onasDetail.map((detail) => [
       {
-        column: "name",
+        column: 'name',
         value: detail.persona,
       },
       {
-        column: "limitDate",
-        value: moment(detail.fechaLimite).format("MMMM DD, YYYY, h:mm a"),
+        column: 'limitDate',
+        value: moment(detail.fechaLimite).format('MMMM DD, YYYY, h:mm a'),
       },
       {
-        column: "alreadyAnswer",
+        column: 'alreadyAnswer',
         value: detail.respondio ? (
-          <CheckCircleOutlineIcon style={{ color: "green" }} />
+          <CheckCircleOutlineIcon style={{ color: 'green' }} />
         ) : (
-          <HighlightOffIcon style={{ color: "red" }} />
+          <HighlightOffIcon style={{ color: 'red' }} />
         ),
       },
       {
-        column: "answerLinK",
+        column: 'answerLinK',
         value: (
           <IconButton
             onClick={() => {
@@ -93,11 +96,11 @@ export default function OnasDetails() {
 
   const some = [
     {
-      nameAdministration: "Detalle Onas",
+      nameAdministration: 'Detalle Onas',
       tableInformation: {
-        title: "Detalle encuesta Onas",
+        title: 'Detalle encuesta Onas',
         buttonCreateName: null,
-        eventButton: "",
+        eventButton: '',
         columns: onasDetailColumns,
         rows: mapOnasDetail(onasDetail),
       },
@@ -107,16 +110,16 @@ export default function OnasDetails() {
 
   useEffect(() => {
     if (
-      userInfo?.role.findIndex((p) => p === "Onas") < 0 &&
-      userInfo?.role.findIndex((p) => p === "Administrador") < 0
+      userInfo?.role.findIndex((p) => p === 'Onas') < 0 &&
+      userInfo?.role.findIndex((p) => p === 'Administrador') < 0
     ) {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+      alert('No tiene permiso para acceder a esta funcionalidad');
+      navigate('/dashboard');
     }
   }, []);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Snackbar
         open={linkCopied}
         autoHideDuration={3000}
@@ -125,11 +128,11 @@ export default function OnasDetails() {
       />
       <Navbar />
       <IconSidebar />
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: 'white' }}>
         <div className={styles.content}>
           <div className={styles.crud}>
-            <Box sx={{ display: "flex" }}>
-              <div style={{ backgroundColor: "white" }}>
+            <Box sx={{ display: 'flex' }}>
+              <div style={{ backgroundColor: 'white' }}>
                 <div className={styles.DataTable}>
                   {loading && <MyLoader />}
                   <div className={styles.DataTable2}>
