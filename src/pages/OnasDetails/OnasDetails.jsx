@@ -1,86 +1,112 @@
-import { useEffect, useMemo,useState } from 'react';
-import { useLocation,useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import Box from '@mui/material/Box';
-import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
-import { DataGrid, gridClasses } from '@mui/x-data-grid';
-import * as uuid from 'uuid';
+import Snackbar from '@mui/material/Snackbar';
+import moment from 'moment';
 
+import 'moment/locale/es';
+
+import MyLoader from '../../components/MyLoader/MyLoader';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import { getOnasDetailsAPI } from '../../services/getOnasDetails.service';
+import DataAdministration from '../InfoAdmin/components/DataAdministration';
 
 import styles from './OnasDetails.module.css';
-
 export default function OnasDetails() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  const [rows, setRows] = useState([]);
-  const [pageSize, setpageSize] = useState(5);
+  const [onasDetail, setOnasDetail] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
-  const onasColumn = [
+  const onasDetailColumns = [
     {
-      field: 'persona',
-      flex: 1,
-      headerName: 'Nombre Empleado',
-      headerAlign: 'center',
-      align: 'center',
+      id: 'employeename',
+      label: 'Nombre empleado',
+      numeric: false,
     },
     {
-      field: 'fechaLimite',
-      flex: 1,
-      headerName: 'Fecha máxima de respuesta',
-      headerAlign: 'center',
-      align: 'center',
+      id: 'limitDate',
+      label: 'Fecha máxima repuesta',
+      numeric: false,
     },
     {
-      field: 'respondio',
-      flex: 1,
-      headerName: 'Respondió?',
-      headerAlign: 'center',
-      align: 'center',
+      id: 'isAnswer',
+      label: 'Respondió?',
+      numeric: false,
     },
     {
-      field: 'actions',
-      type: 'actions',
-      headerName: 'Link Encuesta',
-      width: 250,
-      cellClassName: 'actions',
-      getActions: (params) => {
-        return [
-          <IconButton
-            onClick={() => navigator.clipboard.writeText(params.row.linkAnswer)}
-          >
-            <ContentCopyIcon />
-          </IconButton>,
-        ];
-      },
+      id: 'linkAnswer',
+      label: 'Link Encuesta',
+      numeric: false,
     },
   ];
+  const mapOnasDetail = (onasDetail) =>
+    onasDetail.map((detail) => [
+      {
+        column: 'name',
+        value: detail.persona,
+      },
+      {
+        column: 'limitDate',
+        value: moment(detail.fechaLimite).format('MMMM DD, YYYY, h:mm a'),
+      },
+      {
+        column: 'alreadyAnswer',
+        value: detail.respondio ? (
+          <CheckCircleOutlineIcon style={{ color: 'green' }} />
+        ) : (
+          <HighlightOffIcon style={{ color: 'red' }} />
+        ),
+      },
+      {
+        column: 'answerLinK',
+        value: (
+          <IconButton
+            onClick={() => {
+              navigator.clipboard.writeText(detail.linkAnswer);
+              setLinkCopied(true);
+            }}
+          >
+            <ContentCopyIcon />
+          </IconButton>
+        ),
+      },
+    ]);
 
-  const columns = useMemo(() => onasColumn, []);
-
-  const getTableData = () => {
-    getOnasDetailsAPI(state)
-      .then((res) => {
-        let data = [];
-        res.data.personResponse.forEach((val) => {
-          let id = uuid.v4();
-          if (!data.includes(val)) {
-            val.respondio = val.respondio ? <CheckCircleOutlineIcon/> : <HighlightOffIcon/>;
-            let holder = val;
-            holder._id = id;
-            data.push(val);
-          }
-        });
-        setRows(res.data.personResponse);
-      })
-      .catch((e) => console.log(e));
+  const handleCloseSnackbar = () => {
+    setLinkCopied(false);
   };
+  const fetchOnas = async () => {
+    setLoading(true);
+    const { data } = await getOnasDetailsAPI(state);
+    console.log(data);
+    setOnasDetail(data.personResponse);
+    setLoading(false);
+  };
+  useEffect(() => {
+    fetchOnas();
+  }, []);
+
+  const some = [
+    {
+      nameAdministration: 'Detalle Onas',
+      tableInformation: {
+        title: 'Detalle encuesta Onas',
+        buttonCreateName: null,
+        eventButton: '',
+        columns: onasDetailColumns,
+        rows: mapOnasDetail(onasDetail),
+      },
+      tabsInformation: [],
+    },
+  ];
 
   useEffect(() => {
     if (
@@ -90,36 +116,35 @@ export default function OnasDetails() {
       alert('No tiene permiso para acceder a esta funcionalidad');
       navigate('/dashboard');
     }
-
-    getTableData();
   }, []);
 
   return (
     <Box sx={{ display: 'flex' }}>
+      <Snackbar
+        open={linkCopied}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        message="Enlace copiado"
+      />
       <Navbar />
       <IconSidebar />
       <div style={{ backgroundColor: 'white' }}>
         <div className={styles.content}>
           <div className={styles.crud}>
-            <div className={styles.buttom}>
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                getRowId={(row) => row._id}
-                rowsPerPageOptions={[5, 10, 20]}
-                pageSize={pageSize}
-                onPageSizeChange={(newPageSize) => setpageSize(newPageSize)}
-                getRowSpacing={(params) => ({
-                  top: params.isFirstVisible ? 0 : 5,
-                  bottom: params.isLastVisible ? 0 : 5,
-                })}
-                sx={{
-                  [`& .${gridClasses.row}`]: {
-                    bgcolor: grey[200],
-                  },
-                }}
-              />
-            </div>
+            <Box sx={{ display: 'flex' }}>
+              <div style={{ backgroundColor: 'white' }}>
+                <div className={styles.DataTable}>
+                  {loading && <MyLoader />}
+                  <div className={styles.DataTable2}>
+                    <DataAdministration
+                      dataAdministration={some}
+                      type="Detalle Onas"
+                      loading={loading}
+                    />
+                  </div>
+                </div>
+              </div>
+            </Box>
           </div>
         </div>
       </div>
