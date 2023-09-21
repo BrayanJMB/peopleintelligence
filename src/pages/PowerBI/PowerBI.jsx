@@ -18,6 +18,20 @@ export default function PowerBi() {
   const [response, setResponse] = useState('');
   const navigate = useNavigate();
   const { idDashboard } = useParams();
+  const [userEmail, setUserEmail] = useState('');
+  const decodeToken = (token) => {
+    var base64Url = token.split('.')[1];
+    var base64 = decodeURIComponent(
+      atob(base64Url)
+        .split('')
+        .map((c) => {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join('')
+    );
+    return JSON.parse(base64);
+  };
+
   const accessToken = async () => {
     try {
       await axios.get('PowerBy/' + idDashboard).then((res) => {
@@ -42,6 +56,7 @@ export default function PowerBi() {
     }
   };
 
+
   useEffect(() => {
     if (userInfo.role.findIndex((p) => p === 'PowerBiDashboard') > -1) {
       if (response) {
@@ -56,6 +71,7 @@ export default function PowerBi() {
       alert('No tiene permiso para acceder a esta funcionalidad');
       navigate('/dashboard');
     }
+    setUserEmail(decodeToken(userInfo.accessToken));
   }, [response]);
 
   return (
@@ -79,6 +95,17 @@ export default function PowerBi() {
                   },
                 },
               },
+              filters: [
+                {
+                  $schema: 'http://powerbi.com/product/schema#basicFilter',
+                  target: {
+                    table: 'z_RLS', // Nombre de la tabla en la que deseas aplicar el filtro
+                    column: 'user_name', // Nombre de la columna en la que deseas aplicar el filtro
+                  },
+                  operator: 'In', // Puedes cambiar el operador según tu necesidad (por ejemplo, 'In', 'Equals', etc.)
+                  values: [userEmail], // Valor o valores que deseas filtrar
+                },
+              ],
             }}
             eventHandlers={
               new Map([
