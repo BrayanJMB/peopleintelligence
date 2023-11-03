@@ -228,6 +228,7 @@ export default function NavbarResponsive() {
       JSON.stringify({
         user: holder.user,
         Company: value.id,
+        username: holder.username,
         accessToken: holder.accessToken,
         role: holder.role,
       })
@@ -257,6 +258,7 @@ export default function NavbarResponsive() {
         'userInfo',
         JSON.stringify({
           user: holder.user,
+          username: holder.username,
           Company: activeCompanies[0].id,
           accessToken: holder.accessToken,
           role: holder.role,

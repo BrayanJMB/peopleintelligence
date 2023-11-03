@@ -187,10 +187,9 @@ export default function Home() {
       await axios
         .post('Aut/', { bearer: `Bearer ${access_token}` }, config)
         .then((res) => {
-          console.log('AUTNETI');
-          console.log(process.env.REACT_APP_API_URL);
           let token = res.data.token;
           let decodedToken = decodeToken(token);
+          console.log(decodedToken);
           if (!Array.isArray(decodedToken.role)) {
             let tmp = [];
             tmp.push(decodedToken.role);
@@ -199,6 +198,7 @@ export default function Home() {
           dispatch(
             setCredentials({
               user: decodedToken.user,
+              username: decodedToken.name,
               Company: decodedToken.Company,
               accessToken: token,
               role: decodedToken.role,
@@ -209,6 +209,7 @@ export default function Home() {
             'userInfo',
             JSON.stringify({
               user: decodedToken.user,
+              username: decodedToken.name,
               Company: decodedToken.Company,
               accessToken: token,
               role: decodedToken.role,
