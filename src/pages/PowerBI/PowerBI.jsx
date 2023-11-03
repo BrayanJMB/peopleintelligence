@@ -103,6 +103,7 @@ export default function PowerBi() {
                   },
                   operator: 'In', //Forma de busqueda
                   values: [userEmail.email], //Este es el valor a buscarlo
+
                 },
               ],
             }}
