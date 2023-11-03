@@ -10,7 +10,6 @@ import Navbar from '../../Layout/Navbar/Navbar';
 import axios from '../../utils/axiosInstance';
 
 import styles from './PowerBI.module.css';
-
 // Lifetime is 3600 sec/ 1 hour
 export default function PowerBi() {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -72,7 +71,7 @@ export default function PowerBi() {
     }
     setUserEmail(decodeToken(userInfo.accessToken));
   }, [response]);
-
+  console.log(userEmail.email)
   return (
     <Box sx={{ display: 'flex' }}>
       <Navbar />
