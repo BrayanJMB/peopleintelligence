@@ -150,6 +150,7 @@ export default function Navbar() {
       'userInfo',
       JSON.stringify({
         user: holder.user,
+        username:holder.username,
         Company: value.id,
         accessToken: holder.accessToken,
         role: holder.role,
@@ -183,6 +184,7 @@ export default function Navbar() {
         JSON.stringify({
           user: holder.user,
           Company: activeCompanies[0].id,
+          username:holder.username,
           accessToken: holder.accessToken,
           role: holder.role,
         })

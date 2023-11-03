@@ -7,6 +7,7 @@ import TagFacesIcon from '@mui/icons-material/TagFaces';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 
 import { selectCompanyById } from '../../../features/companies/companiesSlice';
 import MyLoader from '../../MyLoader/MyLoader';
@@ -15,12 +16,11 @@ import UploadImage from './UploadImage';
 
 import styles from './Basic.module.css';
 
-
-
 export default function Basic(props) {
   const [error, setError] = useState({});
   const [helperText, setHelperText] = useState({});
   const currentCompany = useSelector((state) => state.companies.currentCompany);
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const company = useSelector((state) =>
     currentCompany ? selectCompanyById(state, currentCompany.id) : null
   );
@@ -28,9 +28,7 @@ export default function Basic(props) {
     if (fieldsValidation()) {
       props.handleNextStepper();
       props.handleMove('', 'discussion');
-    }
-
-    else return;
+    } else return;
   };
 
   const fieldsValidation = () => {
@@ -47,16 +45,6 @@ export default function Basic(props) {
       setError((prevError) => ({ ...prevError, title: true }));
       hasNotErrors = false;
     }
-
-    if (props.moderator.name === '') {
-      setHelperText((prevHelperText) => ({
-        ...prevHelperText,
-        name: 'Este campo es requerido',
-      }));
-      setError((prevError) => ({ ...prevError, name: true }));
-      hasNotErrors = false;
-    }
-
     if (props.survey.description === '') {
       setHelperText((prevHelperText) => ({
         ...prevHelperText,
@@ -83,7 +71,7 @@ export default function Basic(props) {
       <div className={styles.info}>
         <div className={styles.left}>
           <div>
-            {props.loading && <MyLoader/>}
+            {props.loading && <MyLoader />}
             <div className={styles.general}>
               <NotesIcon color="blue" style={{ marginRight: '1rem' }} />
               <p>Título Conversación (Requerido)</p>
@@ -103,17 +91,15 @@ export default function Basic(props) {
                 />
               </div>
               <div className={styles.input}>
-                <TextField
-                  id="outlined-name"
-                  label="Nombre moderador"
-                  value={props.moderator.name} 
-                  name="name"
-                  onChange={(event) => props.handleChange(event, 'moderator')}
-                  size="small"
-                  style={{ width: '100%' }}
-                  error={error.name}
-                  helperText={helperText.name}
-                />
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex' }}>
+                    <NotesIcon color="blue" style={{ marginRight: '1rem' }} />
+                    <p>Nombre moderador</p>
+                  </div>
+                  <Typography variant="h6" gutterBottom display={{fontStyle:'italic'}}>
+                    {userInfo.username}
+                  </Typography>
+                </div>
               </div>
             </div>
           </div>
@@ -166,7 +152,7 @@ export default function Basic(props) {
                     helperText={helperText.description}
                     aria-label="empty textarea"
                     placeholder="Type your welcome message..."
-                    multiline 
+                    multiline
                     minRows={6}
                     maxRows={8}
                     style={{
@@ -176,7 +162,6 @@ export default function Basic(props) {
                     name="description"
                     value={props.survey.description}
                     onChange={(event) => props.handleChange(event, 'survey')}
-                    
                   />
                 </div>
                 <div style={{ marginTop: '1rem' }}>
