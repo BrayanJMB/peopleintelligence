@@ -222,6 +222,7 @@ function Options({
             style={{
               padding: '20px',
               marginBottom: '20px',
+              maxHeight:'300px',
             }}
           >
             <CardContent>
@@ -238,7 +239,7 @@ function Options({
                 <Button
                   onClick={remove}
                   variant="outlined"
-                  color="secondary"
+                  color="error"
                   startIcon={<DeleteOutlineIcon />}
                 >
                   Eliminar Demográfico
@@ -309,7 +310,7 @@ function Options({
                       />
                       <IconButton
                         onClick={() => handleDeleteOption(opcion.id)}
-                        color="secondary"
+                        color="error"
                       >
                         <DeleteOutlineIcon />
                       </IconButton>

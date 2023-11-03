@@ -12,7 +12,6 @@ import axios from '../../utils/axiosInstance';
 import styles from './PowerBI.module.css';
 
 // Lifetime is 3600 sec/ 1 hour
-
 export default function PowerBi() {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [response, setResponse] = useState('');
@@ -97,13 +96,13 @@ export default function PowerBi() {
               },
               filters: [
                 {
-                  $schema: 'http://powerbi.com/product/schema#basicFilter',
+                  $schema: 'http://powerbi.com/product/schema#basic',
                   target: {
-                    table: 'z_RLS', // Nombre de la tabla en la que deseas aplicar el filtro
-                    column: 'user_name', // Nombre de la columna en la que deseas aplicar el filtro
+                    table: 'z_RLS', // Nombre de la tabla
+                    column: 'user_name', // Nombre de la columna a buscar
                   },
-                  operator: 'In', // Puedes cambiar el operador según tu necesidad (por ejemplo, 'In', 'Equals', etc.)
-                  values: [userEmail], // Valor o valores que deseas filtrar
+                  operator: 'In', //Forma de busqueda
+                  values: [userEmail.email], //Este es el valor a buscar
                 },
               ],
             }}
