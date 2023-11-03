@@ -12,7 +12,6 @@ import axios from '../../utils/axiosInstance';
 import styles from './PowerBI.module.css';
 
 // Lifetime is 3600 sec/ 1 hour
-
 export default function PowerBi() {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [response, setResponse] = useState('');
