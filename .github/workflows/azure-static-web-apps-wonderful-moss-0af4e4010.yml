@@ -3,11 +3,11 @@ name: Azure Static Web Apps CI/CD
 on:
   push:
     branches:
-      - testing
+      - master
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
-      - testing
+      - master
 
 jobs:
   build_and_deploy_job:
@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     env: # Aquí defines tus variables de entorno
-      REACT_APP_API_URL: "https://peopleintelligence-api-test.azurewebsites.net/api/"
-      REACT_APP_DOMAIN_B2C: "test"
+      REACT_APP_API_URL: "https://peopleintelligenceapi.azurewebsites.net/api/"
+      REACT_APP_DOMAIN_B2C: "suite"
     steps:
       - uses: actions/checkout@v3
         with:
