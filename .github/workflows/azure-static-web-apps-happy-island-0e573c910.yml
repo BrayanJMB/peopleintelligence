@@ -14,6 +14,9 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
+    env: # Aquí defines tus variables de entorno
+      REACT_APP_API_URL: "https://peopleintelligenceapi.azurewebsites.net/api/"
+      REACT_APP_DOMAIN_B2C: "suite"
     steps:
       - uses: actions/checkout@v2
         with:
