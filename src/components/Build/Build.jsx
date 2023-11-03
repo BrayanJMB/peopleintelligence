@@ -57,7 +57,7 @@ export default function Build({ stage, handleMove }) {
   const [surveyChat, setSurveyChat] = useState([]);
   const [moderator, setModerator] = useState({
     moderatorId: '123',
-    name: '',
+    name: userInfo.username,
     avatarUrl: '',
   });
   const [survey, setSurvey] = useState({
@@ -93,7 +93,6 @@ export default function Build({ stage, handleMove }) {
   };
 
   const handleReset = (name) => {
-    console.log(name);
     if (name.includes('avatar')) {
       setModerator({ ...moderator, [name]: null });
     } else {
@@ -148,9 +147,7 @@ export default function Build({ stage, handleMove }) {
     }
 
     const { data } = await fecthSurveyChatAPI(currentCompany.id);
-    console.log(data);
     const currentSurvey = id ? data.find((element) => element.id === id) : data;
-    console.log(currentSurvey);
     setSurveyChat(currentSurvey);
   };
 
@@ -161,7 +158,7 @@ export default function Build({ stage, handleMove }) {
   const resetModerator = () => {
     setModerator({
       moderatorId: userInfo.user,
-      name: '',
+      name: userInfo.username,
       avatarUrl: '',
     });
   };
@@ -182,7 +179,7 @@ export default function Build({ stage, handleMove }) {
     // Actualizar el estado del moderador
     setModerator((prevState) => ({
       ...prevState,
-      moderatorId: '123', // Nota: parece que esto está hardcodeado, asegúrate de que es lo que deseas
+      moderatorId: '123', 
     }));
 
     // Actualizar el estado de la encuesta

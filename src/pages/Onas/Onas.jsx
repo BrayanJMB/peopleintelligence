@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import ImportContactsIcon from '@mui/icons-material/ImportContacts';
 import TipsAndUpdatesOutlinedIcon from '@mui/icons-material/TipsAndUpdatesOutlined';
 import Box from '@mui/material/Box';
@@ -17,7 +18,6 @@ import Navbar from '../../Layout/Navbar/Navbar';
 import axios from '../../utils/axiosInstance';
 
 import styles from './Onas.module.css';
-
 const config = {
   headers: { 'Content-type': 'application/csv' },
 };
@@ -88,7 +88,7 @@ export default function Onas() {
       await axios
         .create({
           baseURL:
-            'https://peopleintelligenceapi.azurewebsites.net/api/OnasSurvey/',
+            `${process.env.REACT_APP_API_URL}OnasSurvey/`,
         })
         .post('' + userInfo.Company + '/' + version, { data: file }, config2)
         .then((res) => {
@@ -120,11 +120,21 @@ export default function Onas() {
   };
 
   const handleLink = async () => {
+    if (!versionget){
+      setValues({
+        ...values,
+        message: 'Recuerda importar la plantilla con los correos para hacer el envío',
+        isOpen: true,
+        severity: 'warning',
+      });
+      return;
+    }
+
     try {
       await axios
         .create({
           baseURL:
-            'https://peopleintelligenceapi.azurewebsites.net/api/OnasSurvey/EnvioMAilOnas/',
+            `${process.env.REACT_APP_API_URL}OnasSurvey/EnvioMAilOnas/`,
         })
         .get(versionget, config)
         .then((res) => {
@@ -291,7 +301,7 @@ export default function Onas() {
                       <div className={styles.button}>
                         <Button
                           variant="contained"
-                          startIcon={<ContentCopyIcon />}
+                          startIcon={<ForwardToInboxIcon />}
                           style={{
                             whiteSpace: 'nowrap',
                             padding: '0.5rem 1rem',

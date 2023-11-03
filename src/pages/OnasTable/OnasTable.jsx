@@ -1,26 +1,27 @@
-import { useEffect, useMemo, useRef,useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CSVLink } from 'react-csv';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import DownloadIcon from '@mui/icons-material/Download';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import { grey } from '@mui/material/colors';
-import IconButton from '@mui/material/IconButton';
-import { DataGrid, gridClasses } from '@mui/x-data-grid';
-import * as uuid from 'uuid';
+import Snackbar from '@mui/material/Snackbar';
+import moment from 'moment';
 
+import 'moment/locale/es';
+
+import MyLoader from '../../components/MyLoader/MyLoader';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import { downloadOnasAPI } from '../../services/downloadonas.service';
 import { getOnasAPI } from '../../services/getOnas.service';
+import DataAdministration from '../InfoAdmin/components/DataAdministration';
 
-import styles from './OnasTable.module.css';
+import styles from './OnasTable.module.css';  
+moment.locale('es');
 
 function padTo2Digits(num) {
   return num.toString().padStart(2, '0');
 }
+
 function formatDate(date) {
   return (
     [
@@ -39,14 +40,81 @@ function formatDate(date) {
 
 export default function OnasTable() {
   const navigate = useNavigate();
-  const auth = useSelector((state) => state.auth);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  const [rows, setRows] = useState([]);
   const [transactionData, setTransactionData] = useState('');
   const [datetime, setDatetime] = useState(formatDate(new Date()));
-  const [pageSize, setpageSize] = useState(5);
   const csvLink = useRef();
+  const [onas, setOnas] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const onasColumns = [
+    {
+      id: 'name',
+      label: 'Nombre encuesta',
+      numeric: false,
+    },
+    {
+      id: 'name',
+      label: 'Fecha creación',
+      numeric: false,
+    },
+    {
+      id: 'name',
+      label: 'Fecha Límite',
+      numeric: false,
+    },
+    {
+      id: 'options',
+      label: 'Opciones',
+      numeric: false,
+    },
+  ];
+
+  const mapOnas = (onas) =>
+    onas.map((onas) => [
+      {
+        column: 'name',
+        value: onas.onasName,
+      },
+      {
+        column: 'moderator',
+        isEditable: true,
+        value: moment(onas.creatinDate).format('MMMM DD, YYYY, h:mm a'),
+      },
+      {
+        column: 'moderator',
+        isEditable: true,
+        value: moment(onas.limitDate).format('MMMM DD, YYYY, h:mm a'),
+      },
+      {
+        column: 'options',
+        value: '',
+        payload: {
+          handleView: handleOnasDetails,
+          handleDownload: handleDownload,
+          handleRedirect: handleRedirect,
+          id: onas.id,
+          companyId: currentCompany.id,
+        },
+      },
+    ]);
+
+  const fetchOnas = async () => {
+    if (!currentCompany) {
+      return;
+    }
+    setLoading(true);
+    const { data } = await getOnasAPI(currentCompany.id);
+    setOnas(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchOnas();
+  }, [currentCompany]);
+
+
 
   const handleDownload = (company, id) => {
     downloadOnasAPI(company, id).then((res) => {
@@ -62,83 +130,6 @@ export default function OnasTable() {
   const handleRedirect = (company, id) => {
     navigate('/onas/' + company + '/' + id);
   };
-
-  const onasColumn = [
-    {
-      field: 'onasName',
-      flex: 1,
-      headerName: 'Nombre Encuesta',
-      headerAlign: 'center',
-      align: 'center',
-    },
-    {
-      field: 'creatinDate',
-      flex: 1,
-      headerName: 'Fecha Creacion',
-      headerAlign: 'center',
-      align: 'center',
-    },
-    {
-      field: 'limitDate',
-      flex: 1,
-      headerName: 'Fecha limite',
-      headerAlign: 'center',
-      align: 'center',
-    },
-    {
-      field: 'actions',
-      type: 'actions',
-      headerName: 'Actions',
-      width: 250,
-      cellClassName: 'actions',
-      getActions: (params) => {
-        return [
-          <Button
-            variant="contained"
-            style={{
-              whiteSpace: 'nowrap',
-              padding: '0.5em 1em',
-              color: 'white',
-              textTransform: 'none',
-            }}
-            color="primary"
-            onClick={() => handleRedirect(params.row.companyId, params.row.id)}
-          >
-            Cargar Empleados
-          </Button>,
-          <IconButton
-            onClick={() => handleDownload(params.row.companyId, params.row.id)}
-          >
-            <DownloadIcon />
-          </IconButton>,
-          <IconButton onClick={() => handleOnasDetails(params.row.id)}>
-            <AssignmentIcon />
-          </IconButton>,
-        ];
-      },
-    },
-  ];
-
-  const columns = useMemo(() => onasColumn, []);
-
-  const getTableData = () => {
-
-    getOnasAPI(currentCompany.id)
-      .then((res) => {
-        let data = [];
-        res.data.forEach((val) => {
-          let id = uuid.v4();
-          if (!data.includes(val)) {
-            let holder = val;
-            holder._id = id;
-            data.push(val);
-          }
-        });
-        setRows(data);
-      })
-      .catch((e) => console.log(e));
-  };
-
   useEffect(() => {
     if (
       userInfo?.role.findIndex((p) => p === 'Onas') < 0 &&
@@ -147,47 +138,53 @@ export default function OnasTable() {
       alert('No tiene permiso para acceder a esta funcionalidad');
       navigate('/dashboard');
     }
-    if (!currentCompany)
-      return;
     if (transactionData) {
       csvLink.current.link.click();
     }
-    getTableData();
   }, [transactionData, currentCompany]);
+
+  const some = [
+    {
+      nameAdministration: 'Onas',
+      tableInformation: {
+        title: 'Listado de Onas',
+        buttonCreateName: null,
+        eventButton: '',
+        columns: onasColumns,
+        rows: mapOnas(onas),
+      },
+      tabsInformation: [],
+    },
+  ];
 
   return (
     <Box sx={{ display: 'flex' }}>
       <Navbar />
       <IconSidebar />
+      <CSVLink
+        data={transactionData}
+        filename={'ResultadoOnas' + datetime + '.csv'}
+        style={{ display: 'none' }}
+        ref={csvLink}
+        target="_blank"
+      />
       <div style={{ backgroundColor: 'white' }}>
         <div className={styles.content}>
           <div className={styles.crud}>
-            <div className={styles.buttom}>
-              <CSVLink
-                data={transactionData}
-                filename={'ResultadoOnas' + datetime + '.csv'}
-                style={{ display: 'none' }}
-                ref={csvLink}
-                target="_blank"
-              />
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                getRowId={(row) => row._id}
-                rowsPerPageOptions={[5, 10, 20]}
-                pageSize={pageSize}
-                onPageSizeChange={(newPageSize) => setpageSize(newPageSize)}
-                getRowSpacing={(params) => ({
-                  top: params.isFirstVisible ? 0 : 5,
-                  bottom: params.isLastVisible ? 0 : 5,
-                })}
-                sx={{
-                  [`& .${gridClasses.row}`]: {
-                    bgcolor: grey[200],
-                  },
-                }}
-              />
-            </div>
+            <Box sx={{ display: 'flex' }}>
+              <div style={{ backgroundColor: 'white' }}>
+                <div className={styles.DataTable}>
+                  {loading && <MyLoader />}
+                  <div className={styles.DataTable2}>
+                    <DataAdministration
+                      dataAdministration={some}
+                      type="Onas"
+                      loading={loading}
+                    />
+                  </div>
+                </div>
+              </div>
+            </Box>
           </div>
         </div>
       </div>

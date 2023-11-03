@@ -63,7 +63,6 @@ export default function Discussion({
   surveyChat,
   isUpdate,
 }) {
-  console.log(questions);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [opentemplate, setOpentemplate] = useState(false);
@@ -72,10 +71,6 @@ export default function Discussion({
   const handleCloseModal = () => setOpen(false);
   const handleOpenModaltemplate = () => setOpentemplate(true);
   const handleCloseModaltemplate = () => setOpentemplate(false);
-  const handleTemplateModal = () => {
-    handleCloseModal();
-    handleOpenModaltemplate();
-  };
   const [toogle, setToggle] = useState('edit');
   const [errors, setErrors] = useState([]);
   const [isDemographicsAccordionOpen, setIsDemographicsAccordionOpen] =
@@ -317,6 +312,7 @@ export default function Discussion({
             </div>
           </div>
         </div>
+        {/*
         <div className={styles.grey}>
           <div className={styles.layout}>
             <div className={styles.leftbox}>
@@ -337,7 +333,7 @@ export default function Discussion({
               </p>
             </div>
           </div>
-        </div>
+              </div>*/}
 
         <div className={styles.impexp}>
           <Button variant="text" size="small" onClick={handleOpenModal}>
