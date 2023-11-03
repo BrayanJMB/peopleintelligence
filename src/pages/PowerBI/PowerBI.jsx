@@ -102,7 +102,8 @@ export default function PowerBi() {
                     column: 'user_name', // Nombre de la columna a buscar
                   },
                   operator: 'In', //Forma de busqueda
-                  values: [userEmail.email], //Este es el valor a buscar
+                  values: [userEmail.email], //Este es el valor a buscarlo
+
                 },
               ],
             }}
