@@ -1,6 +1,8 @@
 import React, { Fragment, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -21,7 +23,6 @@ import { visuallyHidden } from '@mui/utils';
 import PropTypes from 'prop-types';
 
 import MyConfirmation from '../MyConfirmation/MyConfirmation';
-
 
 /**
  * Descending comparator.
@@ -68,8 +69,7 @@ function getComparator(order, orderBy) {
  * @constructor
  */
 function EnhancedTableHead(props) {
-  const { order, orderBy, onRequestSort } =
-    props;
+  const { order, orderBy, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -91,10 +91,7 @@ function EnhancedTableHead(props) {
             >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <Box
-                  component="span"
-                  sx={visuallyHidden}
-                >
+                <Box component="span" sx={visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </Box>
               ) : null}
@@ -122,7 +119,10 @@ function EnhancedTableToolbar(props) {
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
           bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+            alpha(
+              theme.palette.primary.main,
+              theme.palette.action.activatedOpacity
+            ),
         }),
       }}
     >
@@ -257,86 +257,122 @@ const MyTable = ({ title, rows, columns }) => {
               rowCount={rows.length}
               columns={columns}
             />
-            <TableBody>
-              {rows.slice()
-                .sort(getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => (
-                  <TableRow
-                    hover
-                    tabIndex={-1}
-                    key={index}
-                  >
-                    {row.map((item, itemIndex) => (
-                      <Fragment
-                        key={itemIndex}
-                      >
-                        {item.column.includes('id') === true && (
-                          <TableCell
-                            component="th"
-                            scope="row"
-                            padding="normal"
-                          >
-                            {item.value}
-                          </TableCell>
-                        )}
-                        {item.column.includes('id') === false && (
-                          <TableCell
-                            align="left"
-                            padding="normal"
-                          >
-                            {item.column.includes('options') === true && (
-                              <Stack
-                                direction="row"
-                                alignItems="center"
+            {rows.length > 0 ? (
+              <>
+                <TableBody>
+                  {rows
+                    .slice()
+                    .sort(getComparator(order, orderBy))
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row, index) => (
+                      <TableRow hover tabIndex={-1} key={index}>
+                        {row.map((item, itemIndex) => (
+                          <Fragment key={itemIndex}>
+                            {item.column.includes('id') === true && (
+                              <TableCell
+                                component="th"
+                                scope="row"
+                                padding="normal"
                               >
-                                {item.payload.handleDelete !== undefined && (
-                                  <Fragment>
-                                    <IconButton
-                                      onClick={() => handleClickDelete(item.payload)}
-                                      size="small"
-                                    >
-                                      <DeleteIcon fontSize="inherit" />
-                                    </IconButton>
-                                    {currentDialog === item.payload.id && (
-                                      <MyConfirmation
-                                        onClose={(shouldDelete) => handleOnCloseDeleteDialog(shouldDelete, item.payload)}
-                                        title="Eliminar registro"
-                                        message="¿Está seguro que desea eliminar este registro?"
-                                        open={openDeleteDialog}
-                                      />
+                                {item.value}
+                              </TableCell>
+                            )}
+                            {item.column.includes('id') === false && (
+                              <TableCell align="left" padding="normal">
+                                {item.column.includes('options') === true && (
+                                  <Stack direction="row" alignItems="center">
+                                    {item.payload.handleDelete !==
+                                      undefined && (
+                                      <Fragment>
+                                        <IconButton
+                                          onClick={() =>
+                                            handleClickDelete(item.payload)
+                                          }
+                                          size="small"
+                                        >
+                                          <DeleteIcon fontSize="inherit" />
+                                        </IconButton>
+                                        {currentDialog === item.payload.id && (
+                                          <MyConfirmation
+                                            onClose={(shouldDelete) =>
+                                              handleOnCloseDeleteDialog(
+                                                shouldDelete,
+                                                item.payload
+                                              )
+                                            }
+                                            title="Eliminar registro"
+                                            message="¿Está seguro que desea eliminar este registro?"
+                                            open={openDeleteDialog}
+                                          />
+                                        )}
+                                      </Fragment>
                                     )}
-                                  </Fragment>
+                                    {item.payload.handleEdit !== undefined && (
+                                      <IconButton
+                                        size="small"
+                                        onClick={() =>
+                                          item.payload.handleEdit(
+                                            item.payload.id
+                                          )
+                                        }
+                                      >
+                                        <EditIcon fontSize="inherit" />
+                                      </IconButton>
+                                    )}
+                                    {item.payload.handleView !== undefined && (
+                                      <IconButton
+                                        size="small"
+                                        onClick={() =>
+                                          item.payload.handleView(
+                                            item.payload.id
+                                          )
+                                        }
+                                      >
+                                        <VisibilityIcon fontSize="inherit" />
+                                      </IconButton>
+                                    )}
+                                    {item.payload.handleDownload !== undefined && (
+                                      <IconButton
+                                        size="small"
+                                        onClick={() =>
+                                          item.payload.handleDownload(
+                                            item.payload.companyId,
+                                            item.payload.id
+                                          )
+                                        }
+                                      >
+                                        <DownloadIcon fontSize="inherit" />
+                                      </IconButton>
+                                    )}
+                                    {item.payload.handleRedirect !== undefined && (
+                                      <IconButton
+                                        size="small"
+                                        onClick={() =>
+                                          item.payload.handleRedirect(
+                                            item.payload.companyId,
+                                            item.payload.id
+                                          )
+                                        }
+                                      >
+                                        <GroupAddIcon fontSize="inherit" />
+                                      </IconButton>
+                                    )}
+                                  </Stack>
                                 )}
-                                {item.payload.handleEdit !== undefined && (
-                                  <IconButton
-                                    size="small"
-                                    onClick={() => item.payload.handleEdit(item.payload.id)}
-                                  >
-                                    <EditIcon fontSize="inherit" />
-                                  </IconButton>
-                                )}
-                                {item.payload.handleView !== undefined && (
-                                  <IconButton
-                                    size="small"
-                                    onClick={() => item.payload.handleView(item.payload.id)}
-                                  >
-                                    <VisibilityIcon fontSize="inherit" />
-                                  </IconButton>
-                                )}
-                              </Stack>
-                            )}
 
-                            {item.column.includes('options') === false && (
-                              item.value
+                                {item.column.includes('options') === false &&
+                                  item.value}
+                              </TableCell>
                             )}
-                          </TableCell>
-                        )}
-                      </Fragment>
+                          </Fragment>
+                        ))}
+                      </TableRow>
                     ))}
-                  </TableRow>
-                ))}
-            </TableBody>
+                </TableBody>
+              </>
+            ) : (
+              <p>No hay información para mostrar</p>
+            )}
           </Table>
         </TableContainer>
         <TablePagination
@@ -348,7 +384,9 @@ const MyTable = ({ title, rows, columns }) => {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           labelRowsPerPage="Filas por página"
-          labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+          labelDisplayedRows={({ from, to, count }) =>
+            `${from}-${to} de ${count}`
+          }
         />
       </Paper>
     </Box>
@@ -371,7 +409,7 @@ MyTable.propTypes = {
       id: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
       numeric: PropTypes.bool.isRequired,
-    }),
+    })
   ).isRequired,
 };
 
