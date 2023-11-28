@@ -1,15 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
-import {HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
-import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
-import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
-import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
-import InsertPhotoOutlinedIcon from '@mui/icons-material/InsertPhotoOutlined';
 import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
-import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
-import SmartDisplayOutlinedIcon from '@mui/icons-material/SmartDisplayOutlined';
 import { Card, CardContent, Grid, Paper } from '@mui/material';
 import { Divider, Icon, Toolbar, Typography } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
@@ -17,14 +10,10 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
 import axios from 'axios';
 import { Demographics } from './Demographics';
-
 import { ChatBox } from './ChatBox';
-
 import styles from './ChatBox.module.css';
-import ConSidebar from '../../../Layout/ConSidebar/ConSidebar';
 import CountdownTimer from './CountdownTimer';
 import { ConnectDisconnectUser } from './ConnectDisconnectUser';
 
@@ -64,52 +53,32 @@ export const Moderator = ({ id }) => {
     }
   };
   
-
-  useEffect(() => {
+  const initializeConnectionAndFetchData = async () => {
     try {
+      await fetchSurvey();
+
       const signalRConnection = new HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
-        .withUrl(
-          'https://localhost:7005/discusion',
-          //'https://chatapppeopleintelligence.azurewebsites.net/discusion',
-          {}
-        )
+        .withUrl('https://localhost:7005/discusion')
         .withAutomaticReconnect()
         .build();
-  
-      setConnection(signalRConnection);
-      fetchSurvey();
 
-     
-    } catch (err) {}
+      setConnection(signalRConnection);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  useEffect(() => {
+    initializeConnectionAndFetchData();
   }, []);
 
   useEffect(() => {
     if (connection && survey) {
       connection.start().then(() => {
-        const demographicList = [
-          {
-            "name": "GENERO",
-            "demographicDetails": [
-              {
-                "id": "1692135097221",
-                "demographicId": "5bdf1b43-4547-4a4f-8f70-860c3b0f43b3",
-                "value": "MASCULINO",
-                "demograpicCount": 0
-              },
-              {
-                "id": "1692135118083",
-                "demographicId": "5bdf1b43-4547-4a4f-8f70-860c3b0f43b3",
-                "value": "FEMENINO",
-                "demograpicCount": 0
-              }
-            ]
-          }
-        ]
-        connection.invoke("ChargeDemographics", demographicList, 300, "Buenas Noches esta es una prueba de DinamicLiveConversation").catch(function (err) {
+        connection.invoke("ChargeDemographics", survey.demographicList, survey.timeDemographics, survey.description).catch(function (err) {
           return console.error(err.toString());
       });
-        connection.on("ReceiveDemograpics", (newDemographics, newDescription) => {
+        connection.on("ReceiveDemograpics", (newDemographics) => {
           setDemographics(newDemographics);
         });
         connection.on("clientConnected", setConnectedUsers);
