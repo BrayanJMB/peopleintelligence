@@ -1,6 +1,8 @@
-import { useCallback,useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import * as signalR from '@microsoft/signalr';
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
@@ -8,7 +10,7 @@ import InsertPhotoOutlinedIcon from '@mui/icons-material/InsertPhotoOutlined';
 import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
 import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
 import SmartDisplayOutlinedIcon from '@mui/icons-material/SmartDisplayOutlined';
-import { Card, CardContent, Grid,Paper } from '@mui/material';
+import { Card, CardContent, Grid, Paper } from '@mui/material';
 import { Divider, Icon, Toolbar, Typography } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -16,81 +18,20 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
+import axios from 'axios';
 
 import { ChatBox } from './ChatBox';
 
 import styles from './ChatBox.module.css';
 
 export const Moderator = ({ id }) => {
+  const [survey, setSurvey] = useState([]);
   function detectURL(message) {
     var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
     return message.replace(urlRegex, function (urlMatch) {
       return '<a href="' + urlMatch + '">' + urlMatch + '</a>';
     });
   }
-
-  const currentSurvey = {
-    id: 'bf4c398f-fb3d-46c1-9df6-b3b2a9c9ecd1',
-    Title: 'Encuesta 1',
-    TimeDemographics: 350,
-    ImageUrl: 'http://example.com/img1.jpg',
-    Description: 'Descripción de encuesta 1',
-    CompanyId: 1,
-    ModeratorId: '123A',
-    Questions: [
-      {
-        id: '92ce935e-937b-47e0-84ca-255ccf02ad8a',
-        OrderNumber: 1,
-        Name: '¿Cuál es tu color favorito?',
-        TimeLimit: null,
-        Type: 'texto',
-        UrlMedia: 'http://example.com/question1.jpg',
-        PrentQuestionId: null,
-        Options: [],
-      },
-      {
-        id: '1e75d05c-1003-44ee-8e56-2163ddeaf0cc',
-        OrderNumber: 2,
-        Name: '¿Qué fruta prefieres?',
-        TimeLimit: 90,
-        Type: 'seleccionsimple',
-        UrlMedia: '',
-        PrentQuestionId: null,
-        Options: [
-          {
-            id: '7f55576a-ba9c-4409-a39e-94f59c44bba5',
-            Value: 'Manzana',
-            StatisticValue: 1,
-            ExperienceQuestion: null,
-          },
-          {
-            id: 'ef07c580-75d0-44a7-b3d0-c901c93ccdb9',
-            Value: 'Plátano',
-            StatisticValue: 2,
-            ExperienceQuestion: null,
-          },
-        ],
-      },
-    ],
-    Demographic: [
-      {
-        id: '0fa73cbc-b165-4ef9-8487-a494290cfc4a',
-        Name: 'Rango de edad',
-        DemographicDetails: [
-          {
-            DemographicId: '0fa73cbc-b165-4ef9-8487-a494290cfc4a',
-            Value: '20-30 años',
-            DemograpicCount: 10,
-          },
-          {
-            DemographicId: '0fa73cbc-b165-4ef9-8487-a494290cfc4a',
-            Value: '31-40 años',
-            DemograpicCount: 5,
-          },
-        ],
-      },
-    ],
-  };
 
   const questionIcons = [
     {
@@ -102,6 +43,40 @@ export const Moderator = ({ id }) => {
       icono: <ListOutlinedIcon />,
     },
   ];
+
+  const fetchSurvey = async () => {
+
+    try {
+      const response = await axios.get(
+        `https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/GetSurvey/getSurvey/${id}`
+      );
+      setSurvey(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const connectionHub = async()=>{
+    try {
+      const signalRConnection = new HubConnectionBuilder()
+        .configureLogging(signalR.LogLevel.Debug)
+        .withUrl(
+          'https://chatapppeopleintelligence.azurewebsites.net/discusion',
+          {}
+        )
+
+        .build();
+      signalRConnection.start();
+    } catch (err) {}
+  };
+
+
+
+  useEffect(() => {
+    connectionHub();
+    fetchSurvey();
+  }, []);
+
 
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState({});
@@ -161,7 +136,7 @@ export const Moderator = ({ id }) => {
             >
               <CardContent>
                 <Typography variant="h5" component="div">
-                  {currentSurvey.Title}
+                  {survey.encuesta}
                 </Typography>
               </CardContent>
             </Card>
@@ -179,14 +154,16 @@ export const Moderator = ({ id }) => {
                   Datos demográficos
                 </Typography>
                 <List>
-                  {currentSurvey.Demographic.map((demographic) => (
-                    <Accordion key={demographic.Name}>
+                  {survey.demographicList && survey.demographicList.map((demographic, index) => (
+
+                    <Accordion key={index}>
+                      
                       <AccordionSummary>
-                        <Typography>{demographic.Name}</Typography>
+                        <Typography>{demographic.name}</Typography>
                       </AccordionSummary>
                       <AccordionDetails>
-                        {demographic.DemographicDetails.map((detail) => (
-                          <p>{detail.Value}</p>
+                        {demographic.demographicDetails.map((detail, index2) => (
+                          <p key={index2}>{detail.value}</p>
                         ))}
                       </AccordionDetails>
                     </Accordion>
@@ -201,15 +178,15 @@ export const Moderator = ({ id }) => {
             >
               <CardContent>
                 <Typography variant="h6" component="div" gutterBottom>
-                  Preguntas
+                  Preguntas 
                 </Typography>
                 <List>
-                  {currentSurvey.Questions.map((option) => {
+                  {survey.preguntas && survey.preguntas.map((option) => {
                     const iconObject = questionIcons.find(
-                      (d) => d.tipoPregunta === option.Type
+                      (d) => d.tipoPregunta === option.type
                     );
                     const iconToDisplay = iconObject ? iconObject.icono : null;
-                    console.log(option.Options);
+                    console.log(option.options);
                     return (
                       <>
                         <div
@@ -224,7 +201,7 @@ export const Moderator = ({ id }) => {
                               padding: '1rem',
                             }}
                           >
-                            <Typography>{option.OrderNumber}</Typography>
+                            <Typography>{option.orderNumber}</Typography>
                             <div style={{ marginLeft: '2rem' }}>
                               <span
                                 style={{
@@ -235,40 +212,42 @@ export const Moderator = ({ id }) => {
                                 <Typography style={{ color: 'blue' }}>
                                   {iconToDisplay}
                                 </Typography>
-                                <Typography>{option.Type}</Typography>
+                                <Typography>{option.type}</Typography>
 
                                 <Typography>
-                                  {option.TimeLimit
-                                    ? ` | ${option.TimeLimit}`
+                                  {option.timeLimit
+                                    ? ` | ${option.timeLimit}`
                                     : null}
                                 </Typography>
                               </span>
 
-                              <Typography>{option.Name}</Typography>
+                              <Typography>{option.name}</Typography>
                             </div>
                           </div>
 
-                          {option.Options && option.Options.length > 0 && (
+                          {option.options && option.options.length > 0 && (
                             <>
+                            
                               <Accordion
-                                key={option.id}
-                                style={{ boxShadow: 'none', border: 'none' }}
-                              >
-                                <AccordionSummary>
-                                  <Typography>Mostar opciones</Typography>
-                                </AccordionSummary>
+                              key={option.id}
+                              style={{ boxShadow: 'none', border: 'none' }}
+                            >
+                              <AccordionSummary>
+                                <Typography>Mostar opciones</Typography>
+                              </AccordionSummary>
 
-                                <AccordionDetails>
-                                  <List>
-                                    <p>dsa</p>
-                                    <p>dsa</p>
-                                    <p>dsa</p>
-                                    <p>dsa</p>
-                                    <p>dsa</p>
-                                    <p>dsa</p>
-                                  </List>
-                                </AccordionDetails>
-                              </Accordion>
+                              <AccordionDetails>
+                                <List>
+                                {option.options.map((option, index)=>(
+                                  <>
+                                    <p>{option.value}</p>
+                                  </>
+                                ))}
+                                </List>
+                              </AccordionDetails>
+                            </Accordion>
+                         
+
                             </>
                           )}
                         </div>
