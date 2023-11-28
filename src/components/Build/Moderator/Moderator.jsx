@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import * as signalR from '@microsoft/signalr';
-import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import {HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
@@ -19,13 +19,19 @@ import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import axios from 'axios';
+import { Demographics } from './Demographics';
 
 import { ChatBox } from './ChatBox';
 
 import styles from './ChatBox.module.css';
+import ConSidebar from '../../../Layout/ConSidebar/ConSidebar';
+import CountdownTimer from './CountdownTimer';
 
 export const Moderator = ({ id }) => {
+  const [connection, setConnection] = useState(null);
   const [survey, setSurvey] = useState([]);
+  const [demographic, setDemographics] = useState([]);
+  const [demographicDescription, setDemographicDescription] = useState('');
   function detectURL(message) {
     var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
     return message.replace(urlRegex, function (urlMatch) {
@@ -55,28 +61,43 @@ export const Moderator = ({ id }) => {
       console.log(error);
     }
   };
+  
 
-  const connectionHub = async()=>{
+  useEffect(() => {
     try {
       const signalRConnection = new HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
         .withUrl(
-          'https://chatapppeopleintelligence.azurewebsites.net/discusion',
+          'https://localhost:7005/discusion',
+          //'https://chatapppeopleintelligence.azurewebsites.net/discusion',
           {}
         )
-
+        .withAutomaticReconnect()
         .build();
-      signalRConnection.start();
+  
+      setConnection(signalRConnection);
+      fetchSurvey();
+
+      return () => signalRConnection.stop();
     } catch (err) {}
-  };
-
-
-
-  useEffect(() => {
-    connectionHub();
-    fetchSurvey();
   }, []);
 
+  useEffect(() => {
+    if (connection) {
+      connection.start().then(() => {
+        connection.on("ReceiveDemograpics", (newDemographics, newDescription) => {
+          setDemographics(newDemographics);
+          setDemographicDescription(newDescription);
+        });
+      })
+      .catch(error => console.error('Error al conectar con SignalR:', error));
+
+      // Limpieza al desmontar
+      return () => {
+        connection.off("ReceiveDemographics");
+      };
+    }
+  }, [connection])
 
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState({});
@@ -186,7 +207,6 @@ export const Moderator = ({ id }) => {
                       (d) => d.tipoPregunta === option.type
                     );
                     const iconToDisplay = iconObject ? iconObject.icono : null;
-                    console.log(option.options);
                     return (
                       <>
                         <div
@@ -260,12 +280,14 @@ export const Moderator = ({ id }) => {
             </Card>
           </div>
         </Grid>
+
         <Grid item xs={8}>
+        <CountdownTimer countdownTime={survey.timeDemographics} startTime={Date.now()}/>
           <div
             style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
           >
-            <p>Hola soy uan prueba</p>
             <div className={styles.chatApp__room}>
+            <Demographics description={demographicDescription} demographics={demographic}/>
               {Object.keys(users).map((key) => {
                 const user = users[key];
                 return (
