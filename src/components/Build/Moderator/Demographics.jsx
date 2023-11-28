@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 export const Demographics = ({ demographics, description })=> {
-  
+    console.log(demographics)
     return (
       <div id="preguntasRecibidas">
         {demographics && demographics.map((demovalue, index) => (

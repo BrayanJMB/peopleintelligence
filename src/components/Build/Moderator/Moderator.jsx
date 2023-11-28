@@ -26,12 +26,14 @@ import { ChatBox } from './ChatBox';
 import styles from './ChatBox.module.css';
 import ConSidebar from '../../../Layout/ConSidebar/ConSidebar';
 import CountdownTimer from './CountdownTimer';
+import { ConnectDisconnectUser } from './ConnectDisconnectUser';
 
 export const Moderator = ({ id }) => {
   const [connection, setConnection] = useState(null);
   const [survey, setSurvey] = useState([]);
   const [demographic, setDemographics] = useState([]);
   const [demographicDescription, setDemographicDescription] = useState('');
+  const [connectedUsers, setConnectedUsers] = useState(0);
   function detectURL(message) {
     var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
     return message.replace(urlRegex, function (urlMatch) {
@@ -89,12 +91,16 @@ export const Moderator = ({ id }) => {
           setDemographics(newDemographics);
           setDemographicDescription(newDescription);
         });
+        connection.on("clientConnected", setConnectedUsers);
+        connection.on("clientDisconnected", setConnectedUsers);
       })
       .catch(error => console.error('Error al conectar con SignalR:', error));
 
       // Limpieza al desmontar
       return () => {
         connection.off("ReceiveDemographics");
+        connection.off("clientConnected", setConnectedUsers);
+        connection.off("clientDisconnected", setConnectedUsers);
       };
     }
   }, [connection])
@@ -282,7 +288,10 @@ export const Moderator = ({ id }) => {
         </Grid>
 
         <Grid item xs={8}>
-        <CountdownTimer countdownTime={survey.timeDemographics} startTime={Date.now()}/>
+          <div style={{ display: 'flex', justifyContent:'space-around' }}>
+          <CountdownTimer countdownTime={survey.timeDemographics} startTime={Date.now()}/>
+          {  connection && <ConnectDisconnectUser connectedUsers={connectedUsers} />}
+          </div>
           <div
             style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
           >

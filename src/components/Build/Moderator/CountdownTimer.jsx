@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import CircularProgress from '@mui/material/CircularProgress';
 const CountdownTimer = ({ countdownTime, startTime }) => {
   const [time, setTime] = useState({
     hours: 0,
@@ -35,8 +35,8 @@ const CountdownTimer = ({ countdownTime, startTime }) => {
   }, [countdownTime, startTime]);
 
   return (
-    <div id="counter">
-      <div className='spinner-grow spinner-grow-sm  me-1 text-info' role='status'></div>
+    <div style={{ display: 'flex', alignItems:"center" }} id="counter">
+      <CircularProgress style={{ marginRight:"5px"}} size={15}/>
       {time.hours}:{time.minutes}:{time.seconds}
     </div>
   );
