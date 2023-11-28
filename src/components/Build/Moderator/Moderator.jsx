@@ -32,7 +32,7 @@ export const Moderator = ({ id }) => {
   const [connection, setConnection] = useState(null);
   const [survey, setSurvey] = useState([]);
   const [demographic, setDemographics] = useState([]);
-  const [demographicDescription, setDemographicDescription] = useState('');
+  const [responseDemographic, setResponseDemographic] = useState([]);
   const [connectedUsers, setConnectedUsers] = useState(0);
   function detectURL(message) {
     var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
@@ -80,19 +80,43 @@ export const Moderator = ({ id }) => {
       setConnection(signalRConnection);
       fetchSurvey();
 
-      return () => signalRConnection.stop();
+     
     } catch (err) {}
   }, []);
 
   useEffect(() => {
-    if (connection) {
+    if (connection && survey) {
       connection.start().then(() => {
+        const demographicList = [
+          {
+            "name": "GENERO",
+            "demographicDetails": [
+              {
+                "id": "1692135097221",
+                "demographicId": "5bdf1b43-4547-4a4f-8f70-860c3b0f43b3",
+                "value": "MASCULINO",
+                "demograpicCount": 0
+              },
+              {
+                "id": "1692135118083",
+                "demographicId": "5bdf1b43-4547-4a4f-8f70-860c3b0f43b3",
+                "value": "FEMENINO",
+                "demograpicCount": 0
+              }
+            ]
+          }
+        ]
+        connection.invoke("ChargeDemographics", demographicList, 300, "Buenas Noches esta es una prueba de DinamicLiveConversation").catch(function (err) {
+          return console.error(err.toString());
+      });
         connection.on("ReceiveDemograpics", (newDemographics, newDescription) => {
           setDemographics(newDemographics);
-          setDemographicDescription(newDescription);
         });
         connection.on("clientConnected", setConnectedUsers);
         connection.on("clientDisconnected", setConnectedUsers);
+        connection.on("DemographicCount", (idDemo, count) => {
+          setResponseDemographic(prevCounts => ({ ...prevCounts, [idDemo]: count }));
+        })
       })
       .catch(error => console.error('Error al conectar con SignalR:', error));
 
@@ -296,7 +320,7 @@ export const Moderator = ({ id }) => {
             style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
           >
             <div className={styles.chatApp__room}>
-            <Demographics description={demographicDescription} demographics={demographic}/>
+            <Demographics responseDemographic={responseDemographic} demographics={demographic}/>
               {Object.keys(users).map((key) => {
                 const user = users[key];
                 return (

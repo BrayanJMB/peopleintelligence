@@ -10,7 +10,7 @@ const CountdownTimer = ({ countdownTime, startTime }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       updateCounter();
-    }, 500);
+    }, 1000);
 
     function updateCounter() {
       const now = new Date();
@@ -32,7 +32,7 @@ const CountdownTimer = ({ countdownTime, startTime }) => {
     }
 
     return () => clearInterval(interval);
-  }, [countdownTime, startTime]);
+  }, [countdownTime]);
 
   return (
     <div style={{ display: 'flex', alignItems:"center" }} id="counter">
