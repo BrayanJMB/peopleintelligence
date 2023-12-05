@@ -261,11 +261,22 @@ export default function Build({ stage, handleMove }) {
 
       <div className={styles.build}>
         <div className={styles.content}>
-          <div className={styles.stepper}>
+          <div style={{margin:"30px auto", width:"90%", }}>
             <Stepper activeStep={activeStep}>
               {steps.map((label, index) => (
-                <Step key={label} completed={completed[index]}>
-                  <StepButton color="inherit" style={{ pointerEvents: 'none' }}>
+                <Step key={label} completed={completed[index]}
+                sx={{
+                  '& .MuiStepLabel-iconContainer .Mui-active':
+                  {
+                    color: '#00B0F0',
+                  },
+                  '& .MuiStepLabel-iconContainer .Mui-completed':
+                  {
+                    color: '#00B0F0',
+                  },
+                }}
+                >
+                  <StepButton style={{ pointerEvents: 'none' }}>
                     {label}
                   </StepButton>
                 </Step>

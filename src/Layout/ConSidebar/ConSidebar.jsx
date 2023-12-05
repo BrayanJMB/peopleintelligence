@@ -9,10 +9,10 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
+import Logo from '../../assets/multicompani.jpeg'
 
 import { selectCompanyById } from '../../features/companies/companiesSlice';
 
@@ -60,9 +60,6 @@ export default function ConSidebar(props) {
     setExpanded(isExpanded ? panel : false);
   };
 
-  useEffect(() => {
-    console.log(selectedOption);
-  }, [selectedOption]);
 
   const options = [
     {
@@ -97,26 +94,26 @@ export default function ConSidebar(props) {
     <Box sx={{ backgroundColor: 'white' }} aria-label="mailbox folders">
       <Toolbar style={{ padding: 0 }}>
         <img
-          src={company?.Logotipo ?? null}
+          src={company?.Logotipo ?? Logo}
           alt="profile"
           className={styles.photo}
         />
       </Toolbar>
       <Divider variant="middle" />
-      <List sx={{ height: '100%', backgroundColor: '#cce7ff' }}>
+      <List sx={{ height: '100%', backgroundColor: '#00B0F0' }}>
         {options.map((option) => (
           <Accordion
             key={option.key}
             expanded={expanded === option.key}
             onChange={handleChange(option.key)}
           >
-            <AccordionSummary expandIcon={option.icon}>
+            <AccordionSummary expandIcon={option.icon} >
               <Typography
                 sx={{
                   color: option.subOptions.some(
                     (sub) => sub.key === selectedOption
                   )
-                    ? '#0000ff' // color azul cuando está seleccionado
+                    ? '#00B0F0' // color azul cuando está seleccionado
                     : 'inherit', // color por defecto
                 }}
               >
@@ -135,8 +132,11 @@ export default function ConSidebar(props) {
                       sx={{
                         backgroundColor:
                           selectedOption === subOption.key
-                            ? '#b3d4fc'
+                            ? '#00B0F0'
                             : 'transparent',
+                          '&:hover': {
+                            backgroundColor: '#00B0F0' 
+                          }
                       }}
                     >
                       {subOption.label}
