@@ -56,8 +56,8 @@ export default function Build({ stage, handleMove }) {
   const [loading, setLoading] = useState(false);
   const [surveyChat, setSurveyChat] = useState([]);
   const [moderator, setModerator] = useState({
-    moderatorId: '123',
-    name: userInfo.username,
+    moderatorId: '',
+    name: 'brayan',
     avatarUrl: '',
   });
   const [survey, setSurvey] = useState({
@@ -91,6 +91,10 @@ export default function Build({ stage, handleMove }) {
       }
     }
   };
+  useEffect(() => {
+    console.log(moderator)
+  }, [moderator])
+  
 
   const handleReset = (name) => {
     if (name.includes('avatar')) {
@@ -158,7 +162,7 @@ export default function Build({ stage, handleMove }) {
   const resetModerator = () => {
     setModerator({
       moderatorId: userInfo.user,
-      name: userInfo.username,
+      name: 'brayan',
       avatarUrl: '',
     });
   };
@@ -175,6 +179,7 @@ export default function Build({ stage, handleMove }) {
     setQuestions([]);
     setDemographics([]);
   };
+
   const updateStatesFromSurveyChat = () => {
     // Actualizar el estado del moderador
     setModerator((prevState) => ({

@@ -25,6 +25,7 @@ export default function AccordionDiscussion({
   isAccordionOpen,
   setIsAccordionOpen,
   demographicRefs,
+  accordionTitle
 }) {
   console.log(questions);
   console.log(demographics);
@@ -87,8 +88,9 @@ export default function AccordionDiscussion({
   
 
   return (
-    <div>
+    <div style={{width:"90%", margin:"0 auto"}}>
       <Accordion
+        sx={{ color:"white", fontWeight:"900"}}
         expanded={isAccordionOpen}
         onChange={(e, expanded) => setIsAccordionOpen(expanded)}
       >
@@ -96,15 +98,16 @@ export default function AccordionDiscussion({
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
           id="panel1a-header"
+          sx={{ backgroundColor:"#00B0F0"}}
         >
-          <Typography>Accordion 1</Typography>
+          <Typography>{accordionTitle}</Typography>
         </AccordionSummary>
         <AccordionDetails style={{ overflow: 'auto', maxHeight: '400px' }}>
           {isConversation ? (
             <>
-              <FormControl sx={{ m: 1, minWidth: 120 }}>
+              <FormControl sx={{ marginBottom: 2, minWidth: 300 }}>
                 <InputLabel id="demo-simple-select-helper-label">
-                  Nuevo Item
+                  Seleccione el tipo pregunta
                 </InputLabel>
                 <Select
                   labelId="demo-simple-select-helper-label"
@@ -112,6 +115,7 @@ export default function AccordionDiscussion({
                   value={item}
                   label="Añadir nuevo ítem"
                   onChange={handleChange}
+                  fullWidth
                 >
                   {questionTypes.map((value, index) => (
                     <MenuItem key={index} value={value}>
@@ -122,7 +126,7 @@ export default function AccordionDiscussion({
               </FormControl>
               <Grid container spacing={2} alignItems="center">
                 {questions.map((question, index) => (
-                  <Grid item xs={6}>
+                  <Grid item xs={8}>
                     <Options
                       key={index}
                       isConversation={isConversation}
@@ -142,12 +146,14 @@ export default function AccordionDiscussion({
             </>
           ) : (
             <>
-              <Button onClick={handleAddDemographic}>
+              <Button onClick={handleAddDemographic} sx={{
+                color:'#00B0F0'
+              }}>
                 Añadir nuevo dato demográfico
               </Button>
               <Grid container spacing={2} alignItems="center">
                 {demographics.map((demographic, index) => (
-                  <Grid item xs={6}>
+                  <Grid item xs={8}>
                     <Options
                       key={index}
                       currentIndex={index}

@@ -260,7 +260,9 @@ function Options({
                   helperText={errors.demographics?.[currentIndex]?.name}
                   size="small"
                 />
-                <Button onClick={handleAddOption} color="primary">
+                <Button onClick={handleAddOption} sx={{
+                color:'#00B0F0'
+                }}>
                   Añadir opción <AddCircleOutlineIcon />
                 </Button>
               </div>
@@ -288,7 +290,7 @@ function Options({
                     >
                       <TextField
                         fullWidth
-                        label={`Opción ${opcion.id}`}
+                        label={`Opción ${index + 1}`}
                         id="outlined-size-small"
                         defaultvalue="Small"
                         size="small"
@@ -340,13 +342,14 @@ function Options({
                 >
                   <div>
                     <Chip
+                    sx={{
+                      color:'#00B0F0' }}
                       label="Pregunta de texto"
-                      color="primary"
                       size="small"
                       variant="outlined"
                       style={{ marginBottom: '5px' }}
                     />
-                    <Button onClick={handleRemoveConversation}>Eliminar</Button>
+                    <Button onClick={handleRemoveConversation} color="error">Eliminar</Button>
                   </div>
                   <TextField
                     size="small"
@@ -375,9 +378,9 @@ function Options({
                       color="primary"
                       size="small"
                       variant="outlined"
-                      style={{ marginBottom: '5px' }}
+                      style={{ marginBottom: '5px', color:'#00B0F0'  }}
                     />
-                    <Button onClick={handleRemoveConversation}>Eliminar</Button>
+                    <Button onClick={handleRemoveConversation} color="error">Eliminar</Button>
                   </div>
                   <div
                     style={{
@@ -440,9 +443,9 @@ function Options({
                       color="primary"
                       size="small"
                       variant="outlined"
-                      style={{ marginBottom: '5px' }}
+                      style={{ marginBottom: '5px', color:'#00B0F0'  }}
                     />
-                    <Button onClick={handleRemoveConversation}>Eliminar</Button>
+                    <Button onClick={handleRemoveConversation} color="error" >Eliminar</Button>
                   </div>
 
                   <div
@@ -489,7 +492,9 @@ function Options({
                       </FormHelperText>
                     </FormControl>
                   </div>
-                  <Button onClick={handleAddOption} color="primary">
+                  <Button onClick={handleAddOption} sx={{
+                  color:'#00B0F0'
+                  }}>
                     Añadir opción <AddCircleOutlineIcon />
                   </Button>
                   {question.options.length > 0 && (
@@ -515,7 +520,7 @@ function Options({
                         >
                           <TextField
                             size="small"
-                            label={`Opción ${opcion.id}`}
+                            label={`Opción ${index+1}`}
                             value={opcion.value}
                             onChange={(e) =>
                               handleOptionChange(
@@ -560,7 +565,7 @@ function Options({
                             }
                             style={{ marginRight: '10px' }}
                           />
-                          <Button onClick={() => handleDeleteOption(opcion.id)}>
+                          <Button onClick={() => handleDeleteOption(opcion.id)} color='error'>
                             <DeleteOutlineIcon />
                           </Button>
                         </div>
@@ -587,9 +592,9 @@ function Options({
                       color="primary"
                       size="small"
                       variant="outlined"
-                      style={{ marginBottom: '5px' }}
+                      style={{ marginBottom: '5px', color:'#00B0F0'  }}
                     />
-                    <Button onClick={handleRemoveConversation}>Eliminar</Button>
+                    <Button onClick={handleRemoveConversation} color="error">Eliminar</Button>
                   </div>
                   <div
                     style={{
@@ -637,9 +642,11 @@ function Options({
                   </div>
                   <Button
                     onClick={handleAddOption}
-                    color="primary"
                     size="small"
                     style={{ minWidth: 'fit-content' }}
+                    sx={{
+                      color:'#00B0F0'
+                      }}
                   >
                     Añadir opción <AddCircleOutlineIcon />
                   </Button>
@@ -665,7 +672,7 @@ function Options({
                           }}
                         >
                           <TextField
-                            label={`Opción ${opcion.id}`}
+                            label={`Opción ${index+1}`}
                             value={opcion.value}
                             onChange={(e) =>
                               handleOptionChange(opcion.id, e.target.value)
@@ -682,7 +689,7 @@ function Options({
                               ]
                             }
                           />
-                          <Button onClick={() => handleDeleteOption(opcion.id)}>
+                          <Button onClick={() => handleDeleteOption(opcion.id)} color='error'>
                             <DeleteOutlineIcon />
                           </Button>
                         </div>

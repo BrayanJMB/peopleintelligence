@@ -13,7 +13,6 @@ import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
-
 import { storeSurveyChatAPI } from '../../../services/ChatLive/storeSurveyChat.service';
 import { updateSurveyChatAPI } from '../../../services/ChatLive/updateSurveyChat.service';
 
@@ -289,10 +288,17 @@ export default function Discussion({
             justifyContent: 'space-around',
           }}
         >
-          <p> Nombre encuesta </p>
+          <p>{survey.title}</p>
           <div>
-            <Button>Compartir</Button>
-            <Button onClick={handleSubmit}>
+          <Button onClick={handleOpenModal} sx={{
+              color:'#00B0F0'
+            }}>Importar</Button>
+            <Button sx={{
+              color:'#00B0F0'
+            }}>Compartir</Button>
+            <Button onClick={handleSubmit} sx={{
+              color:'#00B0F0'
+            }}>
               {isUpdate ? 'Editar' : 'Publicar'}
             </Button>
           </div>
@@ -336,9 +342,6 @@ export default function Discussion({
               </div>*/}
 
         <div className={styles.impexp}>
-          <Button variant="text" size="small" onClick={handleOpenModal}>
-            Importar
-          </Button>
           <Modal
             open={open}
             onClose={handleCloseModal}
@@ -407,6 +410,7 @@ export default function Discussion({
           isAccordionOpen={isDemographicsAccordionOpen}
           setIsAccordionOpen={setIsDemographicsAccordionOpen}
           demographicRefs={demographicRefs}
+          accordionTitle={"Datos Demográficos"}
         />
         <AccordionDiscussion
           isConversation={true}
@@ -419,6 +423,7 @@ export default function Discussion({
           setErrors={setErrors}
           isAccordionOpen={isConversationAccordionOpen}
           setIsAccordionOpen={setIsConversationAccordionOpen}
+          accordionTitle={"Preguntas"}
         />
       </div>
     </div>
