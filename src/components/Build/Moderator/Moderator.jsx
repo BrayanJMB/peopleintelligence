@@ -18,6 +18,7 @@ import CountdownTimer from './CountdownTimer';
 import { ConnectDisconnectUser } from './ConnectDisconnectUser';
 
 export const Moderator = ({ id }) => {
+  
   const [connection, setConnection] = useState(null);
   const [survey, setSurvey] = useState([]);
   const [demographic, setDemographics] = useState([]);
@@ -72,6 +73,7 @@ export const Moderator = ({ id }) => {
     initializeConnectionAndFetchData();
   }, []);
 
+  console.log(survey)
   useEffect(() => {
     if (connection && survey) {
       connection.start().then(() => {

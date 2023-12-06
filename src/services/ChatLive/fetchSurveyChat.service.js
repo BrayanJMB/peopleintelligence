@@ -12,3 +12,8 @@ export const fecthSurveyChatAPI = async (idCompany) => {
   const response = await api.get(`CustomCahtApi/GetSurvey/${idCompany}`);
   return response;
 };
+
+export const fecthModeradorAPI = async (idSurvey) => {
+  const response = await api.get(`CustomCahtApi/GetModerator/${idSurvey}`);
+  return response;
+};

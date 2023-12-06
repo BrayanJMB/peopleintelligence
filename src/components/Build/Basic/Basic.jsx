@@ -23,6 +23,7 @@ export default function Basic(props) {
   const company = useSelector((state) =>
     currentCompany ? selectCompanyById(state, currentCompany.id) : null
   );
+
   const handleNext = () => {
     if (fieldsValidation()) {
       props.handleNextStepper();
@@ -95,9 +96,17 @@ export default function Basic(props) {
                     <NotesIcon color="blue" style={{ marginRight: '1rem' }} />
                     <p>Nombre moderador</p>
                   </div>
-                  <Typography variant="h6" gutterBottom display={{fontStyle:'italic'}}>
-                    {userInfo.username}
-                  </Typography>
+                    <TextField
+                    id="outlined-name"
+                    label="Nombre moderador"
+                    value={props.moderator.name}
+                    name="name"
+                    onChange={(event) => props.handleChange(event, 'moderator')}
+                    size="small"
+                    style={{ width: '100%' , color:'#00B0F0'}}
+                    error={error.title}
+                    helperText={helperText.title}
+                  />
                 </div>
               </div>
             </div>
@@ -150,7 +159,7 @@ export default function Basic(props) {
                     error={error.description}
                     helperText={helperText.description}
                     aria-label="empty textarea"
-                    placeholder="Type your welcome message..."
+                    placeholder="Escribe tú mensaje de bienvenida :)"
                     multiline
                     minRows={6}
                     maxRows={8}

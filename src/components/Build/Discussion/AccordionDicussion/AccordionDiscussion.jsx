@@ -105,7 +105,7 @@ export default function AccordionDiscussion({
         <AccordionDetails style={{ overflow: 'auto', maxHeight: '400px' }}>
           {isConversation ? (
             <>
-              <FormControl sx={{ marginBottom: 2, minWidth: 300 }}>
+              <FormControl sx={{ marginBottom: 5, minWidth: 300 }}>
                 <InputLabel id="demo-simple-select-helper-label">
                   Seleccione el tipo pregunta
                 </InputLabel>

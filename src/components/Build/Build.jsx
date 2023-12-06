@@ -11,7 +11,7 @@ import Stepper from '@mui/material/Stepper';
 import { v4 as uuidv4 } from 'uuid';
 
 import ConSidebar from '../../Layout/ConSidebar/ConSidebar';
-import { fecthSurveyChatAPI } from '../../services/ChatLive/fetchSurveyChat.service';
+import { fecthSurveyChatAPI, fecthModeradorAPI } from '../../services/ChatLive/fetchSurveyChat.service';
 
 import Basic from './Basic/Basic';
 import Discussion from './Discussion/Discussion';
@@ -20,6 +20,8 @@ import Segment from './Segment/Segment';
 import { SurveyChat } from './SurveysChats/SurveyChat';
 
 import styles from './Build.module.css';
+import { gridColumnsTotalWidthSelector } from '@mui/x-data-grid';
+import { current } from '@reduxjs/toolkit';
 const list = [
   'Detalles básicos',
   'Guía conversación',
@@ -57,9 +59,10 @@ export default function Build({ stage, handleMove }) {
   const [surveyChat, setSurveyChat] = useState([]);
   const [moderator, setModerator] = useState({
     moderatorId: '',
-    name: 'brayan',
+    name: '',
     avatarUrl: '',
   });
+
   const [survey, setSurvey] = useState({
     id: uuidv4(),
     title: '',
@@ -90,11 +93,7 @@ export default function Build({ stage, handleMove }) {
         }
       }
     }
-  };
-  useEffect(() => {
-    console.log(moderator)
-  }, [moderator])
-  
+  };  
 
   const handleReset = (name) => {
     if (name.includes('avatar')) {
@@ -152,7 +151,10 @@ export default function Build({ stage, handleMove }) {
 
     const { data } = await fecthSurveyChatAPI(currentCompany.id);
     const currentSurvey = id ? data.find((element) => element.id === id) : data;
+
     setSurveyChat(currentSurvey);
+    const { data:moderator } = await fecthModeradorAPI(currentSurvey.id);
+    setModerator(moderator);
   };
 
   useEffect(() => {
@@ -162,7 +164,7 @@ export default function Build({ stage, handleMove }) {
   const resetModerator = () => {
     setModerator({
       moderatorId: userInfo.user,
-      name: 'brayan',
+      name: '',
       avatarUrl: '',
     });
   };
@@ -184,7 +186,7 @@ export default function Build({ stage, handleMove }) {
     // Actualizar el estado del moderador
     setModerator((prevState) => ({
       ...prevState,
-      moderatorId: '123', 
+      moderatorId: userInfo.user, 
     }));
 
     // Actualizar el estado de la encuesta

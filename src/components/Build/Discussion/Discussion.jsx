@@ -99,7 +99,7 @@ export default function Discussion({
         },
         survey: {
           ...survey,
-          imageUrl: urls ? urls.data.files[0] : '',
+          imageUrl: urls ? urls.data.files[0] : survey.imageUrl,
           questions: questions.map((q, index) => ({
             ...q,
             orderNumber: index + 1,
@@ -117,8 +117,8 @@ export default function Discussion({
           })),
         },
       };
-      console.log(payload);
-      if (!isUpdate) {
+      console.log(payload)
+      /*if (!isUpdate) {
         const response = await storeSurveyChatAPI(payload);
         if (response.status === 200) {
           alert('Chat Live creado satisfactoriamente');
@@ -134,7 +134,7 @@ export default function Discussion({
         } else {
           alert('Hubo un error al crear la encuesta de chat');
         }
-      }
+      }*/
     }
   };
 
@@ -318,29 +318,6 @@ export default function Discussion({
             </div>
           </div>
         </div>
-        {/*
-        <div className={styles.grey}>
-          <div className={styles.layout}>
-            <div className={styles.leftbox}>
-              <img
-                src="https://www.jrmyprtr.com/wp-content/uploads/2014/06/messaging.png"
-                alt="profile"
-                className={styles.photo}
-              />
-            </div>
-            <div className={styles.rightbox}>
-              <p style={{ width: '60%' }}>
-                Prepare messages and questions you will ask participants during
-                this Conversation.
-              </p>
-              <p style={{ width: '60%' }}>
-                Not sur where to start? Try a free template crafted by your
-                Remesh Research Team
-              </p>
-            </div>
-          </div>
-              </div>*/}
-
         <div className={styles.impexp}>
           <Modal
             open={open}
