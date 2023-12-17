@@ -8,13 +8,12 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-
 import { selectCompanyById } from '../../../features/companies/companiesSlice';
 import MyLoader from '../../MyLoader/MyLoader';
-
 import UploadImage from './UploadImage';
-
 import styles from './Basic.module.css';
+import Logo from '../../../assets/multicompani.jpeg'
+
 
 export default function Basic(props) {
   const [error, setError] = useState({});
@@ -24,6 +23,7 @@ export default function Basic(props) {
   const company = useSelector((state) =>
     currentCompany ? selectCompanyById(state, currentCompany.id) : null
   );
+
   const handleNext = () => {
     if (fieldsValidation()) {
       props.handleNextStepper();
@@ -85,7 +85,7 @@ export default function Basic(props) {
                   name="title"
                   onChange={(event) => props.handleChange(event, 'survey')}
                   size="small"
-                  style={{ width: '100%' }}
+                  style={{ width: '100%' , color:'#00B0F0'}}
                   error={error.title}
                   helperText={helperText.title}
                 />
@@ -96,9 +96,17 @@ export default function Basic(props) {
                     <NotesIcon color="blue" style={{ marginRight: '1rem' }} />
                     <p>Nombre moderador</p>
                   </div>
-                  <Typography variant="h6" gutterBottom display={{fontStyle:'italic'}}>
-                    {userInfo.username}
-                  </Typography>
+                    <TextField
+                    id="outlined-name"
+                    label="Nombre moderador"
+                    value={props.moderator.name}
+                    name="name"
+                    onChange={(event) => props.handleChange(event, 'moderator')}
+                    size="small"
+                    style={{ width: '100%' , color:'#00B0F0'}}
+                    error={error.title}
+                    helperText={helperText.title}
+                  />
                 </div>
               </div>
             </div>
@@ -151,7 +159,7 @@ export default function Basic(props) {
                     error={error.description}
                     helperText={helperText.description}
                     aria-label="empty textarea"
-                    placeholder="Type your welcome message..."
+                    placeholder="Escribe tú mensaje de bienvenida :)"
                     multiline
                     minRows={6}
                     maxRows={8}
@@ -185,7 +193,7 @@ export default function Basic(props) {
               <div className={styles.inside}>
                 <div
                   style={{
-                    backgroundColor: 'grey',
+                    backgroundColor: '#00B0F0',
                     width: '24%',
                     height: '4px',
                     borderRadius: '1rem',
@@ -194,7 +202,7 @@ export default function Basic(props) {
                 ></div>
                 <div
                   style={{
-                    backgroundColor: 'grey',
+                    backgroundColor: '#00B0F0',
                     width: '90%',
                     height: '2px',
                     borderRadius: '1rem',
@@ -212,7 +220,7 @@ export default function Basic(props) {
                 >
                   <div style={{ marginBottom: '0.2rem', marginLeft: '0.5rem' }}>
                     <img
-                      src={company?.Logotipo ?? null}
+                      src={company?.Logotipo ?? Logo}
                       alt="logotipo"
                       className={styles.photo}
                     />
@@ -249,7 +257,7 @@ export default function Basic(props) {
                           />
                         ) : (
                           <IconButton>
-                            <TagFacesIcon color="warning" />
+                            <TagFacesIcon style={{color:'#00B0F0'}}/>
                           </IconButton>
                         )}
                       </div>

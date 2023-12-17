@@ -13,7 +13,6 @@ import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
-
 import { storeSurveyChatAPI } from '../../../services/ChatLive/storeSurveyChat.service';
 import { updateSurveyChatAPI } from '../../../services/ChatLive/updateSurveyChat.service';
 
@@ -100,7 +99,7 @@ export default function Discussion({
         },
         survey: {
           ...survey,
-          imageUrl: urls ? urls.data.files[0] : '',
+          imageUrl: urls ? urls.data.files[0] : survey.imageUrl,
           questions: questions.map((q, index) => ({
             ...q,
             orderNumber: index + 1,
@@ -118,7 +117,7 @@ export default function Discussion({
           })),
         },
       };
-      console.log(payload);
+      console.log(payload)
       if (!isUpdate) {
         const response = await storeSurveyChatAPI(payload);
         if (response.status === 200) {
@@ -289,10 +288,17 @@ export default function Discussion({
             justifyContent: 'space-around',
           }}
         >
-          <p> Nombre encuesta </p>
+          <p>{survey.title}</p>
           <div>
-            <Button>Compartir</Button>
-            <Button onClick={handleSubmit}>
+          <Button onClick={handleOpenModal} sx={{
+              color:'#00B0F0'
+            }}>Importar</Button>
+            <Button sx={{
+              color:'#00B0F0'
+            }}>Compartir</Button>
+            <Button onClick={handleSubmit} sx={{
+              color:'#00B0F0'
+            }}>
               {isUpdate ? 'Editar' : 'Publicar'}
             </Button>
           </div>
@@ -312,33 +318,7 @@ export default function Discussion({
             </div>
           </div>
         </div>
-        {/*
-        <div className={styles.grey}>
-          <div className={styles.layout}>
-            <div className={styles.leftbox}>
-              <img
-                src="https://www.jrmyprtr.com/wp-content/uploads/2014/06/messaging.png"
-                alt="profile"
-                className={styles.photo}
-              />
-            </div>
-            <div className={styles.rightbox}>
-              <p style={{ width: '60%' }}>
-                Prepare messages and questions you will ask participants during
-                this Conversation.
-              </p>
-              <p style={{ width: '60%' }}>
-                Not sur where to start? Try a free template crafted by your
-                Remesh Research Team
-              </p>
-            </div>
-          </div>
-              </div>*/}
-
         <div className={styles.impexp}>
-          <Button variant="text" size="small" onClick={handleOpenModal}>
-            Importar
-          </Button>
           <Modal
             open={open}
             onClose={handleCloseModal}
@@ -407,6 +387,7 @@ export default function Discussion({
           isAccordionOpen={isDemographicsAccordionOpen}
           setIsAccordionOpen={setIsDemographicsAccordionOpen}
           demographicRefs={demographicRefs}
+          accordionTitle={"Datos Demográficos"}
         />
         <AccordionDiscussion
           isConversation={true}
@@ -419,6 +400,7 @@ export default function Discussion({
           setErrors={setErrors}
           isAccordionOpen={isConversationAccordionOpen}
           setIsAccordionOpen={setIsConversationAccordionOpen}
+          accordionTitle={"Preguntas"}
         />
       </div>
     </div>
