@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect,useState } from 'react';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 
 export const useSignalRConnection = () => {
@@ -13,9 +13,9 @@ export const useSignalRConnection = () => {
 
     connection.start()
       .then(() => {
-        console.log("Conexión de SignalR iniciada.");
-        connection.on("ReceiveDemograpics", (newDemographics, newDescription) => {
-          console.log("entro acá")
+        console.log('Conexión de SignalR iniciada.');
+        connection.on('ReceiveDemograpics', (newDemographics, newDescription) => {
+          console.log('entro acá');
           setDemographics(newDemographics);
           setDemographicDescription(newDescription);
         });

@@ -11,11 +11,13 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import axios from 'axios';
-import { Demographics } from './Demographics';
+
 import { ChatBox } from './ChatBox';
-import styles from './ChatBox.module.css';
-import CountdownTimer from './CountdownTimer';
 import { ConnectDisconnectUser } from './ConnectDisconnectUser';
+import CountdownTimer from './CountdownTimer';
+import { Demographics } from './Demographics';
+
+import styles from './ChatBox.module.css';
 
 export const Moderator = ({ id }) => {
   
@@ -76,28 +78,28 @@ export const Moderator = ({ id }) => {
   useEffect(() => {
     if (connection && survey) {
       connection.start().then(() => {
-        connection.invoke("ChargeDemographics", survey.demographicList, survey.timeDemographics, survey.description).catch(function (err) {
+        connection.invoke('ChargeDemographics', survey.demographicList, survey.timeDemographics, survey.description).catch(function (err) {
           return console.error(err.toString());
       });
-        connection.on("ReceiveDemograpics", (newDemographics) => {
+        connection.on('ReceiveDemograpics', (newDemographics) => {
           setDemographics(newDemographics);
         });
-        connection.on("clientConnected", setConnectedUsers);
-        connection.on("clientDisconnected", setConnectedUsers);
-        connection.on("DemographicCount", (idDemo, count) => {
+        connection.on('clientConnected', setConnectedUsers);
+        connection.on('clientDisconnected', setConnectedUsers);
+        connection.on('DemographicCount', (idDemo, count) => {
           setResponseDemographic(prevCounts => ({ ...prevCounts, [idDemo]: count }));
-        })
+        });
       })
       .catch(error => console.error('Error al conectar con SignalR:', error));
 
       // Limpieza al desmontar
       return () => {
-        connection.off("ReceiveDemographics");
-        connection.off("clientConnected", setConnectedUsers);
-        connection.off("clientDisconnected", setConnectedUsers);
+        connection.off('ReceiveDemographics');
+        connection.off('clientConnected', setConnectedUsers);
+        connection.off('clientDisconnected', setConnectedUsers);
       };
     }
-  }, [connection])
+  }, [connection]);
 
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState({});
