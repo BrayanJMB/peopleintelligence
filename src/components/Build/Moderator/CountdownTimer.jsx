@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect,useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 const CountdownTimer = ({ countdownTime, startTime }) => {
   const [time, setTime] = useState({
     hours: 0,
     minutes: 0,
-    seconds: 0
+    seconds: 0,
   });
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const CountdownTimer = ({ countdownTime, startTime }) => {
       setTime({
         hours: hours < 10 ? `0${hours}` : hours,
         minutes: minutes < 10 ? `0${minutes}` : minutes,
-        seconds: seconds < 10 ? `0${seconds}` : seconds
+        seconds: seconds < 10 ? `0${seconds}` : seconds,
       });
     }
 
@@ -35,8 +35,8 @@ const CountdownTimer = ({ countdownTime, startTime }) => {
   }, [countdownTime]);
 
   return (
-    <div style={{ display: 'flex', alignItems:"center" }} id="counter">
-      <CircularProgress style={{ marginRight:"5px"}} size={15}/>
+    <div style={{ display: 'flex', alignItems:'center' }} id="counter">
+      <CircularProgress style={{ marginRight:'5px'}} size={15}/>
       {time.hours}:{time.minutes}:{time.seconds}
     </div>
   );

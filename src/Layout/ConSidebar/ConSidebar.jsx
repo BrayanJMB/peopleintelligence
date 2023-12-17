@@ -12,8 +12,8 @@ import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import Logo from '../../assets/multicompani.jpeg'
 
+import Logo from '../../assets/multicompani.jpeg';
 import { selectCompanyById } from '../../features/companies/companiesSlice';
 
 import styles from './ConSidebar.module.css';
@@ -135,8 +135,8 @@ export default function ConSidebar(props) {
                             ? '#00B0F0'
                             : 'transparent',
                           '&:hover': {
-                            backgroundColor: '#00B0F0' 
-                          }
+                            backgroundColor: '#00B0F0', 
+                          },
                       }}
                     >
                       {subOption.label}

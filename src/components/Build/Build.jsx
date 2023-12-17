@@ -8,10 +8,12 @@ import Snackbar from '@mui/material/Snackbar';
 import Step from '@mui/material/Step';
 import StepButton from '@mui/material/StepButton';
 import Stepper from '@mui/material/Stepper';
+import { gridColumnsTotalWidthSelector } from '@mui/x-data-grid';
+import { current } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
 import ConSidebar from '../../Layout/ConSidebar/ConSidebar';
-import { fecthSurveyChatAPI, fecthModeradorAPI } from '../../services/ChatLive/fetchSurveyChat.service';
+import { fecthModeradorAPI,fecthSurveyChatAPI } from '../../services/ChatLive/fetchSurveyChat.service';
 
 import Basic from './Basic/Basic';
 import Discussion from './Discussion/Discussion';
@@ -20,8 +22,6 @@ import Segment from './Segment/Segment';
 import { SurveyChat } from './SurveysChats/SurveyChat';
 
 import styles from './Build.module.css';
-import { gridColumnsTotalWidthSelector } from '@mui/x-data-grid';
-import { current } from '@reduxjs/toolkit';
 const list = [
   'Detalles básicos',
   'Guía conversación',
@@ -266,7 +266,7 @@ export default function Build({ stage, handleMove }) {
 
       <div className={styles.build}>
         <div className={styles.content}>
-          <div style={{margin:"30px auto", width:"90%", }}>
+          <div style={{margin:'30px auto', width:'90%' }}>
             <Stepper activeStep={activeStep}>
               {steps.map((label, index) => (
                 <Step key={label} completed={completed[index]}

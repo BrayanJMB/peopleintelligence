@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
+
 import { storeSurveyChatAPI } from '../../../services/ChatLive/storeSurveyChat.service';
 import { updateSurveyChatAPI } from '../../../services/ChatLive/updateSurveyChat.service';
 
@@ -117,7 +118,7 @@ export default function Discussion({
           })),
         },
       };
-      console.log(payload)
+      console.log(payload);
       if (!isUpdate) {
         const response = await storeSurveyChatAPI(payload);
         if (response.status === 200) {
@@ -291,13 +292,13 @@ export default function Discussion({
           <p>{survey.title}</p>
           <div>
           <Button onClick={handleOpenModal} sx={{
-              color:'#00B0F0'
+              color:'#00B0F0',
             }}>Importar</Button>
             <Button sx={{
-              color:'#00B0F0'
+              color:'#00B0F0',
             }}>Compartir</Button>
             <Button onClick={handleSubmit} sx={{
-              color:'#00B0F0'
+              color:'#00B0F0',
             }}>
               {isUpdate ? 'Editar' : 'Publicar'}
             </Button>
@@ -387,7 +388,7 @@ export default function Discussion({
           isAccordionOpen={isDemographicsAccordionOpen}
           setIsAccordionOpen={setIsDemographicsAccordionOpen}
           demographicRefs={demographicRefs}
-          accordionTitle={"Datos Demográficos"}
+          accordionTitle={'Datos Demográficos'}
         />
         <AccordionDiscussion
           isConversation={true}
@@ -400,7 +401,7 @@ export default function Discussion({
           setErrors={setErrors}
           isAccordionOpen={isConversationAccordionOpen}
           setIsAccordionOpen={setIsConversationAccordionOpen}
-          accordionTitle={"Preguntas"}
+          accordionTitle={'Preguntas'}
         />
       </div>
     </div>

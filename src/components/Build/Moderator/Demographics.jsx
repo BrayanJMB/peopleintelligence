@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 export const Demographics = ({ demographics, responseDemographic })=> {
-    console.log(demographics)
-    console.log(responseDemographic)
+    console.log(demographics);
+    console.log(responseDemographic);
     return (
       <div id="preguntasRecibidas">
         {demographics && demographics.map((demovalue, index) => (
@@ -13,8 +13,8 @@ export const Demographics = ({ demographics, responseDemographic })=> {
             
             
             {demovalue.demographicDetails && demovalue.demographicDetails.map((option, index2)=>(
-                <div key={option.id} style={{ display: 'flex', alignItems:"center" }}>
-                    <p style={{ marginRight:"5px"}}  key={index2}>{option.value}</p>
+                <div key={option.id} style={{ display: 'flex', alignItems:'center' }}>
+                    <p style={{ marginRight:'5px'}}  key={index2}>{option.value}</p>
                     <PersonOutlineIcon/>
                     <p className="me-5 mb-1">{responseDemographic[option.id] || 0}</p>
                 </div>
@@ -24,4 +24,4 @@ export const Demographics = ({ demographics, responseDemographic })=> {
         ))}
       </div>
     );
-  }
+  };

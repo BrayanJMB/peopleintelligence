@@ -8,11 +8,14 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+
+import Logo from '../../../assets/multicompani.jpeg';
 import { selectCompanyById } from '../../../features/companies/companiesSlice';
 import MyLoader from '../../MyLoader/MyLoader';
+
 import UploadImage from './UploadImage';
+
 import styles from './Basic.module.css';
-import Logo from '../../../assets/multicompani.jpeg'
 
 
 export default function Basic(props) {

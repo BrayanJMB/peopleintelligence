@@ -25,7 +25,7 @@ export default function AccordionDiscussion({
   isAccordionOpen,
   setIsAccordionOpen,
   demographicRefs,
-  accordionTitle
+  accordionTitle,
 }) {
   console.log(questions);
   console.log(demographics);
@@ -88,9 +88,9 @@ export default function AccordionDiscussion({
   
 
   return (
-    <div style={{width:"90%", margin:"0 auto"}}>
+    <div style={{width:'90%', margin:'0 auto'}}>
       <Accordion
-        sx={{ color:"white", fontWeight:"900"}}
+        sx={{ color:'white', fontWeight:'900'}}
         expanded={isAccordionOpen}
         onChange={(e, expanded) => setIsAccordionOpen(expanded)}
       >
@@ -98,7 +98,7 @@ export default function AccordionDiscussion({
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
           id="panel1a-header"
-          sx={{ backgroundColor:"#00B0F0"}}
+          sx={{ backgroundColor:'#00B0F0'}}
         >
           <Typography>{accordionTitle}</Typography>
         </AccordionSummary>
@@ -147,7 +147,7 @@ export default function AccordionDiscussion({
           ) : (
             <>
               <Button onClick={handleAddDemographic} sx={{
-                color:'#00B0F0'
+                color:'#00B0F0',
               }}>
                 Añadir nuevo dato demográfico
               </Button>
