@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 export const Demographics = ({ demographics, responseDemographic })=> {
-    
+    console.log(demographics)
     console.log(responseDemographic)
     return (
       <div id="preguntasRecibidas">

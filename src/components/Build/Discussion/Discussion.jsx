@@ -118,7 +118,7 @@ export default function Discussion({
         },
       };
       console.log(payload)
-      /*if (!isUpdate) {
+      if (!isUpdate) {
         const response = await storeSurveyChatAPI(payload);
         if (response.status === 200) {
           alert('Chat Live creado satisfactoriamente');
@@ -134,7 +134,7 @@ export default function Discussion({
         } else {
           alert('Hubo un error al crear la encuesta de chat');
         }
-      }*/
+      }
     }
   };
 

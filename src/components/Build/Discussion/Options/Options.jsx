@@ -394,7 +394,7 @@ function Options({
                   </div>
                   <TextField
                     size="small"
-                    label="Nombre Demográfico"
+                    label="Nombre pregunta"
                     value={question.name}
                     onChange={handleDemographicNameChange}
                     error={!!errors.questions?.[currentIndex]?.name}

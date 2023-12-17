@@ -73,7 +73,6 @@ export const Moderator = ({ id }) => {
     initializeConnectionAndFetchData();
   }, []);
 
-  console.log(survey)
   useEffect(() => {
     if (connection && survey) {
       connection.start().then(() => {

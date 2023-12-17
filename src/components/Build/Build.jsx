@@ -129,9 +129,7 @@ export default function Build({ stage, handleMove }) {
   const handleNextStepper = () => {
     const newActiveStep =
       isLastStep() && !allStepsCompleted()
-        ? // It's the last step, but not all steps have been completed,
-          // find the first step that has been completed
-          steps.findIndex((step, i) => !(i in completed))
+        ? steps.findIndex((step, i) => !(i in completed))
         : activeStep + 1;
     setActiveStep(newActiveStep);
   };

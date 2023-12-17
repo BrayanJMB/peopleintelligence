@@ -77,7 +77,7 @@ export default function ConSidebar(props) {
     },
     {
       key: 'panel2',
-      title: 'Discussion',
+      title: 'Discusión',
       path:'/conversation/Live',
       icon: <ForumOutlinedIcon />,
       subOptions: [
