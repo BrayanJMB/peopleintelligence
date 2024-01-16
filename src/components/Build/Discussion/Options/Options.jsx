@@ -92,7 +92,7 @@ function Options({
     // Acceder al archivo seleccionado
     const file = event.target.files[0];
     // Procesar el archivo o actualizar el estado según sea necesario
-    console.log("Archivo seleccionado:", file.name);
+    console.log('Archivo seleccionado:', file.name);
   };
 
   const handleDemographicNameChange = (e) => {

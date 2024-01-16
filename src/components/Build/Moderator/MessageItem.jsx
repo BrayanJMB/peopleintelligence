@@ -1,6 +1,7 @@
-import styles from "./ChatBox.module.css";
-import { Demographics } from "./Demographics";
-import { Questions } from "./Questions";
+import { Demographics } from './Demographics';
+import { Questions } from './Questions';
+
+import styles from './ChatBox.module.css';
 export const MessageItem = ({
   owner,
   sender,
@@ -21,11 +22,11 @@ export const MessageItem = ({
     <div
       className={`${styles.chatApp__convMessageItem} ${messagePosition} ${styles.clearfix}`}
     >
-      {messageType === "demographic" && (
+      {messageType === 'demographic' && (
         <>
           <img
             src={senderAvatar}
-            alt={"prueba"}
+            alt={'prueba'}
             className={styles.chatApp__convMessageAvatar}
           />
 
@@ -35,11 +36,11 @@ export const MessageItem = ({
           />
         </>
       )}
-      {messageType === "question" && (
+      {messageType === 'question' && (
         <>
           <img
             src={senderAvatar}
-            alt={"prueba"}
+            alt={'prueba'}
             className={styles.chatApp__convMessageAvatar}
           />
           {question.length > 0 && (

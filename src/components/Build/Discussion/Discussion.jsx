@@ -118,7 +118,7 @@ export default function Discussion({
           })),
         },
       };
-      console.log(payload)
+      console.log(payload);
       if (!isUpdate) {
         const response = await storeSurveyChatAPI(payload);  
         const storeSurveyImageQuestion = await (response.response, questionId); 

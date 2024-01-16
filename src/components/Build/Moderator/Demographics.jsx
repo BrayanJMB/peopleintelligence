@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import styles from "./ChatBox.module.css";
+
+import styles from './ChatBox.module.css';
 export const Demographics = ({ demographics, responseDemographic})=> {
   
     return (

@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 
-import { MessageItem } from "./MessageItem";
+import { MessageItem } from './MessageItem';
 
-import styles from "./ChatBox.module.css";
+import styles from './ChatBox.module.css';
 
 export const MessageList = ({
   owner,
@@ -11,7 +11,7 @@ export const MessageList = ({
   demographics,
   question,
   nextQuestionTimer,
-  answersOpinion
+  answersOpinion,
 }) => {
   return (
     <div className={styles.chatApp__convTimeline}>
