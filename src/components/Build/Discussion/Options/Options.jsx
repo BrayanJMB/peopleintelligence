@@ -88,6 +88,13 @@ function Options({
     }
   };
 
+  const handleFileChange = (event) => {
+    // Acceder al archivo seleccionado
+    const file = event.target.files[0];
+    // Procesar el archivo o actualizar el estado según sea necesario
+    console.log('Archivo seleccionado:', file.name);
+  };
+
   const handleDemographicNameChange = (e) => {
     if (!isConversation) {
       const newDemographic = { ...demographic, name: e.target.value };
@@ -796,7 +803,7 @@ function Options({
                           backgroundColor: isDragActive ? '#eeeeee' : '#fafafa',
                         }}
                       >
-                        <input {...getInputProps()} accept="image/*,video/*" />
+                        <input {...getInputProps()} accept="image/*,video/*"  />
                         <CloudUploadIcon sx={{ fontSize: 60 }} />
                         <Typography variant="body1">
                           {isDragActive

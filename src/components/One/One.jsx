@@ -49,9 +49,7 @@ function TabPanel(props) {
 const validEmail = new RegExp(
   '^[a-zA-Z0-9.!#$%&\'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$'
 );
-const validBusinessEmail = new RegExp(
-  '^[a-zA-Z0-9.!#$%&\'+/=?^_`{|}~-]+@(?!gmail.com)(?!yahoo.com)(?!hotmail.com)(?!yahoo.co.in)(?!aol.com)(?!live.com)(?!outlook.com)[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$'
-);
+
 const validphone = new RegExp('^[+][0-9]{12,15}$');
 
 const config = {
@@ -178,11 +176,7 @@ export default function One(props) {
       helperText.correoElectronico = 'El correo ingresado no es válido';
       error.correoElectronico = true;
       bad = true;
-    } else if (!validBusinessEmail.test(props.info.Usuario.correoElectronico)) {
-      helperText.correoElectronico = 'El correo ingresado debe ser corporativo';
-      error.correoElectronico = true;
-      bad = true;
-    }
+    } 
 
     if (props.info.Usuario.numeroDocumento < 10000000) {
       helperText['numeroDocumento'] = 'El tamaño minimo del campo es 8 digitos';
