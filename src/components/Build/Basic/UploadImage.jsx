@@ -11,7 +11,7 @@ export default function UploadImage({informationConversation, handlePhoto, text,
 
   return (
     <>
-      <span>Imagen {text} (optional)</span>
+      <span>Imagen {text} (opcional)</span>
       {informationConversation ? (
         <Button
           variant="text"
