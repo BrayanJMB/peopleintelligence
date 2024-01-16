@@ -1,51 +1,57 @@
-import { useEffect, useState } from 'react';
-import * as signalR from '@microsoft/signalr';
-import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
-import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
-import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
-import { Card, CardContent, Grid, Paper } from '@mui/material';
-import { Divider, Icon, Toolbar, Typography } from '@mui/material';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import * as signalR from "@microsoft/signalr";
+import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
+import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
+import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
+import { Button, Card, CardContent, Grid, Paper } from "@mui/material";
+import { Divider, Icon, Toolbar, Typography } from "@mui/material";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import Box from "@mui/material/Box";
+import List from "@mui/material/List";
+import axios from "axios";
+import SendIcon from "@mui/icons-material/Send";
+import { ChatBox } from "./ChatBox";
+import { ConnectDisconnectUser } from "./ConnectDisconnectUser";
+import CountdownTimer from "./CountdownTimer";
+import { Demographics } from "./Demographics";
+import { Questions } from "./Questions";
 
-import { ChatBox } from './ChatBox';
-import { ConnectDisconnectUser } from './ConnectDisconnectUser';
-import CountdownTimer from './CountdownTimer';
-import { Demographics } from './Demographics';
-
-import styles from './ChatBox.module.css';
+import styles from "./ChatBox.module.css";
 
 export const Moderator = ({ id }) => {
-  
   const [connection, setConnection] = useState(null);
   const [survey, setSurvey] = useState([]);
   const [demographic, setDemographics] = useState([]);
+  const [question, setQuestions] = useState([]);
   const [responseDemographic, setResponseDemographic] = useState([]);
   const [connectedUsers, setConnectedUsers] = useState(0);
+  const [nextQuestion, setNextQuestion] = useState(0);
+  const [questionTimer, setQuestionTimer] = useState(0);
+  const [answersOpinion, setAnswersOpinion] = useState([]);
   function detectURL(message) {
     var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
     return message.replace(urlRegex, function (urlMatch) {
-      return '<a href="' + urlMatch + '">' + urlMatch + '</a>';
+      return '<a href="' + urlMatch + '">' + urlMatch + "</a>";
     });
   }
 
+  const users = {
+    0: { name: "Shun", avatar: "https://i.pravatar.cc/150?img=32" },
+  };
   const questionIcons = [
     {
-      tipoPregunta: 'texto',
+      tipoPregunta: "texto",
       icono: <ChatOutlinedIcon />,
     },
     {
-      tipoPregunta: 'seleccionsimple',
+      tipoPregunta: "seleccionsimple",
       icono: <ListOutlinedIcon />,
     },
   ];
 
   const fetchSurvey = async () => {
-
     try {
       const response = await axios.get(
         `https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/GetSurvey/getSurvey/${id}`
@@ -55,14 +61,14 @@ export const Moderator = ({ id }) => {
       console.log(error);
     }
   };
-  
+
   const initializeConnectionAndFetchData = async () => {
     try {
       await fetchSurvey();
 
       const signalRConnection = new HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
-        .withUrl('https://localhost:7005/discusion')
+        .withUrl("https://localhost:7005/discusion")
         .withAutomaticReconnect()
         .build();
 
@@ -77,30 +83,60 @@ export const Moderator = ({ id }) => {
 
   useEffect(() => {
     if (connection && survey) {
-      connection.start().then(() => {
-        connection.invoke('ChargeDemographics', survey.demographicList, survey.timeDemographics, survey.description).catch(function (err) {
-          return console.error(err.toString());
-      });
-        connection.on('ReceiveDemograpics', (newDemographics) => {
-          setDemographics(newDemographics);
+      connection
+        .start()
+        .then(() => {
+          connection
+            .invoke(
+              "ChargeDemographics",
+              survey.demographicList,
+              survey.timeDemographics,
+              survey.description
+            )
+            .catch(function (err) {
+              return console.error(err.toString());
+            });
+          connection.on("ReceiveDemograpics", (newDemographics) => {
+            setDemographics(newDemographics);
+          });
+          connection.on("RecibirRespuestaSingle", (answer, counter) => {
+            console.log(answer, counter)
         });
-        connection.on('clientConnected', setConnectedUsers);
-        connection.on('clientDisconnected', setConnectedUsers);
-        connection.on('DemographicCount', (idDemo, count) => {
-          setResponseDemographic(prevCounts => ({ ...prevCounts, [idDemo]: count }));
-        });
-      })
-      .catch(error => console.error('Error al conectar con SignalR:', error));
+          connection.on("SendRespuestasDos", tablarespuestas => { 
+            setAnswersOpinion(tablarespuestas)
+          });
+          connection.on("clientConnected", setConnectedUsers);
+          connection.on("clientDisconnected", setConnectedUsers);
+          connection.on("DemographicCount", (idDemo, count) => {
+            setResponseDemographic((prevCounts) => ({
+              ...prevCounts,
+              [idDemo]: count,
+            }));
+          });
+        })
+        .catch((error) =>
+          console.error("Error al conectar con SignalR:", error)
+        );
 
       // Limpieza al desmontar
       return () => {
-        connection.off('ReceiveDemographics');
-        connection.off('clientConnected', setConnectedUsers);
-        connection.off('clientDisconnected', setConnectedUsers);
+        connection.off("ReceiveDemographics");
+        connection.off("clientConnected", setConnectedUsers);
+        connection.off("clientDisconnected", setConnectedUsers);
       };
     }
   }, [connection]);
-
+  
+  useEffect(() => {
+    let newMessageItem = {
+      id: messages.length + 1,
+      sender: 'Shun',
+      senderAvatar: 'https://i.pravatar.cc/150?img=32',
+      messageType:"demographic"
+    };
+    setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+  }, []);
+  
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState({});
 
@@ -128,16 +164,70 @@ export const Moderator = ({ id }) => {
     setIsTyping((prevIsTyping) => ({ ...prevIsTyping, [writer]: false }));
   };
 
-  const users = {
-    0: { name: 'Shun', avatar: 'https://i.pravatar.cc/150?img=32' },
+  const nextQuestionTimer = (timeLimit)=> {
+    let timeInt = parseInt(timeLimit)
+    connection.invoke("StartTimer", timeInt).catch(function (err) {
+        return console.error(err.toString());
+    });
+    setQuestionTimer(timeLimit);
+}
+  const SendQuestionByType = (type, question, index) => {
+    let currentQuestion = index + 1;
+    switch (type.toLowerCase()) {
+      case "texto":
+        connection.invoke("SendText", question.name)
+        .then(()=>{
+          let newMessageItem = {
+            id: messages.length + 1,
+            sender: 'Shun',
+            senderAvatar: 'https://i.pravatar.cc/150?img=32',
+            messageType:"question"
+          };
+          setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+        })
+        .catch(function (err) {
+          return console.error(err.toString());
+        });
+        setQuestions(prevQuestions => {   
+          const newQuestion = question;
+          return [...prevQuestions, newQuestion];
+        });
+        setNextQuestion(index + 1);
+        break;
+      case "seleccionsimple":
+        console.log(question)
+          connection.invoke("SendSingleOption", question).catch(function (err) {
+              return console.error(err.toString());
+          });
+          break;
+      case "imagen":
+          setNextQuestion(index + 1);    
+          break;
+      case "opinión":
+        connection.invoke("SendOpinion", question).catch(function (err) {
+            //envio de pregunta de opinion
+            return console.error(err.toString());
+        });
+          setQuestions(prevQuestions => {   
+            const newQuestion = question;
+            return [...prevQuestions, newQuestion];
+          });
+          nextQuestionTimer(question.timeLimit)
+          setNextQuestion(index + 1);
+        break;
+      default:
+        break;   
+    }
   };
+
+
   return (
     <Box
       sx={{
-        height: '100vh',
-        backgroundColor: 'white',
-        display: 'flex',
-        flex: '1',
+        height: "100vh",
+        backgroundColor: "white",
+        display: "flex",
+        flex: "1",
       }}
       aria-label="mailbox folders"
     >
@@ -145,17 +235,17 @@ export const Moderator = ({ id }) => {
         <Grid item xs={4}>
           <div
             style={{
-              padding: '2rem',
-              backgroundColor: '#f5f5f5',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              height: '100%',
+              paddingLeft: "2rem",
+              backgroundColor: "#f5f5f5",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              height: "100%",
             }}
           >
             <Card
               variant="outlined"
-              style={{ width: '100%', marginBottom: '1rem' }}
+              style={{ width: "100%", marginBottom: "1rem" }}
             >
               <CardContent>
                 <Typography variant="h5" component="div">
@@ -167,9 +257,9 @@ export const Moderator = ({ id }) => {
             <Card
               variant="outlined"
               style={{
-                width: '100%',
-                marginBottom: '1rem',
-                backgroundColor: '#cce7ff',
+                width: "100%",
+                marginBottom: "1rem",
+                backgroundColor: "#00B0F0",
               }}
             >
               <CardContent>
@@ -177,106 +267,117 @@ export const Moderator = ({ id }) => {
                   Datos demográficos
                 </Typography>
                 <List>
-                  {survey.demographicList && survey.demographicList.map((demographic, index) => (
-
-                    <Accordion key={index}>
-                      
-                      <AccordionSummary>
-                        <Typography>{demographic.name}</Typography>
-                      </AccordionSummary>
-                      <AccordionDetails>
-                        {demographic.demographicDetails.map((detail, index2) => (
-                          <p key={index2}>{detail.value}</p>
-                        ))}
-                      </AccordionDetails>
-                    </Accordion>
-                  ))}
+                  {survey.demographicList &&
+                    survey.demographicList.map((demographic, index) => (
+                      <Accordion key={index}>
+                        <AccordionSummary>
+                          <Typography>{demographic.name}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          {demographic.demographicDetails.map(
+                            (detail, index2) => (
+                              <p key={index2}>{detail.value}</p>
+                            )
+                          )}
+                        </AccordionDetails>
+                      </Accordion>
+                    ))}
                 </List>
               </CardContent>
             </Card>
 
             <Card
               variant="outlined"
-              style={{ width: '100%', backgroundColor: '#cce7ff' }}
+              style={{ width: "100%", backgroundColor: "#00B0F0" }}
             >
               <CardContent>
                 <Typography variant="h6" component="div" gutterBottom>
-                  Preguntas 
+                  Preguntas
                 </Typography>
                 <List>
-                  {survey.preguntas && survey.preguntas.map((option) => {
-                    const iconObject = questionIcons.find(
-                      (d) => d.tipoPregunta === option.type
-                    );
-                    const iconToDisplay = iconObject ? iconObject.icono : null;
-                    return (
-                      <>
-                        <div
-                          style={{
-                            backgroundColor: 'white',
-                            heightMin: '100px',
-                          }}
-                        >
+                  {survey.preguntas &&
+                    survey.preguntas.map((option, index) => {
+                      const iconObject = questionIcons.find(
+                        (d) => d.tipoPregunta === option.type
+                      );
+                      const iconToDisplay = iconObject
+                        ? iconObject.icono
+                        : null;
+                      return (
+                        <>
                           <div
                             style={{
-                              display: 'flex',
-                              padding: '1rem',
+                              backgroundColor: "white",
+                              heightMin: "100px",
                             }}
                           >
-                            <Typography>{option.orderNumber}</Typography>
-                            <div style={{ marginLeft: '2rem' }}>
-                              <span
-                                style={{
-                                  display: 'flex',
-                                  justifyContent: 'space-between',
-                                }}
-                              >
-                                <Typography style={{ color: 'blue' }}>
-                                  {iconToDisplay}
-                                </Typography>
-                                <Typography>{option.type}</Typography>
-
-                                <Typography>
-                                  {option.timeLimit
-                                    ? ` | ${option.timeLimit}`
-                                    : null}
-                                </Typography>
-                              </span>
-
-                              <Typography>{option.name}</Typography>
-                            </div>
-                          </div>
-
-                          {option.options && option.options.length > 0 && (
-                            <>
-                            
-                              <Accordion
-                              key={option.id}
-                              style={{ boxShadow: 'none', border: 'none' }}
+                            <div
+                              style={{
+                                display: "flex",
+                                padding: "1rem",
+                              }}
                             >
-                              <AccordionSummary>
-                                <Typography>Mostar opciones</Typography>
-                              </AccordionSummary>
+                              <Typography>{option.orderNumber}</Typography>
+                              <div style={{ marginLeft: "2rem" }}>
+                                <span
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <Typography style={{ color: "blue" }}>
+                                    {iconToDisplay}
+                                  </Typography>
+                                  <Typography>{option.type}</Typography>
 
-                              <AccordionDetails>
-                                <List>
-                                {option.options.map((option, index)=>(
-                                  <>
-                                    <p>{option.value}</p>
-                                  </>
-                                ))}
-                                </List>
-                              </AccordionDetails>
-                            </Accordion>
-                         
+                                  <Typography>
+                                    {option.timeLimit
+                                      ? ` Duración: ${option.timeLimit} segundos`
+                                      : null}
+                                  </Typography>
+                                </span>
 
-                            </>
-                          )}
-                        </div>
-                        <Divider />
-                      </>
-                    );
-                  })}
+                                <Typography>{option.name}</Typography>
+                              </div>
+                              {nextQuestion === index && (
+                                <Button>
+                                <SendIcon
+                                  sx={{ color: "#00B0F0" }}
+                                  onClick={() =>
+                                    SendQuestionByType(option.type, option, index)
+                                  }
+                                />
+                                </Button>
+                              )}
+                            </div>
+
+                            {option.options && option.options.length > 0 && (
+                              <>
+                                <Accordion
+                                  key={option.id}
+                                  style={{ boxShadow: "none", border: "none" }}
+                                >
+                                  <AccordionSummary>
+                                    <Typography>Mostar opciones</Typography>
+                                  </AccordionSummary>
+
+                                  <AccordionDetails>
+                                    <List>
+                                      {option.options.map((option, index) => (
+                                        <>
+                                          <p>{option.value}</p>
+                                        </>
+                                      ))}
+                                    </List>
+                                  </AccordionDetails>
+                                </Accordion>
+                              </>
+                            )}
+                          </div>
+                          <Divider />
+                        </>
+                      );
+                    })}
                 </List>
               </CardContent>
             </Card>
@@ -284,15 +385,19 @@ export const Moderator = ({ id }) => {
         </Grid>
 
         <Grid item xs={8}>
-          <div style={{ display: 'flex', justifyContent:'space-around' }}>
-          <CountdownTimer countdownTime={survey.timeDemographics} startTime={Date.now()}/>
-          {  connection && <ConnectDisconnectUser connectedUsers={connectedUsers} />}
+          <div style={{ display: "flex", justifyContent: "space-around" }}>
+            <CountdownTimer
+              countdownTime={survey.timeDemographics}
+              startTime={Date.now()}
+            />
+            {connection && (
+              <ConnectDisconnectUser connectedUsers={connectedUsers} />
+            )}
           </div>
           <div
-            style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+            style={{ display: "flex", flexDirection: "column", height: "100%" }}
           >
             <div className={styles.chatApp__room}>
-            <Demographics responseDemographic={responseDemographic} demographics={demographic}/>
               {Object.keys(users).map((key) => {
                 const user = users[key];
                 return (
@@ -304,10 +409,18 @@ export const Moderator = ({ id }) => {
                     typing={typing}
                     resetTyping={resetTyping}
                     messages={messages}
+                    setMessages={setMessages}
                     isTyping={isTyping}
+
+                    responseDemographic={responseDemographic}
+                    demographics={demographic}
+                    question={question}
+                    nextQuestionTimer={questionTimer}
+                    answersOpinion={answersOpinion}
                   />
                 );
               })}
+
             </div>
           </div>
         </Grid>

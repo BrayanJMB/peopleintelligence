@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-import { InputMessage } from './InputMessage';
-import { MessageList } from './MessageList';
+import { InputMessage } from "./InputMessage";
+import { MessageList } from "./MessageList";
 
-import styles from './ChatBox.module.css';
-
+import styles from "./ChatBox.module.css";
+import { Demographics } from "./Demographics";
+import { Questions } from "./Questions";
 export const ChatBox = (props) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -15,10 +16,17 @@ export const ChatBox = (props) => {
       setIsLoading(false);
     }, 400);
   };
-
   return (
     <div className={styles.chatApp__conv}>
-      <MessageList owner={props.owner} messages={props.messages} />
+      <MessageList
+        owner={props.owner}
+        messages={props.messages}
+        responseDemographic={props.responseDemographic}
+        demographics={props.demographics}
+        question={props.question}
+        nextQuestionTimer={props.questionTimer}
+        answersOpinion={props.answersOpinion}
+      />
       <div className={`${styles.chatApp__convSendMessage} ${styles.clearfix}`}>
         <InputMessage
           isLoading={isLoading}

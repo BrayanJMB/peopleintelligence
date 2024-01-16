@@ -118,9 +118,10 @@ export default function Discussion({
           })),
         },
       };
-      console.log(payload);
+      console.log(payload)
       if (!isUpdate) {
-        const response = await storeSurveyChatAPI(payload);
+        const response = await storeSurveyChatAPI(payload);  
+        const storeSurveyImageQuestion = await (response.response, questionId); 
         if (response.status === 200) {
           alert('Chat Live creado satisfactoriamente');
           handleMove('/conversation/Live', 'basic');
@@ -136,6 +137,31 @@ export default function Discussion({
           alert('Hubo un error al crear la encuesta de chat');
         }
       }
+    }
+  };
+
+  const storeSurveyImageQuestion = async (surveyId, questionId) => {
+    const formData = new FormData();
+    formData.append('questionImage', surveyImage);
+    formData.append('questionId', questionId);
+    formData.append('surveyId', survey.id);
+    try {
+      const response = await axios.post(
+        'https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImagesQuestion',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      if (response) {
+        return response;
+      } else {
+        console.error('Error al subir la imagen:', response);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
