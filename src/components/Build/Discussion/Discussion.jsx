@@ -121,7 +121,7 @@ export default function Discussion({
       console.log(payload);
       if (!isUpdate) {
         const response = await storeSurveyChatAPI(payload);  
-        const storeSurveyImageQuestion = await (response.response, questionId); 
+        //const storeSurveyImageQuestion = await (response.response, questionId); 
         if (response.status === 200) {
           alert('Chat Live creado satisfactoriamente');
           handleMove('/conversation/Live', 'basic');
