@@ -1,7 +1,8 @@
 .discussion {
   width: 100%;
-  height: 85%;
   background-color: white;
+  height: 90vh;
+  overflow-y: scroll;
 }
 .content {
   display: flex;

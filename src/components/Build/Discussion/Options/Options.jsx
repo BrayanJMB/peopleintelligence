@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useEffect } from 'react';
+import { useDropzone } from 'react-dropzone';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { Button, TextField } from '@mui/material';
+import { Box } from '@mui/material';
+import { Grid } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
@@ -13,6 +17,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
+
 
 const tiempoPregunta = [1, 2, 3, 4, 5];
 function Options({
@@ -27,7 +32,33 @@ function Options({
   handleRemoveConversation,
   errors,
 }) {
-  console.log(question);
+  const [files, setFiles] = useState([]);
+
+  const onDrop = useCallback((acceptedFiles) => {
+    setFiles(
+      acceptedFiles.map((file) =>
+        Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        })
+      )
+    );
+  }, []);
+
+  const removeFile = (file) => () => {
+    const newFiles = files.filter((f) => f.name !== file.name);
+    setFiles(newFiles);
+  };
+
+  const previews = files.map((file) => (
+    <div key={file.name}>
+      <img src={file.preview} style={{ width: '100%' }} alt="Preview" />
+      <IconButton onClick={removeFile(file)}>
+        <DeleteOutlineIcon />
+      </IconButton>
+    </div>
+  ));
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   const isText = (item) => {
     switch (item.toLowerCase()) {
       case 'texto':
@@ -55,6 +86,13 @@ function Options({
       default:
         return false;
     }
+  };
+
+  const handleFileChange = (event) => {
+    // Acceder al archivo seleccionado
+    const file = event.target.files[0];
+    // Procesar el archivo o actualizar el estado según sea necesario
+    console.log('Archivo seleccionado:', file.name);
   };
 
   const handleDemographicNameChange = (e) => {
@@ -214,6 +252,10 @@ function Options({
     });
   };
 
+  useEffect(() => {
+    return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
+  }, [files]);
+
   return (
     <div style={{ marginBottom: '20px' }}>
       {!isConversation ? (
@@ -222,7 +264,7 @@ function Options({
             style={{
               padding: '20px',
               marginBottom: '20px',
-              maxHeight:'300px',
+              maxHeight: '300px',
             }}
           >
             <CardContent>
@@ -260,7 +302,12 @@ function Options({
                   helperText={errors.demographics?.[currentIndex]?.name}
                   size="small"
                 />
-                <Button onClick={handleAddOption} color="primary">
+                <Button
+                  onClick={handleAddOption}
+                  sx={{
+                    color: '#00B0F0',
+                  }}
+                >
                   Añadir opción <AddCircleOutlineIcon />
                 </Button>
               </div>
@@ -288,7 +335,7 @@ function Options({
                     >
                       <TextField
                         fullWidth
-                        label={`Opción ${opcion.id}`}
+                        label={`Opción ${index + 1}`}
                         id="outlined-size-small"
                         defaultvalue="Small"
                         size="small"
@@ -340,17 +387,21 @@ function Options({
                 >
                   <div>
                     <Chip
+                      sx={{
+                        color: '#00B0F0',
+                      }}
                       label="Pregunta de texto"
-                      color="primary"
                       size="small"
                       variant="outlined"
                       style={{ marginBottom: '5px' }}
                     />
-                    <Button onClick={handleRemoveConversation}>Eliminar</Button>
+                    <Button onClick={handleRemoveConversation} color="error">
+                      Eliminar
+                    </Button>
                   </div>
                   <TextField
                     size="small"
-                    label="Nombre Demográfico"
+                    label="Nombre pregunta"
                     value={question.name}
                     onChange={handleDemographicNameChange}
                     error={!!errors.questions?.[currentIndex]?.name}
@@ -375,9 +426,11 @@ function Options({
                       color="primary"
                       size="small"
                       variant="outlined"
-                      style={{ marginBottom: '5px' }}
+                      style={{ marginBottom: '5px', color: '#00B0F0' }}
                     />
-                    <Button onClick={handleRemoveConversation}>Eliminar</Button>
+                    <Button onClick={handleRemoveConversation} color="error">
+                      Eliminar
+                    </Button>
                   </div>
                   <div
                     style={{
@@ -440,9 +493,11 @@ function Options({
                       color="primary"
                       size="small"
                       variant="outlined"
-                      style={{ marginBottom: '5px' }}
+                      style={{ marginBottom: '5px', color: '#00B0F0' }}
                     />
-                    <Button onClick={handleRemoveConversation}>Eliminar</Button>
+                    <Button onClick={handleRemoveConversation} color="error">
+                      Eliminar
+                    </Button>
                   </div>
 
                   <div
@@ -489,7 +544,12 @@ function Options({
                       </FormHelperText>
                     </FormControl>
                   </div>
-                  <Button onClick={handleAddOption} color="primary">
+                  <Button
+                    onClick={handleAddOption}
+                    sx={{
+                      color: '#00B0F0',
+                    }}
+                  >
                     Añadir opción <AddCircleOutlineIcon />
                   </Button>
                   {question.options.length > 0 && (
@@ -515,7 +575,7 @@ function Options({
                         >
                           <TextField
                             size="small"
-                            label={`Opción ${opcion.id}`}
+                            label={`Opción ${index + 1}`}
                             value={opcion.value}
                             onChange={(e) =>
                               handleOptionChange(
@@ -560,7 +620,10 @@ function Options({
                             }
                             style={{ marginRight: '10px' }}
                           />
-                          <Button onClick={() => handleDeleteOption(opcion.id)}>
+                          <Button
+                            onClick={() => handleDeleteOption(opcion.id)}
+                            color="error"
+                          >
                             <DeleteOutlineIcon />
                           </Button>
                         </div>
@@ -587,9 +650,11 @@ function Options({
                       color="primary"
                       size="small"
                       variant="outlined"
-                      style={{ marginBottom: '5px' }}
+                      style={{ marginBottom: '5px', color: '#00B0F0' }}
                     />
-                    <Button onClick={handleRemoveConversation}>Eliminar</Button>
+                    <Button onClick={handleRemoveConversation} color="error">
+                      Eliminar
+                    </Button>
                   </div>
                   <div
                     style={{
@@ -637,9 +702,11 @@ function Options({
                   </div>
                   <Button
                     onClick={handleAddOption}
-                    color="primary"
                     size="small"
                     style={{ minWidth: 'fit-content' }}
+                    sx={{
+                      color: '#00B0F0',
+                    }}
                   >
                     Añadir opción <AddCircleOutlineIcon />
                   </Button>
@@ -665,7 +732,7 @@ function Options({
                           }}
                         >
                           <TextField
-                            label={`Opción ${opcion.id}`}
+                            label={`Opción ${index + 1}`}
                             value={opcion.value}
                             onChange={(e) =>
                               handleOptionChange(opcion.id, e.target.value)
@@ -682,13 +749,127 @@ function Options({
                               ]
                             }
                           />
-                          <Button onClick={() => handleDeleteOption(opcion.id)}>
+                          <Button
+                            onClick={() => handleDeleteOption(opcion.id)}
+                            color="error"
+                          >
                             <DeleteOutlineIcon />
                           </Button>
                         </div>
                       ))}
                     </>
                   )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {isImage() === item && (
+            <Card>
+              <CardContent>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginBottom: '10px',
+                  }}
+                >
+                  <div>
+                    <Chip
+                      label="Imagen"
+                      color="primary"
+                      size="small"
+                      variant="outlined"
+                      style={{ marginBottom: '5px', color: '#00B0F0' }}
+                    />
+                    <Button onClick={handleRemoveConversation} color="error">
+                      Eliminar
+                    </Button>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    {files.length === 0 && (
+                      <Box
+                        {...getRootProps()}
+                        sx={{
+                          border: '2px dashed gray',
+                          borderRadius: '10px',
+                          padding: '20px',
+                          textAlign: 'center',
+                          cursor: 'pointer',
+                          backgroundColor: isDragActive ? '#eeeeee' : '#fafafa',
+                        }}
+                      >
+                        <input {...getInputProps()} accept="image/*,video/*"  />
+                        <CloudUploadIcon sx={{ fontSize: 60 }} />
+                        <Typography variant="body1">
+                          {isDragActive
+                            ? 'Suelta los archivos aquí...'
+                            : 'Arrastra y suelta archivos aquí, o haz clic para seleccionar archivos'}
+                        </Typography>
+                      </Box>
+                    )}
+                    <Grid container spacing={2} style={{ marginTop: '20px' }}>
+                      {previews}
+                    </Grid>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          {isVideo() === item && (
+            <Card>
+              <CardContent>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginBottom: '10px',
+                  }}
+                >
+                  <div>
+                    <Chip
+                      label="Vídeo"
+                      color="primary"
+                      size="small"
+                      variant="outlined"
+                      style={{ marginBottom: '5px', color: '#00B0F0' }}
+                    />
+                    <Button onClick={handleRemoveConversation} color="error">
+                      Eliminar
+                    </Button>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Box
+                      {...getRootProps()}
+                      sx={{
+                        border: '2px dashed gray',
+                        borderRadius: '10px',
+                        padding: '20px',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        backgroundColor: isDragActive ? '#eeeeee' : '#fafafa',
+                      }}
+                    >
+                      <input {...getInputProps()} accept="image/*,video/*" />
+                      {isDragActive ? (
+                        <Typography>Arrastra los archivos aquí...</Typography>
+                      ) : (
+                        <Typography>
+                          Arrastra y suelta imágenes o vídeos aquí, o haz clic
+                          para seleccionar archivos
+                        </Typography>
+                      )}
+                    </Box>
+                  </div>
                 </div>
               </CardContent>
             </Card>

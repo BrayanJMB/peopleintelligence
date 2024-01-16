@@ -8,10 +8,12 @@ import Snackbar from '@mui/material/Snackbar';
 import Step from '@mui/material/Step';
 import StepButton from '@mui/material/StepButton';
 import Stepper from '@mui/material/Stepper';
+import { gridColumnsTotalWidthSelector } from '@mui/x-data-grid';
+import { current } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
 import ConSidebar from '../../Layout/ConSidebar/ConSidebar';
-import { fecthSurveyChatAPI } from '../../services/ChatLive/fetchSurveyChat.service';
+import { fecthModeradorAPI,fecthSurveyChatAPI } from '../../services/ChatLive/fetchSurveyChat.service';
 
 import Basic from './Basic/Basic';
 import Discussion from './Discussion/Discussion';
@@ -56,10 +58,11 @@ export default function Build({ stage, handleMove }) {
   const [loading, setLoading] = useState(false);
   const [surveyChat, setSurveyChat] = useState([]);
   const [moderator, setModerator] = useState({
-    moderatorId: '123',
-    name: userInfo.username,
+    moderatorId: '',
+    name: '',
     avatarUrl: '',
   });
+
   const [survey, setSurvey] = useState({
     id: uuidv4(),
     title: '',
@@ -90,7 +93,7 @@ export default function Build({ stage, handleMove }) {
         }
       }
     }
-  };
+  };  
 
   const handleReset = (name) => {
     if (name.includes('avatar')) {
@@ -126,9 +129,7 @@ export default function Build({ stage, handleMove }) {
   const handleNextStepper = () => {
     const newActiveStep =
       isLastStep() && !allStepsCompleted()
-        ? // It's the last step, but not all steps have been completed,
-          // find the first step that has been completed
-          steps.findIndex((step, i) => !(i in completed))
+        ? steps.findIndex((step, i) => !(i in completed))
         : activeStep + 1;
     setActiveStep(newActiveStep);
   };
@@ -148,7 +149,10 @@ export default function Build({ stage, handleMove }) {
 
     const { data } = await fecthSurveyChatAPI(currentCompany.id);
     const currentSurvey = id ? data.find((element) => element.id === id) : data;
+
     setSurveyChat(currentSurvey);
+    const { data:moderator } = await fecthModeradorAPI(currentSurvey.id);
+    setModerator(moderator);
   };
 
   useEffect(() => {
@@ -158,7 +162,7 @@ export default function Build({ stage, handleMove }) {
   const resetModerator = () => {
     setModerator({
       moderatorId: userInfo.user,
-      name: userInfo.username,
+      name: '',
       avatarUrl: '',
     });
   };
@@ -175,11 +179,12 @@ export default function Build({ stage, handleMove }) {
     setQuestions([]);
     setDemographics([]);
   };
+
   const updateStatesFromSurveyChat = () => {
     // Actualizar el estado del moderador
     setModerator((prevState) => ({
       ...prevState,
-      moderatorId: '123', 
+      moderatorId: userInfo.user, 
     }));
 
     // Actualizar el estado de la encuesta
@@ -261,11 +266,22 @@ export default function Build({ stage, handleMove }) {
 
       <div className={styles.build}>
         <div className={styles.content}>
-          <div className={styles.stepper}>
+          <div style={{margin:'30px auto', width:'90%' }}>
             <Stepper activeStep={activeStep}>
               {steps.map((label, index) => (
-                <Step key={label} completed={completed[index]}>
-                  <StepButton color="inherit" style={{ pointerEvents: 'none' }}>
+                <Step key={label} completed={completed[index]}
+                sx={{
+                  '& .MuiStepLabel-iconContainer .Mui-active':
+                  {
+                    color: '#00B0F0',
+                  },
+                  '& .MuiStepLabel-iconContainer .Mui-completed':
+                  {
+                    color: '#00B0F0',
+                  },
+                }}
+                >
+                  <StepButton style={{ pointerEvents: 'none' }}>
                     {label}
                   </StepButton>
                 </Step>

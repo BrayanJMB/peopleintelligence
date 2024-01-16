@@ -11,7 +11,7 @@ import ConSidebar from '../../Layout/ConSidebar/ConSidebar';
 import IconSidebarNavBar from '../../Layout/IconSideBarNavBar/IconSideBarNavBar';
 
 export default function Conversation() {
-  const { type } = useParams();
+  const { type, id } = useParams();
   const [stage, setStage] = useState('basic');
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -25,12 +25,11 @@ export default function Conversation() {
       },
     },
   });
-
   const handleMove = (path, val) => {
     navigate(path);
     setStage(val);
   };
-  console.log(type);
+
   const renderSwitch = () => {
     switch (type) {
       case 'Build':
@@ -38,7 +37,7 @@ export default function Conversation() {
       case 'Live':
         return <SurveyChat handleMove={handleMove}/>;
       case 'moderator':
-        return <Moderator />;
+        return <Moderator id={id} />;
       default:
         return null;
     }
