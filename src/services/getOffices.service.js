@@ -18,8 +18,6 @@ export const postOfficeAPI = async (
   data,
   idCompany
 ) => {
-  console.log(data, idCompany);
-  
   const response = await axios.post('Campus/', {
     sede: data.sede,
     IdCompania: idCompany,

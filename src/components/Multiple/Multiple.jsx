@@ -177,7 +177,6 @@ export default function Multiple(props) {
               severity: 'error',
             });
           }
-          console.log(error);
         }
       }
     }

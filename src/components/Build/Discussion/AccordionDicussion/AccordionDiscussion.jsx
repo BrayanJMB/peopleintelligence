@@ -27,8 +27,7 @@ export default function AccordionDiscussion({
   demographicRefs,
   accordionTitle,
 }) {
-  console.log(questions);
-  console.log(demographics);
+
   const [item, setItem] = useState('');
 
   const handleAddDemographic = () => {

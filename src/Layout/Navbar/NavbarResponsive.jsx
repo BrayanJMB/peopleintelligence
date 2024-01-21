@@ -200,7 +200,6 @@ export default function NavbarResponsive() {
         setData(holder);
       });
     } catch (error) {
-      console.log(error);
     }
   };
 

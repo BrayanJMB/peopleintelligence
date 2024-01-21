@@ -3,7 +3,7 @@ import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 
 import styles from './ChatBox.module.css';
 export const Questions = ({ question, nextQuestionTimer, answersOpinion }) => {
-  console.log(question);
+
   const isText = (item) => {
     switch (item.toLowerCase()) {
       case 'texto':

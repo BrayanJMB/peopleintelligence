@@ -79,7 +79,6 @@ export default function Onas() {
         setTransactionData(res.data);
       });
     } catch (error) {
-      console.log(error);
     }
   };
   const handleImport = async (file) => {
@@ -107,7 +106,6 @@ export default function Onas() {
         isOpen: true,
         severity: 'error',
       });
-      console.log(error);
     }
   };
 
@@ -152,7 +150,6 @@ export default function Onas() {
         isOpen: true,
         severity: 'error',
       });
-      console.log(error);
     }
   };
 

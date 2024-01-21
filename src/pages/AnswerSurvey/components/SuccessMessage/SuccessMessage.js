@@ -11,7 +11,7 @@ import styles from './SuccessMessage.module.css';
  * @constructor
  */
 const SuccessMessage = ({isAlreadyResponse}) => {
-  console.log(isAlreadyResponse);
+
   return (
     <div className={styles.SuccessMessage}>
       <div className={styles.SuccessIcon}>

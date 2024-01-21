@@ -71,7 +71,6 @@ export default function PowerBi() {
     }
     setUserEmail(decodeToken(userInfo.accessToken));
   }, [response]);
-  console.log(userEmail.email);
   return (
     <Box sx={{ display: 'flex' }}>
       <Navbar />

@@ -59,7 +59,7 @@ export const Moderator = ({ id }) => {
       );
       setSurvey(response.data);
     } catch (error) {
-      console.log(error);
+
     }
   };
 
@@ -101,7 +101,7 @@ export const Moderator = ({ id }) => {
             setDemographics(newDemographics);
           });
           connection.on('RecibirRespuestaSingle', (answer, counter) => {
-            console.log(answer, counter);
+
         });
           connection.on('SendRespuestasDos', tablarespuestas => { 
             setAnswersOpinion(tablarespuestas);
@@ -196,7 +196,7 @@ export const Moderator = ({ id }) => {
         setNextQuestion(index + 1);
         break;
       case 'seleccionsimple':
-        console.log(question);
+
           connection.invoke('SendSingleOption', question).catch(function (err) {
               return console.error(err.toString());
           });

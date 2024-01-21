@@ -118,7 +118,6 @@ export default function Discussion({
           })),
         },
       };
-      console.log(payload);
       if (!isUpdate) {
         const response = await storeSurveyChatAPI(payload);  
         //const storeSurveyImageQuestion = await (response.response, questionId); 
@@ -161,7 +160,6 @@ export default function Discussion({
         console.error('Error al subir la imagen:', response);
       }
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -187,7 +185,6 @@ export default function Discussion({
         console.error('Error al subir la imagen:', response);
       }
     } catch (error) {
-      console.log(error);
     }
   };
 

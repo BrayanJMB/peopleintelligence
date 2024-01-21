@@ -92,7 +92,6 @@ function Options({
     // Acceder al archivo seleccionado
     const file = event.target.files[0];
     // Procesar el archivo o actualizar el estado según sea necesario
-    console.log('Archivo seleccionado:', file.name);
   };
 
   const handleDemographicNameChange = (e) => {
@@ -238,11 +237,11 @@ function Options({
       ...question,
       timeLimit: valueInSeconds,
     };
-    console.log(newConversation);
+
     setQuestion((prevState) => {
       const newConversations = [...prevState];
       const index = newConversations.findIndex((d) => d === question);
-      console.log(index);
+
 
       if (index !== -1) {
         newConversations[index] = newConversation;

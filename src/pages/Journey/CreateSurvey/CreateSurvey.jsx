@@ -266,7 +266,6 @@ export default function CreateSurvey() {
    * Handle next step.
    */
   const handleNextStep = async () => {
-    console.log(isTemplate, isUpdate, data.isValid);
     switch (activeStep) {
       case 0:
         setCheckForm(true);

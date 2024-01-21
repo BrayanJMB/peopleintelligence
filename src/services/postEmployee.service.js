@@ -7,8 +7,6 @@ export const postEmployeeAPI = async (
   size,
   id,
 ) => {
-  console.log('postCompanyAPI');
-
   const response = await axios.post('Employee/', {
       person: {
         numeroDocumento: 'string',
