@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router, Route,Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { SnackbarProvider } from 'notistack';
 
@@ -41,7 +41,6 @@ const theme = createTheme({
 });
 
 export default function App() {
-
   useEffect(() => {
     const timer = new IdleTimer({
       timeout: 1200,
@@ -77,16 +76,33 @@ export default function App() {
                 path="/answer-survey/:surveyId/:companyId/:answerId"
                 element={<AnswerSurvey />}
               />
+              <Route path="bancolombia/:surveyId/:companyId/:answerId" element={<Bancolombia />} exact />
               <Route element={<PrivateRoutes />}>
                 <Route path="/dashboard" element={<Dashboard />} exact />
                 <Route path="/onas" element={<Onas />} exact />
-                <Route path="/onas/:company/:version" element={<Onas />} exact />
-                <Route path="/onas/ver-encuestas" element={<OnasTable />} exact />
+                <Route
+                  path="/onas/:company/:version"
+                  element={<Onas />}
+                  exact
+                />
+                <Route
+                  path="/onas/ver-encuestas"
+                  element={<OnasTable />}
+                  exact
+                />
                 <Route path="/onas/details" element={<OnasDetails />} exact />
                 <Route path="/rolescompany" element={<Roles />} exact />
-                <Route path="/UserAministrator" element={<UserAdministrator/>} exact />
+                <Route
+                  path="/UserAministrator"
+                  element={<UserAdministrator />}
+                  exact
+                />
                 <Route path="/powerbi" element={<PowerBiDashboard />} exact />
-                <Route path="/powerbi/:idDashboard" element={<PowerBI />} exact />
+                <Route
+                  path="/powerbi/:idDashboard"
+                  element={<PowerBI />}
+                  exact
+                />
                 <Route path="/register/:type" element={<Register />} exact />
                 <Route path="/infoadmin/:type" element={<InfoAdmin />} exact />
 
@@ -95,12 +111,22 @@ export default function App() {
                   element={<Conversation />}
                   exact
                 />
-                <Route path="/conversation/:type/:id" element={<Conversation />} exact/>
-                <Route path="/conversation/:type/update-survey-chat/:id" element={<Conversation />} exact/>
-                
+                <Route
+                  path="/conversation/:type/:id"
+                  element={<Conversation />}
+                  exact
+                />
+                <Route
+                  path="/conversation/:type/update-survey-chat/:id"
+                  element={<Conversation />}
+                  exact
+                />
 
                 <Route path="/journey" element={<Journey />} exact />
-                <Route path="/journey/survey/:id/detail" element={<SurveyDetailPage />} />
+                <Route
+                  path="/journey/survey/:id/detail"
+                  element={<SurveyDetailPage />}
+                />
                 <Route
                   path="/journey/survey-template"
                   element={<Template />}
@@ -124,11 +150,6 @@ export default function App() {
                 <Route
                   path="/journey/update-template/:id"
                   element={<CreateSurvey />}
-                  exact
-                />
-                <Route
-                  path="bancolombia/:id"
-                  element={<Bancolombia />}
                   exact
                 />
               </Route>

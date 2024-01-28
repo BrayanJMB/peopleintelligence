@@ -1,27 +1,28 @@
+import { Grid } from '@mui/material';
+
 import logo2 from './img/Logotipo.png';
-export const LayoutQuestions = ({title, color}) => {
+export const LayoutQuestions = ({ title, color }) => {
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'stretch',
-        marginBottom:'10px',
-      }}
-    >
-      <div
-        style={{
+    <Grid container>
+      <Grid
+        item
+        sm={8}
+        xs={12}
+        sx={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           backgroundColor: `${color}`,
-          width: '60%',
           borderRadius: '20px',
+          textAlign:'center',
+          marginBottom:'10px',
         }}
       >
         <h2 style={{ fontSize: '30px' }}>{title}</h2>
-      </div>
-      <img src={logo2} alt="some" style={{ padding: '1rem' }} />
-    </div>
+      </Grid>
+      <Grid item sm={4} xs={12}>
+        <img src={logo2} alt="some" style={{ padding: '1rem' }} />
+      </Grid>
+    </Grid>
   );
 };

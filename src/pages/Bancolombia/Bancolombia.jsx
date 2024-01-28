@@ -1,4 +1,4 @@
-import { useEffect, useRef,useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
@@ -17,7 +17,11 @@ import Stepper from '@mui/material/Stepper';
 import TextField from '@mui/material/TextField';
 import { useSnackbar } from 'notistack';
 
+import MyLoader from '../../components/MyLoader/MyLoader';
+import client from '../../utils/axiosInstance';
+
 import logo from './img/Bancolombia.jpeg';
+import { ErrorsSurvey } from './ErrorsSurvey';
 import InsertQuestion from './InsertQuestion';
 import { QuestionsBancolombia } from './QuestionsBancolombia';
 import { SelectQuestions } from './SelectQuestions';
@@ -30,7 +34,7 @@ export default function Bancolombia() {
     atributos: [
       {
         istext: true,
-        titulo: 'Los cambios en el entorno ',
+        titulo: '',
         descripcion:
           'Los cambios en el entorno global y local exigen hacer ajustes en la estrategia y, en consecuencia, actualizar nuestro modelo de Cultura MovimientoB y de Liderazgo LíderB.\n\nTe enviamos esta encuesta para escuchar tus puntos de vista, teniendo en cuenta lo siguiente:\n\nLos 6 rasgos de MovimientoB se mantienen, la actualización se hace en los comportamientos.\nLas 6 grandes responsabilidades de LíderB se mantienen, los cambios se hacen en las 4 responsabilidades que hacen parte de cada una.\nVamos a mantener la simetría en términos del número de comportamientos o responsabilidades.\nTen presente los retos actuales y futuros para el banco y las tendencias en el mundo de los negocios.\nSiendo la intención hacer una actualización, te pedimos que mantengas foco en los cambios o adiciones que realmente sean necesarios o pertinentes.\nSi quieres reunirte con un equipo para diligenciar la encuesta puedes hacerlo.\n\nDe antemano gracias por tu tiempo y valiosos aportes\n',
         color: '',
@@ -523,15 +527,19 @@ export default function Bancolombia() {
       },
     ],
   };
+  const { surveyId, companyId, answerId } = useParams();
+  const topElementRef = useRef(null);
   const [errors, setErrors] = useState({});
   const firstEmptyRef = useRef({});
   const [inputValuesByAttribute, setInputValuesByAttribute] = useState({});
   const [radioValuesByAttribute, setRadioValuesByAttribute] = useState({});
   const [textValuesByAttribute, setTextValuesByAttribute] = useState({});
   const [currentAttributeIndex, setCurrentAttributeIndex] = useState(0);
+  const [errorSurvey, setErrorSurvey] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleNext = () => {
-    if (validateFields()) {
+
       const nextIndex = currentAttributeIndex + 1;
       if (nextIndex < dataDump.atributos.length) {
         setCurrentAttributeIndex(nextIndex);
@@ -545,14 +553,41 @@ export default function Bancolombia() {
           [nextIndex]: { ...(prev[nextIndex] || {}) },
         }));
         setErrors({});
+        // Desplazamiento automático hacia arriba
+        topElementRef.current?.scrollIntoView({ behavior: 'smooth' });
       }
-    }
+    
   };
+
+  const fetchSurveyForAnswerPersonal = async ({
+    surveyId,
+    companyId,
+    answerId,
+  }) => {
+    setIsLoading(true); // Comenzar la carga
+    client
+      .get(`ShowQuestionAnswer/${surveyId}/${companyId}/${answerId}`)
+      .then((response) => {
+        // Manejo de la respuesta exitosa
+        setIsLoading(false); // Finalizar la carga
+        if (response.status === 200) {
+          // Haz algo con la respuesta
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false); // Finalizar la carga incluso en caso de error
+        setErrorSurvey(error.response.data);
+      });
+  };
+  useEffect(() => {
+    fetchSurveyForAnswerPersonal({ surveyId, companyId, answerId });
+  }, []);
 
   const handlePrevious = () => {
     if (currentAttributeIndex > 0) {
       setCurrentAttributeIndex(currentAttributeIndex - 1);
       setErrors({});
+      topElementRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -566,10 +601,21 @@ export default function Bancolombia() {
     const currentRadioQuestions =
       dataDump.atributos[currentAttributeIndex]?.preguntasRadio;
 
+    let scrollToFirstError = true; // Bandera para controlar el desplazamiento
     // Validación para los Select y sus TextField asociados
     if (currentQuestions && Array.isArray(currentQuestions)) {
-      currentQuestions.forEach((pregunta, indexPregunta) => {
-        pregunta.opciones.forEach((opcion, indexOpcion) => {
+      for (
+        let indexPregunta = 0;
+        indexPregunta < currentQuestions.length;
+        indexPregunta++
+      ) {
+        const pregunta = currentQuestions[indexPregunta];
+
+        for (
+          let indexOpcion = 0;
+          indexOpcion < pregunta.opciones.length;
+          indexOpcion++
+        ) {
           const actionIndexKey = `${indexPregunta}-${indexOpcion}`;
           const detailIndexKey = `detail-${indexPregunta}-${indexOpcion}`;
           const actionValue =
@@ -582,11 +628,17 @@ export default function Bancolombia() {
           if (!actionValue) {
             newErrors[actionIndexKey] = true;
             isValid = false;
+            // Verificar y enfocar el primer elemento con error
             if (
+              scrollToFirstError &&
               firstEmptyRef.current &&
               firstEmptyRef.current[actionIndexKey]
             ) {
-              firstEmptyRef.current[actionIndexKey].focus();
+              firstEmptyRef.current[actionIndexKey].scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+              });
+              scrollToFirstError = false; // Cambiar la bandera después del primer desplazamiento
             }
           }
 
@@ -594,14 +646,19 @@ export default function Bancolombia() {
             newErrors[detailIndexKey] = true;
             isValid = false;
             if (
+              scrollToFirstError &&
               firstEmptyRef.current &&
               firstEmptyRef.current[detailIndexKey]
             ) {
-              firstEmptyRef.current[detailIndexKey].focus();
+              firstEmptyRef.current[detailIndexKey].scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+              });
+              scrollToFirstError = false; // Cambiar la bandera después del primer desplazamiento
             }
           }
-        });
-      });
+        }
+      }
     }
 
     // Validación para los botones de radio y sus TextField asociados
@@ -628,7 +685,10 @@ export default function Bancolombia() {
           ) {
             firstEmptyRef.current[
               `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
-            ].focus();
+            ].scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
           }
         }
 
@@ -646,7 +706,10 @@ export default function Bancolombia() {
           ) {
             firstEmptyRef.current[
               `text-${currentAttributeIndex}-${indexPreguntaRadio}`
-            ].focus();
+            ].scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
           }
         }
       });
@@ -664,6 +727,11 @@ export default function Bancolombia() {
         <WelcomeBancolombia
           titulo={atributo.titulo}
           descripcion={atributo.descripcion}
+          handleNext={handleNext}
+          handlePrevious={handlePrevious}
+          currentAttributeIndex={currentAttributeIndex}
+          dataDump={dataDump}
+          isText={atributo.istext}
         />
       );
     } else {
@@ -672,6 +740,7 @@ export default function Bancolombia() {
           color={atributo.color}
           title={atributo.titulo}
           dataDump={atributo}
+          dataQuestion={dataDump}
           inputValues={inputValues}
           setInputValues={(newValues) =>
             setInputValuesByAttribute({
@@ -687,24 +756,22 @@ export default function Bancolombia() {
           currentAttributeIndex={currentAttributeIndex}
           setTextValuesByAttribute={setTextValuesByAttribute}
           setRadioValuesByAttribute={setRadioValuesByAttribute}
+          handleNext={handleNext}
+          handlePrevious={handlePrevious}
+          isText={atributo.istext}
         />
       );
     }
   };
   return (
     <div className={styles.Bancolombia}>
-      <div className={styles.Bancolombia__Content}>
-        {renderAttribute(dataDump.atributos[currentAttributeIndex])}
-
-        {currentAttributeIndex > 0 && (
-          <button onClick={handlePrevious}>Anterior</button>
-        )}
-        {currentAttributeIndex < dataDump.atributos.length - 1 && (
-          <button onClick={handleNext}>Siguiente</button>
-        )}
-
-        {currentAttributeIndex === dataDump.atributos.length && (
-          <button onClick={handleNext}>Enviar</button>
+      <div className={styles.Bancolombia__Content} ref={topElementRef}>
+        {isLoading ? (
+          < MyLoader />
+        ) : !errorSurvey ? (
+          <ErrorsSurvey errorDescription={errorSurvey}/>
+        ) : (
+          renderAttribute(dataDump.atributos[currentAttributeIndex])
         )}
       </div>
     </div>
