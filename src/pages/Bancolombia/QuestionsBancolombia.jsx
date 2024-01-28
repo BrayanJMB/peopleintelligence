@@ -1,9 +1,11 @@
-import { SelectQuestions } from "./SelectQuestions";
-import InsertQuestion from "./InsertQuestion";
-import { Layout } from "./Layout";
-import styles from "./Bancolombia.module.css";
-import { LayoutQuestions } from "./LayoutQuestions";
-import { useState, useRef } from "react";
+import { useRef,useState } from 'react';
+
+import InsertQuestion from './InsertQuestion';
+import { Layout } from './Layout';
+import { LayoutQuestions } from './LayoutQuestions';
+import { SelectQuestions } from './SelectQuestions';
+
+import styles from './Bancolombia.module.css';
 export const QuestionsBancolombia = ({
   title,
   color,
@@ -17,7 +19,7 @@ export const QuestionsBancolombia = ({
   setRadioValuesByAttribute,
   radioValuesByAttribute,
   textValuesByAttribute,
-  currentAttributeIndex
+  currentAttributeIndex,
 }) => {
   return (
     <Layout>

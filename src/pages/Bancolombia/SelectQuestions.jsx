@@ -1,11 +1,13 @@
-import styles from "./Bancolombia.module.css";
-import { LayoutQuestions } from "./LayoutQuestions";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import { Grid, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+import { Grid, TextField } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+
+import { LayoutQuestions } from './LayoutQuestions';
+
+import styles from './Bancolombia.module.css';
 
 export const SelectQuestions = ({
   dataDump,
@@ -26,7 +28,7 @@ export const SelectQuestions = ({
   const handleTextFieldChange = (indexKey) => (event) => {
     setInputValues({ ...inputValues, [indexKey]: event.target.value });
     // También podrías querer validar el input inmediatamente o quitar el error si ya hay texto
-    if (event.target.value.trim() !== "" && errors[indexKey]) {
+    if (event.target.value.trim() !== '' && errors[indexKey]) {
       setErrors({ ...errors, [indexKey]: false });
     }
   };
@@ -37,7 +39,7 @@ export const SelectQuestions = ({
       {dataDump.preguntas.map((pregunta, indexPregunta) => (
         <div key={indexPregunta}>
           <h3>{pregunta.tituloPregunta}</h3>
-          <ul style={{ fontSize: "12px" }}>
+          <ul style={{ fontSize: '12px' }}>
             {pregunta.opciones.map((opcion, indexOpcion) => {
                 const indexKey = `${indexPregunta}-${indexOpcion}`;
                 const detailKey = `detail-${indexKey}`;
@@ -48,7 +50,7 @@ export const SelectQuestions = ({
                       item
                       sm={9}
                       xs={12}
-                      sx={{ display: "flex", alignItems: "center" }}
+                      sx={{ display: 'flex', alignItems: 'center' }}
                     >
                       <p>{opcion.option}</p>
                     </Grid>
@@ -64,7 +66,7 @@ export const SelectQuestions = ({
                         <Select
                           labelId={`action-select-label-${indexKey}`}
                           id={`action-select-${indexKey}`}
-                          value={inputValues[indexKey] || ""}
+                          value={inputValues[indexKey] || ''}
                           onChange={handleChange(indexKey)}
                           label="Acción"
                           ref={(el) => (firstEmptyRef.current[indexKey] = el)}
@@ -74,13 +76,13 @@ export const SelectQuestions = ({
                           <MenuItem value="Modificar">Modificar</MenuItem>
                         </Select>
                       </FormControl>
-                      {inputValues[indexKey] === "Modificar" && (
+                      {inputValues[indexKey] === 'Modificar' && (
                         <TextField
                           fullWidth
                           size="small"
                           placeholder="¿Cómo?"
-                          sx={{ marginTop: "10px" }}
-                          value={inputValues[detailKey] || ""}
+                          sx={{ marginTop: '10px' }}
+                          value={inputValues[detailKey] || ''}
                           onChange={handleTextFieldChange(detailKey)}
                           error={errors[detailKey]} // Usa el estado de error para este campo también
                           ref={(el) => (firstEmptyRef.current[detailKey] = el)}

@@ -1,13 +1,15 @@
-import { Layout } from "./Layout";
-import styles from "./Bancolombia.module.css";
-import logo2 from "./img/Logotipo.png";
-import backgroundWelcome from "./img/backgroundWelcome.png";
-import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
-import  Button  from "@mui/material/Button";
+import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
+import  Button  from '@mui/material/Button';
+
+import backgroundWelcome from './img/backgroundWelcome.png';
+import logo2 from './img/Logotipo.png';
+import { Layout } from './Layout';
+
+import styles from './Bancolombia.module.css';
 export const WelcomeMovementB = ({nextComponent, previousComponent}) => {
   const mobileStyle = {
-    backgroundImage: "none",
+    backgroundImage: 'none',
   };
   return (
     <Layout>
@@ -15,14 +17,14 @@ export const WelcomeMovementB = ({nextComponent, previousComponent}) => {
         className={styles.Bancolombia__BoxWelcome}
         style={{
           backgroundImage: `url(${backgroundWelcome})`,
-          backgroundPosition: "right",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "contain", // Asegúrate de que la imagen se contenga dentro del div
-          padding: "1rem", // Añade un padding para evitar que el texto toque los bordes del div
-          "@media (maxWidth: 768px)": mobileStyle,
+          backgroundPosition: 'right',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'contain', // Asegúrate de que la imagen se contenga dentro del div
+          padding: '1rem', // Añade un padding para evitar que el texto toque los bordes del div
+          '@media (maxWidth: 768px)': mobileStyle,
         }}
       >
-        <div style={{ maxWidth: "calc(100% - 150px)", textAlign: "justify" }}>
+        <div style={{ maxWidth: 'calc(100% - 150px)', textAlign: 'justify' }}>
           <h2 className={styles.mb}>¡Empecemos con Movimiento B!</h2>
           <p className={styles.mb}>
             Como sabes, el modelo tiene 6 atributos culturales (Integridad,
@@ -46,21 +48,21 @@ export const WelcomeMovementB = ({nextComponent, previousComponent}) => {
         </div>
         <div
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
-          <img src={logo2} alt="some" style={{ padding: "1rem" }} />
+          <img src={logo2} alt="some" style={{ padding: '1rem' }} />
           <div>
           <Button onClick={previousComponent}>
             <ArrowCircleLeftIcon
-              style={{ color: "#7D62A8", fontSize: "40px" }}
+              style={{ color: '#7D62A8', fontSize: '40px' }}
             />
           </Button>
           <Button onClick={nextComponent}>
             <ArrowCircleRightIcon
-              style={{ color: "#7D62A8", fontSize: "40px" }}
+              style={{ color: '#7D62A8', fontSize: '40px' }}
             />
           </Button>
  
