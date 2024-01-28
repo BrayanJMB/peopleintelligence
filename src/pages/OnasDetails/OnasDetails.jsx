@@ -86,7 +86,6 @@ export default function OnasDetails() {
   const fetchOnas = async () => {
     setLoading(true);
     const { data } = await getOnasDetailsAPI(state);
-    console.log(data);
     setOnasDetail(data.personResponse);
     setLoading(false);
   };

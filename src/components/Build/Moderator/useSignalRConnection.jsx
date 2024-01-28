@@ -13,9 +13,7 @@ export const useSignalRConnection = () => {
 
     connection.start()
       .then(() => {
-        console.log('Conexión de SignalR iniciada.');
         connection.on('ReceiveDemograpics', (newDemographics, newDescription) => {
-          console.log('entro acá');
           setDemographics(newDemographics);
           setDemographicDescription(newDescription);
         });

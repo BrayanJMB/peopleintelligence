@@ -120,7 +120,6 @@ export default function Navbar() {
         setData(holder);
       });
     } catch (error) {
-      console.log(error);
     }
   };
 
