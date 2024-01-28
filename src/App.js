@@ -12,6 +12,7 @@ import Error from './pages/Error/Error';
 import Home from './pages/Home/Home';
 import InfoAdmin from './pages/InfoAdmin/InfoAdmin';
 import CreateSurvey from './pages/Journey/CreateSurvey/CreateSurvey';
+import Bancolombia from './pages/Bancolombia/Bancolombia'
 import Journey from './pages/Journey/Journey';
 import Template from './pages/Journey/Template/Template';
 import JourneySettingsPage from './pages/JourneySettingsPage/JourneySettingsPage';
@@ -123,6 +124,11 @@ export default function App() {
                 <Route
                   path="/journey/update-template/:id"
                   element={<CreateSurvey />}
+                  exact
+                />
+                <Route
+                  path="bancolombia/:id"
+                  element={<Bancolombia />}
                   exact
                 />
               </Route>

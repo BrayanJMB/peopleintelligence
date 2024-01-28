@@ -20,6 +20,7 @@ import { Demographics } from './Demographics';
 import { Questions } from './Questions';
 
 import styles from './ChatBox.module.css';
+import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
 
 export const Moderator = ({ id }) => {
   const [connection, setConnection] = useState(null);
@@ -101,8 +102,8 @@ export const Moderator = ({ id }) => {
             setDemographics(newDemographics);
           });
           connection.on('RecibirRespuestaSingle', (answer, counter) => {
-
-        });
+            console.log(answer)
+          });
           connection.on('SendRespuestasDos', tablarespuestas => { 
             setAnswersOpinion(tablarespuestas);
           });
@@ -195,18 +196,24 @@ export const Moderator = ({ id }) => {
         });
         setNextQuestion(index + 1);
         break;
+      case 'imagen':
+          setNextQuestion(index + 1);    
+          break;
+      case 'video':
+            console.log("soy video");
+            break;
       case 'seleccionsimple':
-
           connection.invoke('SendSingleOption', question).catch(function (err) {
               return console.error(err.toString());
           });
           break;
-      case 'imagen':
-          setNextQuestion(index + 1);    
-          break;
+      case 'experiencia':
+          connection.invoke("SendExperiencia", question).catch(function (err) {
+              return console.error(err.toString());
+          });
+            break;
       case 'opinión':
         connection.invoke('SendOpinion', question).catch(function (err) {
-            //envio de pregunta de opinion
             return console.error(err.toString());
         });
           setQuestions(prevQuestions => {   
