@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Box,
   FormControl,
   FormControlLabel,
+  Grid,
   Radio,
   RadioGroup,
   TextField,
-  Grid,
-} from "@mui/material";
+} from '@mui/material';
 
 export default function InsertQuestion({
   dataDump,
@@ -17,7 +17,7 @@ export default function InsertQuestion({
   currentAttributeIndex,
   setTextValuesByAttribute,
   setRadioValuesByAttribute,
-  color
+  color,
 }) {
   const handleRadioChange = (attributeIndex, questionIndex, event) => {
     const newValue = event.target.value;
@@ -30,12 +30,12 @@ export default function InsertQuestion({
     }));
 
     // Si el valor no es "Si", limpia el TextField asociado para esta pregunta
-    if (newValue !== "Si") {
+    if (newValue !== 'Si') {
       setTextValuesByAttribute((prev) => ({
         ...prev,
         [attributeIndex]: {
           ...prev[attributeIndex],
-          [questionIndex]: "",
+          [questionIndex]: '',
         },
       }));
     }
@@ -56,7 +56,7 @@ export default function InsertQuestion({
     <Box>
       {dataDump.preguntasRadio.map((preguntaRadio, indexPreguntaRadio) => (
         <Box key={indexPreguntaRadio}>
-          <p style={{ marginBottom: "5px" }}>{indexPreguntaRadio +1}.{" "}{preguntaRadio.tituloPregunta}</p>
+          <p style={{ marginBottom: '5px' }}>{indexPreguntaRadio +1}.{' '}{preguntaRadio.tituloPregunta}</p>
           <Grid container>
             <Grid item sm={4} xs={12}>
               <FormControl
@@ -72,7 +72,7 @@ export default function InsertQuestion({
                   value={
                     radioValuesByAttribute[currentAttributeIndex]?.[
                       indexPreguntaRadio
-                    ] || ""
+                    ] || ''
                   }
                   onChange={(event) =>
                     handleRadioChange(
@@ -90,16 +90,16 @@ export default function InsertQuestion({
                           color: errors[
                             `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
                           ]
-                            ? "error.main"
+                            ? 'error.main'
                             : {color},
-                          "&.Mui-checked": {
+                          '&.Mui-checked': {
                             color: errors[
                               `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
                             ]
-                              ? "error.main"
+                              ? 'error.main'
                               : {color},
                           },
-                          "& .MuiSvgIcon-root": {
+                          '& .MuiSvgIcon-root': {
                             fontSize: 16,
                           },
                         }}
@@ -110,9 +110,9 @@ export default function InsertQuestion({
                       color: errors[
                         `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
                       ]
-                        ? "error.main"
-                        : "inherit",
-                      ".MuiFormControlLabel-label": {
+                        ? 'error.main'
+                        : 'inherit',
+                      '.MuiFormControlLabel-label': {
                         fontSize: 16, // Por ejemplo, si también quieres cambiar el tamaño del texto de la etiqueta
                       },
                     }}
@@ -125,16 +125,16 @@ export default function InsertQuestion({
                           color: errors[
                             `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
                           ]
-                            ? "error.main"
+                            ? 'error.main'
                             : {color},
-                          "&.Mui-checked": {
+                          '&.Mui-checked': {
                             color: errors[
                               `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
                             ]
-                              ? "error.main"
+                              ? 'error.main'
                               : {color},
                           },
-                          "& .MuiSvgIcon-root": {
+                          '& .MuiSvgIcon-root': {
                             fontSize: 16,
                           },
                         }}
@@ -145,9 +145,9 @@ export default function InsertQuestion({
                       color: errors[
                         `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
                       ]
-                        ? "error.main"
-                        : "inherit",
-                      ".MuiFormControlLabel-label": {
+                        ? 'error.main'
+                        : 'inherit',
+                      '.MuiFormControlLabel-label': {
                         fontSize: 16,
                       },
                     }}
@@ -158,7 +158,7 @@ export default function InsertQuestion({
             <Grid item sm={8} xs={12}>
               {radioValuesByAttribute[currentAttributeIndex]?.[
                 indexPreguntaRadio
-              ] === "Si" && (
+              ] === 'Si' && (
                 <TextField
                   size="small"
                   label="¿Cuál?"
@@ -172,7 +172,7 @@ export default function InsertQuestion({
                   value={
                     textValuesByAttribute[currentAttributeIndex]?.[
                       indexPreguntaRadio
-                    ] || ""
+                    ] || ''
                   }
                   onChange={(event) =>
                     handleTextChange(

@@ -1,11 +1,12 @@
-import { useRef, useState } from "react";
+import { useRef, useState } from 'react';
 
-import InsertQuestion from "./InsertQuestion";
-import { Layout } from "./Layout";
-import { LayoutQuestions } from "./LayoutQuestions";
-import { SelectQuestions } from "./SelectQuestions";
-import { NextQuestion } from "./NextQuestion";
-import styles from "./Bancolombia.module.css";
+import InsertQuestion from './InsertQuestion';
+import { Layout } from './Layout';
+import { LayoutQuestions } from './LayoutQuestions';
+import { NextQuestion } from './NextQuestion';
+import { SelectQuestions } from './SelectQuestions';
+
+import styles from './Bancolombia.module.css';
 export const QuestionsBancolombia = ({
   title,
   color,
@@ -23,9 +24,9 @@ export const QuestionsBancolombia = ({
   handleNext,
   handlePrevious,
   dataQuestion,
-  isText
+  isText,
 }) => {
-  console.log(isText)
+  console.log(isText);
   return (
     <Layout>
       <div className={styles.Bancolombia__BoxWelcome}>
