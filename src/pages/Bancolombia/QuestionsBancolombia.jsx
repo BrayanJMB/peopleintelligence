@@ -1,11 +1,11 @@
-import { useRef,useState } from 'react';
+import { useRef, useState } from "react";
 
-import InsertQuestion from './InsertQuestion';
-import { Layout } from './Layout';
-import { LayoutQuestions } from './LayoutQuestions';
-import { SelectQuestions } from './SelectQuestions';
-
-import styles from './Bancolombia.module.css';
+import InsertQuestion from "./InsertQuestion";
+import { Layout } from "./Layout";
+import { LayoutQuestions } from "./LayoutQuestions";
+import { SelectQuestions } from "./SelectQuestions";
+import { NextQuestion } from "./NextQuestion";
+import styles from "./Bancolombia.module.css";
 export const QuestionsBancolombia = ({
   title,
   color,
@@ -20,7 +20,12 @@ export const QuestionsBancolombia = ({
   radioValuesByAttribute,
   textValuesByAttribute,
   currentAttributeIndex,
+  handleNext,
+  handlePrevious,
+  dataQuestion,
+  isText
 }) => {
+  console.log(isText)
   return (
     <Layout>
       <div className={styles.Bancolombia__BoxWelcome}>
@@ -41,6 +46,15 @@ export const QuestionsBancolombia = ({
           currentAttributeIndex={currentAttributeIndex}
           setTextValuesByAttribute={setTextValuesByAttribute}
           setRadioValuesByAttribute={setRadioValuesByAttribute}
+          color={color}
+        />
+        <NextQuestion
+          dataDump={dataQuestion}
+          currentAttributeIndex={currentAttributeIndex}
+          handleNext={handleNext}
+          handlePrevious={handlePrevious}
+          isText={isText}
+          color={color}
         />
       </div>
     </Layout>
