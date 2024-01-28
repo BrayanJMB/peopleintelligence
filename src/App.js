@@ -6,13 +6,13 @@ import { SnackbarProvider } from 'notistack';
 
 import { Moderator } from './components/Build/Moderator/Moderator';
 import AnswerSurvey from './pages/AnswerSurvey/AnswerSurvey';
+import Bancolombia from './pages/Bancolombia/Bancolombia';
 import Conversation from './pages/Conversation/Conversation';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Error from './pages/Error/Error';
 import Home from './pages/Home/Home';
 import InfoAdmin from './pages/InfoAdmin/InfoAdmin';
 import CreateSurvey from './pages/Journey/CreateSurvey/CreateSurvey';
-import Bancolombia from './pages/Bancolombia/Bancolombia'
 import Journey from './pages/Journey/Journey';
 import Template from './pages/Journey/Template/Template';
 import JourneySettingsPage from './pages/JourneySettingsPage/JourneySettingsPage';

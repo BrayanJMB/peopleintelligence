@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
 import SendIcon from '@mui/icons-material/Send';
@@ -20,7 +21,6 @@ import { Demographics } from './Demographics';
 import { Questions } from './Questions';
 
 import styles from './ChatBox.module.css';
-import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
 
 export const Moderator = ({ id }) => {
   const [connection, setConnection] = useState(null);
@@ -102,7 +102,7 @@ export const Moderator = ({ id }) => {
             setDemographics(newDemographics);
           });
           connection.on('RecibirRespuestaSingle', (answer, counter) => {
-            console.log(answer)
+            console.log(answer);
           });
           connection.on('SendRespuestasDos', tablarespuestas => { 
             setAnswersOpinion(tablarespuestas);
@@ -200,7 +200,7 @@ export const Moderator = ({ id }) => {
           setNextQuestion(index + 1);    
           break;
       case 'video':
-            console.log("soy video");
+            console.log('soy video');
             break;
       case 'seleccionsimple':
           connection.invoke('SendSingleOption', question).catch(function (err) {
@@ -208,7 +208,7 @@ export const Moderator = ({ id }) => {
           });
           break;
       case 'experiencia':
-          connection.invoke("SendExperiencia", question).catch(function (err) {
+          connection.invoke('SendExperiencia', question).catch(function (err) {
               return console.error(err.toString());
           });
             break;

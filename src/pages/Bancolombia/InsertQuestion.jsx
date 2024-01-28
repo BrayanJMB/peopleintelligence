@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Box,
   FormControl,
-  RadioGroup,
   FormControlLabel,
   Radio,
+  RadioGroup,
   TextField,
-} from "@mui/material";
+} from '@mui/material';
 
 export default function InsertQuestion({
   dataDump,
@@ -28,12 +28,12 @@ export default function InsertQuestion({
     }));
 
     // Si el valor no es "Si", limpia el TextField asociado para esta pregunta
-    if (newValue !== "Si") {
+    if (newValue !== 'Si') {
       setTextValuesByAttribute((prev) => ({
         ...prev,
         [attributeIndex]: {
           ...prev[attributeIndex],
-          [questionIndex]: "",
+          [questionIndex]: '',
         },
       }));
     }
@@ -67,7 +67,7 @@ export default function InsertQuestion({
               value={
                 radioValuesByAttribute[currentAttributeIndex]?.[
                   indexPreguntaRadio
-                ] || ""
+                ] || ''
               }
               onChange={(event) =>
                 handleRadioChange(
@@ -84,7 +84,7 @@ export default function InsertQuestion({
 
           {radioValuesByAttribute[currentAttributeIndex]?.[
             indexPreguntaRadio
-          ] === "Si" && (
+          ] === 'Si' && (
             <TextField
               label="¿Cuál?"
               variant="outlined"
@@ -95,7 +95,7 @@ export default function InsertQuestion({
               value={
                 textValuesByAttribute[currentAttributeIndex]?.[
                   indexPreguntaRadio
-                ] || ""
+                ] || ''
               }
               onChange={(event) =>
                 handleTextChange(
