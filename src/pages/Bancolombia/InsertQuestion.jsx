@@ -111,7 +111,7 @@ export default function InsertQuestion({
           </p>
           <Grid container>
             <Grid item sm={4} xs={12} sx={{
-              paddingLeft:"30px"
+              paddingLeft:'30px',
             }}>
               <FormControl
                 error={Boolean(

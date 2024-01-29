@@ -1,10 +1,10 @@
-import { Grid, TextField } from "@mui/material";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
+import { Grid, TextField } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 
-import styles from "./Bancolombia.module.css";
+import styles from './Bancolombia.module.css';
 
 export const SelectQuestions = ({
   dataDump,
@@ -40,16 +40,16 @@ export const SelectQuestions = ({
             id: tituloPregunta,
             opcion: selectedValue,
             valor:
-              selectedValue === "Modificar"
-                ? inputValues[`detail-${index}`] || ""
-                : "",
+              selectedValue === 'Modificar'
+                ? inputValues[`detail-${index}`] || ''
+                : '',
           };
         } else {
           // Si la opción no existe, agrégala
           newAnswers[answerIndex].options.push({
             id: tituloPregunta,
             opcion: selectedValue,
-            valor: "",
+            valor: '',
           });
         }
       } else {
@@ -60,7 +60,7 @@ export const SelectQuestions = ({
             {
               id: tituloPregunta,
               opcion: selectedValue,
-              valor: "",
+              valor: '',
             },
           ],
         });
@@ -74,7 +74,7 @@ export const SelectQuestions = ({
       const textFieldValue = event.target.value;
       setInputValues({ ...inputValues, [indexKey]: textFieldValue });
 
-      if (event.target.value.trim() !== "" && errors[indexKey]) {
+      if (event.target.value.trim() !== '' && errors[indexKey]) {
         setErrors({ ...errors, [indexKey]: false });
       }
 
@@ -107,7 +107,7 @@ export const SelectQuestions = ({
       {dataDump.preguntas.map((pregunta, indexPregunta) => (
         <div key={indexPregunta}>
           <h2>{pregunta.tituloPregunta}</h2>
-          <ul style={{ fontSize: "12px" }}>
+          <ul style={{ fontSize: '12px' }}>
             {pregunta.opciones.map((opcion, indexOpcion) => {
               const indexKey = `${indexPregunta}-${indexOpcion}`;
               const detailKey = `detail-${indexKey}`;
@@ -119,8 +119,8 @@ export const SelectQuestions = ({
                       sm={8}
                       xs={12}
                       sx={{
-                        display: "flex",
-                        alignItems: "center",
+                        display: 'flex',
+                        alignItems: 'center',
                       }}
                     >
                       <p>{opcion.option}</p>
@@ -138,7 +138,7 @@ export const SelectQuestions = ({
                         <Select
                           labelId={`action-select-label-${indexKey}`}
                           id={`action-select-${indexKey}`}
-                          value={inputValues[indexKey] || ""}
+                          value={inputValues[indexKey] || ''}
                           onChange={handleChange(
                             indexKey,
                             pregunta.id,
@@ -153,13 +153,13 @@ export const SelectQuestions = ({
                           <MenuItem value="Modificar">Modificar</MenuItem>
                         </Select>
                       </FormControl>
-                      {inputValues[indexKey] === "Modificar" && (
+                      {inputValues[indexKey] === 'Modificar' && (
                         <TextField
                           fullWidth
                           size="small"
                           placeholder="¿Cómo?"
-                          sx={{ marginTop: "10px" }}
-                          value={inputValues[detailKey] || ""}
+                          sx={{ marginTop: '10px' }}
+                          value={inputValues[detailKey] || ''}
                           onChange={handleTextFieldChange(
                             detailKey,
                             pregunta.id,
