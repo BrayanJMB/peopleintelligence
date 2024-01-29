@@ -12,16 +12,27 @@ export const LayoutQuestions = ({ title, color }) => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: `${color}`,
-          borderRadius: '20px',
-          textAlign:'center',
-          marginBottom:'10px',
+          textAlign: 'center',
+          marginBottom: '10px',
         }}
       >
-        <h2 style={{ fontSize: '30px' }}>{title}</h2>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            textAlign: 'center',
+            height: '50px',
+            backgroundColor: `${color}`,
+            borderRadius: '50px',
+            width: '100%',
+          }}
+        >
+          <h2 style={{ fontSize: '20px' }}>{title}</h2>
+        </div>
       </Grid>
-      <Grid item sm={4} xs={12}>
-        <img src={logo2} alt="some" style={{ padding: '1rem' }} />
+      <Grid item sm={4} xs={12} sx={{ display: 'flex', justifyContent: 'end' }}>
+        <img src={logo2} alt="ImagenBancolombia" style={{ padding: '1rem' }} />
       </Grid>
     </Grid>
   );
