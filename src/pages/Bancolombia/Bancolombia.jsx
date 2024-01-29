@@ -32,7 +32,7 @@ export default function Bancolombia() {
   const [isSurveySubmitted, setIsSurveySubmitted] = useState(false);
   const [isSurveyError, setIsSurveyError] = useState(false);
   const handleNext = () => {
-    //if (validateFields()){
+    if (validateFields()){
       const nextIndex = currentAttributeIndex + 1;
       if (nextIndex < dataDump.length) {
         setCurrentAttributeIndex(nextIndex);
@@ -49,7 +49,7 @@ export default function Bancolombia() {
         // Desplazamiento automático hacia arriba
         topElementRef.current?.scrollIntoView({ behavior: 'smooth' });
       }
-    //}
+    }
   };
 
   const fetchSurveyForAnswerPersonal = async ({
@@ -174,25 +174,25 @@ export default function Bancolombia() {
       currentRadioQuestions.forEach((preguntaRadio, indexPreguntaRadio) => {
         // Asegúrate de acceder al estado anidado para el atributo y la pregunta actual
         const radioValue =
-          radioValuesByAttribute[currentAttributeIndex]?.[indexPreguntaRadio];
+          radioValuesByAttribute[currentAttributeIndex]?.[preguntaRadio.id];
         const textValue =
-          textValuesByAttribute[currentAttributeIndex]?.[indexPreguntaRadio] ||
+          textValuesByAttribute[currentAttributeIndex]?.[preguntaRadio.id] ||
           '';
 
         if (!radioValue) {
           newErrors[
-            `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
+            `radio-${currentAttributeIndex}-${preguntaRadio.id}`
           ] = true;
           isValid = false;
           // Verifica si debes enfocar el elemento RadioGroup
           if (
             firstEmptyRef.current &&
             firstEmptyRef.current[
-              `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
+              `radio-${currentAttributeIndex}-${preguntaRadio.id}`
             ]
           ) {
             firstEmptyRef.current[
-              `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
+              `radio-${currentAttributeIndex}-${preguntaRadio.id}`
             ].scrollIntoView({
               behavior: 'smooth',
               block: 'center',
@@ -202,18 +202,18 @@ export default function Bancolombia() {
 
         if (radioValue === 'Si' && !textValue.trim()) {
           newErrors[
-            `text-${currentAttributeIndex}-${indexPreguntaRadio}`
+            `text-${currentAttributeIndex}-${preguntaRadio.id}`
           ] = true;
           isValid = false;
           // Verifica si debes enfocar el TextField asociado
           if (
             firstEmptyRef.current &&
             firstEmptyRef.current[
-              `text-${currentAttributeIndex}-${indexPreguntaRadio}`
+              `text-${currentAttributeIndex}-${preguntaRadio.id}`
             ]
           ) {
             firstEmptyRef.current[
-              `text-${currentAttributeIndex}-${indexPreguntaRadio}`
+              `text-${currentAttributeIndex}-${preguntaRadio.id}`
             ].scrollIntoView({
               behavior: 'smooth',
               block: 'center',

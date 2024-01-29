@@ -140,13 +140,13 @@ export default function InsertQuestion({
                       <Radio
                         sx={{
                           color: errors[
-                            `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
+                            `radio-${currentAttributeIndex}-${preguntaRadio.id}`
                           ]
                             ? 'error.main'
                             : { color },
                           '&.Mui-checked': {
                             color: errors[
-                              `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
+                              `radio-${currentAttributeIndex}-${preguntaRadio.id}`
                             ]
                               ? 'error.main'
                               : { color },
@@ -160,7 +160,7 @@ export default function InsertQuestion({
                     label="Si"
                     sx={{
                       color: errors[
-                        `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
+                        `radio-${currentAttributeIndex}-${preguntaRadio.id}`
                       ]
                         ? 'error.main'
                         : 'inherit',
