@@ -1,12 +1,10 @@
-import { useRef, useState } from 'react';
+import InsertQuestion from "./InsertQuestion";
+import { Layout } from "./Layout";
+import { LayoutQuestions } from "./LayoutQuestions";
+import { NextQuestion } from "./NextQuestion";
+import { SelectQuestions } from "./SelectQuestions";
+import styles from "./Bancolombia.module.css";
 
-import InsertQuestion from './InsertQuestion';
-import { Layout } from './Layout';
-import { LayoutQuestions } from './LayoutQuestions';
-import { NextQuestion } from './NextQuestion';
-import { SelectQuestions } from './SelectQuestions';
-
-import styles from './Bancolombia.module.css';
 export const QuestionsBancolombia = ({
   title,
   color,
@@ -25,8 +23,9 @@ export const QuestionsBancolombia = ({
   handlePrevious,
   dataQuestion,
   isText,
+  setSurveyData,
+  storeSurvey,
 }) => {
-  console.log(isText);
   return (
     <Layout>
       <div className={styles.Bancolombia__BoxWelcome}>
@@ -38,6 +37,7 @@ export const QuestionsBancolombia = ({
           errors={errors}
           setErrors={setErrors}
           firstEmptyRef={firstEmptyRef}
+          setSurveyData={setSurveyData}
         />
         <InsertQuestion
           dataDump={dataDump}
@@ -48,6 +48,7 @@ export const QuestionsBancolombia = ({
           setTextValuesByAttribute={setTextValuesByAttribute}
           setRadioValuesByAttribute={setRadioValuesByAttribute}
           color={color}
+          setSurveyData={setSurveyData}
         />
         <NextQuestion
           dataDump={dataQuestion}
@@ -56,6 +57,7 @@ export const QuestionsBancolombia = ({
           handlePrevious={handlePrevious}
           isText={isText}
           color={color}
+          storeSurvey={storeSurvey}
         />
       </div>
     </Layout>
