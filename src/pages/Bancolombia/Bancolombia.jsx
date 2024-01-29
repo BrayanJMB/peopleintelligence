@@ -1,12 +1,15 @@
-import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
-import MyLoader from "../../components/MyLoader/MyLoader";
-import client from "../../utils/axiosInstance";
-import { ErrorsSurvey } from "./ErrorsSurvey";
-import { QuestionsBancolombia } from "./QuestionsBancolombia";
-import { WelcomeBancolombia } from "./WelcomeBancolombia";
-import styles from "./Bancolombia.module.css";
-import { Thanks } from "./Thanks";
+import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
+
+import MyLoader from '../../components/MyLoader/MyLoader';
+import client from '../../utils/axiosInstance';
+
+import { ErrorsSurvey } from './ErrorsSurvey';
+import { QuestionsBancolombia } from './QuestionsBancolombia';
+import { Thanks } from './Thanks';
+import { WelcomeBancolombia } from './WelcomeBancolombia';
+
+import styles from './Bancolombia.module.css';
 export default function Bancolombia() {
   const { surveyId, answerId, companyId } = useParams();
   const [surveyData, setSurveyData] = useState({
@@ -44,7 +47,7 @@ export default function Bancolombia() {
         }));
         setErrors({});
         // Desplazamiento automático hacia arriba
-        topElementRef.current?.scrollIntoView({ behavior: "smooth" });
+        topElementRef.current?.scrollIntoView({ behavior: 'smooth' });
       }
     //}
   };
@@ -72,11 +75,11 @@ export default function Bancolombia() {
   const storeSurvey = async () => {
     try {
        await client.post(
-        `AnswerSurvey/SendAnswwersBancolombia`,
+        'AnswerSurvey/SendAnswwersBancolombia',
         surveyData
       );
     } catch (error) {
-      setIsSurveyError(true)
+      setIsSurveyError(true);
       console.error('Error al enviar la encuesta: ', error);
       // Manejar el error adecuadamente
     }finally{
@@ -92,7 +95,7 @@ export default function Bancolombia() {
     if (currentAttributeIndex > 0) {
       setCurrentAttributeIndex(currentAttributeIndex - 1);
       setErrors({});
-      topElementRef.current?.scrollIntoView({ behavior: "smooth" });
+      topElementRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -125,10 +128,10 @@ export default function Bancolombia() {
           const detailIndexKey = `detail-${indexPregunta}-${indexOpcion}`;
           const actionValue =
             inputValuesByAttribute[currentAttributeIndex]?.[actionIndexKey] ||
-            "";
+            '';
           const detailValue =
             inputValuesByAttribute[currentAttributeIndex]?.[detailIndexKey] ||
-            "";
+            '';
 
           if (!actionValue) {
             newErrors[actionIndexKey] = true;
@@ -140,14 +143,14 @@ export default function Bancolombia() {
               firstEmptyRef.current[actionIndexKey]
             ) {
               firstEmptyRef.current[actionIndexKey].scrollIntoView({
-                behavior: "smooth",
-                block: "center",
+                behavior: 'smooth',
+                block: 'center',
               });
               scrollToFirstError = false; // Cambiar la bandera después del primer desplazamiento
             }
           }
 
-          if (actionValue === "Modificar" && !detailValue.trim()) {
+          if (actionValue === 'Modificar' && !detailValue.trim()) {
             newErrors[detailIndexKey] = true;
             isValid = false;
             if (
@@ -156,8 +159,8 @@ export default function Bancolombia() {
               firstEmptyRef.current[detailIndexKey]
             ) {
               firstEmptyRef.current[detailIndexKey].scrollIntoView({
-                behavior: "smooth",
-                block: "center",
+                behavior: 'smooth',
+                block: 'center',
               });
               scrollToFirstError = false; // Cambiar la bandera después del primer desplazamiento
             }
@@ -174,7 +177,7 @@ export default function Bancolombia() {
           radioValuesByAttribute[currentAttributeIndex]?.[indexPreguntaRadio];
         const textValue =
           textValuesByAttribute[currentAttributeIndex]?.[indexPreguntaRadio] ||
-          "";
+          '';
 
         if (!radioValue) {
           newErrors[
@@ -191,13 +194,13 @@ export default function Bancolombia() {
             firstEmptyRef.current[
               `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
             ].scrollIntoView({
-              behavior: "smooth",
-              block: "center",
+              behavior: 'smooth',
+              block: 'center',
             });
           }
         }
 
-        if (radioValue === "Si" && !textValue.trim()) {
+        if (radioValue === 'Si' && !textValue.trim()) {
           newErrors[
             `text-${currentAttributeIndex}-${indexPreguntaRadio}`
           ] = true;
@@ -212,8 +215,8 @@ export default function Bancolombia() {
             firstEmptyRef.current[
               `text-${currentAttributeIndex}-${indexPreguntaRadio}`
             ].scrollIntoView({
-              behavior: "smooth",
-              block: "center",
+              behavior: 'smooth',
+              block: 'center',
             });
           }
         }

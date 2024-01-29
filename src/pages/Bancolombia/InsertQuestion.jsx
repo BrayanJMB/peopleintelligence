@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Box,
   FormControl,
@@ -7,7 +7,7 @@ import {
   Radio,
   RadioGroup,
   TextField,
-} from "@mui/material";
+} from '@mui/material';
 
 export default function InsertQuestion({
   dataDump,
@@ -42,25 +42,25 @@ export default function InsertQuestion({
           ...updatedRadioAnswers[answerIndex],
           value: newValue,
           respuesta:
-            newValue === "Si" ? updatedRadioAnswers[answerIndex].respuesta : "",
+            newValue === 'Si' ? updatedRadioAnswers[answerIndex].respuesta : '',
         };
       } else {
         updatedRadioAnswers.push({
           id: questionIndex,
           value: newValue,
-          respuesta: "",
+          respuesta: '',
         });
       }
 
       return { ...prevData, radioAnswers: updatedRadioAnswers };
     });
 
-    if (newValue !== "Si") {
+    if (newValue !== 'Si') {
       setTextValuesByAttribute((prev) => ({
         ...prev,
         [attributeIndex]: {
           ...prev[attributeIndex],
-          [questionIndex]: "",
+          [questionIndex]: '',
         },
       }));
     }
@@ -77,7 +77,7 @@ export default function InsertQuestion({
       },
     }));
 
-    if (radioValuesByAttribute[attributeIndex]?.[questionIndex] === "Si") {
+    if (radioValuesByAttribute[attributeIndex]?.[questionIndex] === 'Si') {
       setSurveyData((prevData) => {
         const updatedRadioAnswers = [...prevData.radioAnswers];
         const answerIndex = updatedRadioAnswers.findIndex(
@@ -92,7 +92,7 @@ export default function InsertQuestion({
         } else {
           updatedRadioAnswers.push({
             id: questionIndex,
-            value: "Si",
+            value: 'Si',
             respuesta: newValue,
           });
         }
@@ -106,7 +106,7 @@ export default function InsertQuestion({
     <Box>
       {dataDump.preguntasRadio.map((preguntaRadio, indexPreguntaRadio) => (
         <Box key={indexPreguntaRadio}>
-          <p style={{ marginBottom: "5px" }}>
+          <p style={{ marginBottom: '5px' }}>
             {indexPreguntaRadio + 1}. {preguntaRadio.tituloPregunta}
           </p>
           <Grid container>
@@ -124,7 +124,7 @@ export default function InsertQuestion({
                   value={
                     radioValuesByAttribute[currentAttributeIndex]?.[
                       preguntaRadio.id
-                    ] || ""
+                    ] || ''
                   }
                   onChange={(event) =>
                     handleRadioChange(
@@ -142,16 +142,16 @@ export default function InsertQuestion({
                           color: errors[
                             `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
                           ]
-                            ? "error.main"
+                            ? 'error.main'
                             : { color },
-                          "&.Mui-checked": {
+                          '&.Mui-checked': {
                             color: errors[
                               `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
                             ]
-                              ? "error.main"
+                              ? 'error.main'
                               : { color },
                           },
-                          "& .MuiSvgIcon-root": {
+                          '& .MuiSvgIcon-root': {
                             fontSize: 16,
                           },
                         }}
@@ -162,9 +162,9 @@ export default function InsertQuestion({
                       color: errors[
                         `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
                       ]
-                        ? "error.main"
-                        : "inherit",
-                      ".MuiFormControlLabel-label": {
+                        ? 'error.main'
+                        : 'inherit',
+                      '.MuiFormControlLabel-label': {
                         fontSize: 16, // Por ejemplo, si también quieres cambiar el tamaño del texto de la etiqueta
                       },
                     }}
@@ -177,16 +177,16 @@ export default function InsertQuestion({
                           color: errors[
                             `radio-${currentAttributeIndex}-${preguntaRadio.id}`
                           ]
-                            ? "error.main"
+                            ? 'error.main'
                             : { color },
-                          "&.Mui-checked": {
+                          '&.Mui-checked': {
                             color: errors[
                               `radio-${currentAttributeIndex}-${preguntaRadio.id}`
                             ]
-                              ? "error.main"
+                              ? 'error.main'
                               : { color },
                           },
-                          "& .MuiSvgIcon-root": {
+                          '& .MuiSvgIcon-root': {
                             fontSize: 16,
                           },
                         }}
@@ -197,9 +197,9 @@ export default function InsertQuestion({
                       color: errors[
                         `radio-${currentAttributeIndex}-${preguntaRadio.id}`
                       ]
-                        ? "error.main"
-                        : "inherit",
-                      ".MuiFormControlLabel-label": {
+                        ? 'error.main'
+                        : 'inherit',
+                      '.MuiFormControlLabel-label': {
                         fontSize: 16,
                       },
                     }}
@@ -210,7 +210,7 @@ export default function InsertQuestion({
             <Grid item sm={8} xs={12}>
               {radioValuesByAttribute[currentAttributeIndex]?.[
                 preguntaRadio.id
-              ] === "Si" && (
+              ] === 'Si' && (
                 <TextField
                   size="small"
                   label="¿Cuál?"
@@ -222,7 +222,7 @@ export default function InsertQuestion({
                   value={
                     textValuesByAttribute[currentAttributeIndex]?.[
                       preguntaRadio.id
-                    ] || ""
+                    ] || ''
                   }
                   onChange={(event) =>
                     handleTextChange(
