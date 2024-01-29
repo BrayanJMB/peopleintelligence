@@ -32,7 +32,7 @@ export default function Bancolombia() {
   const [isSurveySubmitted, setIsSurveySubmitted] = useState(false);
   const [isSurveyError, setIsSurveyError] = useState(false);
   const handleNext = () => {
-    if (validateFields()){
+    //if (validateFields()){
       const nextIndex = currentAttributeIndex + 1;
       if (nextIndex < dataDump.length) {
         setCurrentAttributeIndex(nextIndex);
@@ -49,7 +49,7 @@ export default function Bancolombia() {
         // Desplazamiento automático hacia arriba
         topElementRef.current?.scrollIntoView({ behavior: 'smooth' });
       }
-    }
+    //}
   };
 
   const fetchSurveyForAnswerPersonal = async ({
@@ -273,10 +273,7 @@ export default function Bancolombia() {
       );
     }
   };
-  useEffect(() => {
-    console.log(surveyData);
-  }, [surveyData]);
-  console.log(dataDump);
+
   return (
     <div className={styles.Bancolombia}>
       <div className={styles.Bancolombia__Content} ref={topElementRef}>
