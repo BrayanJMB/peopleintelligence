@@ -7,6 +7,7 @@ import logo2 from './img/Logotipo.png';
 export const NextQuestion = ({
   handleNext,
   handlePrevious,
+  storeSurvey,
   currentAttributeIndex,
   dataDump,
   isText,
@@ -27,7 +28,7 @@ export const NextQuestion = ({
           />
         )}
       </Grid>
-      <Grid item sm={4} style={{ display: 'flex-inline', justifyContent: 'flex-end' }}>
+      <Grid item sm={4} style={{ display: 'flex', justifyContent: 'end' }}>
         {currentAttributeIndex > 0 && (
           <Button onClick={handlePrevious}>
             <ArrowCircleLeftIcon
@@ -35,7 +36,7 @@ export const NextQuestion = ({
             />
           </Button>
         )}
-        {currentAttributeIndex < dataDump.atributos.length - 1 && (
+        {currentAttributeIndex < dataDump.length - 1 && (
           <Button onClick={handleNext}>
             <ArrowCircleRightIcon
               style={{ fontSize: '40px', color: `${color ? color : 'black'}` }}
@@ -43,8 +44,8 @@ export const NextQuestion = ({
           </Button>
         )}
 
-        {currentAttributeIndex === dataDump.atributos.length - 1 && (
-          <button onClick={handleNext}>Enviar</button>
+        {currentAttributeIndex === dataDump.length - 1 && (
+          <button onClick={storeSurvey}>Enviar</button>
         )}
       </Grid>
     </Grid>

@@ -18,9 +18,11 @@ export default function InsertQuestion({
   setTextValuesByAttribute,
   setRadioValuesByAttribute,
   color,
+  setSurveyData,
 }) {
   const handleRadioChange = (attributeIndex, questionIndex, event) => {
     const newValue = event.target.value;
+
     setRadioValuesByAttribute((prev) => ({
       ...prev,
       [attributeIndex]: {
@@ -29,7 +31,30 @@ export default function InsertQuestion({
       },
     }));
 
-    // Si el valor no es "Si", limpia el TextField asociado para esta pregunta
+    setSurveyData((prevData) => {
+      const updatedRadioAnswers = [...prevData.radioAnswers];
+      const answerIndex = updatedRadioAnswers.findIndex(
+        (answer) => answer.id === questionIndex
+      );
+
+      if (answerIndex !== -1) {
+        updatedRadioAnswers[answerIndex] = {
+          ...updatedRadioAnswers[answerIndex],
+          value: newValue,
+          respuesta:
+            newValue === 'Si' ? updatedRadioAnswers[answerIndex].respuesta : '',
+        };
+      } else {
+        updatedRadioAnswers.push({
+          id: questionIndex,
+          value: newValue,
+          respuesta: '',
+        });
+      }
+
+      return { ...prevData, radioAnswers: updatedRadioAnswers };
+    });
+
     if (newValue !== 'Si') {
       setTextValuesByAttribute((prev) => ({
         ...prev,
@@ -43,6 +68,7 @@ export default function InsertQuestion({
 
   const handleTextChange = (attributeIndex, questionIndex, event) => {
     const newValue = event.target.value;
+
     setTextValuesByAttribute((prev) => ({
       ...prev,
       [attributeIndex]: {
@@ -50,34 +76,60 @@ export default function InsertQuestion({
         [questionIndex]: newValue,
       },
     }));
+
+    if (radioValuesByAttribute[attributeIndex]?.[questionIndex] === 'Si') {
+      setSurveyData((prevData) => {
+        const updatedRadioAnswers = [...prevData.radioAnswers];
+        const answerIndex = updatedRadioAnswers.findIndex(
+          (answer) => answer.id === questionIndex
+        );
+
+        if (answerIndex !== -1) {
+          updatedRadioAnswers[answerIndex] = {
+            ...updatedRadioAnswers[answerIndex],
+            respuesta: newValue,
+          };
+        } else {
+          updatedRadioAnswers.push({
+            id: questionIndex,
+            value: 'Si',
+            respuesta: newValue,
+          });
+        }
+
+        return { ...prevData, radioAnswers: updatedRadioAnswers };
+      });
+    }
   };
 
   return (
     <Box>
       {dataDump.preguntasRadio.map((preguntaRadio, indexPreguntaRadio) => (
         <Box key={indexPreguntaRadio}>
-          <p style={{ marginBottom: '5px' }}>{indexPreguntaRadio +1}.{' '}{preguntaRadio.tituloPregunta}</p>
+          <p style={{ marginBottom: '5px' }}>
+            {indexPreguntaRadio + 1}. {preguntaRadio.tituloPregunta}
+          </p>
           <Grid container>
             <Grid item sm={4} xs={12}>
               <FormControl
                 error={Boolean(
-                  errors[`radio-${currentAttributeIndex}-${indexPreguntaRadio}`]
+                  errors[`radio-${currentAttributeIndex}-${preguntaRadio.id}`]
                 )} // Error específico para cada pregunta radio
                 component="fieldset"
               >
                 <RadioGroup
                   row
                   aria-labelledby="demo-radio-buttons-group-label"
-                  name={`radio-buttons-group-${indexPreguntaRadio}`}
+                  name={`radio-buttons-group-${preguntaRadio.id}`}
                   value={
                     radioValuesByAttribute[currentAttributeIndex]?.[
-                      indexPreguntaRadio
+                      preguntaRadio.id
                     ] || ''
                   }
                   onChange={(event) =>
                     handleRadioChange(
                       currentAttributeIndex,
-                      indexPreguntaRadio,
+                      preguntaRadio.id,
                       event
                     )
                   }
@@ -91,13 +143,13 @@ export default function InsertQuestion({
                             `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
                           ]
                             ? 'error.main'
-                            : {color},
+                            : { color },
                           '&.Mui-checked': {
                             color: errors[
                               `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
                             ]
                               ? 'error.main'
-                              : {color},
+                              : { color },
                           },
                           '& .MuiSvgIcon-root': {
                             fontSize: 16,
@@ -123,16 +175,16 @@ export default function InsertQuestion({
                       <Radio
                         sx={{
                           color: errors[
-                            `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
+                            `radio-${currentAttributeIndex}-${preguntaRadio.id}`
                           ]
                             ? 'error.main'
-                            : {color},
+                            : { color },
                           '&.Mui-checked': {
                             color: errors[
-                              `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
+                              `radio-${currentAttributeIndex}-${preguntaRadio.id}`
                             ]
                               ? 'error.main'
-                              : {color},
+                              : { color },
                           },
                           '& .MuiSvgIcon-root': {
                             fontSize: 16,
@@ -143,7 +195,7 @@ export default function InsertQuestion({
                     label="No"
                     sx={{
                       color: errors[
-                        `radio-${currentAttributeIndex}-${indexPreguntaRadio}`
+                        `radio-${currentAttributeIndex}-${preguntaRadio.id}`
                       ]
                         ? 'error.main'
                         : 'inherit',
@@ -157,7 +209,7 @@ export default function InsertQuestion({
             </Grid>
             <Grid item sm={8} xs={12}>
               {radioValuesByAttribute[currentAttributeIndex]?.[
-                indexPreguntaRadio
+                preguntaRadio.id
               ] === 'Si' && (
                 <TextField
                   size="small"
@@ -165,19 +217,17 @@ export default function InsertQuestion({
                   variant="outlined"
                   fullWidth
                   error={Boolean(
-                    errors[
-                      `text-${currentAttributeIndex}-${indexPreguntaRadio}`
-                    ]
+                    errors[`text-${currentAttributeIndex}-${preguntaRadio.id}`]
                   )} // Error específico para cada TextField
                   value={
                     textValuesByAttribute[currentAttributeIndex]?.[
-                      indexPreguntaRadio
+                      preguntaRadio.id
                     ] || ''
                   }
                   onChange={(event) =>
                     handleTextChange(
                       currentAttributeIndex,
-                      indexPreguntaRadio,
+                      preguntaRadio.id,
                       event
                     )
                   }
