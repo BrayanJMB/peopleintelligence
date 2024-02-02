@@ -277,10 +277,7 @@ export default function Bancolombia() {
       );
     }
   };
-  useEffect(() => {
-    console.log(surveyData);
-  }, [surveyData]);
-  console.log(dataDump);
+
   return (
     <div className={styles.Bancolombia}>
       <div className={styles.Bancolombia__Content} ref={topElementRef}>

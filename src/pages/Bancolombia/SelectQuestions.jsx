@@ -17,7 +17,6 @@ export const SelectQuestions = ({
 }) => {
   // Función para manejar cambios en los Select y actualizar el estado
   const handleChange = (index, indexPregunta, tituloPregunta) => (event) => {
-    console.log(indexPregunta);
     const selectedValue = event.target.value;
     setInputValues({ ...inputValues, [index]: selectedValue });
 
@@ -84,9 +83,7 @@ export const SelectQuestions = ({
         const answerIndex = newAnswers.findIndex(
           (answer) => answer.id === indexPregunta
         );
-        console.log(answerIndex);
         if (answerIndex !== -1) {
-          console.log(newAnswers[answerIndex]);
           // Encuentra la opción específica por su ID único
           const optionIndex = newAnswers[answerIndex].options.findIndex(
             (option) => option.id === opcionId
@@ -109,7 +106,7 @@ export const SelectQuestions = ({
     <div>
       {dataDump.preguntas.map((pregunta, indexPregunta) => (
         <div key={indexPregunta}>
-          <h3>{pregunta.tituloPregunta}</h3>
+          <h2>{pregunta.tituloPregunta}</h2>
           <ul style={{ fontSize: '12px' }}>
             {pregunta.opciones.map((opcion, indexOpcion) => {
               const indexKey = `${indexPregunta}-${indexOpcion}`;
@@ -119,12 +116,16 @@ export const SelectQuestions = ({
                   <Grid container>
                     <Grid
                       item
-                      sm={9}
+                      sm={8}
                       xs={12}
-                      sx={{ display: 'flex', alignItems: 'center' }}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
                     >
                       <p>{opcion.option}</p>
                     </Grid>
+                    <Grid item sm={1} xs={0}></Grid>
                     <Grid item sm={3} xs={12}>
                       <FormControl
                         fullWidth

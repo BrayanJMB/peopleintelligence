@@ -110,7 +110,9 @@ export default function InsertQuestion({
             {preguntaRadio.tituloPregunta}
           </p>
           <Grid container>
-            <Grid item sm={4} xs={12}>
+            <Grid item sm={4} xs={12} sx={{
+              paddingLeft:'30px',
+            }}>
               <FormControl
                 error={Boolean(
                   errors[`radio-${currentAttributeIndex}-${preguntaRadio.id}`]
