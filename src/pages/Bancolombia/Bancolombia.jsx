@@ -91,7 +91,7 @@ export default function Bancolombia() {
   
   useEffect(() => {
     fetchSurveyForAnswerPersonal({ surveyId, companyId, answerId });
-  }, []);
+  }, [surveyId, companyId, answerId]);
 
   const handlePrevious = () => {
     if (currentAttributeIndex > 0) {

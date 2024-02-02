@@ -33,7 +33,7 @@ export const QuestionsBancolombia = ({
   return (
     <Layout>
       <div className={styles.Bancolombia__BoxWelcome}>
-        <LayoutQuestions title={title} color={color} />
+        <LayoutQuestions title={title} color={color} fontColor={dataDump.fontColor} />
         <SelectQuestions
           dataDump={dataDump}
           inputValues={inputValues}
