@@ -1,11 +1,11 @@
-import InsertQuestion from "./InsertQuestion";
-import { Layout } from "./Layout";
-import { LayoutQuestions } from "./LayoutQuestions";
-import { NextQuestion } from "./NextQuestion";
-import { SelectQuestions } from "./SelectQuestions";
-import { OpenQuestions } from "./OpenQuestions";
+import InsertQuestion from './InsertQuestion';
+import { Layout } from './Layout';
+import { LayoutQuestions } from './LayoutQuestions';
+import { NextQuestion } from './NextQuestion';
+import { OpenQuestions } from './OpenQuestions';
+import { SelectQuestions } from './SelectQuestions';
 
-import styles from "./Bancolombia.module.css";
+import styles from './Bancolombia.module.css';
 
 export const QuestionsBancolombia = ({
   title,

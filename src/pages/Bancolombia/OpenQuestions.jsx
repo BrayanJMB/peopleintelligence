@@ -1,12 +1,12 @@
-import { TextField } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect } from 'react';
+import { TextField } from '@mui/material';
 
 export const OpenQuestions = ({
   dataDump,
   textOpenValuesByAttribute,
   setTextOpenValuesByAttribute,
   setSurveyData,
-  currentAttributeIndex
+  currentAttributeIndex,
 }) => {
   const handleTextChange = (preguntaId, event) => {
     const updatedValue = event.target.value;

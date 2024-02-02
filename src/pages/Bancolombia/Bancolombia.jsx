@@ -17,7 +17,7 @@ export default function Bancolombia() {
     answerId: answerId,
     answers: [],
     radioAnswers: [],
-    respuestasAbiertas:[]
+    respuestasAbiertas:[],
   });
 
   const topElementRef = useRef(null);
