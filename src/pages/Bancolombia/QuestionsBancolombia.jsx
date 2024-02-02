@@ -1,10 +1,11 @@
-import InsertQuestion from './InsertQuestion';
-import { Layout } from './Layout';
-import { LayoutQuestions } from './LayoutQuestions';
-import { NextQuestion } from './NextQuestion';
-import { SelectQuestions } from './SelectQuestions';
+import InsertQuestion from "./InsertQuestion";
+import { Layout } from "./Layout";
+import { LayoutQuestions } from "./LayoutQuestions";
+import { NextQuestion } from "./NextQuestion";
+import { SelectQuestions } from "./SelectQuestions";
+import { OpenQuestions } from "./OpenQuestions";
 
-import styles from './Bancolombia.module.css';
+import styles from "./Bancolombia.module.css";
 
 export const QuestionsBancolombia = ({
   title,
@@ -26,6 +27,8 @@ export const QuestionsBancolombia = ({
   isText,
   setSurveyData,
   storeSurvey,
+  textOpenValuesByAttribute,
+  setTextOpenValuesByAttribute,
 }) => {
   return (
     <Layout>
@@ -49,6 +52,13 @@ export const QuestionsBancolombia = ({
           setTextValuesByAttribute={setTextValuesByAttribute}
           setRadioValuesByAttribute={setRadioValuesByAttribute}
           color={color}
+          setSurveyData={setSurveyData}
+        />
+        <OpenQuestions
+          dataDump={dataDump}
+          textOpenValuesByAttribute={textOpenValuesByAttribute}
+          setTextOpenValuesByAttribute={setTextOpenValuesByAttribute}
+          currentAttributeIndex={currentAttributeIndex}
           setSurveyData={setSurveyData}
         />
         <NextQuestion

@@ -107,7 +107,7 @@ export default function InsertQuestion({
       {dataDump.preguntasRadio.map((preguntaRadio, indexPreguntaRadio) => (
         <Box key={indexPreguntaRadio}>
           <p style={{ marginBottom: '5px' }}>
-            {indexPreguntaRadio + 1}. {preguntaRadio.tituloPregunta}
+            {preguntaRadio.tituloPregunta}
           </p>
           <Grid container>
             <Grid item sm={4} xs={12}>
