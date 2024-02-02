@@ -2,6 +2,7 @@ import InsertQuestion from './InsertQuestion';
 import { Layout } from './Layout';
 import { LayoutQuestions } from './LayoutQuestions';
 import { NextQuestion } from './NextQuestion';
+import { OpenQuestions } from './OpenQuestions';
 import { SelectQuestions } from './SelectQuestions';
 
 import styles from './Bancolombia.module.css';
@@ -26,11 +27,13 @@ export const QuestionsBancolombia = ({
   isText,
   setSurveyData,
   storeSurvey,
+  textOpenValuesByAttribute,
+  setTextOpenValuesByAttribute,
 }) => {
   return (
     <Layout>
       <div className={styles.Bancolombia__BoxWelcome}>
-        <LayoutQuestions title={title} color={color} />
+        <LayoutQuestions title={title} color={color} fontColor={dataDump.fontColor} />
         <SelectQuestions
           dataDump={dataDump}
           inputValues={inputValues}
@@ -49,6 +52,13 @@ export const QuestionsBancolombia = ({
           setTextValuesByAttribute={setTextValuesByAttribute}
           setRadioValuesByAttribute={setRadioValuesByAttribute}
           color={color}
+          setSurveyData={setSurveyData}
+        />
+        <OpenQuestions
+          dataDump={dataDump}
+          textOpenValuesByAttribute={textOpenValuesByAttribute}
+          setTextOpenValuesByAttribute={setTextOpenValuesByAttribute}
+          currentAttributeIndex={currentAttributeIndex}
           setSurveyData={setSurveyData}
         />
         <NextQuestion

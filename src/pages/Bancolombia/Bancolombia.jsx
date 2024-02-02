@@ -17,6 +17,7 @@ export default function Bancolombia() {
     answerId: answerId,
     answers: [],
     radioAnswers: [],
+    respuestasAbiertas:[],
   });
 
   const topElementRef = useRef(null);
@@ -25,6 +26,7 @@ export default function Bancolombia() {
   const [inputValuesByAttribute, setInputValuesByAttribute] = useState({});
   const [radioValuesByAttribute, setRadioValuesByAttribute] = useState({});
   const [textValuesByAttribute, setTextValuesByAttribute] = useState({});
+  const [textOpenValuesByAttribute, setTextOpenValuesByAttribute] = useState({});
   const [currentAttributeIndex, setCurrentAttributeIndex] = useState(0);
   const [errorSurvey, setErrorSurvey] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -89,7 +91,7 @@ export default function Bancolombia() {
   
   useEffect(() => {
     fetchSurveyForAnswerPersonal({ surveyId, companyId, answerId });
-  }, []);
+  }, [surveyId, companyId, answerId]);
 
   const handlePrevious = () => {
     if (currentAttributeIndex > 0) {
@@ -262,6 +264,8 @@ export default function Bancolombia() {
           radioValuesByAttribute={radioValuesByAttribute}
           textValuesByAttribute={textValuesByAttribute}
           currentAttributeIndex={currentAttributeIndex}
+          textOpenValuesByAttribute={textOpenValuesByAttribute}
+          setTextOpenValuesByAttribute={setTextOpenValuesByAttribute}
           setTextValuesByAttribute={setTextValuesByAttribute}
           setRadioValuesByAttribute={setRadioValuesByAttribute}
           handleNext={handleNext}

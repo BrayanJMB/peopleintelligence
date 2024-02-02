@@ -1,7 +1,7 @@
 import { Grid } from '@mui/material';
 
 import logo2 from './img/Logotipo.png';
-export const LayoutQuestions = ({ title, color }) => {
+export const LayoutQuestions = ({ title, color, fontColor }) => {
   return (
     <Grid container>
       <Grid
@@ -28,7 +28,7 @@ export const LayoutQuestions = ({ title, color }) => {
             width: '100%',
           }}
         >
-          <h2 style={{ fontSize: '20px' }}>{title}</h2>
+          <h2 style={{ fontSize: '20px', color:`${fontColor ? fontColor : 'black'}` }}>{title}</h2>
         </div>
       </Grid>
       <Grid item sm={4} xs={12} sx={{ display: 'flex', justifyContent: 'end' }}>
