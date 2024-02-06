@@ -1,12 +1,4 @@
 {
-    "globalHeaders": {
-        "content-security-policy": "default-src 'self'; img-src 'self' https://test.peopleintelligence.app; script-src 'self' 'nonce-YourRandomNonceValue'; style-src 'self'; object-src 'none'",
-        "x-frame-options": "DENY",
-        "permissions-policy": "camera=(), microphone=(), geolocation=()",
-        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
-        "x-content-type-options": "nosniff",
-        "referrer-policy": "strict-origin-when-cross-origin"
-    },
     "navigationFallback": {
         "rewrite": "/index.html",
         "exclude": [
