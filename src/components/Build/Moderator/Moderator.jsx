@@ -117,7 +117,7 @@ export const Moderator = ({ id }) => {
             }));
           });
 
-          connection.on("QuestionSingleOptions", question => {
+          connection.on('QuestionSingleOptions', question => {
             setSingleQuestion(question);
         });
         })
@@ -189,7 +189,7 @@ export const Moderator = ({ id }) => {
             sender: 'Shun',
             senderAvatar: 'https://i.pravatar.cc/150?img=32',
             messageType:'question',
-            content: question
+            content: question,
           };
           setMessages((prevMessages) => [...prevMessages, newMessageItem]);
         })
@@ -215,7 +215,7 @@ export const Moderator = ({ id }) => {
             sender: 'Shun',
             senderAvatar: 'https://i.pravatar.cc/150?img=32',
             messageType:'question',
-            content: question
+            content: question,
           };
           setMessages((prevMessages) => [...prevMessages, newMessageItem]);
           //setQuestions(prevQuestions => [...prevQuestions, question]);
