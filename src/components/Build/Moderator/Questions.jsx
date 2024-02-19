@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import { useCallback, useEffect, useState } from "react";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 
-import styles from './ChatBox.module.css';
+import styles from "./ChatBox.module.css";
 export const Questions = ({ question, nextQuestionTimer, answersOpinion }) => {
-
+  console.log(question);
   const isText = (item) => {
     switch (item.toLowerCase()) {
-      case 'texto':
+      case "texto":
         return true;
       default:
         return false;
@@ -14,24 +14,24 @@ export const Questions = ({ question, nextQuestionTimer, answersOpinion }) => {
   };
   const isOpinion = (item) => {
     switch (item.toLowerCase()) {
-      case 'opinión':
+      case "opinión":
         return true;
       default:
         return false;
     }
   };
   const isExperience = () => {
-    return 'experiencia';
+    return "experiencia";
   };
   const isImage = () => {
-    return 'imagen';
+    return "imagen";
   };
   const isVideo = () => {
-    return 'video';
+    return "video";
   };
   const isSelecionSimple = (item) => {
     switch (item.toLowerCase()) {
-      case 'seleccionsimple':
+      case "seleccionsimple":
         return true;
       default:
         return false;
@@ -39,23 +39,31 @@ export const Questions = ({ question, nextQuestionTimer, answersOpinion }) => {
   };
   return (
     <>
-      {question.map((question, index) => (
-        <div key={index} className={styles.chatApp__convMessageValue}>
-          {isText(question.type) && <p>{question.name}</p>}
-          {isOpinion(question.type) && (
-            <>
-              <p>{nextQuestionTimer}lol</p>
-              <p>{question.name}</p>
-              {answersOpinion.map((option) => (
-                <p>
-                  {option.respuesta}--{option.porcentaje}
-                </p>
-              ))}
-            </>
-          )}
-          {isSelecionSimple(question.type) && <p>{question.name}</p>}
-        </div>
-      ))}
+      <div className={styles.chatApp__convMessageValue}>
+        {isText(question.type) && <p>{question.name}</p>}
+        {isOpinion(question.type) && (
+          <>
+            <p>{nextQuestionTimer}lol</p>
+            <p>{question.name}</p>
+            {answersOpinion.map((option) => (
+              <p>
+                {option.respuesta}--{option.porcentaje}
+              </p>
+            ))}
+          </>
+        )}
+        {isSelecionSimple(question.type) && (
+          <>
+            <p>{nextQuestionTimer}lol</p>
+            <p>{question.name}</p>
+            {answersOpinion.map((option) => (
+              <p>
+                {option.respuesta}--{option.porcentaje}
+              </p>
+            ))}
+          </>
+        )}
+      </div>
     </>
   );
 };

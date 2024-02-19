@@ -23,7 +23,6 @@ export const ChatBox = (props) => {
         messages={props.messages}
         responseDemographic={props.responseDemographic}
         demographics={props.demographics}
-        question={props.question}
         nextQuestionTimer={props.questionTimer}
         answersOpinion={props.answersOpinion}
       />

@@ -21,7 +21,7 @@ export const MessageItem = ({
   return (
     <div
       className={`${styles.chatApp__convMessageItem} ${messagePosition} ${styles.clearfix}`}
-    >
+    >  
       {messageType === 'demographic' && (
         <>
           <img
@@ -43,7 +43,7 @@ export const MessageItem = ({
             alt={'prueba'}
             className={styles.chatApp__convMessageAvatar}
           />
-          {question.length > 0 && (
+          {question  && (
             <Questions
               question={question}
               nextQuestionTimer={nextQuestionTimer}
