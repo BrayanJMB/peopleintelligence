@@ -80,11 +80,11 @@ const AnswerSurvey = () => {
     event.preventDefault();
 
     // validate email
-    if (!email || !email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
+    /*if (!email || !email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
       setEmailError(true);
 
       return;
-    }
+    }*/
 
     try {
       const response = await client.get(`getMailPersonalSurvey/${surveyId}/${companyId}/${email}`);
@@ -418,11 +418,11 @@ const AnswerSurvey = () => {
                         }}
                         error={emailError}
                       >
-                        Ingrese su correo electrónico para continuar
+                        Ingrese su correo electrónico o cédula para continuar
                       </FormLabel>
                       <TextField
                         id="email"
-                        label="Correo electrónico"
+                        label="Correo electrónico o cédula"
                         variant="outlined"
                         type="email"
                         onChange={handleEmailChange}

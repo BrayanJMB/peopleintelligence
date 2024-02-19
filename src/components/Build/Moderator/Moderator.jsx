@@ -32,6 +32,7 @@ export const Moderator = ({ id }) => {
   const [nextQuestion, setNextQuestion] = useState(0);
   const [questionTimer, setQuestionTimer] = useState(0);
   const [answersOpinion, setAnswersOpinion] = useState([]);
+  const [singleQuestion, setSingleQuestion] = useState({});
   function detectURL(message) {
     var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
     return message.replace(urlRegex, function (urlMatch) {
@@ -90,7 +91,7 @@ export const Moderator = ({ id }) => {
         .then(() => {
           connection
             .invoke(
-              'ChargeDemographics',
+              'ChargeDemographics', //Carga de Demográficos apeans carga el chat, si existen.
               survey.demographicList,
               survey.timeDemographics,
               survey.description
@@ -115,6 +116,10 @@ export const Moderator = ({ id }) => {
               [idDemo]: count,
             }));
           });
+
+          connection.on("QuestionSingleOptions", question => {
+            setSingleQuestion(question);
+        });
         })
         .catch((error) =>
           console.error('Error al conectar con SignalR:', error)
@@ -174,7 +179,7 @@ export const Moderator = ({ id }) => {
     setQuestionTimer(timeLimit);
 };
   const SendQuestionByType = (type, question, index) => {
-    let currentQuestion = index + 1;
+    let currentQuestion = index + 1;  
     switch (type.toLowerCase()) {
       case 'texto':
         connection.invoke('SendText', question.name)
@@ -184,35 +189,43 @@ export const Moderator = ({ id }) => {
             sender: 'Shun',
             senderAvatar: 'https://i.pravatar.cc/150?img=32',
             messageType:'question',
+            content: question
           };
           setMessages((prevMessages) => [...prevMessages, newMessageItem]);
         })
         .catch(function (err) {
           return console.error(err.toString());
         });
-        setQuestions(prevQuestions => {   
-          const newQuestion = question;
-          return [...prevQuestions, newQuestion];
-        });
+        //setQuestions(prevQuestions => [...prevQuestions, question]);
         setNextQuestion(index + 1);
         break;
-      case 'imagen':
+      /*case 'imagen':
           setNextQuestion(index + 1);    
           break;
       case 'video':
             console.log('soy video');
-            break;
+            break;*/
       case 'seleccionsimple':
+        debugger;
           connection.invoke('SendSingleOption', question).catch(function (err) {
               return console.error(err.toString());
           });
+          let newMessageItem = {
+            id: messages.length + 1,
+            sender: 'Shun',
+            senderAvatar: 'https://i.pravatar.cc/150?img=32',
+            messageType:'question',
+            content: question
+          };
+          setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+          //setQuestions(prevQuestions => [...prevQuestions, question]);
           break;
-      case 'experiencia':
+      /*case 'experiencia':
           connection.invoke('SendExperiencia', question).catch(function (err) {
               return console.error(err.toString());
           });
-            break;
-      case 'opinión':
+            break;*/
+      /*case 'opinión':
         connection.invoke('SendOpinion', question).catch(function (err) {
             return console.error(err.toString());
         });
@@ -222,7 +235,7 @@ export const Moderator = ({ id }) => {
           });
           nextQuestionTimer(question.timeLimit);
           setNextQuestion(index + 1);
-        break;
+        break;*/
       default:
         break;   
     }
