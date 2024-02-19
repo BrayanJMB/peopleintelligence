@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import { useCallback, useEffect, useState } from 'react';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 
-import styles from "./ChatBox.module.css";
+import styles from './ChatBox.module.css';
 export const Questions = ({ question, nextQuestionTimer, answersOpinion }) => {
   console.log(question);
   const isText = (item) => {
     switch (item.toLowerCase()) {
-      case "texto":
+      case 'texto':
         return true;
       default:
         return false;
@@ -14,24 +14,24 @@ export const Questions = ({ question, nextQuestionTimer, answersOpinion }) => {
   };
   const isOpinion = (item) => {
     switch (item.toLowerCase()) {
-      case "opinión":
+      case 'opinión':
         return true;
       default:
         return false;
     }
   };
   const isExperience = () => {
-    return "experiencia";
+    return 'experiencia';
   };
   const isImage = () => {
-    return "imagen";
+    return 'imagen';
   };
   const isVideo = () => {
-    return "video";
+    return 'video';
   };
   const isSelecionSimple = (item) => {
     switch (item.toLowerCase()) {
-      case "seleccionsimple":
+      case 'seleccionsimple':
         return true;
       default:
         return false;
