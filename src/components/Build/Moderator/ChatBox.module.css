@@ -130,6 +130,7 @@ html, body {
 	overflow: visible;  /* Asegurarse de que el texto no se corta */
 	white-space: pre-wrap; 
 	word-wrap: break-word;
+	width: 300px;
 }
 .chatApp__convMessageItemLeft .chatApp__convMessageAvatar {
 	float: left;
