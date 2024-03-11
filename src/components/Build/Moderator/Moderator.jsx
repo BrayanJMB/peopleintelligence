@@ -200,6 +200,7 @@ export const Moderator = ({ id }) => {
   };
 
   const SendQuestionByType = (type, question, index) => {
+    console.log(type)
     let currentQuestion = question.orderNumber;
     console.log(currentQuestion);
     switch (type.toLowerCase()) {
@@ -251,7 +252,7 @@ export const Moderator = ({ id }) => {
           return console.error(err.toString());
         });
         break;
-      /*case 'opinión':
+      case 'opinión':
         connection.invoke('SendOpinion', question).catch(function (err) {
             return console.error(err.toString());
         });
@@ -262,7 +263,7 @@ export const Moderator = ({ id }) => {
           nextQuestionTimer(question.timeLimit);
           setIndexCurrentQuestion(currentQuestion);
           setNextQuestion(currentQuestion);
-        break;*/
+        break;
       default:
         break;
     }

@@ -20,6 +20,7 @@ export const Questions = ({
   const answerSingleQuestion = useContext(answerSingleQuestionContext);
   const questionTimer = useContext(nextQuestionTimerContext);
   console.log(question);
+  console.log(answerSingleQuestion)
   const isText = (item) => {
     switch (item.toLowerCase()) {
       case "texto":
@@ -112,7 +113,8 @@ export const Questions = ({
                           <p>
                             <CircularWithValueLabel
                               data={
-                                answerSingleQuestion
+                                answerSingleQuestion &&
+                                answerSingleQuestion 
                                   ? (answerSingleQuestion.answer[index]
                                       .contador *
                                       100) /

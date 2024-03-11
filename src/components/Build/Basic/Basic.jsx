@@ -26,7 +26,6 @@ export default function Basic(props) {
   const company = useSelector((state) =>
     currentCompany ? selectCompanyById(state, currentCompany.id) : null
   );
-
   const handleNext = () => {
     if (fieldsValidation()) {
       props.handleNextStepper();
@@ -59,7 +58,7 @@ export default function Basic(props) {
 
     return hasNotErrors;
   };
-
+  
   return (
     <div className={styles.basic}>
       <span
