@@ -35,7 +35,7 @@ function Options({
 }) {
   const files = useContext(filesImageQuestionContext);
   const onDrop = useCallback((acceptedFiles) => {
-    files.setFilesImageQuestion(
+    files.ImageQuestion(
       acceptedFiles.map((file) =>
         Object.assign(file, {
           preview: URL.createObjectURL(file),
@@ -46,7 +46,7 @@ function Options({
 
   const removeFile = (file) => () => {
     const newFiles = files.filesImageQuestion.filter((f) => f.name !== file.name);
-    setFiles(newFiles);
+    files.setFiles(newFiles);
   };
 
   const previews = Object.values(files.filesImageQuestion).map((file) => (

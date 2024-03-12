@@ -254,7 +254,7 @@ export const Moderator = ({ id }) => {
           return console.error(err.toString());
         });
         break;
-      case 'opinión':
+      /*case 'opinión':
         connection.invoke('SendOpinion', question).catch(function (err) {
             return console.error(err.toString());
         });
@@ -265,7 +265,7 @@ export const Moderator = ({ id }) => {
           nextQuestionTimer(question.timeLimit);
           setIndexCurrentQuestion(currentQuestion);
           setNextQuestion(currentQuestion);
-        break;
+        break;*/
       default:
         break;
     }
