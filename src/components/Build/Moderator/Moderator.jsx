@@ -97,7 +97,7 @@ export const Moderator = ({ id }) => {
               survey.demographicList,
               survey.timeDemographics,
               survey.description
-            ).then(() => console.log("envío data"))
+            ).then(() => console.log('envío data'))
             .catch(function (err) {
               return console.error(err.toString());
             });
