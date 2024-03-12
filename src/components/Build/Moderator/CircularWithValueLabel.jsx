@@ -1,11 +1,11 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
+import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import PropTypes from 'prop-types';
 
 function CircularProgressWithLabel(props) {
-    console.log({...props})
+    console.log({...props});
   return (
 
     <Box sx={{ position: 'relative', display: 'inline-flex'}}>
@@ -37,7 +37,7 @@ CircularProgressWithLabel.propTypes = {
    * @default 0
    */
   value: PropTypes.number.isRequired,
-  circleColor: PropTypes.string
+  circleColor: PropTypes.string,
 };
 
 export default function CircularWithValueLabel({data, color}) {

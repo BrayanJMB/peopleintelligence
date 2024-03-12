@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useState, useContext } from "react";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import LinearProgress from "@mui/material/LinearProgress";
-import styles from "./ChatBox.module.css";
+import { useCallback, useContext,useEffect, useState } from 'react';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import LinearProgress from '@mui/material/LinearProgress';
 
-import CircularWithValueLabel from "./CircularWithValueLabel";
+import CircularWithValueLabel from './CircularWithValueLabel';
 import {
-  singleQuestionContext,
   answerSingleQuestionContext,
-  nextQuestionTimerContext
-} from "./Moderator";
+  nextQuestionTimerContext,
+  singleQuestionContext} from './Moderator';
+
+import styles from './ChatBox.module.css';
 
 export const Questions = ({
   question,
@@ -20,10 +20,10 @@ export const Questions = ({
   const answerSingleQuestion = useContext(answerSingleQuestionContext);
   const questionTimer = useContext(nextQuestionTimerContext);
   console.log(question);
-  console.log(answerSingleQuestion)
+  console.log(answerSingleQuestion);
   const isText = (item) => {
     switch (item.toLowerCase()) {
-      case "texto":
+      case 'texto':
         return true;
       default:
         return false;
@@ -31,24 +31,24 @@ export const Questions = ({
   };
   const isOpinion = (item) => {
     switch (item.toLowerCase()) {
-      case "opinión":
+      case 'opinión':
         return true;
       default:
         return false;
     }
   };
   const isExperience = () => {
-    return "experiencia";
+    return 'experiencia';
   };
   const isImage = () => {
-    return "imagen";
+    return 'imagen';
   };
   const isVideo = () => {
-    return "video";
+    return 'video';
   };
   const isSelecionSimple = (item) => {
     switch (item.toLowerCase()) {
-      case "seleccionsimple":
+      case 'seleccionsimple':
         return true;
       default:
         return false;
@@ -57,11 +57,11 @@ export const Questions = ({
 
   function getColorForPercentage(percentage) {
     if (percentage <= 33) {
-      return "#ff0000"; // Rojo
+      return '#ff0000'; // Rojo
     } else if (percentage <= 66) {
-      return "#ffff00"; // Amarillo
+      return '#ffff00'; // Amarillo
     } else {
-      return "#008000"; // Verde
+      return '#008000'; // Verde
     }
   }
   return (
@@ -93,18 +93,18 @@ export const Questions = ({
                     <>
                       <div
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
                         }}
                       >
                         <p>{option.value}</p>
-                        <div style={{ width: "100%" }}>
+                        <div style={{ width: '100%' }}>
                           <LinearProgress
                             sx={{
-                              backgroundColor: "white",
-                              "& .MuiLinearProgress-bar": {
-                                backgroundColor: "green",
+                              backgroundColor: 'white',
+                              '& .MuiLinearProgress-bar': {
+                                backgroundColor: 'green',
                               },
                             }}
                           />
