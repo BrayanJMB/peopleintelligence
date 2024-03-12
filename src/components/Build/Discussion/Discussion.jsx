@@ -119,6 +119,7 @@ export default function Discussion({
         })),
       },
     };
+    //Javascript, Js
 
     let response;
 
@@ -128,15 +129,12 @@ export default function Discussion({
         (question) => question.type === "imagen"
       );
       response = await storeSurveyChatAPI(payload);
-      console.log(payload)
-      // Cargar imágenes si es necesario
       if (surveyImage && avatarImage) {
         urls = await storeAvatarAndSurveyImage(response.data.survey.id);
         payload.moderator.avatarUrl = urls ? urls.data.files[1] : "";
         payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
         await updateSurveyChatAPI(payload.survey);
       }
-
       await storeSurveyImageQuestion(imageQuestions, response.data.survey.id);
     } else {
       // Manejar actualización

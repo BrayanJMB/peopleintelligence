@@ -71,7 +71,7 @@ export const Moderator = ({ id }) => {
 
       const signalRConnection = new HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
-        .withUrl("https://localhost:7005/discusion")
+        .withUrl("https://chatapppeopleintelligence.azurewebsites.net/discusion")
         .withAutomaticReconnect()
         .build();
 
