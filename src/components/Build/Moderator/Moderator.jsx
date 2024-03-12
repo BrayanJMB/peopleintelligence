@@ -152,18 +152,15 @@ export const Moderator = ({ id }) => {
     }
   }, [connection]);
 
+  
   useEffect(() => {
-    console.log(indexCurrentQuestion);
-  }, [indexCurrentQuestion]);
-
-  useEffect(() => {
-    let newMessageItem = {
-      id: messages.length + 1,
-      sender: 'Shun',
-      senderAvatar: 'https://i.pravatar.cc/150?img=32',
-      messageType: 'demographic',
-    };
-    setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+      let newMessageItem = {
+        id: messages.length + 1,
+        sender: 'Shun',
+        senderAvatar: 'https://i.pravatar.cc/150?img=32',
+        messageType: 'demographic',
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessageItem]);
   }, []);
 
   const [messages, setMessages] = useState([]);
