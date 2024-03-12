@@ -97,13 +97,10 @@ export const Moderator = ({ id }) => {
               survey.demographicList,
               survey.timeDemographics,
               survey.description
-            )
+            ).then(() => console.log('envío data'))
             .catch(function (err) {
               return console.error(err.toString());
             });
-          connection.on('ReceiveDemograpics', (newDemographics) => {
-            setDemographics(newDemographics);
-          });
           connection.on('RecibirRespuestaSingle', (answer, counter) => {
             answerSetSingleQuestion({
               answer: answer,
@@ -152,15 +149,14 @@ export const Moderator = ({ id }) => {
     }
   }, [connection]);
 
-  
   useEffect(() => {
-      let newMessageItem = {
-        id: messages.length + 1,
-        sender: 'Shun',
-        senderAvatar: 'https://i.pravatar.cc/150?img=32',
-        messageType: 'demographic',
-      };
-      setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+    let newMessageItem = {
+      id: messages.length + 1,
+      sender: 'Shun',
+      senderAvatar: 'https://i.pravatar.cc/150?img=32',
+      messageType: 'demographic',
+    };
+    setMessages((prevMessages) => [...prevMessages, newMessageItem]);
   }, []);
 
   const [messages, setMessages] = useState([]);
@@ -199,9 +195,7 @@ export const Moderator = ({ id }) => {
   };
 
   const SendQuestionByType = (type, question, index) => {
-    console.log(type);
     let currentQuestion = question.orderNumber;
-    console.log(currentQuestion);
     switch (type.toLowerCase()) {
       case 'texto':
         connection
@@ -485,7 +479,7 @@ export const Moderator = ({ id }) => {
                           setMessages={setMessages}
                           isTyping={isTyping}
                           responseDemographic={responseDemographic}
-                          demographics={demographic}
+                          demographics={survey.demographicList}
                           question={question}
                           nextQuestionTimer={questionTimer}
                           answersOpinion={answersOpinion}
@@ -502,3 +496,4 @@ export const Moderator = ({ id }) => {
     </Box>
   );
 };
+
