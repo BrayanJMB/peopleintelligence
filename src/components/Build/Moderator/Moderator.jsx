@@ -102,7 +102,6 @@ export const Moderator = ({ id }) => {
               return console.error(err.toString());
             });
           connection.on('ReceiveDemograpics', (newDemographics) => {
-            console.log(newDemographics)
             setDemographics(newDemographics);
           });
           connection.on('RecibirRespuestaSingle', (answer, counter) => {
@@ -155,7 +154,6 @@ export const Moderator = ({ id }) => {
 
   
   useEffect(() => {
-    if (demographic.length > 0){
       let newMessageItem = {
         id: messages.length + 1,
         sender: 'Shun',
@@ -163,7 +161,6 @@ export const Moderator = ({ id }) => {
         messageType: 'demographic',
       };
       setMessages((prevMessages) => [...prevMessages, newMessageItem]);
-    }
   }, []);
 
   const [messages, setMessages] = useState([]);
