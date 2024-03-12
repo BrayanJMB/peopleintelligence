@@ -1,26 +1,24 @@
-import { useEffect, useState } from 'react';
-import * as signalR from '@microsoft/signalr';
-import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
-import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
-import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
-import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
-import SendIcon from '@mui/icons-material/Send';
-import { Button, Card, CardContent, Grid, Paper } from '@mui/material';
-import { Divider, Icon, Toolbar, Typography } from '@mui/material';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import axios from 'axios';
-
-import { ChatBox } from './ChatBox';
-import { ConnectDisconnectUser } from './ConnectDisconnectUser';
-import CountdownTimer from './CountdownTimer';
-import { Demographics } from './Demographics';
-import { Questions } from './Questions';
-
-import styles from './ChatBox.module.css';
+import { useEffect, useState, createContext, useRef } from "react";
+import * as signalR from "@microsoft/signalr";
+import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
+import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
+import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
+import SendIcon from "@mui/icons-material/Send";
+import { Button, Card, CardContent, Grid, Paper } from "@mui/material";
+import { Divider, Typography } from "@mui/material";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import Box from "@mui/material/Box";
+import List from "@mui/material/List";
+import axios from "axios";
+import { ChatBox } from "./ChatBox";
+import { ConnectDisconnectUser } from "./ConnectDisconnectUser";
+import CountdownTimer from "./CountdownTimer";
+import styles from "./ChatBox.module.css";
+export const singleQuestionContext = createContext();
+export const answerSingleQuestionContext = createContext();
+export const nextQuestionTimerContext = createContext();
 
 export const Moderator = ({ id }) => {
   const [connection, setConnection] = useState(null);
@@ -30,26 +28,30 @@ export const Moderator = ({ id }) => {
   const [responseDemographic, setResponseDemographic] = useState([]);
   const [connectedUsers, setConnectedUsers] = useState(0);
   const [nextQuestion, setNextQuestion] = useState(0);
-  const [questionTimer, setQuestionTimer] = useState(0);
+  const [questionTimer, setQuestionTimer] = useState(null);
   const [answersOpinion, setAnswersOpinion] = useState([]);
-  const [singleQuestion, setSingleQuestion] = useState({});
+  const [singleQuestion, setSingleQuestion] = useState(null);
+  const [answerSingleQuestion, answerSetSingleQuestion] = useState(null);
+  const indexCurrentQuestion = useRef(null);
+  const [complexQuestion, setComplexQuestion] = useState(true);
+
   function detectURL(message) {
     var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
     return message.replace(urlRegex, function (urlMatch) {
-      return '<a href="' + urlMatch + '">' + urlMatch + '</a>';
+      return '<a href="' + urlMatch + '">' + urlMatch + "</a>";
     });
   }
 
   const users = {
-    0: { name: 'Shun', avatar: 'https://i.pravatar.cc/150?img=32' },
+    0: { name: "Shun", avatar: "https://i.pravatar.cc/150?img=32" },
   };
   const questionIcons = [
     {
-      tipoPregunta: 'texto',
+      tipoPregunta: "texto",
       icono: <ChatOutlinedIcon />,
     },
     {
-      tipoPregunta: 'seleccionsimple',
+      tipoPregunta: "seleccionsimple",
       icono: <ListOutlinedIcon />,
     },
   ];
@@ -60,9 +62,7 @@ export const Moderator = ({ id }) => {
         `https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/GetSurvey/getSurvey/${id}`
       );
       setSurvey(response.data);
-    } catch (error) {
-
-    }
+    } catch (error) {}
   };
 
   const initializeConnectionAndFetchData = async () => {
@@ -71,7 +71,7 @@ export const Moderator = ({ id }) => {
 
       const signalRConnection = new HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
-        .withUrl('https://localhost:7005/discusion')
+        .withUrl("https://chatapppeopleintelligence.azurewebsites.net/discusion")
         .withAutomaticReconnect()
         .build();
 
@@ -91,7 +91,7 @@ export const Moderator = ({ id }) => {
         .then(() => {
           connection
             .invoke(
-              'ChargeDemographics', //Carga de Demográficos apeans carga el chat, si existen.
+              "ChargeDemographics", //Carga de Demográficos apeans carga el chat, si existen.
               survey.demographicList,
               survey.timeDemographics,
               survey.description
@@ -99,51 +99,71 @@ export const Moderator = ({ id }) => {
             .catch(function (err) {
               return console.error(err.toString());
             });
-          connection.on('ReceiveDemograpics', (newDemographics) => {
+          connection.on("ReceiveDemograpics", (newDemographics) => {
             setDemographics(newDemographics);
           });
-          connection.on('RecibirRespuestaSingle', (answer, counter) => {
-            console.log(answer);
+          connection.on("RecibirRespuestaSingle", (answer, counter) => {
+            answerSetSingleQuestion({
+              answer: answer,
+              counter: counter,
+            });
+            if  (counter >= connectedUsers){
+              setComplexQuestion(true);
+              setNextQuestion(indexCurrentQuestion.current);
+            }
           });
-          connection.on('SendRespuestasDos', tablarespuestas => { 
+          connection.on("SendRespuestasDos", (tablarespuestas) => {
             setAnswersOpinion(tablarespuestas);
           });
-          connection.on('clientConnected', setConnectedUsers);
-          connection.on('clientDisconnected', setConnectedUsers);
-          connection.on('DemographicCount', (idDemo, count) => {
+          connection.on("clientConnected", setConnectedUsers);
+          connection.on("clientDisconnected", setConnectedUsers);
+          connection.on("DemographicCount", (idDemo, count) => {
             setResponseDemographic((prevCounts) => ({
               ...prevCounts,
               [idDemo]: count,
             }));
           });
 
-          connection.on('QuestionSingleOptions', question => {
+          connection.on("QuestionSingleOptions", (question) => {
             setSingleQuestion(question);
-        });
+          });
+
+          // Actualiza la interfaz de usuario con el tiempo actual
+          connection.on("UpdateTime", (time) => {
+            setQuestionTimer(time);
+            if (time === 0) {
+              setComplexQuestion(true);
+              setNextQuestion(indexCurrentQuestion.current);
+            }
+          });
         })
         .catch((error) =>
-          console.error('Error al conectar con SignalR:', error)
+          console.error("Error al conectar con SignalR:", error)
         );
 
       // Limpieza al desmontar
       return () => {
-        connection.off('ReceiveDemographics');
-        connection.off('clientConnected', setConnectedUsers);
-        connection.off('clientDisconnected', setConnectedUsers);
+        connection.off("ReceiveDemographics");
+        connection.off("clientConnected", setConnectedUsers);
+        connection.off("clientDisconnected", setConnectedUsers);
       };
     }
   }, [connection]);
-  
+
+  useEffect(() => {
+    console.log(indexCurrentQuestion);
+  }, [indexCurrentQuestion]);
+
   useEffect(() => {
     let newMessageItem = {
       id: messages.length + 1,
-      sender: 'Shun',
-      senderAvatar: 'https://i.pravatar.cc/150?img=32',
-      messageType:'demographic',
+      sender: "Shun",
+      senderAvatar: "https://i.pravatar.cc/150?img=32",
+      messageType: "demographic",
     };
     setMessages((prevMessages) => [...prevMessages, newMessageItem]);
   }, []);
-  
+
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState({});
 
@@ -171,33 +191,37 @@ export const Moderator = ({ id }) => {
     setIsTyping((prevIsTyping) => ({ ...prevIsTyping, [writer]: false }));
   };
 
-  const nextQuestionTimer = (timeLimit)=> {
+  const nextQuestionTimer = (timeLimit) => {
     let timeInt = parseInt(timeLimit);
-    connection.invoke('StartTimer', timeInt).catch(function (err) {
-        return console.error(err.toString());
+    connection.invoke("StartTimer", timeInt).catch(function (err) {
+      return console.error(err.toString());
     });
     setQuestionTimer(timeLimit);
-};
+  };
+
   const SendQuestionByType = (type, question, index) => {
-    let currentQuestion = index + 1;  
+    console.log(type)
+    let currentQuestion = question.orderNumber;
+    console.log(currentQuestion);
     switch (type.toLowerCase()) {
-      case 'texto':
-        connection.invoke('SendText', question.name)
-        .then(()=>{
-          let newMessageItem = {
-            id: messages.length + 1,
-            sender: 'Shun',
-            senderAvatar: 'https://i.pravatar.cc/150?img=32',
-            messageType:'question',
-            content: question,
-          };
-          setMessages((prevMessages) => [...prevMessages, newMessageItem]);
-        })
-        .catch(function (err) {
-          return console.error(err.toString());
-        });
-        //setQuestions(prevQuestions => [...prevQuestions, question]);
-        setNextQuestion(index + 1);
+      case "texto":
+        connection
+          .invoke("SendText", question.name)
+          .then(() => {
+            let newMessageItem = {
+              id: messages.length + 1,
+              sender: "Shun",
+              senderAvatar: "https://i.pravatar.cc/150?img=32",
+              messageType: "question",
+              content: question,
+            };
+            setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+            indexCurrentQuestion.current = currentQuestion;
+          })
+          .catch(function (err) {
+            return console.error(err.toString());
+          });
+        setNextQuestion(currentQuestion);
         break;
       /*case 'imagen':
           setNextQuestion(index + 1);    
@@ -205,27 +229,30 @@ export const Moderator = ({ id }) => {
       case 'video':
             console.log('soy video');
             break;*/
-      case 'seleccionsimple':
-        debugger;
-          connection.invoke('SendSingleOption', question).catch(function (err) {
-              return console.error(err.toString());
-          });
-          let newMessageItem = {
-            id: messages.length + 1,
-            sender: 'Shun',
-            senderAvatar: 'https://i.pravatar.cc/150?img=32',
-            messageType:'question',
-            content: question,
-          };
-          setMessages((prevMessages) => [...prevMessages, newMessageItem]);
-          //setQuestions(prevQuestions => [...prevQuestions, question]);
-          break;
-      /*case 'experiencia':
-          connection.invoke('SendExperiencia', question).catch(function (err) {
-              return console.error(err.toString());
-          });
-            break;*/
-      /*case 'opinión':
+      case "seleccionsimple":
+        connection.invoke("SendSingleOption", question).catch(function (err) {
+          return console.error(err.toString());
+        });
+        let newMessageItem = {
+          id: messages.length + 1,
+          sender: "Shun",
+          senderAvatar: "https://i.pravatar.cc/150?img=32",
+          messageType: "question",
+          content: question,
+        };
+        setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+        console.log(currentQuestion);
+        indexCurrentQuestion.current = currentQuestion;
+        nextQuestionTimer(question.timeLimit);
+        setComplexQuestion(false);
+        //setNextQuestion(currentQuestion);
+        break;
+      case "experiencia":
+        connection.invoke("SendExperiencia", question).catch(function (err) {
+          return console.error(err.toString());
+        });
+        break;
+      case 'opinión':
         connection.invoke('SendOpinion', question).catch(function (err) {
             return console.error(err.toString());
         });
@@ -234,21 +261,36 @@ export const Moderator = ({ id }) => {
             return [...prevQuestions, newQuestion];
           });
           nextQuestionTimer(question.timeLimit);
-          setNextQuestion(index + 1);
-        break;*/
+          setIndexCurrentQuestion(currentQuestion);
+          setNextQuestion(currentQuestion);
+        break;
       default:
-        break;   
+        break;
     }
   };
 
+  useEffect(() => {
+    // Verificar que singleQuestion tiene datos para proceder
+    if (singleQuestion) {
+      let newMessageItemSender = {
+        id: messages.length + 1,
+        sender: "Cliente",
+        senderAvatar: "https://i.pravatar.cc/150?img=32",
+        messageType: "question",
+        content: singleQuestion,
+        isAnswer: true,
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
+    }
+  }, [singleQuestion]);
 
   return (
     <Box
       sx={{
-        height: '100vh',
-        backgroundColor: 'white',
-        display: 'flex',
-        flex: '1',
+        height: "100vh",
+        backgroundColor: "white",
+        display: "flex",
+        flex: "1",
       }}
       aria-label="mailbox folders"
     >
@@ -256,17 +298,17 @@ export const Moderator = ({ id }) => {
         <Grid item xs={4}>
           <div
             style={{
-              paddingLeft: '2rem',
-              backgroundColor: '#f5f5f5',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              height: '100%',
+              paddingLeft: "2rem",
+              backgroundColor: "#f5f5f5",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              height: "100%",
             }}
           >
             <Card
               variant="outlined"
-              style={{ width: '100%', marginBottom: '1rem' }}
+              style={{ width: "100%", marginBottom: "1rem" }}
             >
               <CardContent>
                 <Typography variant="h5" component="div">
@@ -278,9 +320,9 @@ export const Moderator = ({ id }) => {
             <Card
               variant="outlined"
               style={{
-                width: '100%',
-                marginBottom: '1rem',
-                backgroundColor: '#00B0F0',
+                width: "100%",
+                marginBottom: "1rem",
+                backgroundColor: "#00B0F0",
               }}
             >
               <CardContent>
@@ -309,7 +351,7 @@ export const Moderator = ({ id }) => {
 
             <Card
               variant="outlined"
-              style={{ width: '100%', backgroundColor: '#00B0F0' }}
+              style={{ width: "100%", backgroundColor: "#00B0F0" }}
             >
               <CardContent>
                 <Typography variant="h6" component="div" gutterBottom>
@@ -328,25 +370,25 @@ export const Moderator = ({ id }) => {
                         <>
                           <div
                             style={{
-                              backgroundColor: 'white',
-                              heightMin: '100px',
+                              backgroundColor: "white",
+                              heightMin: "100px",
                             }}
                           >
                             <div
                               style={{
-                                display: 'flex',
-                                padding: '1rem',
+                                display: "flex",
+                                padding: "1rem",
                               }}
                             >
                               <Typography>{option.orderNumber}</Typography>
-                              <div style={{ marginLeft: '2rem' }}>
+                              <div style={{ marginLeft: "2rem" }}>
                                 <span
                                   style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
+                                    display: "flex",
+                                    justifyContent: "space-between",
                                   }}
                                 >
-                                  <Typography style={{ color: 'blue' }}>
+                                  <Typography style={{ color: "blue" }}>
                                     {iconToDisplay}
                                   </Typography>
                                   <Typography>{option.type}</Typography>
@@ -362,12 +404,18 @@ export const Moderator = ({ id }) => {
                               </div>
                               {nextQuestion === index && (
                                 <Button>
-                                <SendIcon
-                                  sx={{ color: '#00B0F0' }}
-                                  onClick={() =>
-                                    SendQuestionByType(option.type, option, index)
-                                  }
-                                />
+                                  {complexQuestion && (
+                                    <SendIcon
+                                      sx={{ color: "#00B0F0" }}
+                                      onClick={() =>
+                                        SendQuestionByType(
+                                          option.type,
+                                          option,
+                                          index
+                                        )
+                                      }
+                                    />
+                                  )}
                                 </Button>
                               )}
                             </div>
@@ -376,7 +424,7 @@ export const Moderator = ({ id }) => {
                               <>
                                 <Accordion
                                   key={option.id}
-                                  style={{ boxShadow: 'none', border: 'none' }}
+                                  style={{ boxShadow: "none", border: "none" }}
                                 >
                                   <AccordionSummary>
                                     <Typography>Mostar opciones</Typography>
@@ -406,7 +454,7 @@ export const Moderator = ({ id }) => {
         </Grid>
 
         <Grid item xs={8}>
-          <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+          <div style={{ display: "flex", justifyContent: "space-around" }}>
             <CountdownTimer
               countdownTime={survey.timeDemographics}
               startTime={Date.now()}
@@ -416,32 +464,38 @@ export const Moderator = ({ id }) => {
             )}
           </div>
           <div
-            style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+            style={{ display: "flex", flexDirection: "column", height: "100%" }}
           >
             <div className={styles.chatApp__room}>
               {Object.keys(users).map((key) => {
                 const user = users[key];
                 return (
-                  <ChatBox
-                    key={key}
-                    owner={user.name}
-                    ownerAvatar={user.avatar}
-                    sendMessage={sendMessage}
-                    typing={typing}
-                    resetTyping={resetTyping}
-                    messages={messages}
-                    setMessages={setMessages}
-                    isTyping={isTyping}
-
-                    responseDemographic={responseDemographic}
-                    demographics={demographic}
-                    question={question}
-                    nextQuestionTimer={questionTimer}
-                    answersOpinion={answersOpinion}
-                  />
+                  <answerSingleQuestionContext.Provider
+                    value={answerSingleQuestion}
+                  >
+                    <singleQuestionContext.Provider value={singleQuestion}>
+                      <nextQuestionTimerContext.Provider value={questionTimer}>
+                        <ChatBox
+                          key={key}
+                          owner={user.name}
+                          ownerAvatar={user.avatar}
+                          sendMessage={sendMessage}
+                          typing={typing}
+                          resetTyping={resetTyping}
+                          messages={messages}
+                          setMessages={setMessages}
+                          isTyping={isTyping}
+                          responseDemographic={responseDemographic}
+                          demographics={demographic}
+                          question={question}
+                          nextQuestionTimer={questionTimer}
+                          answersOpinion={answersOpinion}
+                        />
+                      </nextQuestionTimerContext.Provider>
+                    </singleQuestionContext.Provider>
+                  </answerSingleQuestionContext.Provider>
                 );
               })}
-
             </div>
           </div>
         </Grid>

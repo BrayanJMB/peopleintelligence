@@ -8,6 +8,7 @@ export const MessageItem = ({
   senderAvatar,
   message,
   messageType,
+  isAnswer,
   responseDemographic,
   demographics,
   question,
@@ -48,6 +49,7 @@ export const MessageItem = ({
               question={question}
               nextQuestionTimer={nextQuestionTimer}
               answersOpinion={answersOpinion}
+              isAnswer={isAnswer}
             />
           )}
         </>

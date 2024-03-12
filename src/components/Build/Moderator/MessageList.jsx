@@ -25,6 +25,7 @@ export const MessageList = ({
             senderAvatar={messageItem.senderAvatar}
             message={messageItem.message}
             messageType={messageItem.messageType}
+            isAnswer={messageItem.isAnswer}
             responseDemographic={responseDemographic}
             demographics={demographics}
             question={messageItem.content && messageItem.content}
