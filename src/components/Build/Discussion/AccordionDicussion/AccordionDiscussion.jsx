@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 
 import Options from '../Options/Options';
 
-const questionTypes = ['texto', 'seleccionsimple', /*'Opinión', 'experiencia', 'imagen', 'video'*/];
+const questionTypes = ['texto', 'seleccionsimple' /*'Opinión', 'experiencia', 'imagen', 'video'*/];
 export default function AccordionDiscussion({
   isConversation,
   demographics,

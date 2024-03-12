@@ -1,21 +1,23 @@
-import { useEffect, useState, createContext, useRef } from "react";
-import * as signalR from "@microsoft/signalr";
-import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
-import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
-import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
-import SendIcon from "@mui/icons-material/Send";
-import { Button, Card, CardContent, Grid, Paper } from "@mui/material";
-import { Divider, Typography } from "@mui/material";
-import Accordion from "@mui/material/Accordion";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import Box from "@mui/material/Box";
-import List from "@mui/material/List";
-import axios from "axios";
-import { ChatBox } from "./ChatBox";
-import { ConnectDisconnectUser } from "./ConnectDisconnectUser";
-import CountdownTimer from "./CountdownTimer";
-import styles from "./ChatBox.module.css";
+import { createContext, useEffect, useRef,useState } from 'react';
+import * as signalR from '@microsoft/signalr';
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
+import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
+import SendIcon from '@mui/icons-material/Send';
+import { Button, Card, CardContent, Grid, Paper } from '@mui/material';
+import { Divider, Typography } from '@mui/material';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import axios from 'axios';
+
+import { ChatBox } from './ChatBox';
+import { ConnectDisconnectUser } from './ConnectDisconnectUser';
+import CountdownTimer from './CountdownTimer';
+
+import styles from './ChatBox.module.css';
 export const singleQuestionContext = createContext();
 export const answerSingleQuestionContext = createContext();
 export const nextQuestionTimerContext = createContext();
@@ -38,20 +40,20 @@ export const Moderator = ({ id }) => {
   function detectURL(message) {
     var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
     return message.replace(urlRegex, function (urlMatch) {
-      return '<a href="' + urlMatch + '">' + urlMatch + "</a>";
+      return '<a href="' + urlMatch + '">' + urlMatch + '</a>';
     });
   }
 
   const users = {
-    0: { name: "Shun", avatar: "https://i.pravatar.cc/150?img=32" },
+    0: { name: 'Shun', avatar: 'https://i.pravatar.cc/150?img=32' },
   };
   const questionIcons = [
     {
-      tipoPregunta: "texto",
+      tipoPregunta: 'texto',
       icono: <ChatOutlinedIcon />,
     },
     {
-      tipoPregunta: "seleccionsimple",
+      tipoPregunta: 'seleccionsimple',
       icono: <ListOutlinedIcon />,
     },
   ];
@@ -71,7 +73,7 @@ export const Moderator = ({ id }) => {
 
       const signalRConnection = new HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
-        .withUrl("https://chatapppeopleintelligence.azurewebsites.net/discusion")
+        .withUrl('https://chatapppeopleintelligence.azurewebsites.net/discusion')
         .withAutomaticReconnect()
         .build();
 
@@ -91,7 +93,7 @@ export const Moderator = ({ id }) => {
         .then(() => {
           connection
             .invoke(
-              "ChargeDemographics", //Carga de Demográficos apeans carga el chat, si existen.
+              'ChargeDemographics', //Carga de Demográficos apeans carga el chat, si existen.
               survey.demographicList,
               survey.timeDemographics,
               survey.description
@@ -99,10 +101,10 @@ export const Moderator = ({ id }) => {
             .catch(function (err) {
               return console.error(err.toString());
             });
-          connection.on("ReceiveDemograpics", (newDemographics) => {
+          connection.on('ReceiveDemograpics', (newDemographics) => {
             setDemographics(newDemographics);
           });
-          connection.on("RecibirRespuestaSingle", (answer, counter) => {
+          connection.on('RecibirRespuestaSingle', (answer, counter) => {
             answerSetSingleQuestion({
               answer: answer,
               counter: counter,
@@ -112,24 +114,24 @@ export const Moderator = ({ id }) => {
               setNextQuestion(indexCurrentQuestion.current);
             }
           });
-          connection.on("SendRespuestasDos", (tablarespuestas) => {
+          connection.on('SendRespuestasDos', (tablarespuestas) => {
             setAnswersOpinion(tablarespuestas);
           });
-          connection.on("clientConnected", setConnectedUsers);
-          connection.on("clientDisconnected", setConnectedUsers);
-          connection.on("DemographicCount", (idDemo, count) => {
+          connection.on('clientConnected', setConnectedUsers);
+          connection.on('clientDisconnected', setConnectedUsers);
+          connection.on('DemographicCount', (idDemo, count) => {
             setResponseDemographic((prevCounts) => ({
               ...prevCounts,
               [idDemo]: count,
             }));
           });
 
-          connection.on("QuestionSingleOptions", (question) => {
+          connection.on('QuestionSingleOptions', (question) => {
             setSingleQuestion(question);
           });
 
           // Actualiza la interfaz de usuario con el tiempo actual
-          connection.on("UpdateTime", (time) => {
+          connection.on('UpdateTime', (time) => {
             setQuestionTimer(time);
             if (time === 0) {
               setComplexQuestion(true);
@@ -138,14 +140,14 @@ export const Moderator = ({ id }) => {
           });
         })
         .catch((error) =>
-          console.error("Error al conectar con SignalR:", error)
+          console.error('Error al conectar con SignalR:', error)
         );
 
       // Limpieza al desmontar
       return () => {
-        connection.off("ReceiveDemographics");
-        connection.off("clientConnected", setConnectedUsers);
-        connection.off("clientDisconnected", setConnectedUsers);
+        connection.off('ReceiveDemographics');
+        connection.off('clientConnected', setConnectedUsers);
+        connection.off('clientDisconnected', setConnectedUsers);
       };
     }
   }, [connection]);
@@ -157,9 +159,9 @@ export const Moderator = ({ id }) => {
   useEffect(() => {
     let newMessageItem = {
       id: messages.length + 1,
-      sender: "Shun",
-      senderAvatar: "https://i.pravatar.cc/150?img=32",
-      messageType: "demographic",
+      sender: 'Shun',
+      senderAvatar: 'https://i.pravatar.cc/150?img=32',
+      messageType: 'demographic',
     };
     setMessages((prevMessages) => [...prevMessages, newMessageItem]);
   }, []);
@@ -193,26 +195,26 @@ export const Moderator = ({ id }) => {
 
   const nextQuestionTimer = (timeLimit) => {
     let timeInt = parseInt(timeLimit);
-    connection.invoke("StartTimer", timeInt).catch(function (err) {
+    connection.invoke('StartTimer', timeInt).catch(function (err) {
       return console.error(err.toString());
     });
     setQuestionTimer(timeLimit);
   };
 
   const SendQuestionByType = (type, question, index) => {
-    console.log(type)
+    console.log(type);
     let currentQuestion = question.orderNumber;
     console.log(currentQuestion);
     switch (type.toLowerCase()) {
-      case "texto":
+      case 'texto':
         connection
-          .invoke("SendText", question.name)
+          .invoke('SendText', question.name)
           .then(() => {
             let newMessageItem = {
               id: messages.length + 1,
-              sender: "Shun",
-              senderAvatar: "https://i.pravatar.cc/150?img=32",
-              messageType: "question",
+              sender: 'Shun',
+              senderAvatar: 'https://i.pravatar.cc/150?img=32',
+              messageType: 'question',
               content: question,
             };
             setMessages((prevMessages) => [...prevMessages, newMessageItem]);
@@ -229,15 +231,15 @@ export const Moderator = ({ id }) => {
       case 'video':
             console.log('soy video');
             break;*/
-      case "seleccionsimple":
-        connection.invoke("SendSingleOption", question).catch(function (err) {
+      case 'seleccionsimple':
+        connection.invoke('SendSingleOption', question).catch(function (err) {
           return console.error(err.toString());
         });
         let newMessageItem = {
           id: messages.length + 1,
-          sender: "Shun",
-          senderAvatar: "https://i.pravatar.cc/150?img=32",
-          messageType: "question",
+          sender: 'Shun',
+          senderAvatar: 'https://i.pravatar.cc/150?img=32',
+          messageType: 'question',
           content: question,
         };
         setMessages((prevMessages) => [...prevMessages, newMessageItem]);
@@ -247,8 +249,8 @@ export const Moderator = ({ id }) => {
         setComplexQuestion(false);
         //setNextQuestion(currentQuestion);
         break;
-      case "experiencia":
-        connection.invoke("SendExperiencia", question).catch(function (err) {
+      case 'experiencia':
+        connection.invoke('SendExperiencia', question).catch(function (err) {
           return console.error(err.toString());
         });
         break;
@@ -274,9 +276,9 @@ export const Moderator = ({ id }) => {
     if (singleQuestion) {
       let newMessageItemSender = {
         id: messages.length + 1,
-        sender: "Cliente",
-        senderAvatar: "https://i.pravatar.cc/150?img=32",
-        messageType: "question",
+        sender: 'Cliente',
+        senderAvatar: 'https://i.pravatar.cc/150?img=32',
+        messageType: 'question',
         content: singleQuestion,
         isAnswer: true,
       };
@@ -287,10 +289,10 @@ export const Moderator = ({ id }) => {
   return (
     <Box
       sx={{
-        height: "100vh",
-        backgroundColor: "white",
-        display: "flex",
-        flex: "1",
+        height: '100vh',
+        backgroundColor: 'white',
+        display: 'flex',
+        flex: '1',
       }}
       aria-label="mailbox folders"
     >
@@ -298,17 +300,17 @@ export const Moderator = ({ id }) => {
         <Grid item xs={4}>
           <div
             style={{
-              paddingLeft: "2rem",
-              backgroundColor: "#f5f5f5",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              height: "100%",
+              paddingLeft: '2rem',
+              backgroundColor: '#f5f5f5',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              height: '100%',
             }}
           >
             <Card
               variant="outlined"
-              style={{ width: "100%", marginBottom: "1rem" }}
+              style={{ width: '100%', marginBottom: '1rem' }}
             >
               <CardContent>
                 <Typography variant="h5" component="div">
@@ -320,9 +322,9 @@ export const Moderator = ({ id }) => {
             <Card
               variant="outlined"
               style={{
-                width: "100%",
-                marginBottom: "1rem",
-                backgroundColor: "#00B0F0",
+                width: '100%',
+                marginBottom: '1rem',
+                backgroundColor: '#00B0F0',
               }}
             >
               <CardContent>
@@ -351,7 +353,7 @@ export const Moderator = ({ id }) => {
 
             <Card
               variant="outlined"
-              style={{ width: "100%", backgroundColor: "#00B0F0" }}
+              style={{ width: '100%', backgroundColor: '#00B0F0' }}
             >
               <CardContent>
                 <Typography variant="h6" component="div" gutterBottom>
@@ -370,25 +372,25 @@ export const Moderator = ({ id }) => {
                         <>
                           <div
                             style={{
-                              backgroundColor: "white",
-                              heightMin: "100px",
+                              backgroundColor: 'white',
+                              heightMin: '100px',
                             }}
                           >
                             <div
                               style={{
-                                display: "flex",
-                                padding: "1rem",
+                                display: 'flex',
+                                padding: '1rem',
                               }}
                             >
                               <Typography>{option.orderNumber}</Typography>
-                              <div style={{ marginLeft: "2rem" }}>
+                              <div style={{ marginLeft: '2rem' }}>
                                 <span
                                   style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
                                   }}
                                 >
-                                  <Typography style={{ color: "blue" }}>
+                                  <Typography style={{ color: 'blue' }}>
                                     {iconToDisplay}
                                   </Typography>
                                   <Typography>{option.type}</Typography>
@@ -406,7 +408,7 @@ export const Moderator = ({ id }) => {
                                 <Button>
                                   {complexQuestion && (
                                     <SendIcon
-                                      sx={{ color: "#00B0F0" }}
+                                      sx={{ color: '#00B0F0' }}
                                       onClick={() =>
                                         SendQuestionByType(
                                           option.type,
@@ -424,7 +426,7 @@ export const Moderator = ({ id }) => {
                               <>
                                 <Accordion
                                   key={option.id}
-                                  style={{ boxShadow: "none", border: "none" }}
+                                  style={{ boxShadow: 'none', border: 'none' }}
                                 >
                                   <AccordionSummary>
                                     <Typography>Mostar opciones</Typography>
@@ -454,7 +456,7 @@ export const Moderator = ({ id }) => {
         </Grid>
 
         <Grid item xs={8}>
-          <div style={{ display: "flex", justifyContent: "space-around" }}>
+          <div style={{ display: 'flex', justifyContent: 'space-around' }}>
             <CountdownTimer
               countdownTime={survey.timeDemographics}
               startTime={Date.now()}
@@ -464,7 +466,7 @@ export const Moderator = ({ id }) => {
             )}
           </div>
           <div
-            style={{ display: "flex", flexDirection: "column", height: "100%" }}
+            style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
           >
             <div className={styles.chatApp__room}>
               {Object.keys(users).map((key) => {
