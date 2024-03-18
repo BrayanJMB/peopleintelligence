@@ -130,6 +130,7 @@ export default function Discussion({
       response = await storeSurveyChatAPI(payload);
       if (surveyImage || avatarImage) {
         urls = await storeAvatarAndSurveyImage(response.data.survey.id);
+        console.log(urls)
         payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
         payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
       }
@@ -149,16 +150,8 @@ export default function Discussion({
       if (surveyImage || avatarImage) {   
         urls = await storeAvatarAndSurveyImage(payload.survey.id);
         console.log(urls)
-        if (urls.data.file > 1){
-          payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
-          payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
-        }else{
-          if(urls.data.files[0].toLowerCase().includes("avatars"))
-            payload.moderator.avatarUrl = urls ? urls.data.files[0] : '';
-          else
-            payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
-        }
-
+        payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
+        payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
       }
       response = await updateSurveyChatAPI(payload.survey);
       const updateData = {

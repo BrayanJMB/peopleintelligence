@@ -25,6 +25,7 @@ export const nextQuestionTimerContext = createContext();
 export const Moderator = ({ id }) => {
   const [connection, setConnection] = useState(null);
   const [survey, setSurvey] = useState([]);
+  const [moderatorAvatar, setModeratorAvatar] = useState();
   const [question, setQuestions] = useState([]);
   const [responseDemographic, setResponseDemographic] = useState([]);
   const [connectedUsers, setConnectedUsers] = useState(0);
@@ -44,7 +45,7 @@ export const Moderator = ({ id }) => {
   }
 
   const users = {
-    0: { name: 'Shun', avatar: 'https://i.pravatar.cc/150?img=32' },
+    0: { name: 'Shun', avatar: "" },
   };
   const questionIcons = [
     {
@@ -66,10 +67,21 @@ export const Moderator = ({ id }) => {
     } catch (error) {}
   };
 
+  
+  const fetchModerator = async () => {
+    try {
+      const response = await axios.get(
+        `https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/GetModerator/${id}`
+      );
+      console.log(response.data)
+      setModeratorAvatar(response.data);
+    } catch (error) {}
+  };
+  
   const initializeConnectionAndFetchData = async () => {
     try {
       await fetchSurvey();
-
+      await fetchModerator();
       const signalRConnection = new HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
         .withUrl('https://chatapppeopleintelligence.azurewebsites.net/discusion')
@@ -148,19 +160,24 @@ export const Moderator = ({ id }) => {
     }
   }, [connection]);
 
+  console.log(survey)
   useEffect(() => {
-    let newMessageItem = {
-      id: messages.length + 1,
-      sender: 'Shun',
-      senderAvatar: 'https://i.pravatar.cc/150?img=32',
-      messageType: 'demographic',
-    };
-    setMessages((prevMessages) => [...prevMessages, newMessageItem]);
-  }, []);
+    if (moderatorAvatar && (survey.demographicList && survey.demographicList.length > 0)){
+
+      let newMessageItem = {
+        id: messages.length + 1,
+        sender: 'Shun',
+        senderAvatar: moderatorAvatar.avatarUrl,
+        messageType: 'demographic',
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+    }
+
+  }, [moderatorAvatar]);
 
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState({});
-
+  console.log(survey)
   const sendMessage = (sender, senderAvatar, message) => {
     setTimeout(() => {
       let messageFormat = detectURL(message);
@@ -203,7 +220,7 @@ export const Moderator = ({ id }) => {
             let newMessageItem = {
               id: messages.length + 1,
               sender: 'Shun',
-              senderAvatar: 'https://i.pravatar.cc/150?img=32',
+              senderAvatar: moderatorAvatar.avatarUrl,
               messageType: 'question',
               content: question,
             };
@@ -228,7 +245,7 @@ export const Moderator = ({ id }) => {
         let newMessageItem = {
           id: messages.length + 1,
           sender: 'Shun',
-          senderAvatar: 'https://i.pravatar.cc/150?img=32',
+          senderAvatar: moderatorAvatar.avatarUrl,
           messageType: 'question',
           content: question,
         };
