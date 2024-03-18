@@ -82,7 +82,7 @@ export default function Basic(props) {
               <div className={styles.input}>
                 <TextField
                   id="outlined-name"
-                  label="Título encuesta"
+                  label="Título conversación"
                   value={props.survey.title}
                   name="title"
                   onChange={(event) => props.handleChange(event, 'survey')}
@@ -92,26 +92,26 @@ export default function Basic(props) {
                   helperText={helperText.title}
                 />
               </div>
-              <div className={styles.input}>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ display: 'flex' }}>
-                    <NotesIcon color="blue" style={{ marginRight: '1rem' }} />
-                    <p>Nombre moderador</p>
-                  </div>
-                    <TextField
-                    id="outlined-name"
-                    label="Nombre moderador"
-                    value={props.moderator.name}
-                    name="name"
-                    onChange={(event) => props.handleChange(event, 'moderator')}
-                    size="small"
-                    style={{ width: '100%' , color:'#00B0F0'}}
-                    error={error.title}
-                    helperText={helperText.title}
-                  />
-                </div>
-              </div>
             </div>
+            <div className={styles.general}>
+              <NotesIcon color="blue" style={{ marginRight: '1rem' }} />
+              <p>Nombre Moderador</p>
+            </div>
+            <div className={styles.required}>
+              <div className={styles.input}>
+                <TextField
+                  id="outlined-name"
+                  label="Nombre moderador"
+                  value={props.moderator.name}
+                  name="name"
+                  onChange={(event) => props.handleChange(event, 'moderator')}
+                  size="small"
+                  style={{ width: '100%' , color:'#00B0F0'}}
+                  error={error.title}
+                  helperText={helperText.title}
+                />
+              </div>
+              </div>
           </div>
           <div>
             <div className={styles.optional}>

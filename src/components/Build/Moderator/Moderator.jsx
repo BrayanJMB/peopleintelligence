@@ -25,7 +25,6 @@ export const nextQuestionTimerContext = createContext();
 export const Moderator = ({ id }) => {
   const [connection, setConnection] = useState(null);
   const [survey, setSurvey] = useState([]);
-  const [demographic, setDemographics] = useState([]);
   const [question, setQuestions] = useState([]);
   const [responseDemographic, setResponseDemographic] = useState([]);
   const [connectedUsers, setConnectedUsers] = useState(0);
@@ -97,7 +96,7 @@ export const Moderator = ({ id }) => {
               survey.demographicList,
               survey.timeDemographics,
               survey.description
-            ).then(() => console.log('envío data'))
+            )
             .catch(function (err) {
               return console.error(err.toString());
             });
