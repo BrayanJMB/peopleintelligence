@@ -60,6 +60,14 @@ function Options({
     </div>
   ));
 
+  function limpiarTexto(texto) {
+    let textoSinEspacios = texto.replace(/\s+/g, "");
+    let textoSinTildes = textoSinEspacios
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+
+    return textoSinTildes;
+  }
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   const isText = (item) => {
     switch (item.toLowerCase()) {
@@ -82,7 +90,7 @@ function Options({
     return "video";
   };
   const isSelecionSimple = (item) => {
-    switch (item.toLowerCase()) {
+    switch (limpiarTexto(item.toLowerCase())) {
       case "seleccionsimple":
         return true;
       default:
@@ -325,7 +333,7 @@ function Options({
               <div
                 style={{
                   overflowY: "scroll",
-                  height: '10em'
+                  height: "10em",
                 }}
               >
                 {demographic.demographicDetails.length > 0 && (
@@ -402,15 +410,12 @@ function Options({
                     marginBottom: "10px",
                   }}
                 >
-                  <div>
+                  <div style={{ marginBottom: "10px", color: "#00B0F0" }}>
                     <Chip
-                      sx={{
-                        color: "#00B0F0",
-                      }}
-                      label="Pregunta de texto"
+                      label="Texto"
                       size="small"
                       variant="outlined"
-                      style={{ marginBottom: "5px" }}
+                      color="primary"
                     />
                     <Button onClick={handleRemoveConversation} color="error">
                       Eliminar
@@ -418,7 +423,7 @@ function Options({
                   </div>
                   <TextField
                     size="small"
-                    label="Nombre pregunta"
+                    label="Ingrese texto"
                     value={question.name}
                     onChange={handleDemographicNameChange}
                     error={!!errors.questions?.[currentIndex]?.name}
@@ -504,13 +509,12 @@ function Options({
                     marginBottom: "10px",
                   }}
                 >
-                  <div>
+                  <div style={{ marginBottom: "10px", color: "#00B0F0" }}>
                     <Chip
                       label="Experiencia"
                       color="primary"
                       size="small"
                       variant="outlined"
-                      style={{ marginBottom: "5px", color: "#00B0F0" }}
                     />
                     <Button onClick={handleRemoveConversation} color="error">
                       Eliminar
@@ -661,13 +665,12 @@ function Options({
                     marginBottom: "10px",
                   }}
                 >
-                  <div>
+                  <div style={{ marginBottom: "10px", color: "#00B0F0" }}>
                     <Chip
                       label="Seleccion simple"
                       color="primary"
                       size="small"
                       variant="outlined"
-                      style={{ marginBottom: "5px", color: "#00B0F0" }}
                     />
                     <Button onClick={handleRemoveConversation} color="error">
                       Eliminar
@@ -682,7 +685,7 @@ function Options({
                     <TextField
                       size="small"
                       fullWidth
-                      label="seleccion simple"
+                      label="Ingrese pregunta"
                       value={question.name}
                       onChange={handleDemographicNameChange}
                       error={!!errors.questions?.[currentIndex]?.name}

@@ -1,19 +1,22 @@
-import { useEffect, useRef,useState } from 'react';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Button } from '@mui/material';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import FormControl from '@mui/material/FormControl';
-import Grid from '@mui/material/Grid';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import Typography from '@mui/material/Typography';
+import { useEffect, useRef, useState } from "react";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Button } from "@mui/material";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import FormControl from "@mui/material/FormControl";
+import Grid from "@mui/material/Grid";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import Typography from "@mui/material/Typography";
 
-import Options from '../Options/Options';
+import Options from "../Options/Options";
 
-const questionTypes = ['texto', 'seleccionsimple' /*'Opinión', 'experiencia', 'imagen', 'video'*/];
+const questionTypes = [
+  "Texto",
+  "Selección simple" /*'Opinión', 'experiencia', 'imagen', 'video'*/,
+];
 export default function AccordionDiscussion({
   isConversation,
   demographics,
@@ -27,15 +30,14 @@ export default function AccordionDiscussion({
   demographicRefs,
   accordionTitle,
 }) {
-
-  const [item, setItem] = useState('');
+  const [item, setItem] = useState("");
 
   const handleAddDemographic = () => {
     setDemographics((prevState) => [
       ...prevState,
       {
-        name: '',
-        description: '',
+        name: "",
+        description: "",
         demographicDetails: [],
       },
     ]);
@@ -58,10 +60,10 @@ export default function AccordionDiscussion({
       ...prevState,
       {
         orderNumber: null,
-        name: '',
+        name: "",
         timeLimit: null,
         type: valor,
-        urlMedia: '',
+        urlMedia: "",
         options: [],
       },
     ]);
@@ -84,12 +86,10 @@ export default function AccordionDiscussion({
     handleAddConversation(event.target.value);
   };
 
-  
-
   return (
-    <div style={{width:'90%', margin:'0 auto'}}>
+    <div style={{ width: "90%", margin: "0 auto" }}>
       <Accordion
-        sx={{ color:'white', fontWeight:'900'}}
+        sx={{ color: "white", fontWeight: "900" }}
         expanded={isAccordionOpen}
         onChange={(e, expanded) => setIsAccordionOpen(expanded)}
       >
@@ -97,23 +97,26 @@ export default function AccordionDiscussion({
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
           id="panel1a-header"
-          sx={{ backgroundColor:'#00B0F0'}}
+          sx={{ backgroundColor: "#00B0F0" }}
         >
           <Typography>{accordionTitle}</Typography>
         </AccordionSummary>
-        <AccordionDetails style={{ overflow: 'auto', maxHeight: '400px' }}>
+        <AccordionDetails style={{ overflow: "auto", maxHeight: "400px" }}>
           {isConversation ? (
             <>
-              <FormControl sx={{ marginBottom: 5, minWidth: 300 }}>
-                <InputLabel id="demo-simple-select-helper-label">
+              <FormControl
+                sx={{ marginBottom: 5, minWidth: 300 }}
+                variant="outlined"
+              >
+                <InputLabel id="demo-simple-select-outlined-label">
                   Seleccione el tipo pregunta
                 </InputLabel>
                 <Select
-                  labelId="demo-simple-select-helper-label"
-                  id="demo-simple-select-helper"
+                  labelId="demo-simple-select-outlined-label"
+                  id="demo-simple-select-outlined"
                   value={item}
-                  label="Añadir nuevo ítem"
                   onChange={handleChange}
+                  label="Seleccione el tipo pregunta"
                   fullWidth
                 >
                   {questionTypes.map((value, index) => (
@@ -145,9 +148,12 @@ export default function AccordionDiscussion({
             </>
           ) : (
             <>
-              <Button onClick={handleAddDemographic} sx={{
-                color:'#00B0F0',
-              }}>
+              <Button
+                onClick={handleAddDemographic}
+                sx={{
+                  color: "#00B0F0",
+                }}
+              >
                 Añadir nuevo dato demográfico
               </Button>
               <Grid container spacing={2} alignItems="center">

@@ -243,7 +243,7 @@ export default function Basic(props) {
                           ? props.survey.imageUrl
                           : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlNXd9tJhoyJMieolHXk9y6MmWuT7Y2bBv7ftTIS0U7Q&s'
                       }
-                      alt="profildde"
+                      alt="baseImagen"
                       className={styles.coverright}
                     />
                   </div>
@@ -266,7 +266,7 @@ export default function Basic(props) {
                       <div>
                         {props.moderator.name
                           ? props.moderator.name
-                          : 'Moderator'}
+                          : 'Moderador'}
                       </div>
                     </div>
                   </div>

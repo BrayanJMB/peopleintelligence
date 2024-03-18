@@ -419,7 +419,7 @@ export const Moderator = ({ id }) => {
                                   style={{ boxShadow: 'none', border: 'none' }}
                                 >
                                   <AccordionSummary>
-                                    <Typography>Mostar opciones</Typography>
+                                    <Typography>Mostrar opciones</Typography>
                                   </AccordionSummary>
 
                                   <AccordionDetails>
