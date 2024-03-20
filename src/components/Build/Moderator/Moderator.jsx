@@ -1,4 +1,5 @@
 import { createContext, useEffect, useRef,useState } from 'react';
+import { useSelector } from 'react-redux';
 import * as signalR from '@microsoft/signalr';
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
@@ -16,8 +17,10 @@ import axios from 'axios';
 import { ChatBox } from './ChatBox';
 import { ConnectDisconnectUser } from './ConnectDisconnectUser';
 import CountdownTimer from './CountdownTimer';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 import styles from './ChatBox.module.css';
+
 export const singleQuestionContext = createContext();
 export const answerSingleQuestionContext = createContext();
 export const nextQuestionTimerContext = createContext();
@@ -36,6 +39,8 @@ export const Moderator = ({ id }) => {
   const [answerSingleQuestion, answerSetSingleQuestion] = useState(null);
   const indexCurrentQuestion = useRef(null);
   const [complexQuestion, setComplexQuestion] = useState(true);
+
+
 
   function detectURL(message) {
     var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
@@ -163,7 +168,6 @@ export const Moderator = ({ id }) => {
   console.log(survey)
   useEffect(() => {
     if (moderatorAvatar && (survey.demographicList && survey.demographicList.length > 0)){
-
       let newMessageItem = {
         id: messages.length + 1,
         sender: 'Shun',
@@ -220,7 +224,7 @@ export const Moderator = ({ id }) => {
             let newMessageItem = {
               id: messages.length + 1,
               sender: 'Shun',
-              senderAvatar: moderatorAvatar.avatarUrl,
+              senderAvatar: moderatorAvatar.avatarUrl ,
               messageType: 'question',
               content: question,
             };

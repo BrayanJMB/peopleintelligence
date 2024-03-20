@@ -2,6 +2,7 @@ import { Demographics } from './Demographics';
 import { Questions } from './Questions';
 
 import styles from './ChatBox.module.css';
+import { useSelector } from 'react-redux';
 export const MessageItem = ({
   owner,
   sender,
@@ -15,6 +16,8 @@ export const MessageItem = ({
   nextQuestionTimer,
   answersOpinion,
 }) => {
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
+  console.log(currentCompany)
   let messagePosition =
     owner === sender
       ? styles.chatApp__convMessageItemRight
@@ -26,8 +29,8 @@ export const MessageItem = ({
       {messageType === 'demographic' && (
         <>
           <img
-            src={senderAvatar}
-            alt={'prueba'}
+            src={senderAvatar || currentCompany.Logotipo}
+            alt={'ImagenModerador'}
             className={styles.chatApp__convMessageAvatar}
           />
 
@@ -40,8 +43,8 @@ export const MessageItem = ({
       {messageType === 'question' && (
         <>
           <img
-            src={senderAvatar}
-            alt={'prueba'}
+            src={senderAvatar || currentCompany.Logotipo}
+            alt={'ImagenModerador'}
             className={styles.chatApp__convMessageAvatar}
           />
           {question  && (
