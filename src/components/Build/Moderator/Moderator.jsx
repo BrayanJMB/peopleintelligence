@@ -2,6 +2,7 @@ import { createContext, useEffect, useRef,useState } from 'react';
 import { useSelector } from 'react-redux';
 import * as signalR from '@microsoft/signalr';
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
 import SendIcon from '@mui/icons-material/Send';
@@ -17,7 +18,6 @@ import axios from 'axios';
 import { ChatBox } from './ChatBox';
 import { ConnectDisconnectUser } from './ConnectDisconnectUser';
 import CountdownTimer from './CountdownTimer';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 import styles from './ChatBox.module.css';
 
@@ -50,7 +50,7 @@ export const Moderator = ({ id }) => {
   }
 
   const users = {
-    0: { name: 'Shun', avatar: "" },
+    0: { name: 'Shun', avatar: '' },
   };
   const questionIcons = [
     {
@@ -78,7 +78,7 @@ export const Moderator = ({ id }) => {
       const response = await axios.get(
         `https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/GetModerator/${id}`
       );
-      console.log(response.data)
+      console.log(response.data);
       setModeratorAvatar(response.data);
     } catch (error) {}
   };
@@ -165,7 +165,7 @@ export const Moderator = ({ id }) => {
     }
   }, [connection]);
 
-  console.log(survey)
+  console.log(survey);
   useEffect(() => {
     if (moderatorAvatar && (survey.demographicList && survey.demographicList.length > 0)){
       let newMessageItem = {
@@ -181,7 +181,7 @@ export const Moderator = ({ id }) => {
 
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState({});
-  console.log(survey)
+  console.log(survey);
   const sendMessage = (sender, senderAvatar, message) => {
     setTimeout(() => {
       let messageFormat = detectURL(message);

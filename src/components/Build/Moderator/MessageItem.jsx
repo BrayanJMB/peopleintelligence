@@ -1,8 +1,9 @@
+import { useSelector } from 'react-redux';
+
 import { Demographics } from './Demographics';
 import { Questions } from './Questions';
 
 import styles from './ChatBox.module.css';
-import { useSelector } from 'react-redux';
 export const MessageItem = ({
   owner,
   sender,
@@ -17,7 +18,7 @@ export const MessageItem = ({
   answersOpinion,
 }) => {
   const currentCompany = useSelector((state) => state.companies.currentCompany);
-  console.log(currentCompany)
+  console.log(currentCompany);
   let messagePosition =
     owner === sender
       ? styles.chatApp__convMessageItemRight

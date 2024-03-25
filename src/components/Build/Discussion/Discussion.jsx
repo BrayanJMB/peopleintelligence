@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import axios from 'axios';
 
 import { storeSurveyChatAPI } from '../../../services/ChatLive/storeSurveyChat.service';
-import { updateSurveyChatAPI, updateModeratorChatAPI } from '../../../services/ChatLive/updateSurveyChat.service';
+import { updateModeratorChatAPI,updateSurveyChatAPI } from '../../../services/ChatLive/updateSurveyChat.service';
 
 import AccordionDiscussion from './AccordionDicussion/AccordionDiscussion';
 
@@ -130,7 +130,7 @@ export default function Discussion({
       response = await storeSurveyChatAPI(payload);
       if (surveyImage || avatarImage) {
         urls = await storeAvatarAndSurveyImage(response.data.survey.id);
-        console.log(urls)
+        console.log(urls);
         payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
         payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
       }
@@ -141,15 +141,15 @@ export default function Discussion({
         description: payload.survey.description,
         moderatorName: payload.moderator.name,
         moderatorId: payload.moderator.moderatorId,
-        avatarUrl: payload.moderator.avatarUrl
-      }
+        avatarUrl: payload.moderator.avatarUrl,
+      };
       await updateModeratorChatAPI(updateData);
       await storeSurveyImageQuestion(imageQuestions, response.data.survey.id);
     } else {
       // Manejar actualización
       if (surveyImage || avatarImage) {   
         urls = await storeAvatarAndSurveyImage(payload.survey.id);
-        console.log(urls)
+        console.log(urls);
         payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
         payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
       }
@@ -161,8 +161,8 @@ export default function Discussion({
         description: payload.survey.description,
         moderatorName: payload.moderator.name,
         moderatorId: payload.moderator.moderatorId,
-        avatarUrl: payload.moderator.avatarUrl
-      }
+        avatarUrl: payload.moderator.avatarUrl,
+      };
       await updateModeratorChatAPI(updateData);
     }
 
