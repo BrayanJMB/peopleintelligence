@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 
 function CircularProgressWithLabel(props) {
-    console.log({...props});
   return (
 
     <Box sx={{ position: 'relative', display: 'inline-flex'}}>

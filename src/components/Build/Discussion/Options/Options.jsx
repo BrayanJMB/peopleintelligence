@@ -193,7 +193,7 @@ function Options({
         ...question,
         options: [...question.options, newOption],
       };
-      console.log(newConversation);
+
       setQuestion((prevState) => {
         const newConversations = [...prevState];
         const index = newConversations.findIndex((d) => d === question);
@@ -871,7 +871,6 @@ function Options({
                         <input
                           {...getInputProps({
                             onChange: (event) => {
-                              console.log(event.target.files);
                               handleFileChange(event); // Asumiendo que handleFileChange maneja el evento de cambio
                             },
                           })}

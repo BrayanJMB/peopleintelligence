@@ -130,7 +130,6 @@ export default function Discussion({
       response = await storeSurveyChatAPI(payload);
       if (surveyImage || avatarImage) {
         urls = await storeAvatarAndSurveyImage(response.data.survey.id);
-        console.log(urls);
         payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
         payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
       }
@@ -149,7 +148,6 @@ export default function Discussion({
       // Manejar actualización
       if (surveyImage || avatarImage) {   
         urls = await storeAvatarAndSurveyImage(payload.survey.id);
-        console.log(urls);
         payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
         payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
       }
@@ -202,15 +200,13 @@ export default function Discussion({
     });
 
     try {
-      const results = await Promise.all(promises); // Espera a que todas las promesas se resuelvan
-      console.log(results); // Aquí manejas las respuestas
+      const results = await Promise.all(promises); // Espera a que todas las promesas se resuelvan// Aquí manejas las respuestas
     } catch (error) {
       console.error('Error en alguna solicitud:', error);
     }
   };
 
   const storeAvatarAndSurveyImage = async (surveyId) => {
-    console.log(userInfo.Company);
     const formData = new FormData();
     formData.append('surveyImage', surveyImage);
     formData.append('moderatorAvatar', avatarImage);

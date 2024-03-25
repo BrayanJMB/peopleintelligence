@@ -18,7 +18,6 @@ export const MessageItem = ({
   answersOpinion,
 }) => {
   const currentCompany = useSelector((state) => state.companies.currentCompany);
-  console.log(currentCompany);
   let messagePosition =
     owner === sender
       ? styles.chatApp__convMessageItemRight
