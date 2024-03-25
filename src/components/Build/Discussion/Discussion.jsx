@@ -1,4 +1,5 @@
-import { createRef,useEffect, useRef, useState } from 'react';
+import { createContext,createRef, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import ClearIcon from '@mui/icons-material/Clear';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -15,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import axios from 'axios';
 
 import { storeSurveyChatAPI } from '../../../services/ChatLive/storeSurveyChat.service';
-import { updateSurveyChatAPI } from '../../../services/ChatLive/updateSurveyChat.service';
+import { updateModeratorChatAPI,updateSurveyChatAPI } from '../../../services/ChatLive/updateSurveyChat.service';
 
 import AccordionDiscussion from './AccordionDicussion/AccordionDiscussion';
 
@@ -46,7 +47,9 @@ function stringAvatar(name) {
     children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
   };
 }
-
+//Context
+export const filesImageQuestionContext = createContext();
+//
 export default function Discussion({
   moderator,
   survey,
@@ -63,6 +66,7 @@ export default function Discussion({
   surveyChat,
   isUpdate,
 }) {
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [opentemplate, setOpentemplate] = useState(false);
@@ -71,13 +75,14 @@ export default function Discussion({
   const handleCloseModal = () => setOpen(false);
   const handleOpenModaltemplate = () => setOpentemplate(true);
   const handleCloseModaltemplate = () => setOpentemplate(false);
+  const [filesImageQuestion, setFilesImageQuestion] = useState([]);
   const [toogle, setToggle] = useState('edit');
   const [errors, setErrors] = useState([]);
   const [isDemographicsAccordionOpen, setIsDemographicsAccordionOpen] =
     useState(false);
   const [isConversationAccordionOpen, setIsConversationAccordionOpen] =
     useState(false);
-
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
   const demographicRefs = useRef([]);
 
   const handleOpenAccordion = () => {
@@ -87,90 +92,126 @@ export default function Discussion({
   const handleCloseAccordion = () => {
     setAccordionOpen(false);
   };
+
   const handleSubmit = async () => {
-    if (validate()) {
-      let urls = null;
-      if (!isUpdate || (surveyImage && avatarImage )) {
-        urls = await storeAvatarAndSurveyImage();
-      }
-      const payload = {
-        moderator: {
-          ...moderator,
-          avatarUrl: urls ? urls.data.files[1] : '',
-        },
-        survey: {
-          ...survey,
-          imageUrl: urls ? urls.data.files[0] : survey.imageUrl,
-          questions: questions.map((q, index) => ({
-            ...q,
-            orderNumber: index + 1,
-            options: q.options.map((option) => {
-              const {...rest } = option;
-              return rest;
-            }),
-          })),
-          demographic: demographics.map((demo) => ({
-            ...demo,
-            demographicDetails: demo.demographicDetails.map((detail) => {
-              const {...rest } = detail;
-              return rest;
-            }),
-          })),
-        },
-      };
-      console.log(payload);
-      if (!isUpdate) {
-        const response = await storeSurveyChatAPI(payload);  
-        //const storeSurveyImageQuestion = await (response.response, questionId); 
-        if (response.status === 200) {
-          alert('Chat Live creado satisfactoriamente');
-          handleMove('/conversation/Live', 'basic');
-        } else {
-          alert('Hubo un error al crear la encuesta de chat');
-        }
-      } else {
-        const response = await updateSurveyChatAPI(payload.survey);
-        if (response.status === 200) {
-          alert('Chat Live actualizado satisfactoriamente');
-          handleMove('/conversation/Live', 'basic');
-        } else {
-          alert('Hubo un error al crear la encuesta de chat');
-        }
-      }
-    }
-  };
+    let urls = null;
+    const payload = {
+      moderator: {
+        ...moderator,
+      },
+      survey: {
+        ...survey,
+        questions: questions.map((q, index) => ({
+          ...q,
+          orderNumber: index + 1,
+          options: q.options.map((option) => {
+            const { ...rest } = option;
+            return rest;
+          }),
+        })),
+        demographic: demographics.map((demo) => ({
+          ...demo,
+          demographicDetails: demo.demographicDetails.map((detail) => {
+            const { ...rest } = detail;
+            return rest;
+          }),
+        })),
+      },
+    };
+    //Javascript, Js
 
-  const storeSurveyImageQuestion = async (surveyId, questionId) => {
-    const formData = new FormData();
-    formData.append('questionImage', surveyImage);
-    formData.append('questionId', questionId);
-    formData.append('surveyId', survey.id);
-    try {
-      const response = await axios.post(
-        'https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImagesQuestion',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
+    let response;
+
+    if (!isUpdate) {
+      // Manejar creación
+      const imageQuestions = payload.survey.questions.filter(
+        (question) => question.type === 'imagen'
       );
-      if (response) {
-        return response;
-      } else {
-        console.error('Error al subir la imagen:', response);
+      response = await storeSurveyChatAPI(payload);
+      if (surveyImage || avatarImage) {
+        urls = await storeAvatarAndSurveyImage(response.data.survey.id);
+        payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
+        payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
       }
-    } catch (error) {
-      console.log(error);
+      const updateData = {
+        id: payload.survey.id,
+        title: payload.survey.title,
+        imageUrl: payload.survey.imageUrl,
+        description: payload.survey.description,
+        moderatorName: payload.moderator.name,
+        moderatorId: payload.moderator.moderatorId,
+        avatarUrl: payload.moderator.avatarUrl,
+      };
+      await updateModeratorChatAPI(updateData);
+      await storeSurveyImageQuestion(imageQuestions, response.data.survey.id);
+    } else {
+      // Manejar actualización
+      if (surveyImage || avatarImage) {   
+        urls = await storeAvatarAndSurveyImage(payload.survey.id);
+        payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
+        payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
+      }
+      response = await updateSurveyChatAPI(payload.survey);
+      const updateData = {
+        id: payload.survey.id,
+        title: payload.survey.title,
+        imageUrl: payload.survey.imageUrl,
+        description: payload.survey.description,
+        moderatorName: payload.moderator.name,
+        moderatorId: payload.moderator.moderatorId,
+        avatarUrl: payload.moderator.avatarUrl,
+      };
+      await updateModeratorChatAPI(updateData);
+    }
+
+    // Manejar respuesta
+    if (response.status === 200) {
+      alert(
+        `Chat Live ${!isUpdate ? 'creado' : 'actualizado'} satisfactoriamente`
+      );
+      handleMove('/conversation/Live', 'basic');
+    } else {
+      alert('Hubo un error al crear la encuesta de chat');
     }
   };
 
-  const storeAvatarAndSurveyImage = async () => {
+  const storeSurveyImageQuestion = async (questions, surveyId) => {
+    const promises = questions.map(async (question, index) => {
+      const formData = new FormData();
+      formData.append('questionImage', filesImageQuestion[index]);
+      formData.append('questionNumber', question.orderNumber);
+      formData.append('surveyId', surveyId);
+
+      try {
+        const response = await axios.post(
+          'https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImagesQuestion',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+        return response.data; // Retorna los datos de respuesta para su uso posterior
+      } catch (error) {
+        console.error('Error al subir la imagen:', error);
+        throw error; // Lanza el error para manejar rechazos en Promise.all
+      }
+    });
+
+    try {
+      const results = await Promise.all(promises); // Espera a que todas las promesas se resuelvan// Aquí manejas las respuestas
+    } catch (error) {
+      console.error('Error en alguna solicitud:', error);
+    }
+  };
+
+  const storeAvatarAndSurveyImage = async (surveyId) => {
     const formData = new FormData();
     formData.append('surveyImage', surveyImage);
     formData.append('moderatorAvatar', avatarImage);
-    formData.append('companyId', '1');
-    formData.append('surveyId', survey.id);
+    formData.append('companyId', currentCompany?.id);
+    formData.append('surveyId', surveyId);
     try {
       const response = await axios.post(
         'https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImages',
@@ -186,9 +227,7 @@ export default function Discussion({
       } else {
         console.error('Error al subir la imagen:', response);
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   const validate = () => {
@@ -317,15 +356,27 @@ export default function Discussion({
         >
           <p>{survey.title}</p>
           <div>
-          <Button onClick={handleOpenModal} sx={{
-              color:'#00B0F0',
-            }}>Importar</Button>
-            <Button sx={{
-              color:'#00B0F0',
-            }}>Compartir</Button>
-            <Button onClick={handleSubmit} sx={{
-              color:'#00B0F0',
-            }}>
+            <Button
+              onClick={handleOpenModal}
+              sx={{
+                color: '#00B0F0',
+              }}
+            >
+              Importar
+            </Button>
+            <Button
+              sx={{
+                color: '#00B0F0',
+              }}
+            >
+              Compartir
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              sx={{
+                color: '#00B0F0',
+              }}
+            >
               {isUpdate ? 'Editar' : 'Publicar'}
             </Button>
           </div>
@@ -403,32 +454,37 @@ export default function Discussion({
             </Box>
           </Modal>
         </div>
-        <AccordionDiscussion
-          isConversation={false}
-          questions={questions}
-          setQuestions={setQuestions}
-          demographics={demographics}
-          setDemographics={setDemographics}
-          errors={errors}
-          setErrors={setErrors}
-          isAccordionOpen={isDemographicsAccordionOpen}
-          setIsAccordionOpen={setIsDemographicsAccordionOpen}
-          demographicRefs={demographicRefs}
-          accordionTitle={'Datos Demográficos'}
-        />
-        <AccordionDiscussion
-          isConversation={true}
-          questions={questions}
-          setQuestions={setQuestions}
-          demographics={demographics}
-          setDemographics={setDemographics}
-          demographicRefs={demographicRefs}
-          errors={errors}
-          setErrors={setErrors}
-          isAccordionOpen={isConversationAccordionOpen}
-          setIsAccordionOpen={setIsConversationAccordionOpen}
-          accordionTitle={'Preguntas'}
-        />
+        <filesImageQuestionContext.Provider
+          value={{ filesImageQuestion, setFilesImageQuestion }}
+        >
+          <AccordionDiscussion
+            isConversation={false}
+            questions={questions}
+            setQuestions={setQuestions}
+            demographics={demographics}
+            setDemographics={setDemographics}
+            errors={errors}
+            setErrors={setErrors}
+            isAccordionOpen={isDemographicsAccordionOpen}
+            setIsAccordionOpen={setIsDemographicsAccordionOpen}
+            demographicRefs={demographicRefs}
+            accordionTitle={'Datos Demográficos'}
+          />
+
+          <AccordionDiscussion
+            isConversation={true}
+            questions={questions}
+            setQuestions={setQuestions}
+            demographics={demographics}
+            setDemographics={setDemographics}
+            demographicRefs={demographicRefs}
+            errors={errors}
+            setErrors={setErrors}
+            isAccordionOpen={isConversationAccordionOpen}
+            setIsAccordionOpen={setIsConversationAccordionOpen}
+            accordionTitle={'Preguntas'}
+          />
+        </filesImageQuestionContext.Provider>
       </div>
     </div>
   );

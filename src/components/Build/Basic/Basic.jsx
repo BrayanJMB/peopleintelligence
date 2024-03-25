@@ -26,7 +26,6 @@ export default function Basic(props) {
   const company = useSelector((state) =>
     currentCompany ? selectCompanyById(state, currentCompany.id) : null
   );
-
   const handleNext = () => {
     if (fieldsValidation()) {
       props.handleNextStepper();
@@ -59,7 +58,7 @@ export default function Basic(props) {
 
     return hasNotErrors;
   };
-
+  
   return (
     <div className={styles.basic}>
       <span
@@ -83,7 +82,7 @@ export default function Basic(props) {
               <div className={styles.input}>
                 <TextField
                   id="outlined-name"
-                  label="Título encuesta"
+                  label="Título conversación"
                   value={props.survey.title}
                   name="title"
                   onChange={(event) => props.handleChange(event, 'survey')}
@@ -93,26 +92,26 @@ export default function Basic(props) {
                   helperText={helperText.title}
                 />
               </div>
-              <div className={styles.input}>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ display: 'flex' }}>
-                    <NotesIcon color="blue" style={{ marginRight: '1rem' }} />
-                    <p>Nombre moderador</p>
-                  </div>
-                    <TextField
-                    id="outlined-name"
-                    label="Nombre moderador"
-                    value={props.moderator.name}
-                    name="name"
-                    onChange={(event) => props.handleChange(event, 'moderator')}
-                    size="small"
-                    style={{ width: '100%' , color:'#00B0F0'}}
-                    error={error.title}
-                    helperText={helperText.title}
-                  />
-                </div>
-              </div>
             </div>
+            <div className={styles.general}>
+              <NotesIcon color="blue" style={{ marginRight: '1rem' }} />
+              <p>Nombre Moderador</p>
+            </div>
+            <div className={styles.required}>
+              <div className={styles.input}>
+                <TextField
+                  id="outlined-name"
+                  label="Nombre moderador"
+                  value={props.moderator.name}
+                  name="name"
+                  onChange={(event) => props.handleChange(event, 'moderator')}
+                  size="small"
+                  style={{ width: '100%' , color:'#00B0F0'}}
+                  error={error.title}
+                  helperText={helperText.title}
+                />
+              </div>
+              </div>
           </div>
           <div>
             <div className={styles.optional}>
@@ -244,7 +243,7 @@ export default function Basic(props) {
                           ? props.survey.imageUrl
                           : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlNXd9tJhoyJMieolHXk9y6MmWuT7Y2bBv7ftTIS0U7Q&s'
                       }
-                      alt="profildde"
+                      alt="baseImagen"
                       className={styles.coverright}
                     />
                   </div>
@@ -267,7 +266,7 @@ export default function Basic(props) {
                       <div>
                         {props.moderator.name
                           ? props.moderator.name
-                          : 'Moderator'}
+                          : 'Moderador'}
                       </div>
                     </div>
                   </div>

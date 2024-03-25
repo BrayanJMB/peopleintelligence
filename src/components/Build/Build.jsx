@@ -185,6 +185,7 @@ export default function Build({ stage, handleMove }) {
     setModerator((prevState) => ({
       ...prevState,
       moderatorId: userInfo.user, 
+      avatarUrl: moderator.avatarUrl,
     }));
 
     // Actualizar el estado de la encuesta
@@ -192,6 +193,7 @@ export default function Build({ stage, handleMove }) {
       ...prevState,
       id: surveyChat.id,
       title: surveyChat.title,
+      companyId: currentCompany?.id,
       timeDemographics: surveyChat.timeDemographics,
       description: surveyChat.description,
       imageUrl: surveyChat.imageUrl,
@@ -242,6 +244,7 @@ export default function Build({ stage, handleMove }) {
             setModerator={setModerator}
             surveyChat={surveyChat}
             isUpdate={isUpdate}
+            setSurveyChat={setSurveyChat}
           />
         );
       case 'quota':

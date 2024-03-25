@@ -8,8 +8,6 @@ export const postCompanyAPI = async (
   id,
   logoTipo
 ) => {
-  console.log('postCompanyAPI');
-
   const response = await axios.post('companias/' + id, {
     IdPais: pais,
     IdTamanoCompania: size,

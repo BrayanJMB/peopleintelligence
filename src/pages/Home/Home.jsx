@@ -97,7 +97,7 @@ export default function Home() {
         setData(holder);
       });
     } catch (error) {
-      console.log(error);
+
     }
   };
 
@@ -118,8 +118,6 @@ export default function Home() {
         setData(holder);
       });
     } catch (error) {
-      console.log(error);
-
     }
   };
 
@@ -140,7 +138,6 @@ export default function Home() {
         setData(holder);
       });
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -161,7 +158,6 @@ export default function Home() {
         setData(holder);
       });
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -189,7 +185,6 @@ export default function Home() {
         .then((res) => {
           let token = res.data.token;
           let decodedToken = decodeToken(token);
-          console.log(decodedToken);
           if (!Array.isArray(decodedToken.role)) {
             let tmp = [];
             tmp.push(decodedToken.role);
@@ -251,7 +246,6 @@ export default function Home() {
       sizeCompanyConsume();
       sectorConsume();
       documentTypeConsume();
-      console.log(error);
     }
   };
 

@@ -268,7 +268,6 @@ export default function One(props) {
               severity: 'error',
             });
           }
-          console.log(error);
         }
       }
     }

@@ -89,7 +89,6 @@ export default function Roles() {
         setData(holder);
       });
     } catch (error) {
-      console.log(error);
     }
   };
   const companyRolesConsume = async () => {
@@ -125,7 +124,6 @@ export default function Roles() {
         setData(holder);
       });
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -146,7 +144,6 @@ export default function Roles() {
         setData(holder);
       });
     } catch (error) {
-      console.log(error);
     }
   };
 

@@ -9,7 +9,6 @@ export const MessageList = ({
   messages,
   responseDemographic,
   demographics,
-  question,
   nextQuestionTimer,
   answersOpinion,
 }) => {
@@ -26,11 +25,12 @@ export const MessageList = ({
             senderAvatar={messageItem.senderAvatar}
             message={messageItem.message}
             messageType={messageItem.messageType}
-			responseDemographic={responseDemographic}
-			demographics={demographics}
-			question={question}
-			nextQuestionTimer={nextQuestionTimer}
-			answersOpinion={answersOpinion}
+            isAnswer={messageItem.isAnswer}
+            responseDemographic={responseDemographic}
+            demographics={demographics}
+            question={messageItem.content && messageItem.content}
+            nextQuestionTimer={nextQuestionTimer}
+            answersOpinion={answersOpinion}
           />
         ))}
     </div>

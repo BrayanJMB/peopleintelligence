@@ -1,9 +1,7 @@
 import { useState } from 'react';
 
-import { Demographics } from './Demographics';
 import { InputMessage } from './InputMessage';
 import { MessageList } from './MessageList';
-import { Questions } from './Questions';
 
 import styles from './ChatBox.module.css';
 export const ChatBox = (props) => {
@@ -23,7 +21,6 @@ export const ChatBox = (props) => {
         messages={props.messages}
         responseDemographic={props.responseDemographic}
         demographics={props.demographics}
-        question={props.question}
         nextQuestionTimer={props.questionTimer}
         answersOpinion={props.answersOpinion}
       />

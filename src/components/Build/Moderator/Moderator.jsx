@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { createContext, useEffect, useRef,useState } from 'react';
+import { useSelector } from 'react-redux';
 import * as signalR from '@microsoft/signalr';
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
 import SendIcon from '@mui/icons-material/Send';
 import { Button, Card, CardContent, Grid, Paper } from '@mui/material';
-import { Divider, Icon, Toolbar, Typography } from '@mui/material';
+import { Divider, Typography } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -16,21 +18,30 @@ import axios from 'axios';
 import { ChatBox } from './ChatBox';
 import { ConnectDisconnectUser } from './ConnectDisconnectUser';
 import CountdownTimer from './CountdownTimer';
-import { Demographics } from './Demographics';
-import { Questions } from './Questions';
 
 import styles from './ChatBox.module.css';
+
+export const singleQuestionContext = createContext();
+export const answerSingleQuestionContext = createContext();
+export const nextQuestionTimerContext = createContext();
 
 export const Moderator = ({ id }) => {
   const [connection, setConnection] = useState(null);
   const [survey, setSurvey] = useState([]);
-  const [demographic, setDemographics] = useState([]);
+  const [moderatorAvatar, setModeratorAvatar] = useState();
   const [question, setQuestions] = useState([]);
   const [responseDemographic, setResponseDemographic] = useState([]);
   const [connectedUsers, setConnectedUsers] = useState(0);
   const [nextQuestion, setNextQuestion] = useState(0);
-  const [questionTimer, setQuestionTimer] = useState(0);
+  const [questionTimer, setQuestionTimer] = useState(null);
   const [answersOpinion, setAnswersOpinion] = useState([]);
+  const [singleQuestion, setSingleQuestion] = useState(null);
+  const [answerSingleQuestion, answerSetSingleQuestion] = useState(null);
+  const indexCurrentQuestion = useRef(null);
+  const [complexQuestion, setComplexQuestion] = useState(true);
+
+
+
   function detectURL(message) {
     var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
     return message.replace(urlRegex, function (urlMatch) {
@@ -39,7 +50,7 @@ export const Moderator = ({ id }) => {
   }
 
   const users = {
-    0: { name: 'Shun', avatar: 'https://i.pravatar.cc/150?img=32' },
+    0: { name: 'Shun', avatar: '' },
   };
   const questionIcons = [
     {
@@ -58,18 +69,26 @@ export const Moderator = ({ id }) => {
         `https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/GetSurvey/getSurvey/${id}`
       );
       setSurvey(response.data);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
+  
+  const fetchModerator = async () => {
+    try {
+      const response = await axios.get(
+        `https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/GetModerator/${id}`
+      );
+      setModeratorAvatar(response.data);
+    } catch (error) {}
+  };
+  
   const initializeConnectionAndFetchData = async () => {
     try {
       await fetchSurvey();
-
+      await fetchModerator();
       const signalRConnection = new HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
-        .withUrl('https://localhost:7005/discusion')
+        .withUrl('https://chatapppeopleintelligence.azurewebsites.net/discusion')
         .withAutomaticReconnect()
         .build();
 
@@ -89,7 +108,7 @@ export const Moderator = ({ id }) => {
         .then(() => {
           connection
             .invoke(
-              'ChargeDemographics',
+              'ChargeDemographics', //Carga de Demográficos apeans carga el chat, si existen.
               survey.demographicList,
               survey.timeDemographics,
               survey.description
@@ -97,13 +116,17 @@ export const Moderator = ({ id }) => {
             .catch(function (err) {
               return console.error(err.toString());
             });
-          connection.on('ReceiveDemograpics', (newDemographics) => {
-            setDemographics(newDemographics);
-          });
           connection.on('RecibirRespuestaSingle', (answer, counter) => {
-            console.log(answer, counter);
-        });
-          connection.on('SendRespuestasDos', tablarespuestas => { 
+            answerSetSingleQuestion({
+              answer: answer,
+              counter: counter,
+            });
+            if  (counter >= connectedUsers){
+              setComplexQuestion(true);
+              setNextQuestion(indexCurrentQuestion.current);
+            }
+          });
+          connection.on('SendRespuestasDos', (tablarespuestas) => {
             setAnswersOpinion(tablarespuestas);
           });
           connection.on('clientConnected', setConnectedUsers);
@@ -113,6 +136,19 @@ export const Moderator = ({ id }) => {
               ...prevCounts,
               [idDemo]: count,
             }));
+          });
+
+          connection.on('QuestionSingleOptions', (question) => {
+            setSingleQuestion(question);
+          });
+
+          // Actualiza la interfaz de usuario con el tiempo actual
+          connection.on('UpdateTime', (time) => {
+            setQuestionTimer(time);
+            if (time === 0) {
+              setComplexQuestion(true);
+              setNextQuestion(indexCurrentQuestion.current);
+            }
           });
         })
         .catch((error) =>
@@ -127,17 +163,20 @@ export const Moderator = ({ id }) => {
       };
     }
   }, [connection]);
-  
+
   useEffect(() => {
-    let newMessageItem = {
-      id: messages.length + 1,
-      sender: 'Shun',
-      senderAvatar: 'https://i.pravatar.cc/150?img=32',
-      messageType:'demographic',
-    };
-    setMessages((prevMessages) => [...prevMessages, newMessageItem]);
-  }, []);
-  
+    if (moderatorAvatar && (survey.demographicList && survey.demographicList.length > 0)){
+      let newMessageItem = {
+        id: messages.length + 1,
+        sender: 'Shun',
+        senderAvatar: moderatorAvatar.avatarUrl,
+        messageType: 'demographic',
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+    }
+
+  }, [moderatorAvatar]);
+
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState({});
 
@@ -165,48 +204,67 @@ export const Moderator = ({ id }) => {
     setIsTyping((prevIsTyping) => ({ ...prevIsTyping, [writer]: false }));
   };
 
-  const nextQuestionTimer = (timeLimit)=> {
+  const nextQuestionTimer = (timeLimit) => {
     let timeInt = parseInt(timeLimit);
     connection.invoke('StartTimer', timeInt).catch(function (err) {
-        return console.error(err.toString());
+      return console.error(err.toString());
     });
     setQuestionTimer(timeLimit);
-};
+  };
+
   const SendQuestionByType = (type, question, index) => {
-    let currentQuestion = index + 1;
+    let currentQuestion = question.orderNumber;
     switch (type.toLowerCase()) {
       case 'texto':
-        connection.invoke('SendText', question.name)
-        .then(()=>{
-          let newMessageItem = {
-            id: messages.length + 1,
-            sender: 'Shun',
-            senderAvatar: 'https://i.pravatar.cc/150?img=32',
-            messageType:'question',
-          };
-          setMessages((prevMessages) => [...prevMessages, newMessageItem]);
-        })
-        .catch(function (err) {
-          return console.error(err.toString());
-        });
-        setQuestions(prevQuestions => {   
-          const newQuestion = question;
-          return [...prevQuestions, newQuestion];
-        });
-        setNextQuestion(index + 1);
-        break;
-      case 'seleccionsimple':
-        console.log(question);
-          connection.invoke('SendSingleOption', question).catch(function (err) {
-              return console.error(err.toString());
+        connection
+          .invoke('SendText', question.name)
+          .then(() => {
+            let newMessageItem = {
+              id: messages.length + 1,
+              sender: 'Shun',
+              senderAvatar: moderatorAvatar.avatarUrl ,
+              messageType: 'question',
+              content: question,
+            };
+            setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+            indexCurrentQuestion.current = currentQuestion;
+          })
+          .catch(function (err) {
+            return console.error(err.toString());
           });
-          break;
-      case 'imagen':
+        setNextQuestion(currentQuestion);
+        break;
+      /*case 'imagen':
           setNextQuestion(index + 1);    
           break;
-      case 'opinión':
+      case 'video':
+            console.log('soy video');
+            break;*/
+      case 'seleccionsimple':
+        connection.invoke('SendSingleOption', question).catch(function (err) {
+          return console.error(err.toString());
+        });
+        let newMessageItem = {
+          id: messages.length + 1,
+          sender: 'Shun',
+          senderAvatar: moderatorAvatar.avatarUrl,
+          messageType: 'question',
+          content: question,
+        };
+        setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+
+        indexCurrentQuestion.current = currentQuestion;
+        nextQuestionTimer(question.timeLimit);
+        setComplexQuestion(false);
+        //setNextQuestion(currentQuestion);
+        break;
+      case 'experiencia':
+        connection.invoke('SendExperiencia', question).catch(function (err) {
+          return console.error(err.toString());
+        });
+        break;
+      /*case 'opinión':
         connection.invoke('SendOpinion', question).catch(function (err) {
-            //envio de pregunta de opinion
             return console.error(err.toString());
         });
           setQuestions(prevQuestions => {   
@@ -214,13 +272,28 @@ export const Moderator = ({ id }) => {
             return [...prevQuestions, newQuestion];
           });
           nextQuestionTimer(question.timeLimit);
-          setNextQuestion(index + 1);
-        break;
+          setIndexCurrentQuestion(currentQuestion);
+          setNextQuestion(currentQuestion);
+        break;*/
       default:
-        break;   
+        break;
     }
   };
 
+  useEffect(() => {
+    // Verificar que singleQuestion tiene datos para proceder
+    if (singleQuestion) {
+      let newMessageItemSender = {
+        id: messages.length + 1,
+        sender: 'Cliente',
+        senderAvatar: 'https://i.pravatar.cc/150?img=32',
+        messageType: 'question',
+        content: singleQuestion,
+        isAnswer: true,
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
+    }
+  }, [singleQuestion]);
 
   return (
     <Box
@@ -342,12 +415,18 @@ export const Moderator = ({ id }) => {
                               </div>
                               {nextQuestion === index && (
                                 <Button>
-                                <SendIcon
-                                  sx={{ color: '#00B0F0' }}
-                                  onClick={() =>
-                                    SendQuestionByType(option.type, option, index)
-                                  }
-                                />
+                                  {complexQuestion && (
+                                    <SendIcon
+                                      sx={{ color: '#00B0F0' }}
+                                      onClick={() =>
+                                        SendQuestionByType(
+                                          option.type,
+                                          option,
+                                          index
+                                        )
+                                      }
+                                    />
+                                  )}
                                 </Button>
                               )}
                             </div>
@@ -359,7 +438,7 @@ export const Moderator = ({ id }) => {
                                   style={{ boxShadow: 'none', border: 'none' }}
                                 >
                                   <AccordionSummary>
-                                    <Typography>Mostar opciones</Typography>
+                                    <Typography>Mostrar opciones</Typography>
                                   </AccordionSummary>
 
                                   <AccordionDetails>
@@ -402,26 +481,32 @@ export const Moderator = ({ id }) => {
               {Object.keys(users).map((key) => {
                 const user = users[key];
                 return (
-                  <ChatBox
-                    key={key}
-                    owner={user.name}
-                    ownerAvatar={user.avatar}
-                    sendMessage={sendMessage}
-                    typing={typing}
-                    resetTyping={resetTyping}
-                    messages={messages}
-                    setMessages={setMessages}
-                    isTyping={isTyping}
-
-                    responseDemographic={responseDemographic}
-                    demographics={demographic}
-                    question={question}
-                    nextQuestionTimer={questionTimer}
-                    answersOpinion={answersOpinion}
-                  />
+                  <answerSingleQuestionContext.Provider
+                    value={answerSingleQuestion}
+                  >
+                    <singleQuestionContext.Provider value={singleQuestion}>
+                      <nextQuestionTimerContext.Provider value={questionTimer}>
+                        <ChatBox
+                          key={key}
+                          owner={user.name}
+                          ownerAvatar={user.avatar}
+                          sendMessage={sendMessage}
+                          typing={typing}
+                          resetTyping={resetTyping}
+                          messages={messages}
+                          setMessages={setMessages}
+                          isTyping={isTyping}
+                          responseDemographic={responseDemographic}
+                          demographics={survey.demographicList}
+                          question={question}
+                          nextQuestionTimer={questionTimer}
+                          answersOpinion={answersOpinion}
+                        />
+                      </nextQuestionTimerContext.Provider>
+                    </singleQuestionContext.Provider>
+                  </answerSingleQuestionContext.Provider>
                 );
               })}
-
             </div>
           </div>
         </Grid>
@@ -429,3 +514,4 @@ export const Moderator = ({ id }) => {
     </Box>
   );
 };
+

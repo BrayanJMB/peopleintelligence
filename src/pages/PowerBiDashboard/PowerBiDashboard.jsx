@@ -35,7 +35,6 @@ export default function PowerBiDashboard() {
       return;
     if (userInfo.role.findIndex((p) => p === 'PowerBiDashboard') > -1) {
       getCompanyDashboardsAPI(currentCompany.id).then((res) => {
-        console.log(res.data);
         let data = [];
         res.data.forEach((val) => {
           if (!data.includes(val)) {
