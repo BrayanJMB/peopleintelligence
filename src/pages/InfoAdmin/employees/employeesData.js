@@ -98,7 +98,6 @@ export const useEmployee = (
     setLoading(true);
 
     const { data } = await fetchEmployeeAPI(currentCompany.id);
-    console.log(data);
     const { data: area } = await fetchAreaByCompanyAPI(currentCompany.id);
     const areasNames = area.reduce((acc, area) => {
       acc[area.id] = area.NombreArea;
@@ -135,7 +134,6 @@ export const useEmployee = (
 
   const fetchArea = async (idCompany) => {
     const { data: areaData } = await fetchAreaByCompanyAPI(idCompany);
-    console.log(areaData);
     setArea(areaData);
   };
 
@@ -429,14 +427,10 @@ export const useEmployee = (
 
   const handleEditEmployee = async (id) => {
     const employee = employees.find((employee) => employee.id === id);
-    console.log(employee);  
-    console.log(persons);
     const person = persons.find((person) => person.id === employee.IdPersona);
-    console.log(person);
     const { data: segmentsData } = await getSegmentsAPI(
       person.IdSegmentos || 0
     );
-    console.log(segmentsData);
     const documentType = DocumentsTypes.find(
       (documentType) => documentType.documentTypeId === person.IdTipoDocumento
     );

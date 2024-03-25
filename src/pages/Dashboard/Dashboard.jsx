@@ -65,7 +65,6 @@ export default function Dashboard() {
         return res.data;
       });
     } catch (error) {
-      console.log(error);
     }
   };
 

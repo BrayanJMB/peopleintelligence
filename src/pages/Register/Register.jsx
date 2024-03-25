@@ -83,7 +83,6 @@ export default function Register() {
         setData(holder);
       });
     } catch (error) {
-      console.log(error);
     }
   };
   const reportConsume = async () => {
@@ -103,7 +102,6 @@ export default function Register() {
         setData(holder);
       });
     } catch (error) {
-      console.log(error);
     }
   };
 

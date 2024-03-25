@@ -354,7 +354,6 @@ export default function InfoAdmin() {
           console.error('Error al subir la imagen:', response.statusText);
         }
       } catch (error) {
-        console.log(error);
       }
     }
     return urlLogo;
@@ -1587,7 +1586,6 @@ export default function InfoAdmin() {
     }
 
     const { data } = await fetchWorkingDayByCompanyAPI(currentCompany.id);
-    console.log(data);
     setWorkingDay(data);
   };
   //fin Working Day

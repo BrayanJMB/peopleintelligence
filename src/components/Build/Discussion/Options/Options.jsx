@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -18,6 +18,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 
+import { filesImageQuestionContext } from '../Discussion';
 
 const tiempoPregunta = [1, 2, 3, 4, 5];
 function Options({
@@ -32,10 +33,10 @@ function Options({
   handleRemoveConversation,
   errors,
 }) {
-  const [files, setFiles] = useState([]);
-
+  const [time, setTime] = useState('00:00');
+  const files = useContext(filesImageQuestionContext);
   const onDrop = useCallback((acceptedFiles) => {
-    setFiles(
+    files.ImageQuestion(
       acceptedFiles.map((file) =>
         Object.assign(file, {
           preview: URL.createObjectURL(file),
@@ -45,19 +46,29 @@ function Options({
   }, []);
 
   const removeFile = (file) => () => {
-    const newFiles = files.filter((f) => f.name !== file.name);
-    setFiles(newFiles);
+    const newFiles = files.filesImageQuestion.filter(
+      (f) => f.name !== file.name
+    );
+    files.setFiles(newFiles);
   };
 
-  const previews = files.map((file) => (
+  const previews = Object.values(files.filesImageQuestion).map((file) => (
     <div key={file.name}>
       <img src={file.preview} style={{ width: '100%' }} alt="Preview" />
-      <IconButton onClick={removeFile(file)}>
+      <IconButton onClick={() => removeFile(file)}>
         <DeleteOutlineIcon />
       </IconButton>
     </div>
   ));
 
+  function limpiarTexto(texto) {
+    let textoSinEspacios = texto.replace(/\s+/g, '');
+    let textoSinTildes = textoSinEspacios
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+    return textoSinTildes;
+  }
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   const isText = (item) => {
     switch (item.toLowerCase()) {
@@ -80,7 +91,7 @@ function Options({
     return 'video';
   };
   const isSelecionSimple = (item) => {
-    switch (item.toLowerCase()) {
+    switch (limpiarTexto(item.toLowerCase())) {
       case 'seleccionsimple':
         return true;
       default:
@@ -90,9 +101,14 @@ function Options({
 
   const handleFileChange = (event) => {
     // Acceder al archivo seleccionado
-    const file = event.target.files[0];
-    // Procesar el archivo o actualizar el estado según sea necesario
-    console.log('Archivo seleccionado:', file.name);
+    files.setFilesImageQuestion(event.target.files[0]);
+    const newConversation = { ...question };
+    setQuestion((prevState) => {
+      const newConversations = [...prevState];
+      const index = newConversations.findIndex((d) => d === question);
+      newConversations[index] = newConversation;
+      return newConversations;
+    });
   };
 
   const handleDemographicNameChange = (e) => {
@@ -106,7 +122,6 @@ function Options({
       });
     } else {
       const newConversation = { ...question, name: e.target.value };
-
       setQuestion((prevState) => {
         const newConversations = [...prevState];
         const index = newConversations.findIndex((d) => d === question);
@@ -178,6 +193,7 @@ function Options({
         ...question,
         options: [...question.options, newOption],
       };
+
       setQuestion((prevState) => {
         const newConversations = [...prevState];
         const index = newConversations.findIndex((d) => d === question);
@@ -238,11 +254,10 @@ function Options({
       ...question,
       timeLimit: valueInSeconds,
     };
-    console.log(newConversation);
+
     setQuestion((prevState) => {
       const newConversations = [...prevState];
       const index = newConversations.findIndex((d) => d === question);
-      console.log(index);
 
       if (index !== -1) {
         newConversations[index] = newConversation;
@@ -253,8 +268,61 @@ function Options({
   };
 
   useEffect(() => {
-    return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
+    return () =>
+      Object.values(files.filesImageQuestion).forEach((file) =>
+        URL.revokeObjectURL(file.preview)
+      );
   }, [files]);
+
+  const handleChangeTime = (event) => {
+    let { value } = event.target;
+
+    // Elimina cualquier carácter que no sea dígito
+    let filteredValue = value.replace(/[^\d]/g, '');
+
+    // Inserta automáticamente un ':' después de 2 dígitos
+    if (filteredValue.length > 2) {
+      filteredValue =
+        filteredValue.substring(0, 2) + ':' + filteredValue.substring(2);
+    }
+
+    // Limita la entrada a 5 caracteres: MM:SS
+    filteredValue = filteredValue.substring(0, 5);
+
+    // Divide los minutos de los segundos
+    let parts = filteredValue.split(':');
+    let minutes = parts[0] ? parts[0].substring(0, 2) : '';
+    let seconds = parts[1] ? parts[1].substring(0, 2) : '';
+
+    // Asegura que los minutos y segundos no sean mayores de 59
+    minutes = parseInt(minutes, 10) > 10 ? '10' : minutes;
+    seconds = parseInt(seconds, 10) > 59 ? '59' : seconds;
+
+    // Reconstruye el valor asegurándose de que cumpla con el formato MM:SS
+    let newValue = `${minutes}:${seconds}`;
+
+    // Convertir minutos y segundos a segundos totales
+    let totalSeconds = parseInt(minutes) * 60 + parseInt(seconds);
+
+    const newConversation = {
+      ...question,
+      timeLimit: totalSeconds, // Aquí se asignan los segundos totales calculados
+    };
+
+    // Actualiza el estado con el nuevo valor y la nueva conversación
+    setTime(newValue); // Actualiza el tiempo mostrado en la interfaz
+
+    setQuestion((prevState) => {
+      const newConversations = [...prevState];
+      const index = newConversations.findIndex((d) => d === question);
+
+      if (index !== -1) {
+        newConversations[index] = newConversation;
+      }
+
+      return newConversations;
+    });
+  };
 
   return (
     <div style={{ marginBottom: '20px' }}>
@@ -273,6 +341,8 @@ function Options({
                   display: 'flex',
                   alignItems: 'flex-start',
                   justifyContent: 'space-between',
+                  overflowX: 'hidden',
+                  overflowY: 'scroll',
                 }}
               >
                 <Typography variant="h5" style={{ marginBottom: '15px' }}>
@@ -311,60 +381,66 @@ function Options({
                   Añadir opción <AddCircleOutlineIcon />
                 </Button>
               </div>
-
-              {demographic.demographicDetails.length > 0 && (
-                <>
-                  <Typography
-                    variant="h6"
-                    style={{
-                      marginBottom: '10px',
-                      borderBottom: '1px solid #ddd',
-                      paddingBottom: '10px',
-                    }}
-                  >
-                    Opciones demográfico
-                  </Typography>
-                  {demographic.demographicDetails.map((opcion, index) => (
-                    <div
-                      key={opcion.id}
+              <div
+                style={{
+                  overflowY: 'scroll',
+                  height: '10em',
+                }}
+              >
+                {demographic.demographicDetails.length > 0 && (
+                  <>
+                    <Typography
+                      variant="h6"
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
                         marginBottom: '10px',
+                        borderBottom: '1px solid #ddd',
+                        paddingBottom: '10px',
                       }}
                     >
-                      <TextField
-                        fullWidth
-                        label={`Opción ${index + 1}`}
-                        id="outlined-size-small"
-                        defaultvalue="Small"
-                        size="small"
-                        value={opcion.value}
-                        onChange={(e) =>
-                          handleOptionChange(opcion.id, e.target.value)
-                        }
-                        style={{ marginRight: '20px' }}
-                        error={
-                          !!errors.demographics?.[currentIndex]?.[
-                            `option${index}`
-                          ]
-                        }
-                        helperText={
-                          errors.demographics?.[currentIndex]?.[
-                            `option${index}`
-                          ]
-                        }
-                      />
-                      <IconButton
-                        onClick={() => handleDeleteOption(opcion.id)}
-                        color="error"
+                      Opciones demográfico
+                    </Typography>
+                    {demographic.demographicDetails.map((opcion, index) => (
+                      <div
+                        key={opcion.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          marginBottom: '10px',
+                        }}
                       >
-                        <DeleteOutlineIcon />
-                      </IconButton>
-                    </div>
-                  ))}
-                </>
-              )}
+                        <TextField
+                          fullWidth
+                          label={`Opción ${index + 1}`}
+                          id="outlined-size-small"
+                          defaultvalue="Small"
+                          size="small"
+                          value={opcion.value}
+                          onChange={(e) =>
+                            handleOptionChange(opcion.id, e.target.value)
+                          }
+                          style={{ marginRight: '20px' }}
+                          error={
+                            !!errors.demographics?.[currentIndex]?.[
+                              `option${index}`
+                            ]
+                          }
+                          helperText={
+                            errors.demographics?.[currentIndex]?.[
+                              `option${index}`
+                            ]
+                          }
+                        />
+                        <IconButton
+                          onClick={() => handleDeleteOption(opcion.id)}
+                          color="error"
+                        >
+                          <DeleteOutlineIcon />
+                        </IconButton>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
             </CardContent>
           </Card>
         </>
@@ -385,15 +461,12 @@ function Options({
                     marginBottom: '10px',
                   }}
                 >
-                  <div>
+                  <div style={{ marginBottom: '10px', color: '#00B0F0' }}>
                     <Chip
-                      sx={{
-                        color: '#00B0F0',
-                      }}
-                      label="Pregunta de texto"
+                      label="Texto"
                       size="small"
                       variant="outlined"
-                      style={{ marginBottom: '5px' }}
+                      color="primary"
                     />
                     <Button onClick={handleRemoveConversation} color="error">
                       Eliminar
@@ -401,7 +474,7 @@ function Options({
                   </div>
                   <TextField
                     size="small"
-                    label="Nombre pregunta"
+                    label="Ingrese texto"
                     value={question.name}
                     onChange={handleDemographicNameChange}
                     error={!!errors.questions?.[currentIndex]?.name}
@@ -487,13 +560,12 @@ function Options({
                     marginBottom: '10px',
                   }}
                 >
-                  <div>
+                  <div style={{ marginBottom: '10px', color: '#00B0F0' }}>
                     <Chip
                       label="Experiencia"
                       color="primary"
                       size="small"
                       variant="outlined"
-                      style={{ marginBottom: '5px', color: '#00B0F0' }}
                     />
                     <Button onClick={handleRemoveConversation} color="error">
                       Eliminar
@@ -644,13 +716,12 @@ function Options({
                     marginBottom: '10px',
                   }}
                 >
-                  <div>
+                  <div style={{ marginBottom: '10px', color: '#00B0F0' }}>
                     <Chip
                       label="Seleccion simple"
                       color="primary"
                       size="small"
                       variant="outlined"
-                      style={{ marginBottom: '5px', color: '#00B0F0' }}
                     />
                     <Button onClick={handleRemoveConversation} color="error">
                       Eliminar
@@ -659,13 +730,12 @@ function Options({
                   <div
                     style={{
                       display: 'flex',
-                      alignItems: 'center',
                     }}
                   >
                     <TextField
                       size="small"
                       fullWidth
-                      label="seleccion simple"
+                      label="Ingrese pregunta"
                       value={question.name}
                       onChange={handleDemographicNameChange}
                       error={!!errors.questions?.[currentIndex]?.name}
@@ -676,25 +746,20 @@ function Options({
                       sx={{ minWidth: 120 }}
                       size="small"
                     >
-                      <InputLabel id="demo-simple-select-helper-label">
-                        Tiempo
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-helper-label"
-                        id="demo-simple-select-helper"
-                        value={
-                          question.timeLimit < 60
-                            ? question.timeLimit
-                            : question.timeLimit / 60
-                        }
-                        onChange={handleChangeTimeLimit}
-                      >
-                        {tiempoPregunta.map((value, index) => (
-                          <MenuItem key={index} value={value}>
-                            {`${value} ${value === 1 ? 'minuto' : 'minutos'}`}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                      <TextField
+                        label="Tiempo (MM:SS)"
+                        size="small"
+                        value={time}
+                        onChange={handleChangeTime}
+                        placeholder="MM:SS"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        inputProps={{
+                          maxLength: 5, // Limita la longitud del input a MM:SS
+                        }}
+                        sx={{ width: 120 }}
+                      />
                       <FormHelperText>
                         {errors.questions?.[currentIndex]?.timeLimit}
                       </FormHelperText>
@@ -791,7 +856,7 @@ function Options({
                       alignItems: 'center',
                     }}
                   >
-                    {files.length === 0 && (
+                    {files.filesImageQuestion.length === 0 && (
                       <Box
                         {...getRootProps()}
                         sx={{
@@ -803,7 +868,14 @@ function Options({
                           backgroundColor: isDragActive ? '#eeeeee' : '#fafafa',
                         }}
                       >
-                        <input {...getInputProps()} accept="image/*,video/*"  />
+                        <input
+                          {...getInputProps({
+                            onChange: (event) => {
+                              handleFileChange(event); // Asumiendo que handleFileChange maneja el evento de cambio
+                            },
+                          })}
+                          accept="image/*,video/*"
+                        />
                         <CloudUploadIcon sx={{ fontSize: 60 }} />
                         <Typography variant="body1">
                           {isDragActive

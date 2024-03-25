@@ -204,7 +204,6 @@ export default function UserAdministrator() {
 
 
   const handleSubmittedCreateDialog = async (formValues) => {
-    console.log(currentCreate.type);
     if (currentCreate.type === 'user') {
       try{
        await postUserAPI({
@@ -221,7 +220,6 @@ export default function UserAdministrator() {
           variant: 'success',
         });
       } catch (e) {
-        console.log(e);
         enqueueSnackbar('Hubo un error al crear el usuario', {
           variant: 'error',
         });
@@ -229,7 +227,6 @@ export default function UserAdministrator() {
     }
 
     if (currentCreate.type === 'userRolChange') {
-      console.log(formValues);
       try{
 
         await postUserRolsAPI(
@@ -245,7 +242,7 @@ export default function UserAdministrator() {
            variant: 'success',
          });
        } catch (e) {
-         console.log(e);
+
          enqueueSnackbar('Hubo un error al crear el usuario', {
            variant: 'error',
          });

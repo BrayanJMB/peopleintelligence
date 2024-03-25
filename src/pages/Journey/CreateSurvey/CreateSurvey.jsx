@@ -65,11 +65,11 @@ export default function CreateSurvey() {
     name: '',
     description: '',
     options: [
-      'Totalmente en Desacuerdo',
-      'En Desacuerdo',
-      'Ni de Acuerdo  Ni en Desacuerdo',
-      'De Acuerdo',
       'Totalmente de Acuerdo',
+      'De Acuerdo',
+      'Ni de Acuerdo  Ni en Desacuerdo',
+      'En Desacuerdo',
+      'Totalmente en Desacuerdo',
     ],
     customOptions: Array(2).fill(''),
     stars: Array(3).fill(''),
@@ -266,7 +266,6 @@ export default function CreateSurvey() {
    * Handle next step.
    */
   const handleNextStep = async () => {
-    console.log(isTemplate, isUpdate, data.isValid);
     switch (activeStep) {
       case 0:
         setCheckForm(true);

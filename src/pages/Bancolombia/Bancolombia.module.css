@@ -1,0 +1,73 @@
+.Bancolombia {
+    background-color: #f3f3f3;
+    width: 100%;
+    height: 100vh;
+    overflow: auto;
+}
+
+.Bancolombia__BoxWelcome{
+    border-left: 8px solid #FDDA25;
+    border-right: 8px solid #FDDA25;
+    padding: 15px;
+}
+
+.mb {
+    margin-bottom: 1rem;
+}
+
+.Bancolombia__Background {
+    width: 100%;
+    height: 20%;
+    background-color: #03aae4;
+    text-align: center;
+    position: fixed;
+}
+.Bancolombia__Content {
+    position: relative;
+    z-index: 1;
+    padding: 1em;
+}
+.Bancolombia__DemographicsForm {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.Bancolombia__Imagen {
+    width: 100%; /* Establece el ancho de la imagen al 100% del contenedor */
+    height: auto; /* Ajusta la altura automáticamente para mantener la proporción */
+  }
+
+@media screen and (min-width: 1000px) {
+    .Bancolombia__Content {
+        top: 3em;
+        width: 1000px;
+        margin: 0 auto;
+    }
+}
+
+/* Bancolombia.module.css */
+.Bancolombia__Content {
+    padding: 1rem;
+  }
+  
+  /* Para pantallas grandes */
+  @media (min-width: 1024px) {
+    .Bancolombia__Content {
+      max-width: calc(100% - 100px); /* o cualquier otro cálculo que necesites */
+    }
+  }
+  
+  /* Para pantallas medianas */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .Bancolombia__Content {
+        max-width: calc(100% - 50px); /* Ajusta según tus necesidades */
+    }
+  }
+  
+  /* Para pantallas pequeñas (móviles) */
+  @media (max-width: 767px) {
+    .Bancolombia__Content {
+        max-width: 100%; /* Aquí puedes simplemente usar 100% si quieres que tome todo el ancho */
+    }
+  }
+  

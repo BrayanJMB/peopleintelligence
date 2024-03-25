@@ -81,7 +81,7 @@ export const useOffice = (currentCompany) => {
         autoHideDuration: 3000,
       });
     } catch (e) {
-      console.log(e);
+
       enqueueSnackbar('Hubo un error al eliminar la oficina', {
         variant: 'error',
         autoHideDuration: 3000,

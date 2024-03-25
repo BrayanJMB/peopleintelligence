@@ -1,3 +1,5 @@
+import { useSelector } from 'react-redux';
+
 import { Demographics } from './Demographics';
 import { Questions } from './Questions';
 
@@ -8,12 +10,14 @@ export const MessageItem = ({
   senderAvatar,
   message,
   messageType,
+  isAnswer,
   responseDemographic,
   demographics,
   question,
   nextQuestionTimer,
   answersOpinion,
 }) => {
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
   let messagePosition =
     owner === sender
       ? styles.chatApp__convMessageItemRight
@@ -21,12 +25,12 @@ export const MessageItem = ({
   return (
     <div
       className={`${styles.chatApp__convMessageItem} ${messagePosition} ${styles.clearfix}`}
-    >
+    >  
       {messageType === 'demographic' && (
         <>
           <img
-            src={senderAvatar}
-            alt={'prueba'}
+            src={senderAvatar || currentCompany.Logotipo}
+            alt={'ImagenModerador'}
             className={styles.chatApp__convMessageAvatar}
           />
 
@@ -39,15 +43,16 @@ export const MessageItem = ({
       {messageType === 'question' && (
         <>
           <img
-            src={senderAvatar}
-            alt={'prueba'}
+            src={senderAvatar || currentCompany.Logotipo}
+            alt={'ImagenModerador'}
             className={styles.chatApp__convMessageAvatar}
           />
-          {question.length > 0 && (
+          {question  && (
             <Questions
               question={question}
               nextQuestionTimer={nextQuestionTimer}
               answersOpinion={answersOpinion}
+              isAnswer={isAnswer}
             />
           )}
         </>
