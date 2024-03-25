@@ -12,3 +12,8 @@ export const updateSurveyChatAPI = async (payload) => {
   const response = await api.put('CustomCahtApi/UpdateSurvey/', payload);
   return response;
 };
+
+export const updateModeratorChatAPI = async (payload) => {
+  const response = await api.patch('CustomCahtApi/UpdateModerator/', payload);
+  return response;
+};
