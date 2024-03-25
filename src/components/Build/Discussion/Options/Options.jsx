@@ -33,6 +33,7 @@ function Options({
   handleRemoveConversation,
   errors,
 }) {
+  const [time, setTime] = useState("00:00");
   const files = useContext(filesImageQuestionContext);
   const onDrop = useCallback((acceptedFiles) => {
     files.ImageQuestion(
@@ -272,6 +273,56 @@ function Options({
         URL.revokeObjectURL(file.preview)
       );
   }, [files]);
+
+  const handleChangeTime = (event) => {
+    let { value } = event.target;
+
+    // Elimina cualquier carácter que no sea dígito
+    let filteredValue = value.replace(/[^\d]/g, "");
+
+    // Inserta automáticamente un ':' después de 2 dígitos
+    if (filteredValue.length > 2) {
+      filteredValue =
+        filteredValue.substring(0, 2) + ":" + filteredValue.substring(2);
+    }
+
+    // Limita la entrada a 5 caracteres: MM:SS
+    filteredValue = filteredValue.substring(0, 5);
+
+    // Divide los minutos de los segundos
+    let parts = filteredValue.split(":");
+    let minutes = parts[0] ? parts[0].substring(0, 2) : "";
+    let seconds = parts[1] ? parts[1].substring(0, 2) : "";
+
+    // Asegura que los minutos y segundos no sean mayores de 59
+    minutes = parseInt(minutes, 10) > 10 ? "10" : minutes;
+    seconds = parseInt(seconds, 10) > 59 ? "59" : seconds;
+
+    // Reconstruye el valor asegurándose de que cumpla con el formato MM:SS
+    let newValue = `${minutes}:${seconds}`;
+
+    // Convertir minutos y segundos a segundos totales
+    let totalSeconds = parseInt(minutes) * 60 + parseInt(seconds);
+
+    const newConversation = {
+      ...question,
+      timeLimit: totalSeconds, // Aquí se asignan los segundos totales calculados
+    };
+
+    // Actualiza el estado con el nuevo valor y la nueva conversación
+    setTime(newValue); // Actualiza el tiempo mostrado en la interfaz
+
+    setQuestion((prevState) => {
+      const newConversations = [...prevState];
+      const index = newConversations.findIndex((d) => d === question);
+
+      if (index !== -1) {
+        newConversations[index] = newConversation;
+      }
+
+      return newConversations;
+    });
+  };
 
   return (
     <div style={{ marginBottom: "20px" }}>
@@ -679,7 +730,6 @@ function Options({
                   <div
                     style={{
                       display: "flex",
-                      alignItems: "center",
                     }}
                   >
                     <TextField
@@ -696,25 +746,20 @@ function Options({
                       sx={{ minWidth: 120 }}
                       size="small"
                     >
-                      <InputLabel id="demo-simple-select-helper-label">
-                        Tiempo
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-helper-label"
-                        id="demo-simple-select-helper"
-                        value={
-                          question.timeLimit < 60
-                            ? question.timeLimit
-                            : question.timeLimit / 60
-                        }
-                        onChange={handleChangeTimeLimit}
-                      >
-                        {tiempoPregunta.map((value, index) => (
-                          <MenuItem key={index} value={value}>
-                            {`${value} ${value === 1 ? "minuto" : "minutos"}`}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                      <TextField
+                        label="Tiempo (MM:SS)"
+                        size="small"
+                        value={time}
+                        onChange={handleChangeTime}
+                        placeholder="MM:SS"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        inputProps={{
+                          maxLength: 5, // Limita la longitud del input a MM:SS
+                        }}
+                        sx={{ width: 120 }}
+                      />
                       <FormHelperText>
                         {errors.questions?.[currentIndex]?.timeLimit}
                       </FormHelperText>
