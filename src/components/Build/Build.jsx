@@ -182,8 +182,6 @@ export default function Build({ stage, handleMove }) {
 
   const updateStatesFromSurveyChat = () => {
     // Actualizar el estado del moderador
-    console.log(surveyChat);
-    console.log(moderator);
     setModerator((prevState) => ({
       ...prevState,
       moderatorId: userInfo.user, 

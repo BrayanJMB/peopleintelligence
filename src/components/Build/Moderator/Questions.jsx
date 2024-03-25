@@ -19,8 +19,7 @@ export const Questions = ({
   const singleQuestion = useContext(singleQuestionContext);
   const answerSingleQuestion = useContext(answerSingleQuestionContext);
   const questionTimer = useContext(nextQuestionTimerContext);
-  console.log(question);
-  console.log(answerSingleQuestion);
+
   const isText = (item) => {
     switch (item.toLowerCase()) {
       case 'texto':

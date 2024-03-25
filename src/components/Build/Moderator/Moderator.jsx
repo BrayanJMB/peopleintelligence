@@ -78,7 +78,6 @@ export const Moderator = ({ id }) => {
       const response = await axios.get(
         `https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/GetModerator/${id}`
       );
-      console.log(response.data);
       setModeratorAvatar(response.data);
     } catch (error) {}
   };
@@ -165,7 +164,6 @@ export const Moderator = ({ id }) => {
     }
   }, [connection]);
 
-  console.log(survey);
   useEffect(() => {
     if (moderatorAvatar && (survey.demographicList && survey.demographicList.length > 0)){
       let newMessageItem = {
@@ -181,7 +179,7 @@ export const Moderator = ({ id }) => {
 
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState({});
-  console.log(survey);
+
   const sendMessage = (sender, senderAvatar, message) => {
     setTimeout(() => {
       let messageFormat = detectURL(message);
@@ -254,7 +252,7 @@ export const Moderator = ({ id }) => {
           content: question,
         };
         setMessages((prevMessages) => [...prevMessages, newMessageItem]);
-        console.log(currentQuestion);
+
         indexCurrentQuestion.current = currentQuestion;
         nextQuestionTimer(question.timeLimit);
         setComplexQuestion(false);
