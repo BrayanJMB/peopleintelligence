@@ -1,29 +1,31 @@
-import { createContext, useEffect, useRef,useState } from 'react';
-import { useSelector } from 'react-redux';
-import * as signalR from '@microsoft/signalr';
-import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
-import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
-import SendIcon from '@mui/icons-material/Send';
-import { Button, Card, CardContent, Grid, Paper } from '@mui/material';
-import { Divider, Typography } from '@mui/material';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import axios from 'axios';
+import { createContext, useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import * as signalR from "@microsoft/signalr";
+import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
+import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
+import SendIcon from "@mui/icons-material/Send";
+import { Button, Card, CardContent, Grid, Paper } from "@mui/material";
+import { Divider, Typography } from "@mui/material";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import Box from "@mui/material/Box";
+import List from "@mui/material/List";
+import axios from "axios";
 
-import { ChatBox } from './ChatBox';
-import { ConnectDisconnectUser } from './ConnectDisconnectUser';
-import CountdownTimer from './CountdownTimer';
+import { ChatBox } from "./ChatBox";
+import { ConnectDisconnectUser } from "./ConnectDisconnectUser";
+import CountdownTimer from "./CountdownTimer";
 
-import styles from './ChatBox.module.css';
+import styles from "./ChatBox.module.css";
 
 export const singleQuestionContext = createContext();
 export const answerSingleQuestionContext = createContext();
 export const nextQuestionTimerContext = createContext();
+export const connectionContext = createContext();
+export const moderatorAvatarContext = createContext();
 
 export const Moderator = ({ id }) => {
   const [connection, setConnection] = useState(null);
@@ -40,25 +42,23 @@ export const Moderator = ({ id }) => {
   const indexCurrentQuestion = useRef(null);
   const [complexQuestion, setComplexQuestion] = useState(true);
 
-
-
   function detectURL(message) {
     var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
     return message.replace(urlRegex, function (urlMatch) {
-      return '<a href="' + urlMatch + '">' + urlMatch + '</a>';
+      return '<a href="' + urlMatch + '">' + urlMatch + "</a>";
     });
   }
 
   const users = {
-    0: { name: 'Shun', avatar: '' },
+    0: { name: "Shun", avatar: "" },
   };
   const questionIcons = [
     {
-      tipoPregunta: 'texto',
+      tipoPregunta: "texto",
       icono: <ChatOutlinedIcon />,
     },
     {
-      tipoPregunta: 'seleccionsimple',
+      tipoPregunta: "seleccionsimple",
       icono: <ListOutlinedIcon />,
     },
   ];
@@ -72,7 +72,6 @@ export const Moderator = ({ id }) => {
     } catch (error) {}
   };
 
-  
   const fetchModerator = async () => {
     try {
       const response = await axios.get(
@@ -81,14 +80,16 @@ export const Moderator = ({ id }) => {
       setModeratorAvatar(response.data);
     } catch (error) {}
   };
-  
+
   const initializeConnectionAndFetchData = async () => {
     try {
       await fetchSurvey();
       await fetchModerator();
       const signalRConnection = new HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
-        .withUrl('https://chatapppeopleintelligence.azurewebsites.net/discusion')
+        .withUrl(
+          "https://chatapppeopleintelligence.azurewebsites.net/discusion"
+        )
         .withAutomaticReconnect()
         .build();
 
@@ -108,7 +109,7 @@ export const Moderator = ({ id }) => {
         .then(() => {
           connection
             .invoke(
-              'ChargeDemographics', //Carga de Demográficos apeans carga el chat, si existen.
+              "ChargeDemographics", //Carga de Demográficos apeans carga el chat, si existen.
               survey.demographicList,
               survey.timeDemographics,
               survey.description
@@ -116,34 +117,34 @@ export const Moderator = ({ id }) => {
             .catch(function (err) {
               return console.error(err.toString());
             });
-          connection.on('RecibirRespuestaSingle', (answer, counter) => {
+          connection.on("RecibirRespuestaSingle", (answer, counter) => {
             answerSetSingleQuestion({
               answer: answer,
               counter: counter,
             });
-            if  (counter >= connectedUsers){
+            if (counter >= connectedUsers) {
               setComplexQuestion(true);
               setNextQuestion(indexCurrentQuestion.current);
             }
           });
-          connection.on('SendRespuestasDos', (tablarespuestas) => {
+          connection.on("SendRespuestasDos", (tablarespuestas) => {
             setAnswersOpinion(tablarespuestas);
           });
-          connection.on('clientConnected', setConnectedUsers);
-          connection.on('clientDisconnected', setConnectedUsers);
-          connection.on('DemographicCount', (idDemo, count) => {
+          connection.on("clientConnected", setConnectedUsers);
+          connection.on("clientDisconnected", setConnectedUsers);
+          connection.on("DemographicCount", (idDemo, count) => {
             setResponseDemographic((prevCounts) => ({
               ...prevCounts,
               [idDemo]: count,
             }));
           });
 
-          connection.on('QuestionSingleOptions', (question) => {
+          connection.on("QuestionSingleOptions", (question) => {
             setSingleQuestion(question);
           });
 
           // Actualiza la interfaz de usuario con el tiempo actual
-          connection.on('UpdateTime', (time) => {
+          connection.on("UpdateTime", (time) => {
             setQuestionTimer(time);
             if (time === 0) {
               setComplexQuestion(true);
@@ -152,29 +153,32 @@ export const Moderator = ({ id }) => {
           });
         })
         .catch((error) =>
-          console.error('Error al conectar con SignalR:', error)
+          console.error("Error al conectar con SignalR:", error)
         );
 
       // Limpieza al desmontar
       return () => {
-        connection.off('ReceiveDemographics');
-        connection.off('clientConnected', setConnectedUsers);
-        connection.off('clientDisconnected', setConnectedUsers);
+        connection.off("ReceiveDemographics");
+        connection.off("clientConnected", setConnectedUsers);
+        connection.off("clientDisconnected", setConnectedUsers);
       };
     }
   }, [connection]);
 
   useEffect(() => {
-    if (moderatorAvatar && (survey.demographicList && survey.demographicList.length > 0)){
+    if (
+      moderatorAvatar &&
+      survey.demographicList &&
+      survey.demographicList.length > 0
+    ) {
       let newMessageItem = {
         id: messages.length + 1,
-        sender: 'Shun',
+        sender: "Shun",
         senderAvatar: moderatorAvatar.avatarUrl,
-        messageType: 'demographic',
+        messageType: "demographic",
       };
       setMessages((prevMessages) => [...prevMessages, newMessageItem]);
     }
-
   }, [moderatorAvatar]);
 
   const [messages, setMessages] = useState([]);
@@ -206,7 +210,7 @@ export const Moderator = ({ id }) => {
 
   const nextQuestionTimer = (timeLimit) => {
     let timeInt = parseInt(timeLimit);
-    connection.invoke('StartTimer', timeInt).catch(function (err) {
+    connection.invoke("StartTimer", timeInt).catch(function (err) {
       return console.error(err.toString());
     });
     setQuestionTimer(timeLimit);
@@ -215,15 +219,15 @@ export const Moderator = ({ id }) => {
   const SendQuestionByType = (type, question, index) => {
     let currentQuestion = question.orderNumber;
     switch (type.toLowerCase()) {
-      case 'texto':
+      case "texto":
         connection
-          .invoke('SendText', question.name)
+          .invoke("SendText", question.name)
           .then(() => {
             let newMessageItem = {
               id: messages.length + 1,
-              sender: 'Shun',
-              senderAvatar: moderatorAvatar.avatarUrl ,
-              messageType: 'question',
+              sender: "Shun",
+              senderAvatar: moderatorAvatar.avatarUrl,
+              messageType: "question",
               content: question,
             };
             setMessages((prevMessages) => [...prevMessages, newMessageItem]);
@@ -240,15 +244,15 @@ export const Moderator = ({ id }) => {
       case 'video':
             console.log('soy video');
             break;*/
-      case 'seleccionsimple':
-        connection.invoke('SendSingleOption', question).catch(function (err) {
+      case "seleccionsimple":
+        connection.invoke("SendSingleOption", question).catch(function (err) {
           return console.error(err.toString());
         });
         let newMessageItem = {
           id: messages.length + 1,
-          sender: 'Shun',
+          sender: "Shun",
           senderAvatar: moderatorAvatar.avatarUrl,
-          messageType: 'question',
+          messageType: "question",
           content: question,
         };
         setMessages((prevMessages) => [...prevMessages, newMessageItem]);
@@ -258,8 +262,8 @@ export const Moderator = ({ id }) => {
         setComplexQuestion(false);
         //setNextQuestion(currentQuestion);
         break;
-      case 'experiencia':
-        connection.invoke('SendExperiencia', question).catch(function (err) {
+      case "experiencia":
+        connection.invoke("SendExperiencia", question).catch(function (err) {
           return console.error(err.toString());
         });
         break;
@@ -285,9 +289,9 @@ export const Moderator = ({ id }) => {
     if (singleQuestion) {
       let newMessageItemSender = {
         id: messages.length + 1,
-        sender: 'Cliente',
-        senderAvatar: 'https://i.pravatar.cc/150?img=32',
-        messageType: 'question',
+        sender: "Cliente",
+        senderAvatar: "https://i.pravatar.cc/150?img=32",
+        messageType: "question",
         content: singleQuestion,
         isAnswer: true,
       };
@@ -298,10 +302,10 @@ export const Moderator = ({ id }) => {
   return (
     <Box
       sx={{
-        height: '100vh',
-        backgroundColor: 'white',
-        display: 'flex',
-        flex: '1',
+        height: "100vh",
+        backgroundColor: "white",
+        display: "flex",
+        flex: "1",
       }}
       aria-label="mailbox folders"
     >
@@ -309,17 +313,17 @@ export const Moderator = ({ id }) => {
         <Grid item xs={4}>
           <div
             style={{
-              paddingLeft: '2rem',
-              backgroundColor: '#f5f5f5',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              height: '100%',
+              paddingLeft: "2rem",
+              backgroundColor: "#f5f5f5",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              height: "100%",
             }}
           >
             <Card
               variant="outlined"
-              style={{ width: '100%', marginBottom: '1rem' }}
+              style={{ width: "100%", marginBottom: "1rem" }}
             >
               <CardContent>
                 <Typography variant="h5" component="div">
@@ -331,9 +335,9 @@ export const Moderator = ({ id }) => {
             <Card
               variant="outlined"
               style={{
-                width: '100%',
-                marginBottom: '1rem',
-                backgroundColor: '#00B0F0',
+                width: "100%",
+                marginBottom: "1rem",
+                backgroundColor: "#00B0F0",
               }}
             >
               <CardContent>
@@ -362,7 +366,7 @@ export const Moderator = ({ id }) => {
 
             <Card
               variant="outlined"
-              style={{ width: '100%', backgroundColor: '#00B0F0' }}
+              style={{ width: "100%", backgroundColor: "#00B0F0" }}
             >
               <CardContent>
                 <Typography variant="h6" component="div" gutterBottom>
@@ -381,25 +385,25 @@ export const Moderator = ({ id }) => {
                         <>
                           <div
                             style={{
-                              backgroundColor: 'white',
-                              heightMin: '100px',
+                              backgroundColor: "white",
+                              heightMin: "100px",
                             }}
                           >
                             <div
                               style={{
-                                display: 'flex',
-                                padding: '1rem',
+                                display: "flex",
+                                padding: "1rem",
                               }}
                             >
                               <Typography>{option.orderNumber}</Typography>
-                              <div style={{ marginLeft: '2rem' }}>
+                              <div style={{ marginLeft: "2rem" }}>
                                 <span
                                   style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
+                                    display: "flex",
+                                    justifyContent: "space-between",
                                   }}
                                 >
-                                  <Typography style={{ color: 'blue' }}>
+                                  <Typography style={{ color: "blue" }}>
                                     {iconToDisplay}
                                   </Typography>
                                   <Typography>{option.type}</Typography>
@@ -417,7 +421,7 @@ export const Moderator = ({ id }) => {
                                 <Button>
                                   {complexQuestion && (
                                     <SendIcon
-                                      sx={{ color: '#00B0F0' }}
+                                      sx={{ color: "#00B0F0" }}
                                       onClick={() =>
                                         SendQuestionByType(
                                           option.type,
@@ -435,7 +439,7 @@ export const Moderator = ({ id }) => {
                               <>
                                 <Accordion
                                   key={option.id}
-                                  style={{ boxShadow: 'none', border: 'none' }}
+                                  style={{ boxShadow: "none", border: "none" }}
                                 >
                                   <AccordionSummary>
                                     <Typography>Mostrar opciones</Typography>
@@ -465,7 +469,7 @@ export const Moderator = ({ id }) => {
         </Grid>
 
         <Grid item xs={8}>
-          <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+          <div style={{ display: "flex", justifyContent: "space-around" }}>
             <CountdownTimer
               countdownTime={survey.timeDemographics}
               startTime={Date.now()}
@@ -475,36 +479,42 @@ export const Moderator = ({ id }) => {
             )}
           </div>
           <div
-            style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+            style={{ display: "flex", flexDirection: "column", height: "100%" }}
           >
             <div className={styles.chatApp__room}>
               {Object.keys(users).map((key) => {
                 const user = users[key];
                 return (
-                  <answerSingleQuestionContext.Provider
-                    value={answerSingleQuestion}
-                  >
-                    <singleQuestionContext.Provider value={singleQuestion}>
-                      <nextQuestionTimerContext.Provider value={questionTimer}>
-                        <ChatBox
-                          key={key}
-                          owner={user.name}
-                          ownerAvatar={user.avatar}
-                          sendMessage={sendMessage}
-                          typing={typing}
-                          resetTyping={resetTyping}
-                          messages={messages}
-                          setMessages={setMessages}
-                          isTyping={isTyping}
-                          responseDemographic={responseDemographic}
-                          demographics={survey.demographicList}
-                          question={question}
-                          nextQuestionTimer={questionTimer}
-                          answersOpinion={answersOpinion}
-                        />
-                      </nextQuestionTimerContext.Provider>
-                    </singleQuestionContext.Provider>
-                  </answerSingleQuestionContext.Provider>
+                  <connectionContext.Provider value={connection}>
+                    <moderatorAvatarContext.Provider value={moderatorAvatar}>
+                    <answerSingleQuestionContext.Provider
+                      value={answerSingleQuestion}
+                    >
+                      <singleQuestionContext.Provider value={singleQuestion}>
+                        <nextQuestionTimerContext.Provider
+                          value={questionTimer}
+                        >
+                          <ChatBox
+                            key={key}
+                            owner={user.name}
+                            ownerAvatar={user.avatar}
+                            sendMessage={sendMessage}
+                            typing={typing}
+                            resetTyping={resetTyping}
+                            messages={messages}
+                            setMessages={setMessages}
+                            isTyping={isTyping}
+                            responseDemographic={responseDemographic}
+                            demographics={survey.demographicList}
+                            question={question}
+                            nextQuestionTimer={questionTimer}
+                            answersOpinion={answersOpinion}
+                          />
+                        </nextQuestionTimerContext.Provider>
+                      </singleQuestionContext.Provider>
+                    </answerSingleQuestionContext.Provider>
+                    </moderatorAvatarContext.Provider>
+                  </connectionContext.Provider>
                 );
               })}
             </div>
@@ -514,4 +524,3 @@ export const Moderator = ({ id }) => {
     </Box>
   );
 };
-

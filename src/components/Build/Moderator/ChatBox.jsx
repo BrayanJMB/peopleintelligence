@@ -33,6 +33,8 @@ export const ChatBox = (props) => {
           sendMessageLoading={sendMessageLoading}
           typing={props.typing}
           resetTyping={props.resetTyping}
+          setMessages={props.setMessages}
+          messages={props.messages}
         />
       </div>
     </div>
