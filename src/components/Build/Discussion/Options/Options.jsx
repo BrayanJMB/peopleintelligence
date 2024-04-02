@@ -37,11 +37,10 @@ function Options({
   handleRemoveConversation,
   errors,
 }) {
-
   const [files, setFiles] = useState([]);
   const [time, setTime] = useState("00:00");
   //const files = useContext(filesImageQuestionContext);
-  const onDrop = useCallback((acceptedFiles) => {
+  const onDropImages = useCallback((acceptedFiles) => {
     // Crear una URL de objeto para cada archivo
     const mappedFiles = acceptedFiles.map((file) =>
       Object.assign(file, {
@@ -59,10 +58,48 @@ function Options({
       return newConversations;
     });
   }, []);
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: "image/*", // Aceptar solo imágenes
+
+  const onDropVideos = useCallback((acceptedFiles) => {
+    // Crear una URL de objeto para cada archivo
+    const mappedFiles = acceptedFiles.map((file) =>
+      Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      })
+    );
+
+    // Actualizar el estado con los nuevos archivos, incluidos sus previews
+    setFiles(mappedFiles);
+    const newConversation = { ...question, urlMedia: mappedFiles[0] };
+    setQuestion((prevState) => {
+      const newConversations = [...prevState];
+      const index = newConversations.findIndex((d) => d === question);
+      newConversations[index] = newConversation;
+      return newConversations;
+    });
+  }, []);
+  // Configuración para dropzone de imágenes
+  const {
+    getRootProps: getRootPropsImages,
+    getInputProps: getInputPropsImages,
+    isDragActive: isDragActiveImages,
+  } = useDropzone({
+    onDrop: onDropImages,
+    accept: {
+      'image/jpeg': [],
+      'image/png': []
+    },
     maxFiles: 2,
+  });
+
+  // Configuración para dropzone de vídeos
+  const {
+    getRootProps: getRootPropsVideos,
+    getInputProps: getInputPropsVideos,
+    isDragActive: isDragActiveVideos,
+  } = useDropzone({
+    onDrop: onDropVideos,
+    accept: {'video/mp4': ['.mp4', '.MP4']},
+    maxFiles: 1,
   });
 
   const removeFile = (file) => () => {
@@ -70,14 +107,37 @@ function Options({
     setFiles(newFiles);
   };
 
-  const previews = files.map((file) => (
-    <div key={file.name}>
-      <img src={file.preview} style={{ width: "100%" }} alt="Preview" />
-      <IconButton onClick={removeFile(file)}>
-        <DeleteOutlineIcon />
-      </IconButton>
-    </div>
-  ));
+  const previews = files.map((file) => {
+    // Determinar si el archivo es un vídeo o una imagen por su tipo MIME
+    const isVideo = file.type.startsWith("video");
+
+    // Crear un elemento JSX basado en el tipo de archivo
+    let mediaElement;
+    if (isVideo) {
+      mediaElement = (
+        <video
+          src={file.preview}
+          style={{ width: "100%" }}
+          controls
+          alt="Preview"
+        />
+      );
+    } else {
+      mediaElement = (
+        <img src={file.preview} style={{ width: "100%" }} alt="Preview" />
+      );
+    }
+
+    // Crear el elemento contenedor con el elemento de media correspondiente
+    return (
+      <div key={file.name}>
+        {mediaElement}
+        <IconButton onClick={() => removeFile(file)}>
+          <DeleteOutlineIcon />
+        </IconButton>
+      </div>
+    );
+  });
 
   function limpiarTexto(texto) {
     let textoSinEspacios = texto.replace(/\s+/g, "");
@@ -866,22 +926,29 @@ function Options({
                   >
                     {files.length === 0 && (
                       <Box
-                        {...getRootProps()}
+                        {...getRootPropsImages()}
                         sx={{
                           border: "2px dashed gray",
                           borderRadius: "10px",
                           padding: "20px",
                           textAlign: "center",
                           cursor: "pointer",
-                          backgroundColor: isDragActive ? "#eeeeee" : "#fafafa",
+                          backgroundColor: isDragActiveImages
+                            ? "#eeeeee"
+                            : "#fafafa",
                         }}
                       >
-                        <CloudUploadIcon sx={{ fontSize: 60 }} />
-                        <Typography variant="body1">
-                          {isDragActive
-                            ? "Suelta los archivos aquí..."
-                            : "Arrastra y suelta archivos aquí, o haz clic para seleccionar archivos"}
-                        </Typography>
+                        <input {...getInputPropsImages()} />
+                        {
+                          <>
+                            <CloudUploadIcon sx={{ fontSize: 60 }} />
+                            <Typography variant="body1">
+                              {isDragActiveImages
+                                ? "Suelta los archivos aquí..."
+                                : "Arrastra y suelta archivos aquí, o haz clic para seleccionar archivos"}
+                            </Typography>
+                          </>
+                        }
                       </Box>
                     )}
                     <Grid container spacing={2} style={{ marginTop: "20px" }}>
@@ -921,25 +988,30 @@ function Options({
                     }}
                   >
                     <Box
-                      {...getRootProps()}
+                      {...getRootPropsVideos()}
                       sx={{
                         border: "2px dashed gray",
                         borderRadius: "10px",
                         padding: "20px",
                         textAlign: "center",
                         cursor: "pointer",
-                        backgroundColor: isDragActive ? "#eeeeee" : "#fafafa",
+                        backgroundColor: isDragActiveVideos
+                          ? "#eeeeee"
+                          : "#fafafa",
                       }}
                     >
-                      <input {...getInputProps()} accept="image/*,video/*" />
-                      {isDragActive ? (
-                        <Typography>Arrastra los archivos aquí...</Typography>
-                      ) : (
-                        <Typography>
-                          Arrastra y suelta imágenes o vídeos aquí, o haz clic
-                          para seleccionar archivos
+                      <input {...getInputPropsVideos()} />
+                      <>
+                        <CloudUploadIcon sx={{ fontSize: 60 }} />
+                        <Typography variant="body1">
+                          {isDragActiveVideos
+                            ? "Suelta los archivos aquí..."
+                            : "Arrastra y suelta archivos aquí, o haz clic para seleccionar archivos"}
                         </Typography>
-                      )}
+                      </>
+                      <Grid container spacing={2} style={{ marginTop: "20px" }}>
+                        {previews}
+                      </Grid>
                     </Box>
                   </div>
                 </div>
