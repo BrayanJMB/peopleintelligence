@@ -37,6 +37,7 @@ function Options({
   handleRemoveConversation,
   errors,
 }) {
+
   const [files, setFiles] = useState([]);
   const [time, setTime] = useState("00:00");
   //const files = useContext(filesImageQuestionContext);
@@ -58,7 +59,7 @@ function Options({
       return newConversations;
     });
   }, []);
-  const { getRootProps, getInputProps, isDragActive, onChange } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: "image/*", // Aceptar solo imágenes
     maxFiles: 2,
@@ -277,6 +278,10 @@ function Options({
       Object.values(files).forEach((file) => URL.revokeObjectURL(file.preview));
   }, [files]);
 
+  useEffect(() => {
+    console.log(question);
+  }, [question]);
+
   const handleChangeTime = (event) => {
     let { value } = event.target;
 
@@ -326,10 +331,6 @@ function Options({
       return newConversations;
     });
   };
-
-  useEffect(() => {
-    console.log(question);
-  }, [question]);
 
   return (
     <div style={{ marginBottom: "20px" }}>
