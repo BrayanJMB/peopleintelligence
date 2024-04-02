@@ -950,7 +950,8 @@ function Options({
                   <div
                     style={{
                       display: "flex",
-                      alignItems: "center",
+                      alignItems: "start",
+                      flexDirection: "column",
                     }}
                   >
                     {files.length === 0 && (
@@ -980,6 +981,12 @@ function Options({
                         }
                       </Box>
                     )}
+                    {!!errors.questions?.[currentIndex]?.name && (
+                      <Typography color="error" style={{ marginTop: "10px" }}>
+                        {errors.questions?.[currentIndex]?.name}
+                      </Typography>
+                    )}
+
                     <Grid container spacing={2} style={{ marginTop: "20px" }}>
                       {previews}
                     </Grid>
@@ -1013,7 +1020,8 @@ function Options({
                   <div
                     style={{
                       display: "flex",
-                      alignItems: "center",
+                      alignItems: "start",
+                      flexDirection: "column",  
                     }}
                   >
                     {files.length === 0 && (
@@ -1040,6 +1048,11 @@ function Options({
                           </Typography>
                         </>
                       </Box>
+                    )}
+                    {!!errors.questions?.[currentIndex]?.name && (
+                      <Typography color="error" style={{ marginTop: "10px" }}>
+                        {errors.questions?.[currentIndex]?.name}
+                      </Typography>
                     )}
                     <Grid container spacing={2} style={{ marginTop: "20px" }}>
                       {previews}

@@ -103,116 +103,119 @@ export default function Discussion({
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    setIsDisabled(true);
-    setOpenSnackbar(true);
-    setSnackbarMessage("Creando encuesta, por favor espere...");
-    setSnackbarSeverity("info");
-    let urls = null;
-    const filesImage =
-      questions?.filter((q) => q.type === "imagen").map((q) => q.urlMedia) ??
-      [];
-    const filesVideo =
-      questions?.filter((q) => q.type === "video").map((q) => q.urlMedia) ?? [];
+    if (validate()) {
+      event.preventDefault();
+      setIsDisabled(true);
+      setOpenSnackbar(true);
+      setSnackbarMessage("Creando encuesta, por favor espere...");
+      setSnackbarSeverity("info");
+      let urls = null;
+      const filesImage =
+        questions?.filter((q) => q.type === "imagen").map((q) => q.urlMedia) ??
+        [];
+      const filesVideo =
+        questions?.filter((q) => q.type === "video").map((q) => q.urlMedia) ??
+        [];
 
-    const payload = {
-      moderator: {
-        ...moderator,
-      },
-      survey: {
-        ...survey,
-        questions: questions.map((q, index) => ({
-          ...q,
-          orderNumber: index + 1,
-          urlMedia: "",
-          options: q.options.map((option) => {
-            const { ...rest } = option;
-            return rest;
-          }),
-        })),
-        demographic: demographics.map((demo) => ({
-          ...demo,
-          demographicDetails: demo.demographicDetails.map((detail) => {
-            const { ...rest } = detail;
-            return rest;
-          }),
-        })),
-      },
-    };
-    let response;
-
-    if (!isUpdate) {
-      // Manejar creación
-      const imageQuestions = payload.survey.questions.filter(
-        (question) => question.type === "imagen"
-      );
-      const videoQuestions = payload.survey.questions.filter(
-        (video) => video.type === "video"
-      );
-      response = await storeSurveyChatAPI(payload);
-      if (surveyImage || avatarImage) {
-        urls = await storeAvatarAndSurveyImage(response.data.survey.id);
-        payload.moderator.avatarUrl = urls ? urls.data.files[1] : "";
-        payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
-      }
-      const updateData = {
-        id: payload.survey.id,
-        title: payload.survey.title,
-        imageUrl: payload.survey.imageUrl,
-        description: payload.survey.description,
-        moderatorName: payload.moderator.name,
-        moderatorId: payload.moderator.moderatorId,
-        avatarUrl: payload.moderator.avatarUrl,
+      const payload = {
+        moderator: {
+          ...moderator,
+        },
+        survey: {
+          ...survey,
+          questions: questions.map((q, index) => ({
+            ...q,
+            orderNumber: index + 1,
+            urlMedia: "",
+            options: q.options.map((option) => {
+              const { ...rest } = option;
+              return rest;
+            }),
+          })),
+          demographic: demographics.map((demo) => ({
+            ...demo,
+            demographicDetails: demo.demographicDetails.map((detail) => {
+              const { ...rest } = detail;
+              return rest;
+            }),
+          })),
+        },
       };
-      await updateModeratorChatAPI(updateData);
-      if (imageQuestions.length > 0) {
-        await storeSurveyImageQuestion(
-          filesImage,
-          imageQuestions,
-          response.data.survey.id
-        );
-      }
-      if (videoQuestions.length > 0) {
-        await storeSurveyVideoQuestion(
-          filesVideo,
-          videoQuestions,
-          response.data.survey.id
-        );
-      }
-    } else {
-      // Manejar actualización
-      if (surveyImage || avatarImage) {
-        urls = await storeAvatarAndSurveyImage(payload.survey.id);
-        payload.moderator.avatarUrl = urls ? urls.data.files[1] : "";
-        payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
-      }
-      response = await updateSurveyChatAPI(payload.survey);
-      const updateData = {
-        id: payload.survey.id,
-        title: payload.survey.title,
-        imageUrl: payload.survey.imageUrl,
-        description: payload.survey.description,
-        moderatorName: payload.moderator.name,
-        moderatorId: payload.moderator.moderatorId,
-        avatarUrl: payload.moderator.avatarUrl,
-      };
-      await updateModeratorChatAPI(updateData);
-    }
+      let response;
 
-    // Manejar respuesta
-    if (response.status === 200) {
-      setSnackbarMessage(
-        `Chat Live ${!isUpdate ? "creado" : "actualizado"} satisfactoriamente`
-      );
-      setSnackbarSeverity("success");
-      setIsDisabled(false);
-      setTimeout(() => {
-        handleMove("/conversation/Live", "basic");
-      }, 2000);
-    } else {
-      setIsDisabled(false);
-      setSnackbarMessage(`Hubo un error al crear la encuesta de chat`);
-      setSnackbarSeverity("error");
+      if (!isUpdate) {
+        // Manejar creación
+        const imageQuestions = payload.survey.questions.filter(
+          (question) => question.type === "imagen"
+        );
+        const videoQuestions = payload.survey.questions.filter(
+          (video) => video.type === "video"
+        );
+        response = await storeSurveyChatAPI(payload);
+        if (surveyImage || avatarImage) {
+          urls = await storeAvatarAndSurveyImage(response.data.survey.id);
+          payload.moderator.avatarUrl = urls ? urls.data.files[1] : "";
+          payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
+        }
+        const updateData = {
+          id: payload.survey.id,
+          title: payload.survey.title,
+          imageUrl: payload.survey.imageUrl,
+          description: payload.survey.description,
+          moderatorName: payload.moderator.name,
+          moderatorId: payload.moderator.moderatorId,
+          avatarUrl: payload.moderator.avatarUrl,
+        };
+        await updateModeratorChatAPI(updateData);
+        if (imageQuestions.length > 0) {
+          await storeSurveyImageQuestion(
+            filesImage,
+            imageQuestions,
+            response.data.survey.id
+          );
+        }
+        /*if (videoQuestions.length > 0) {
+          await storeSurveyVideoQuestion(
+            filesVideo,
+            videoQuestions,
+            response.data.survey.id
+          );
+        }*/
+      } else {
+        // Manejar actualización
+        if (surveyImage || avatarImage) {
+          urls = await storeAvatarAndSurveyImage(payload.survey.id);
+          payload.moderator.avatarUrl = urls ? urls.data.files[1] : "";
+          payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
+        }
+        response = await updateSurveyChatAPI(payload.survey);
+        const updateData = {
+          id: payload.survey.id,
+          title: payload.survey.title,
+          imageUrl: payload.survey.imageUrl,
+          description: payload.survey.description,
+          moderatorName: payload.moderator.name,
+          moderatorId: payload.moderator.moderatorId,
+          avatarUrl: payload.moderator.avatarUrl,
+        };
+        await updateModeratorChatAPI(updateData);
+      }
+
+      // Manejar respuesta
+      if (response.status === 200) {
+        setSnackbarMessage(
+          `Chat Live ${!isUpdate ? "creado" : "actualizado"} satisfactoriamente`
+        );
+        setSnackbarSeverity("success");
+        setIsDisabled(false);
+        setTimeout(() => {
+          handleMove("/conversation/Live", "basic");
+        }, 2000);
+      } else {
+        setIsDisabled(false);
+        setSnackbarMessage(`Hubo un error al crear la encuesta de chat`);
+        setSnackbarSeverity("error");
+      }
     }
   };
 
@@ -225,7 +228,7 @@ export default function Discussion({
 
       try {
         const response = await axios.post(
-          "https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadVideo",
+          "https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImagesQuestion",
           formData,
           {
             headers: {
@@ -330,27 +333,50 @@ export default function Discussion({
 
       allErrors.demographics[demoIndex] = currentErrors;
     });
-
+    console.log(questions);
     questions.forEach((question, questionIndex) => {
       let currentQuestionErrors = {};
 
       // Validar si el nombre de la pregunta está vacío
-      if (!question.name.trim()) {
-        currentQuestionErrors.name =
-          "El nombre de la pregunta no puede estar vacío.";
+      if (question.type !== "imagen" && question.type !== "video") {
+        if (!question.name.trim()) {
+          currentQuestionErrors.name =
+            "El nombre de la pregunta no puede estar vacío.";
+        } else {
+          // Validar si hay al menos 2 opciones
+          console.log(question.type)
+          if (
+            question.options.length < 2 &&
+            question.type.toLowerCase() !== "texto" &&
+            question.type !== "Opinión"
+          ) {
+            currentQuestionErrors.name = "Debe haber al menos 2 opciones.";
+          }
+        }
       } else {
-        // Validar si hay al menos 2 opciones
         if (
-          question.options.length < 2 &&
-          question.type !== "texto" &&
-          question.type !== "Opinión"
+          typeof question.urlMedia === "string" &&
+          !question.urlMedia.trim()
         ) {
-          currentQuestionErrors.name = "Debe haber al menos 2 opciones.";
+          currentQuestionErrors.name =
+            "No puede ir vacío, debe subir un archivo";
+        }
+        // Verifica si question.urlMedia es un objeto File pero no tiene tamaño (lo que indicaría un archivo vacío)
+        else if (
+          question.urlMedia instanceof File &&
+          question.urlMedia.size === 0
+        ) {
+          currentQuestionErrors.name = "El archivo no puede estar vacío.";
         }
       }
 
       // Validar si el timeLimit es nulo
-      if (!question.timeLimit && question.type !== "texto") {
+      if (
+        !question.timeLimit &&
+        question.type.toLowerCase() !== "texto" &&
+        question.type !== "imagen" &&
+        question.type !== "video"
+      ) {
         currentQuestionErrors.timeLimit = "Debe seleccionar un tiempo";
       }
 
@@ -368,7 +394,7 @@ export default function Discussion({
 
       allErrors.questions[questionIndex] = currentQuestionErrors;
     });
-
+    console.log(allErrors);
     setErrors(allErrors);
 
     const hasErrorsInDemographics = allErrors.demographics.some(
