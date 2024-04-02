@@ -23,7 +23,8 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
-
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 const tiempoPregunta = [1, 2, 3, 4, 5];
 function Options({
   currentIndex,
@@ -38,6 +39,9 @@ function Options({
   errors,
 }) {
   const [files, setFiles] = useState([]);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("info");
   const [time, setTime] = useState("00:00");
   //const files = useContext(filesImageQuestionContext);
   const onDropImages = useCallback((acceptedFiles) => {
@@ -59,6 +63,18 @@ function Options({
     });
   }, []);
 
+  const onDropRejectedImages = useCallback((fileRejections) => {
+    // Lógica para manejar archivos rechazados
+    // Puedes personalizar el mensaje de error basado en tu lógica
+    const message =
+      fileRejections.length > 0
+        ? "Tipo de archivo no válido. Por favor, sube un archivo con extensión .jpeg, .png."
+        : "";
+    setOpenSnackbar(true);
+    setSnackbarMessage(message);
+    setSnackbarSeverity("warning");
+  }, []);
+
   const onDropVideos = useCallback((acceptedFiles) => {
     // Crear una URL de objeto para cada archivo
     const mappedFiles = acceptedFiles.map((file) =>
@@ -77,6 +93,18 @@ function Options({
       return newConversations;
     });
   }, []);
+
+  const onDropRejectedVideos = useCallback((fileRejections) => {
+    // Lógica para manejar archivos rechazados
+    // Puedes personalizar el mensaje de error basado en tu lógica
+    const message =
+      fileRejections.length > 0
+        ? "Tipo de archivo no válido. Por favor, sube un archivo con extensión.mp4."
+        : "";
+    setOpenSnackbar(true);
+    setSnackbarMessage(message);
+    setSnackbarSeverity("warning");
+  }, []);
   // Configuración para dropzone de imágenes
   const {
     getRootProps: getRootPropsImages,
@@ -84,9 +112,10 @@ function Options({
     isDragActive: isDragActiveImages,
   } = useDropzone({
     onDrop: onDropImages,
+    onDropRejected: onDropRejectedImages,
     accept: {
-      'image/jpeg': [],
-      'image/png': []
+      "image/jpeg": [],
+      "image/png": [],
     },
     maxFiles: 2,
   });
@@ -98,11 +127,12 @@ function Options({
     isDragActive: isDragActiveVideos,
   } = useDropzone({
     onDrop: onDropVideos,
-    accept: {'video/mp4': ['.mp4', '.MP4']},
+    onDropRejected: onDropRejectedVideos,
+    accept: { "video/mp4": [".mp4", ".MP4"] },
     maxFiles: 1,
   });
 
-  const removeFile = (file) => () => {
+  const removeFile = (file) => {
     const newFiles = files.filter((f) => f.name !== file.name);
     setFiles(newFiles);
   };
@@ -127,8 +157,6 @@ function Options({
         <img src={file.preview} style={{ width: "100%" }} alt="Preview" />
       );
     }
-
-    // Crear el elemento contenedor con el elemento de media correspondiente
     return (
       <div key={file.name}>
         {mediaElement}
@@ -338,10 +366,6 @@ function Options({
       Object.values(files).forEach((file) => URL.revokeObjectURL(file.preview));
   }, [files]);
 
-  useEffect(() => {
-    console.log(question);
-  }, [question]);
-
   const handleChangeTime = (event) => {
     let { value } = event.target;
 
@@ -394,6 +418,11 @@ function Options({
 
   return (
     <div style={{ marginBottom: "20px" }}>
+      <Snackbar open={openSnackbar} autoHideDuration={2000}>
+        <Alert severity={snackbarSeverity} sx={{ width: "100%" }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
       {!isConversation ? (
         <>
           <Card
@@ -987,32 +1016,34 @@ function Options({
                       alignItems: "center",
                     }}
                   >
-                    <Box
-                      {...getRootPropsVideos()}
-                      sx={{
-                        border: "2px dashed gray",
-                        borderRadius: "10px",
-                        padding: "20px",
-                        textAlign: "center",
-                        cursor: "pointer",
-                        backgroundColor: isDragActiveVideos
-                          ? "#eeeeee"
-                          : "#fafafa",
-                      }}
-                    >
-                      <input {...getInputPropsVideos()} />
-                      <>
-                        <CloudUploadIcon sx={{ fontSize: 60 }} />
-                        <Typography variant="body1">
-                          {isDragActiveVideos
-                            ? "Suelta los archivos aquí..."
-                            : "Arrastra y suelta archivos aquí, o haz clic para seleccionar archivos"}
-                        </Typography>
-                      </>
-                      <Grid container spacing={2} style={{ marginTop: "20px" }}>
-                        {previews}
-                      </Grid>
-                    </Box>
+                    {files.length === 0 && (
+                      <Box
+                        {...getRootPropsVideos()}
+                        sx={{
+                          border: "2px dashed gray",
+                          borderRadius: "10px",
+                          padding: "20px",
+                          textAlign: "center",
+                          cursor: "pointer",
+                          backgroundColor: isDragActiveVideos
+                            ? "#eeeeee"
+                            : "#fafafa",
+                        }}
+                      >
+                        <input {...getInputPropsVideos()} />
+                        <>
+                          <CloudUploadIcon sx={{ fontSize: 60 }} />
+                          <Typography variant="body1">
+                            {isDragActiveVideos
+                              ? "Suelta los archivos aquí..."
+                              : "Arrastra y suelta archivos aquí, o haz clic para seleccionar archivos"}
+                          </Typography>
+                        </>
+                      </Box>
+                    )}
+                    <Grid container spacing={2} style={{ marginTop: "20px" }}>
+                      {previews}
+                    </Grid>
                   </div>
                 </div>
               </CardContent>

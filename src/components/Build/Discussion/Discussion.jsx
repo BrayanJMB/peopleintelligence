@@ -14,8 +14,8 @@ import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 
 import { storeSurveyChatAPI } from "../../../services/ChatLive/storeSurveyChat.service";
 import {
@@ -109,9 +109,12 @@ export default function Discussion({
     setSnackbarMessage("Creando encuesta, por favor espere...");
     setSnackbarSeverity("info");
     let urls = null;
-    const filesImage = questions
-      .filter((q) => q.type === "imagen") // Filtrar preguntas por tipo "imagen"
-      .map((q) => q.urlMedia); // Extraer urlMedia de las preguntas filtradas
+    const filesImage =
+      questions?.filter((q) => q.type === "imagen").map((q) => q.urlMedia) ??
+      [];
+    const filesVideo =
+      questions?.filter((q) => q.type === "video").map((q) => q.urlMedia) ?? [];
+
     const payload = {
       moderator: {
         ...moderator,
@@ -136,14 +139,15 @@ export default function Discussion({
         })),
       },
     };
-    //Javascript, Js
-    console.log(payload);
     let response;
 
     if (!isUpdate) {
       // Manejar creación
       const imageQuestions = payload.survey.questions.filter(
         (question) => question.type === "imagen"
+      );
+      const videoQuestions = payload.survey.questions.filter(
+        (video) => video.type === "video"
       );
       response = await storeSurveyChatAPI(payload);
       if (surveyImage || avatarImage) {
@@ -161,11 +165,20 @@ export default function Discussion({
         avatarUrl: payload.moderator.avatarUrl,
       };
       await updateModeratorChatAPI(updateData);
-      await storeSurveyImageQuestion(
-        filesImage,
-        imageQuestions,
-        response.data.survey.id
-      );
+      if (imageQuestions.length > 0) {
+        await storeSurveyImageQuestion(
+          filesImage,
+          imageQuestions,
+          response.data.survey.id
+        );
+      }
+      if (videoQuestions.length > 0) {
+        await storeSurveyVideoQuestion(
+          filesVideo,
+          videoQuestions,
+          response.data.survey.id
+        );
+      }
     } else {
       // Manejar actualización
       if (surveyImage || avatarImage) {
@@ -195,8 +208,7 @@ export default function Discussion({
       setIsDisabled(false);
       setTimeout(() => {
         handleMove("/conversation/Live", "basic");
-      }, 2000); 
-
+      }, 2000);
     } else {
       setIsDisabled(false);
       setSnackbarMessage(`Hubo un error al crear la encuesta de chat`);
@@ -211,6 +223,37 @@ export default function Discussion({
       formData.append("questionNumber", question.orderNumber);
       formData.append("surveyId", surveyId);
 
+      try {
+        const response = await axios.post(
+          "https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadVideo",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        return response.data; // Retorna los datos de respuesta para su uso posterior
+      } catch (error) {
+        console.error("Error al subir la imagen:", error);
+        throw error; // Lanza el error para manejar rechazos en Promise.all
+      }
+    });
+
+    try {
+      const results = await Promise.all(promises); // Espera a que todas las promesas se resuelvan// Aquí manejas las respuestas
+    } catch (error) {
+      console.error("Error en alguna solicitud:", error);
+    }
+  };
+
+  const storeSurveyVideoQuestion = async (filesVideo, questions, surveyId) => {
+    const promises = questions.map(async (question, index) => {
+      const formData = new FormData();
+      formData.append("questionImage", filesVideo[index]);
+      formData.append("questionNumber", question.orderNumber);
+      formData.append("surveyId", surveyId);
+      formData.append("companyId", currentCompany?.id);
       try {
         const response = await axios.post(
           "https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImagesQuestion",
@@ -367,14 +410,8 @@ export default function Discussion({
 
   return (
     <div className={styles.discussion}>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={2000}
-      >
-        <Alert
-          severity={snackbarSeverity}
-          sx={{ width: "100%" }}
-        >
+      <Snackbar open={openSnackbar} autoHideDuration={2000}>
+        <Alert severity={snackbarSeverity} sx={{ width: "100%" }}>
           {snackbarMessage}
         </Alert>
       </Snackbar>
@@ -412,7 +449,7 @@ export default function Discussion({
               Compartir
             </Button>
             <Button
-              onClick={(event)=> handleSubmit(event)}
+              onClick={(event) => handleSubmit(event)}
               disabled={isDisabled}
               sx={{
                 color: isDisabled ? "#9b9b9b" : "#00B0F0",
