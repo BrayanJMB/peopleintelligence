@@ -87,9 +87,7 @@ export const Moderator = ({ id }) => {
       await fetchModerator();
       const signalRConnection = new HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
-        .withUrl(
-          "https://chatapppeopleintelligence.azurewebsites.net/discusion"
-        )
+        .withUrl("https://localhost:7005/discusion")
         .withAutomaticReconnect()
         .build();
 
@@ -238,10 +236,27 @@ export const Moderator = ({ id }) => {
           });
         setNextQuestion(currentQuestion);
         break;
-      /*case 'imagen':
-          setNextQuestion(index + 1);    
-          break;
-      case 'video':
+      case "imagen":
+        connection
+          .invoke("SendImage", question.urlMedia)
+          .then(() => {
+            let newMessageItem = {
+              id: messages.length + 1,
+              sender: "Shun",
+              senderAvatar: moderatorAvatar.avatarUrl,
+              messageType: "question",
+              content: question,
+            };
+            setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+            indexCurrentQuestion.current = currentQuestion;
+          })
+          .catch(function (err) {
+            return console.error(err.toString());
+          });
+        indexCurrentQuestion.current = currentQuestion;
+        setNextQuestion(currentQuestion);
+        break;
+      /*case 'video':
             console.log('soy video');
             break;*/
       case "seleccionsimple":
@@ -298,7 +313,7 @@ export const Moderator = ({ id }) => {
       setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
     }
   }, [singleQuestion]);
-
+  console.log(survey.preguntas && survey.preguntas);
   return (
     <Box
       sx={{
@@ -416,6 +431,13 @@ export const Moderator = ({ id }) => {
                                 </span>
 
                                 <Typography>{option.name}</Typography>
+                                {option.urlMedia && (
+                                  <img
+                                    src={option.urlMedia}
+                                    alt="imagenPregunta"
+                                    style={{ width: "100%", height: "auto" }}
+                                  />
+                                )}
                               </div>
                               {nextQuestion === index && (
                                 <Button>
@@ -487,32 +509,32 @@ export const Moderator = ({ id }) => {
                 return (
                   <connectionContext.Provider value={connection}>
                     <moderatorAvatarContext.Provider value={moderatorAvatar}>
-                    <answerSingleQuestionContext.Provider
-                      value={answerSingleQuestion}
-                    >
-                      <singleQuestionContext.Provider value={singleQuestion}>
-                        <nextQuestionTimerContext.Provider
-                          value={questionTimer}
-                        >
-                          <ChatBox
-                            key={key}
-                            owner={user.name}
-                            ownerAvatar={user.avatar}
-                            sendMessage={sendMessage}
-                            typing={typing}
-                            resetTyping={resetTyping}
-                            messages={messages}
-                            setMessages={setMessages}
-                            isTyping={isTyping}
-                            responseDemographic={responseDemographic}
-                            demographics={survey.demographicList}
-                            question={question}
-                            nextQuestionTimer={questionTimer}
-                            answersOpinion={answersOpinion}
-                          />
-                        </nextQuestionTimerContext.Provider>
-                      </singleQuestionContext.Provider>
-                    </answerSingleQuestionContext.Provider>
+                      <answerSingleQuestionContext.Provider
+                        value={answerSingleQuestion}
+                      >
+                        <singleQuestionContext.Provider value={singleQuestion}>
+                          <nextQuestionTimerContext.Provider
+                            value={questionTimer}
+                          >
+                            <ChatBox
+                              key={key}
+                              owner={user.name}
+                              ownerAvatar={user.avatar}
+                              sendMessage={sendMessage}
+                              typing={typing}
+                              resetTyping={resetTyping}
+                              messages={messages}
+                              setMessages={setMessages}
+                              isTyping={isTyping}
+                              responseDemographic={responseDemographic}
+                              demographics={survey.demographicList}
+                              question={question}
+                              nextQuestionTimer={questionTimer}
+                              answersOpinion={answersOpinion}
+                            />
+                          </nextQuestionTimerContext.Provider>
+                        </singleQuestionContext.Provider>
+                      </answerSingleQuestionContext.Provider>
                     </moderatorAvatarContext.Provider>
                   </connectionContext.Provider>
                 );
