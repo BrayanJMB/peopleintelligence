@@ -15,7 +15,7 @@ import Options from '../Options/Options';
 
 const questionTypes = [
   'Texto',
-  'Selección simple' /*'Opinión', 'experiencia', 'imagen', 'video'*/,
+  'Selección simple' ,'imagen'/*'Opinión', 'experiencia', 'imagen', 'video'*/,
 ];
 export default function AccordionDiscussion({
   isConversation,

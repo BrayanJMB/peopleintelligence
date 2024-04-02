@@ -33,29 +33,30 @@ function Options({
   handleRemoveConversation,
   errors,
 }) {
+  const [files, setFiles] = useState([]);
   const [time, setTime] = useState('00:00');
-  const files = useContext(filesImageQuestionContext);
-  const onDrop = useCallback((acceptedFiles) => {
-    files.ImageQuestion(
-      acceptedFiles.map((file) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        })
-      )
-    );
+  //const files = useContext(filesImageQuestionContext);
+  const onDrop = useCallback(acceptedFiles => {
+    // Crear una URL de objeto para cada archivo
+    const mappedFiles = acceptedFiles.map(file => Object.assign(file, {
+      preview: URL.createObjectURL(file)
+    }));
+    
+    // Actualizar el estado con los nuevos archivos, incluidos sus previews
+    setFiles(mappedFiles);
   }, []);
-
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   const removeFile = (file) => () => {
-    const newFiles = files.filesImageQuestion.filter(
+    const newFiles = files.filter(
       (f) => f.name !== file.name
     );
-    files.setFiles(newFiles);
+    setFiles(newFiles);
   };
 
-  const previews = Object.values(files.filesImageQuestion).map((file) => (
+  const previews = files.map(file => (
     <div key={file.name}>
       <img src={file.preview} style={{ width: '100%' }} alt="Preview" />
-      <IconButton onClick={() => removeFile(file)}>
+      <IconButton onClick={removeFile(file)}>
         <DeleteOutlineIcon />
       </IconButton>
     </div>
@@ -69,7 +70,7 @@ function Options({
 
     return textoSinTildes;
   }
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
   const isText = (item) => {
     switch (item.toLowerCase()) {
       case 'texto':
@@ -101,7 +102,7 @@ function Options({
 
   const handleFileChange = (event) => {
     // Acceder al archivo seleccionado
-    files.setFilesImageQuestion(event.target.files[0]);
+    setFiles([event.target.files[0]]);
     const newConversation = { ...question };
     setQuestion((prevState) => {
       const newConversations = [...prevState];
@@ -269,7 +270,7 @@ function Options({
 
   useEffect(() => {
     return () =>
-      Object.values(files.filesImageQuestion).forEach((file) =>
+      Object.values(files).forEach((file) =>
         URL.revokeObjectURL(file.preview)
       );
   }, [files]);
@@ -856,7 +857,7 @@ function Options({
                       alignItems: 'center',
                     }}
                   >
-                    {files.filesImageQuestion.length === 0 && (
+                    {files.length === 0 && (
                       <Box
                         {...getRootProps()}
                         sx={{
