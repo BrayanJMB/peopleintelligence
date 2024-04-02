@@ -14,6 +14,8 @@ import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 import { storeSurveyChatAPI } from "../../../services/ChatLive/storeSurveyChat.service";
 import {
@@ -71,7 +73,11 @@ export default function Discussion({
 }) {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const navigate = useNavigate();
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("info");
   const [open, setOpen] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
   const [opentemplate, setOpentemplate] = useState(false);
   const [accordionOpen, setAccordionOpen] = useState(false);
   const handleOpenModal = () => setOpen(true);
@@ -96,7 +102,12 @@ export default function Discussion({
     setAccordionOpen(false);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsDisabled(true);
+    setOpenSnackbar(true);
+    setSnackbarMessage("Creando encuesta, por favor espere...");
+    setSnackbarSeverity("info");
     let urls = null;
     const filesImage = questions
       .filter((q) => q.type === "imagen") // Filtrar preguntas por tipo "imagen"
@@ -177,12 +188,19 @@ export default function Discussion({
 
     // Manejar respuesta
     if (response.status === 200) {
-      alert(
+      setSnackbarMessage(
         `Chat Live ${!isUpdate ? "creado" : "actualizado"} satisfactoriamente`
       );
-      handleMove("/conversation/Live", "basic");
+      setSnackbarSeverity("success");
+      setIsDisabled(false);
+      setTimeout(() => {
+        handleMove("/conversation/Live", "basic");
+      }, 2000); 
+
     } else {
-      alert("Hubo un error al crear la encuesta de chat");
+      setIsDisabled(false);
+      setSnackbarMessage(`Hubo un error al crear la encuesta de chat`);
+      setSnackbarSeverity("error");
     }
   };
 
@@ -349,6 +367,17 @@ export default function Discussion({
 
   return (
     <div className={styles.discussion}>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={2000}
+      >
+        <Alert
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
       <Button
         onClick={() => {
           handleMove("", "basic");
@@ -383,9 +412,10 @@ export default function Discussion({
               Compartir
             </Button>
             <Button
-              onClick={handleSubmit}
+              onClick={(event)=> handleSubmit(event)}
+              disabled={isDisabled}
               sx={{
-                color: "#00B0F0",
+                color: isDisabled ? "#9b9b9b" : "#00B0F0",
               }}
             >
               {isUpdate ? "Editar" : "Publicar"}
