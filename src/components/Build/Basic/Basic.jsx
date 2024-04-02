@@ -26,6 +26,7 @@ export default function Basic(props) {
   const company = useSelector((state) =>
     currentCompany ? selectCompanyById(state, currentCompany.id) : null
   );
+
   const handleNext = () => {
     if (fieldsValidation()) {
       props.handleNextStepper();
@@ -45,6 +46,14 @@ export default function Basic(props) {
         title: 'Este campo es requerido',
       }));
       setError((prevError) => ({ ...prevError, title: true }));
+      hasNotErrors = false;
+    }
+    if (props.moderator.name === '') {
+      setHelperText((prevHelperText) => ({
+        ...prevHelperText,
+        moderatorName: 'Este campo es requerido',
+      }));
+      setError((prevError) => ({ ...prevError, moderatorName: true }));
       hasNotErrors = false;
     }
     if (props.survey.description === '') {
@@ -107,8 +116,8 @@ export default function Basic(props) {
                   onChange={(event) => props.handleChange(event, 'moderator')}
                   size="small"
                   style={{ width: '100%' , color:'#00B0F0'}}
-                  error={error.title}
-                  helperText={helperText.title}
+                  error={error.moderatorName}
+                  helperText={helperText.moderatorName}
                 />
               </div>
               </div>
