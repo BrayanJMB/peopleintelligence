@@ -35,6 +35,10 @@ export const ChatBox = (props) => {
           resetTyping={props.resetTyping}
           setMessages={props.setMessages}
           messages={props.messages}
+          question={props.question}
+          questions={props.questions}
+          setQuestions2={props.setQuestions2}
+          setQuestions={props.setQuestions}
         />
       </div>
     </div>

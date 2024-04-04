@@ -333,7 +333,6 @@ export default function Discussion({
 
       allErrors.demographics[demoIndex] = currentErrors;
     });
-    console.log(questions);
     questions.forEach((question, questionIndex) => {
       let currentQuestionErrors = {};
 

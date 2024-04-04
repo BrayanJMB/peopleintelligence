@@ -27,7 +27,7 @@ export const nextQuestionTimerContext = createContext();
 export const connectionContext = createContext();
 export const moderatorAvatarContext = createContext();
 
-export const Moderator = ({ id }) => {
+export const Moderator = ({ id,questions,setQuestions2 }) => {
   const [connection, setConnection] = useState(null);
   const [survey, setSurvey] = useState([]);
   const [moderatorAvatar, setModeratorAvatar] = useState();
@@ -87,7 +87,7 @@ export const Moderator = ({ id }) => {
       await fetchModerator();
       const signalRConnection = new HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
-        .withUrl("https://localhost:7005/discusion")
+        .withUrl("https://chatapppeopleintelligence.azurewebsites.net/discusion")
         .withAutomaticReconnect()
         .build();
 
@@ -313,7 +313,17 @@ export const Moderator = ({ id }) => {
       setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
     }
   }, [singleQuestion]);
-  console.log(survey.preguntas && survey.preguntas);
+
+  useEffect(() => {
+    initializeConnectionAndFetchData();
+  }, []);
+
+  useEffect(() => {
+    fetchSurvey();
+    console.log("entré acá :3")
+  }, [questions]);
+
+  
   return (
     <Box
       sx={{
@@ -531,6 +541,9 @@ export const Moderator = ({ id }) => {
                               question={question}
                               nextQuestionTimer={questionTimer}
                               answersOpinion={answersOpinion}
+                              questions={questions}
+                              setQuestions2={setQuestions2}
+                              setQuestions={setQuestions}
                             />
                           </nextQuestionTimerContext.Provider>
                         </singleQuestionContext.Provider>
