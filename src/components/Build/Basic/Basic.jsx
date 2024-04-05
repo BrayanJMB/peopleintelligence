@@ -1,35 +1,38 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import InterestsOutlinedIcon from '@mui/icons-material/InterestsOutlined';
-import NotesIcon from '@mui/icons-material/Notes';
-import TagFacesIcon from '@mui/icons-material/TagFaces';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 
-import Logo from '../../../assets/multicompani.jpeg';
 import { selectCompanyById } from '../../../features/companies/companiesSlice';
-import MyLoader from '../../MyLoader/MyLoader';
 
+import { InputsFields } from './InputsFields';
+import { PreviewSurvey } from './PreviewSurvey';
 import UploadImage from './UploadImage';
 
 import styles from './Basic.module.css';
 
-
-export default function Basic(props) {
+export default function Basic({
+  moderator,
+  survey,
+  handleChange,
+  handlePhoto,
+  handleReset,
+  handleMove,
+  handleNextStepper,
+  loading,
+}) {
   const [error, setError] = useState({});
   const [helperText, setHelperText] = useState({});
   const currentCompany = useSelector((state) => state.companies.currentCompany);
-  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const company = useSelector((state) =>
     currentCompany ? selectCompanyById(state, currentCompany.id) : null
   );
+
   const handleNext = () => {
     if (fieldsValidation()) {
-      props.handleNextStepper();
-      props.handleMove('', 'discussion');
+      handleNextStepper();
+      handleMove('', 'discussion');
     } else return;
   };
 
@@ -39,7 +42,7 @@ export default function Basic(props) {
     setHelperText({});
     setError({});
 
-    if (props.survey.title === '') {
+    if (survey.title === '') {
       setHelperText((prevHelperText) => ({
         ...prevHelperText,
         title: 'Este campo es requerido',
@@ -47,7 +50,15 @@ export default function Basic(props) {
       setError((prevError) => ({ ...prevError, title: true }));
       hasNotErrors = false;
     }
-    if (props.survey.description === '') {
+    if (moderator.name === '') {
+      setHelperText((prevHelperText) => ({
+        ...prevHelperText,
+        moderatorName: 'Este campo es requerido',
+      }));
+      setError((prevError) => ({ ...prevError, moderatorName: true }));
+      hasNotErrors = false;
+    }
+    if (survey.description === '') {
       setHelperText((prevHelperText) => ({
         ...prevHelperText,
         description: 'Este campo es requerido',
@@ -58,7 +69,7 @@ export default function Basic(props) {
 
     return hasNotErrors;
   };
-  
+
   return (
     <div className={styles.basic}>
       <span
@@ -73,45 +84,14 @@ export default function Basic(props) {
       <div className={styles.info}>
         <div className={styles.left}>
           <div>
-            {props.loading && <MyLoader />}
-            <div className={styles.general}>
-              <NotesIcon color="blue" style={{ marginRight: '1rem' }} />
-              <p>Título Conversación (Requerido)</p>
-            </div>
-            <div className={styles.required}>
-              <div className={styles.input}>
-                <TextField
-                  id="outlined-name"
-                  label="Título conversación"
-                  value={props.survey.title}
-                  name="title"
-                  onChange={(event) => props.handleChange(event, 'survey')}
-                  size="small"
-                  style={{ width: '100%' , color:'#00B0F0'}}
-                  error={error.title}
-                  helperText={helperText.title}
-                />
-              </div>
-            </div>
-            <div className={styles.general}>
-              <NotesIcon color="blue" style={{ marginRight: '1rem' }} />
-              <p>Nombre Moderador</p>
-            </div>
-            <div className={styles.required}>
-              <div className={styles.input}>
-                <TextField
-                  id="outlined-name"
-                  label="Nombre moderador"
-                  value={props.moderator.name}
-                  name="name"
-                  onChange={(event) => props.handleChange(event, 'moderator')}
-                  size="small"
-                  style={{ width: '100%' , color:'#00B0F0'}}
-                  error={error.title}
-                  helperText={helperText.title}
-                />
-              </div>
-              </div>
+            {loading && <MyLoader />}
+            <InputsFields
+              survey={survey}
+              moderator={moderator}
+              error={error}
+              helperText={helperText}
+              handleChange={handleChange}
+            />
           </div>
           <div>
             <div className={styles.optional}>
@@ -119,27 +99,26 @@ export default function Basic(props) {
                 color="blue"
                 style={{ marginRight: '1rem' }}
               />
-
               <p>Personalizar (Opcional)</p>
             </div>
             <div className={styles.images}>
               <div className={styles.cover}>
                 <UploadImage
-                  informationConversation={props.survey.imageUrl}
+                  informationConversation={survey.imageUrl}
                   text="Conversación"
                   nameInput="imageUrl"
-                  handlePhoto={props.handlePhoto}
-                  handleReset={props.handleReset}
+                  handlePhoto={handlePhoto}
+                  handleReset={handleReset}
                   sizeImage={styles.avatarleft}
                 />
               </div>
               <div className={styles.avatar}>
                 <UploadImage
-                  informationConversation={props.moderator.avatarUrl}
+                  informationConversation={moderator.avatarUrl}
                   text="Avatar"
                   nameInput="avatarUrl"
-                  handlePhoto={props.handlePhoto}
-                  handleReset={props.handleReset}
+                  handlePhoto={handlePhoto}
+                  handleReset={handleReset}
                   sizeImage={styles.avatarleft}
                 />
               </div>
@@ -170,8 +149,8 @@ export default function Basic(props) {
                       marginTop: '0.5rem',
                     }}
                     name="description"
-                    value={props.survey.description}
-                    onChange={(event) => props.handleChange(event, 'survey')}
+                    value={survey.description}
+                    onChange={(event) => handleChange(event, 'survey')}
                   />
                 </div>
                 <div style={{ marginTop: '1rem' }}>
@@ -189,92 +168,11 @@ export default function Basic(props) {
             </div>
           </div>
         </div>
-        <div className={styles.right}>
-          <div className={styles.phone}>
-            <div className={styles.preview}>
-              <div className={styles.inside}>
-                <div
-                  style={{
-                    backgroundColor: '#00B0F0',
-                    width: '24%',
-                    height: '4px',
-                    borderRadius: '1rem',
-                    marginTop: '0.5rem',
-                  }}
-                ></div>
-                <div
-                  style={{
-                    backgroundColor: '#00B0F0',
-                    width: '90%',
-                    height: '2px',
-                    borderRadius: '1rem',
-                    marginTop: '1rem',
-                    marginBottom: '1rem',
-                  }}
-                ></div>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-start',
-                    width: '100%',
-                  }}
-                >
-                  <div style={{ marginBottom: '0.2rem', marginLeft: '0.5rem' }}>
-                    <img
-                      src={company?.Logotipo ?? Logo}
-                      alt="logotipo"
-                      className={styles.photo}
-                    />
-                    <span
-                      style={{
-                        color: 'grey',
-                        fontSize: '0.7rem',
-                        marginLeft: '0.8rem',
-                      }}
-                    >
-                      {company?.nombreCompania}
-                    </span>
-                  </div>
-                  <div className={styles.covers}>
-                    <img
-                      src={
-                        props.survey.imageUrl
-                          ? props.survey.imageUrl
-                          : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlNXd9tJhoyJMieolHXk9y6MmWuT7Y2bBv7ftTIS0U7Q&s'
-                      }
-                      alt="baseImagen"
-                      className={styles.coverright}
-                    />
-                  </div>
-                  <h2 style={{ marginLeft: '0.8rem' }}>{props.survey.title}</h2>
-                  <div className={styles.bottom}>
-                    <div className={styles.avatarright}>
-                      <div>
-                        {props.moderator.avatarUrl ? (
-                          <img
-                            src={props.moderator.avatarUrl}
-                            alt="profile"
-                            className={styles.little}
-                          />
-                        ) : (
-                          <IconButton>
-                            <TagFacesIcon style={{color:'#00B0F0'}}/>
-                          </IconButton>
-                        )}
-                      </div>
-                      <div>
-                        {props.moderator.name
-                          ? props.moderator.name
-                          : 'Moderador'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <PreviewSurvey
+          survey={survey}
+          moderator={moderator}
+          company={company}
+        />
       </div>
     </div>
   );

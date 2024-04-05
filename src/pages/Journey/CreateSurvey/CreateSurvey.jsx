@@ -654,14 +654,14 @@ export default function CreateSurvey() {
         });
 
         return;
-      }else if((information.name.length > 150)){
+      }else if((information.name.length > 400)){
         setErrorMessage({
           ...errorMessage,
           name: true,
         });
         setHelperText({
           ...helperText,
-          name: 'El número máximo de carácteres de 150.',
+          name: 'El número máximo de carácteres de 400.',
         });
         return;
       }
@@ -708,14 +708,14 @@ export default function CreateSurvey() {
       });
 
       return;
-    }else if((information.name.length > 150)){
+    }else if((information.name.length > 400)){
       setErrorMessage({
         ...errorMessage,
         name: true,
       });
       setHelperText({
         ...helperText,
-        name: 'El número máximo de carácteres de 150.',
+        name: 'El número máximo de carácteres de 400.',
       });
       return;
     }
