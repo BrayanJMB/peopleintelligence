@@ -1,4 +1,4 @@
-import { createContext, useEffect, useRef,useState } from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import * as signalR from '@microsoft/signalr';
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
@@ -24,8 +24,10 @@ import styles from './ChatBox.module.css';
 export const singleQuestionContext = createContext();
 export const answerSingleQuestionContext = createContext();
 export const nextQuestionTimerContext = createContext();
+export const connectionContext = createContext();
+export const moderatorAvatarContext = createContext();
 
-export const Moderator = ({ id }) => {
+export const Moderator = ({ id,questions,setQuestions2 }) => {
   const [connection, setConnection] = useState(null);
   const [survey, setSurvey] = useState([]);
   const [moderatorAvatar, setModeratorAvatar] = useState();
@@ -39,8 +41,6 @@ export const Moderator = ({ id }) => {
   const [answerSingleQuestion, answerSetSingleQuestion] = useState(null);
   const indexCurrentQuestion = useRef(null);
   const [complexQuestion, setComplexQuestion] = useState(true);
-
-
 
   function detectURL(message) {
     var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
@@ -72,7 +72,6 @@ export const Moderator = ({ id }) => {
     } catch (error) {}
   };
 
-  
   const fetchModerator = async () => {
     try {
       const response = await axios.get(
@@ -81,7 +80,7 @@ export const Moderator = ({ id }) => {
       setModeratorAvatar(response.data);
     } catch (error) {}
   };
-  
+
   const initializeConnectionAndFetchData = async () => {
     try {
       await fetchSurvey();
@@ -121,7 +120,7 @@ export const Moderator = ({ id }) => {
               answer: answer,
               counter: counter,
             });
-            if  (counter >= connectedUsers){
+            if (counter >= connectedUsers) {
               setComplexQuestion(true);
               setNextQuestion(indexCurrentQuestion.current);
             }
@@ -165,7 +164,11 @@ export const Moderator = ({ id }) => {
   }, [connection]);
 
   useEffect(() => {
-    if (moderatorAvatar && (survey.demographicList && survey.demographicList.length > 0)){
+    if (
+      moderatorAvatar &&
+      survey.demographicList &&
+      survey.demographicList.length > 0
+    ) {
       let newMessageItem = {
         id: messages.length + 1,
         sender: 'Shun',
@@ -174,7 +177,6 @@ export const Moderator = ({ id }) => {
       };
       setMessages((prevMessages) => [...prevMessages, newMessageItem]);
     }
-
   }, [moderatorAvatar]);
 
   const [messages, setMessages] = useState([]);
@@ -222,7 +224,7 @@ export const Moderator = ({ id }) => {
             let newMessageItem = {
               id: messages.length + 1,
               sender: 'Shun',
-              senderAvatar: moderatorAvatar.avatarUrl ,
+              senderAvatar: moderatorAvatar.avatarUrl,
               messageType: 'question',
               content: question,
             };
@@ -234,10 +236,27 @@ export const Moderator = ({ id }) => {
           });
         setNextQuestion(currentQuestion);
         break;
-      /*case 'imagen':
-          setNextQuestion(index + 1);    
-          break;
-      case 'video':
+      case 'imagen':
+        connection
+          .invoke('SendImage', question.urlMedia)
+          .then(() => {
+            let newMessageItem = {
+              id: messages.length + 1,
+              sender: 'Shun',
+              senderAvatar: moderatorAvatar.avatarUrl,
+              messageType: 'question',
+              content: question,
+            };
+            setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+            indexCurrentQuestion.current = currentQuestion;
+          })
+          .catch(function (err) {
+            return console.error(err.toString());
+          });
+        indexCurrentQuestion.current = currentQuestion;
+        setNextQuestion(currentQuestion);
+        break;
+      /*case 'video':
             console.log('soy video');
             break;*/
       case 'seleccionsimple':
@@ -295,6 +314,16 @@ export const Moderator = ({ id }) => {
     }
   }, [singleQuestion]);
 
+  useEffect(() => {
+    initializeConnectionAndFetchData();
+  }, []);
+
+  useEffect(() => {
+    fetchSurvey();
+    console.log('entré acá :3');
+  }, [questions]);
+
+  
   return (
     <Box
       sx={{
@@ -412,6 +441,13 @@ export const Moderator = ({ id }) => {
                                 </span>
 
                                 <Typography>{option.name}</Typography>
+                                {option.urlMedia && (
+                                  <img
+                                    src={option.urlMedia}
+                                    alt="imagenPregunta"
+                                    style={{ width: '100%', height: 'auto' }}
+                                  />
+                                )}
                               </div>
                               {nextQuestion === index && (
                                 <Button>
@@ -481,30 +517,39 @@ export const Moderator = ({ id }) => {
               {Object.keys(users).map((key) => {
                 const user = users[key];
                 return (
-                  <answerSingleQuestionContext.Provider
-                    value={answerSingleQuestion}
-                  >
-                    <singleQuestionContext.Provider value={singleQuestion}>
-                      <nextQuestionTimerContext.Provider value={questionTimer}>
-                        <ChatBox
-                          key={key}
-                          owner={user.name}
-                          ownerAvatar={user.avatar}
-                          sendMessage={sendMessage}
-                          typing={typing}
-                          resetTyping={resetTyping}
-                          messages={messages}
-                          setMessages={setMessages}
-                          isTyping={isTyping}
-                          responseDemographic={responseDemographic}
-                          demographics={survey.demographicList}
-                          question={question}
-                          nextQuestionTimer={questionTimer}
-                          answersOpinion={answersOpinion}
-                        />
-                      </nextQuestionTimerContext.Provider>
-                    </singleQuestionContext.Provider>
-                  </answerSingleQuestionContext.Provider>
+                  <connectionContext.Provider value={connection}>
+                    <moderatorAvatarContext.Provider value={moderatorAvatar}>
+                      <answerSingleQuestionContext.Provider
+                        value={answerSingleQuestion}
+                      >
+                        <singleQuestionContext.Provider value={singleQuestion}>
+                          <nextQuestionTimerContext.Provider
+                            value={questionTimer}
+                          >
+                            <ChatBox
+                              key={key}
+                              owner={user.name}
+                              ownerAvatar={user.avatar}
+                              sendMessage={sendMessage}
+                              typing={typing}
+                              resetTyping={resetTyping}
+                              messages={messages}
+                              setMessages={setMessages}
+                              isTyping={isTyping}
+                              responseDemographic={responseDemographic}
+                              demographics={survey.demographicList}
+                              question={question}
+                              nextQuestionTimer={questionTimer}
+                              answersOpinion={answersOpinion}
+                              questions={questions}
+                              setQuestions2={setQuestions2}
+                              setQuestions={setQuestions}
+                            />
+                          </nextQuestionTimerContext.Provider>
+                        </singleQuestionContext.Provider>
+                      </answerSingleQuestionContext.Provider>
+                    </moderatorAvatarContext.Provider>
+                  </connectionContext.Provider>
                 );
               })}
             </div>
@@ -514,4 +559,3 @@ export const Moderator = ({ id }) => {
     </Box>
   );
 };
-
