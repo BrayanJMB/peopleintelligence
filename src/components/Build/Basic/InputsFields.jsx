@@ -1,7 +1,7 @@
-import styles from "./Basic.module.css";
+import NotesIcon from '@mui/icons-material/Notes';
+import TextField from '@mui/material/TextField';
 
-import TextField from "@mui/material/TextField";
-import NotesIcon from "@mui/icons-material/Notes";
+import styles from './Basic.module.css';
 
 export const InputsFields = ({
   survey,
@@ -12,28 +12,28 @@ export const InputsFields = ({
 }) => {
   const inputFields = [
     {
-      labelInput: "Título Conversación (Requerido)",
-      label: "Título Conversación",
-      name: "title",
+      labelInput: 'Título Conversación (Requerido)',
+      label: 'Título Conversación',
+      name: 'title',
       value: survey.title,
-      size: "small",
-      color: "#00B0F0",
-      width: "100%",
+      size: 'small',
+      color: '#00B0F0',
+      width: '100%',
       error: error.title,
       helperText: helperText.title,
-      parameterOnChange: "survey",
+      parameterOnChange: 'survey',
     },
     {
-      labelInput: "Nombre moderador (Requerido)",
-      label: "Nombre moderador",
-      name: "name",
+      labelInput: 'Nombre moderador (Requerido)',
+      label: 'Nombre moderador',
+      name: 'name',
       value: moderator.name,
-      size: "small",
-      color: "#00B0F0",
-      width: "100%",
+      size: 'small',
+      color: '#00B0F0',
+      width: '100%',
       error: error.moderatorName,
       helperText: helperText.moderatorName,
-      parameterOnChange: "moderator",
+      parameterOnChange: 'moderator',
     },
   ];
 
@@ -42,7 +42,7 @@ export const InputsFields = ({
       {inputFields.map((field, index) => (
         <div key={index}>
           <div className={styles.general}>
-            <NotesIcon color="blue" style={{ marginRight: "1rem" }} />
+            <NotesIcon color="blue" style={{ marginRight: '1rem' }} />
             <p>{field.labelInput}</p>
           </div>
           <div className={styles.required}>

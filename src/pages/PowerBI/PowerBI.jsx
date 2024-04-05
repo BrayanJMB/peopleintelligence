@@ -31,7 +31,7 @@ export default function PowerBi() {
   };
   // Creamos una tabla
   const accessToken = async () => {
-    console.log("entro aca")
+    console.log('entro aca');
     try {
       await axios.get('PowerBy/' + idDashboard).then((res) => {
         if (
@@ -57,7 +57,7 @@ export default function PowerBi() {
 
 
   useEffect(() => {
-    console.log("entro aca2")
+    console.log('entro aca2');
     if (userInfo.role.findIndex((p) => p === 'PowerBiDashboard') > -1) {
       if (response) {
         let timer1 = setInterval(() => accessToken(), 1000 * 60 * 60);
@@ -65,7 +65,7 @@ export default function PowerBi() {
           clearInterval(timer1);
         };
       } else {
-        console.log("entro a consumir de neuvo")
+        console.log('entro a consumir de neuvo');
         accessToken();
       }
     } else {
@@ -73,7 +73,7 @@ export default function PowerBi() {
       navigate('/dashboard');
     }
     setUserEmail(decodeToken(userInfo.accessToken));
-    console.log(response)
+    console.log(response);
   }, [response]);
    
   return (

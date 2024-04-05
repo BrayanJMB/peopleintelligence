@@ -1,15 +1,16 @@
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import { selectCompanyById } from "../../../features/companies/companiesSlice";
-import { PreviewSurvey } from "./PreviewSurvey";
-import { InputsFields } from "./InputsFields";
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import InterestsOutlinedIcon from '@mui/icons-material/InterestsOutlined';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 
-import UploadImage from "./UploadImage";
-import styles from "./Basic.module.css";
+import { selectCompanyById } from '../../../features/companies/companiesSlice';
 
-import TextField from "@mui/material/TextField";
-import InterestsOutlinedIcon from "@mui/icons-material/InterestsOutlined";
-import Button from "@mui/material/Button";
+import { InputsFields } from './InputsFields';
+import { PreviewSurvey } from './PreviewSurvey';
+import UploadImage from './UploadImage';
+
+import styles from './Basic.module.css';
 
 export default function Basic({
   moderator,
@@ -31,7 +32,7 @@ export default function Basic({
   const handleNext = () => {
     if (fieldsValidation()) {
       handleNextStepper();
-      handleMove("", "discussion");
+      handleMove('', 'discussion');
     } else return;
   };
 
@@ -41,26 +42,26 @@ export default function Basic({
     setHelperText({});
     setError({});
 
-    if (survey.title === "") {
+    if (survey.title === '') {
       setHelperText((prevHelperText) => ({
         ...prevHelperText,
-        title: "Este campo es requerido",
+        title: 'Este campo es requerido',
       }));
       setError((prevError) => ({ ...prevError, title: true }));
       hasNotErrors = false;
     }
-    if (moderator.name === "") {
+    if (moderator.name === '') {
       setHelperText((prevHelperText) => ({
         ...prevHelperText,
-        moderatorName: "Este campo es requerido",
+        moderatorName: 'Este campo es requerido',
       }));
       setError((prevError) => ({ ...prevError, moderatorName: true }));
       hasNotErrors = false;
     }
-    if (survey.description === "") {
+    if (survey.description === '') {
       setHelperText((prevHelperText) => ({
         ...prevHelperText,
-        description: "Este campo es requerido",
+        description: 'Este campo es requerido',
       }));
       setError((prevError) => ({ ...prevError, description: true }));
       hasNotErrors = false;
@@ -73,9 +74,9 @@ export default function Basic({
     <div className={styles.basic}>
       <span
         style={{
-          marginLeft: "2rem",
-          fontWeight: "bold",
-          fontSize: "1.2rem",
+          marginLeft: '2rem',
+          fontWeight: 'bold',
+          fontSize: '1.2rem',
         }}
       >
         Detalles básicos
@@ -96,7 +97,7 @@ export default function Basic({
             <div className={styles.optional}>
               <InterestsOutlinedIcon
                 color="blue"
-                style={{ marginRight: "1rem" }}
+                style={{ marginRight: '1rem' }}
               />
               <p>Personalizar (Opcional)</p>
             </div>
@@ -124,13 +125,13 @@ export default function Basic({
 
               <div>
                 <span>Introducción</span>
-                <div style={{ marginTop: "0.2rem" }}>
+                <div style={{ marginTop: '0.2rem' }}>
                   <span
                     style={{
-                      color: "grey",
-                      fontSize: "0.8rem",
-                      fontWeight: "500",
-                      resize: "none",
+                      color: 'grey',
+                      fontSize: '0.8rem',
+                      fontWeight: '500',
+                      resize: 'none',
                     }}
                   >
                     Los participantes verán esto antes de los onboarding polls
@@ -144,20 +145,20 @@ export default function Basic({
                     minRows={6}
                     maxRows={8}
                     style={{
-                      width: "100%",
-                      marginTop: "0.5rem",
+                      width: '100%',
+                      marginTop: '0.5rem',
                     }}
                     name="description"
                     value={survey.description}
-                    onChange={(event) => handleChange(event, "survey")}
+                    onChange={(event) => handleChange(event, 'survey')}
                   />
                 </div>
-                <div style={{ marginTop: "1rem" }}>
+                <div style={{ marginTop: '1rem' }}>
                   <Button
                     fullWidth
                     variant="contained"
                     onClick={handleNext}
-                    style={{ color: "white" }}
+                    style={{ color: 'white' }}
                     color="blue"
                   >
                     Continuar

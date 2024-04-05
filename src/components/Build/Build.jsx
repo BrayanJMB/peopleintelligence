@@ -1,18 +1,21 @@
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
+import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
+import { v4 as uuidv4 } from 'uuid';
+
 import {
   fecthModeradorAPI,
   fecthSurveyChatAPI,
-} from "../../services/ChatLive/fetchSurveyChat.service";
-import { StepperSurvey } from "./Stepper";
-import Alert from "@mui/material/Alert";
-import Snackbar from "@mui/material/Snackbar";
-import Basic from "./Basic/Basic";
-import Discussion from "./Discussion/Discussion";
-import styles from "./Build.module.css";
-const steps = ["Detalles básicos", "Preguntas y demográficos"];
+} from '../../services/ChatLive/fetchSurveyChat.service';
+
+import Basic from './Basic/Basic';
+import Discussion from './Discussion/Discussion';
+import { StepperSurvey } from './Stepper';
+
+import styles from './Build.module.css';
+const steps = ['Detalles básicos', 'Preguntas y demográficos'];
 export default function Build({
   stage,
   handleMove,
@@ -44,8 +47,8 @@ export default function Build({
 }) {
   const { id } = useParams();
   const location = useLocation();
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const isUpdate = location.pathname.indexOf("Build/update-survey-chat") !== -1;
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  const isUpdate = location.pathname.indexOf('Build/update-survey-chat') !== -1;
 
   const totalSteps = () => {
     return steps.length;
@@ -66,19 +69,19 @@ export default function Build({
   const resetModerator = () => {
     setModerator({
       moderatorId: userInfo.user,
-      name: "",
-      avatarUrl: "",
+      name: '',
+      avatarUrl: '',
     });
   };
 
   const resetSurvey = () => {
     setSurvey({
       id: uuidv4(),
-      title: "",
+      title: '',
       timeDemographics: 300,
       companyId: currentCompany?.id,
-      description: "",
-      imageUrl: "",
+      description: '',
+      imageUrl: '',
     });
     setQuestions([]);
     setDemographics([]);
@@ -111,11 +114,11 @@ export default function Build({
     if (event.target.files && event.target.files[0]) {
       if (event.target.files[0].size > 500000) {
         setSnackbarMessage(
-          "El tamaño de la imagen no puede ser mayor a 500kB."
+          'El tamaño de la imagen no puede ser mayor a 500kB.'
         );
         setOpenSnackbar(true);
       } else {
-        if (event.target.name.includes("avatar")) {
+        if (event.target.name.includes('avatar')) {
           const url = URL.createObjectURL(event.target.files[0]);
           setAvatarImage(event.target.files[0]);
           setModerator({ ...moderator, [event.target.name]: url });
@@ -129,7 +132,7 @@ export default function Build({
   };
 
   const handleReset = (name) => {
-    if (name.includes("avatar")) {
+    if (name.includes('avatar')) {
       setModerator({ ...moderator, [name]: null });
     } else {
       setSurvey({ ...survey, [name]: null });
@@ -137,9 +140,9 @@ export default function Build({
   };
 
   const handleChange = (event, type) => {
-    if (type === "moderator")
+    if (type === 'moderator')
       setModerator({ ...moderator, [event.target.name]: event.target.value });
-    if (type === "survey")
+    if (type === 'survey')
       setSurvey({ ...survey, [event.target.name]: event.target.value });
   };
 
@@ -183,7 +186,7 @@ export default function Build({
 
   const renderSwitch = (type) => {
     switch (type.toLowerCase()) {
-      case "basic":
+      case 'basic':
         return (
           <Basic
             moderator={moderator}
@@ -196,7 +199,7 @@ export default function Build({
             loading={loading}
           />
         );
-      case "discussion":
+      case 'discussion':
         return (
           <Discussion
             moderator={moderator}
@@ -225,7 +228,7 @@ export default function Build({
         open={openSnackbar}
         autoHideDuration={3000}
         onClose={() => setOpenSnackbar(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={() => setOpenSnackbar(false)} severity="warning">
           {snackbarMessage}
@@ -233,7 +236,7 @@ export default function Build({
       </Snackbar>
       <div className={styles.build}>
         <div className={styles.content}>
-          <div style={{ margin: "30px auto", width: "90%" }}>
+          <div style={{ margin: '30px auto', width: '90%' }}>
             <StepperSurvey
               activeStep={activeStep}
               completed={completed}

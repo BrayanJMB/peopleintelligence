@@ -1,15 +1,15 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import LinearProgress from "@mui/material/LinearProgress";
+import { useCallback, useContext, useEffect, useState } from 'react';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import LinearProgress from '@mui/material/LinearProgress';
 
-import CircularWithValueLabel from "./CircularWithValueLabel";
+import CircularWithValueLabel from './CircularWithValueLabel';
 import {
   answerSingleQuestionContext,
   nextQuestionTimerContext,
   singleQuestionContext,
-} from "./Moderator";
+} from './Moderator';
 
-import styles from "./ChatBox.module.css";
+import styles from './ChatBox.module.css';
 
 export const Questions = ({
   question,
@@ -23,7 +23,7 @@ export const Questions = ({
 
   const isText = (item) => {
     switch (item.toLowerCase()) {
-      case "texto":
+      case 'texto':
         return true;
       default:
         return false;
@@ -31,29 +31,29 @@ export const Questions = ({
   };
   const isOpinion = (item) => {
     switch (item.toLowerCase()) {
-      case "opinión":
+      case 'opinión':
         return true;
       default:
         return false;
     }
   };
   const isExperience = () => {
-    return "experiencia";
+    return 'experiencia';
   };
   const isImage = (item) => {
     switch (item.toLowerCase()) {
-      case "imagen":
+      case 'imagen':
         return true;
       default:
         return false;
     }
   };
   const isVideo = () => {
-    return "video";
+    return 'video';
   };
   const isSelecionSimple = (item) => {
     switch (item.toLowerCase()) {
-      case "seleccionsimple":
+      case 'seleccionsimple':
         return true;
       default:
         return false;
@@ -62,11 +62,11 @@ export const Questions = ({
 
   function getColorForPercentage(percentage) {
     if (percentage <= 33) {
-      return "#ff0000"; // Rojo
+      return '#ff0000'; // Rojo
     } else if (percentage <= 66) {
-      return "#ffff00"; // Amarillo
+      return '#ffff00'; // Amarillo
     } else {
-      return "#008000"; // Verde
+      return '#008000'; // Verde
     }
   }
   return (
@@ -87,18 +87,18 @@ export const Questions = ({
                     <>
                       <div
                         style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
                         }}
                       >
                         <p>{option.value}</p>
-                        <div style={{ width: "100%" }}>
+                        <div style={{ width: '100%' }}>
                           <LinearProgress
                             sx={{
-                              backgroundColor: "white",
-                              "& .MuiLinearProgress-bar": {
-                                backgroundColor: "green",
+                              backgroundColor: 'white',
+                              '& .MuiLinearProgress-bar': {
+                                backgroundColor: 'green',
                               },
                             }}
                           />
@@ -136,7 +136,7 @@ export const Questions = ({
           <img
             src={question.urlMedia}
             alt="imagenPregunta"
-            style={{ width: "100%", height: "auto" }}
+            style={{ width: '100%', height: 'auto' }}
           />
         )}
         {isOpinion(question.type) && (
