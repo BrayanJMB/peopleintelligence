@@ -1,6 +1,6 @@
 import axios from 'axios';
 export const storeSurveyImageQuestion = async (filesImage, questions, surveyId) => {
-    const promises = questions.map(async (question, index) => {
+    /*const promises = questions.map(async (question, index) => {
       const formData = new FormData();
       formData.append('questionImage', filesImage[index]);
       formData.append('questionNumber', question.orderNumber);
@@ -27,11 +27,11 @@ export const storeSurveyImageQuestion = async (filesImage, questions, surveyId) 
       const results = await Promise.all(promises); // Espera a que todas las promesas se resuelvan// Aquí manejas las respuestas
     } catch (error) {
       console.error('Error en alguna solicitud:', error);
-    }
+    }*/
   };
 
 export const storeSurveyVideoQuestion = async (filesVideo, questions, surveyId) => {
-    const promises = questions.map(async (question, index) => {
+    /*const promises = questions.map(async (question, index) => {
       const formData = new FormData();
       formData.append('questionImage', filesVideo[index]);
       formData.append('questionNumber', question.orderNumber);
@@ -58,11 +58,11 @@ export const storeSurveyVideoQuestion = async (filesVideo, questions, surveyId) 
       const results = await Promise.all(promises); // Espera a que todas las promesas se resuelvan// Aquí manejas las respuestas
     } catch (error) {
       console.error('Error en alguna solicitud:', error);
-    }
+    }*/
   };
 
 export const storeAvatarAndSurveyImage = async (surveyId) => {
-    const formData = new FormData();
+    /*const formData = new FormData();
     formData.append('surveyImage', surveyImage);
     formData.append('moderatorAvatar', avatarImage);
     formData.append('companyId', currentCompany?.id);
@@ -82,5 +82,5 @@ export const storeAvatarAndSurveyImage = async (surveyId) => {
       } else {
         console.error('Error al subir la imagen:', response);
       }
-    } catch (error) {}
+    } catch (error) {}*/
   };
