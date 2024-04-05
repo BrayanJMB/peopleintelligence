@@ -209,8 +209,6 @@ export default function Build({
             handleBack={handleBack}
             avatarImage={avatarImage}
             surveyImage={surveyImage}
-            setSurvey={setSurvey}
-            setModerator={setModerator}
             surveyChat={surveyChat}
             isUpdate={isUpdate}
             setSurveyChat={setSurveyChat}

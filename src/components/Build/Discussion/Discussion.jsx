@@ -1,10 +1,22 @@
 import { createContext, createRef, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+
+import { storeSurveyChatAPI } from "../../../services/ChatLive/storeSurveyChat.service";
+import {
+  updateModeratorChatAPI,
+  updateSurveyChatAPI,
+} from "../../../services/ChatLive/updateSurveyChat.service";
+import {
+  storeAvatarAndSurveyImage,
+  storeSurveyImageQuestion,
+  storeSurveyVideoQuestion,
+} from "./services/service";
+import AccordionDiscussion from "./AccordionDicussion/AccordionDiscussion";
+import styles from "./Discussion.module.css";
+
+import { List, ListItem, ListItemText } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ForumOutlinedIcon from "@mui/icons-material/ForumOutlined";
-import { List, ListItem, ListItemText } from "@mui/material";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -13,46 +25,9 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
-import axios from "axios";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 
-import { storeSurveyChatAPI } from "../../../services/ChatLive/storeSurveyChat.service";
-import {
-  updateModeratorChatAPI,
-  updateSurveyChatAPI,
-} from "../../../services/ChatLive/updateSurveyChat.service";
-
-import AccordionDiscussion from "./AccordionDicussion/AccordionDiscussion";
-
-import styles from "./Discussion.module.css";
-function stringToColor(string) {
-  let hash = 0;
-  let i;
-
-  /* eslint-disable no-bitwise */
-  for (i = 0; i < string.length; i += 1) {
-    hash = string.charCodeAt(i) + ((hash << 5) - hash);
-  }
-
-  let color = "#";
-
-  for (i = 0; i < 3; i += 1) {
-    const value = (hash >> (i * 8)) & 0xff;
-    color += `00${value.toString(16)}`.slice(-2);
-  }
-  /* eslint-enable no-bitwise */
-
-  return color;
-}
-
-function stringAvatar(name) {
-  return {
-    style: { backgroundColor: stringToColor(name) },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
-  };
-}
-//Context
 export const filesImageQuestionContext = createContext();
 //
 export default function Discussion({
@@ -66,32 +41,23 @@ export default function Discussion({
   handleBack,
   surveyImage,
   avatarImage,
-  setSurvey,
-  setModerator,
   surveyChat,
   isUpdate,
 }) {
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const navigate = useNavigate();
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("info");
   const [open, setOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
-  const [opentemplate, setOpentemplate] = useState(false);
   const [accordionOpen, setAccordionOpen] = useState(false);
   const handleOpenModal = () => setOpen(true);
   const handleCloseModal = () => setOpen(false);
-  const handleOpenModaltemplate = () => setOpentemplate(true);
-  const handleCloseModaltemplate = () => setOpentemplate(false);
   const [filesImageQuestion, setFilesImageQuestion] = useState([]);
-  const [toogle, setToggle] = useState("edit");
   const [errors, setErrors] = useState([]);
   const [isDemographicsAccordionOpen, setIsDemographicsAccordionOpen] =
     useState(false);
   const [isConversationAccordionOpen, setIsConversationAccordionOpen] =
     useState(false);
-  const currentCompany = useSelector((state) => state.companies.currentCompany);
   const demographicRefs = useRef([]);
 
   const handleOpenAccordion = () => {
@@ -219,92 +185,6 @@ export default function Discussion({
     }
   };
 
-  const storeSurveyImageQuestion = async (filesImage, questions, surveyId) => {
-    const promises = questions.map(async (question, index) => {
-      const formData = new FormData();
-      formData.append("questionImage", filesImage[index]);
-      formData.append("questionNumber", question.orderNumber);
-      formData.append("surveyId", surveyId);
-
-      try {
-        const response = await axios.post(
-          "https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImagesQuestion",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-        return response.data; // Retorna los datos de respuesta para su uso posterior
-      } catch (error) {
-        console.error("Error al subir la imagen:", error);
-        throw error; // Lanza el error para manejar rechazos en Promise.all
-      }
-    });
-
-    try {
-      const results = await Promise.all(promises); // Espera a que todas las promesas se resuelvan// Aquí manejas las respuestas
-    } catch (error) {
-      console.error("Error en alguna solicitud:", error);
-    }
-  };
-
-  const storeSurveyVideoQuestion = async (filesVideo, questions, surveyId) => {
-    const promises = questions.map(async (question, index) => {
-      const formData = new FormData();
-      formData.append("questionImage", filesVideo[index]);
-      formData.append("questionNumber", question.orderNumber);
-      formData.append("surveyId", surveyId);
-      formData.append("companyId", currentCompany?.id);
-      try {
-        const response = await axios.post(
-          "https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImagesQuestion",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-        return response.data; // Retorna los datos de respuesta para su uso posterior
-      } catch (error) {
-        console.error("Error al subir la imagen:", error);
-        throw error; // Lanza el error para manejar rechazos en Promise.all
-      }
-    });
-
-    try {
-      const results = await Promise.all(promises); // Espera a que todas las promesas se resuelvan// Aquí manejas las respuestas
-    } catch (error) {
-      console.error("Error en alguna solicitud:", error);
-    }
-  };
-
-  const storeAvatarAndSurveyImage = async (surveyId) => {
-    const formData = new FormData();
-    formData.append("surveyImage", surveyImage);
-    formData.append("moderatorAvatar", avatarImage);
-    formData.append("companyId", currentCompany?.id);
-    formData.append("surveyId", surveyId);
-    try {
-      const response = await axios.post(
-        "https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImages",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      if (response) {
-        return response;
-      } else {
-        console.error("Error al subir la imagen:", response);
-      }
-    } catch (error) {}
-  };
-
   const validate = () => {
     let allErrors = {
       demographics: [],
@@ -343,7 +223,7 @@ export default function Discussion({
             "El nombre de la pregunta no puede estar vacío.";
         } else {
           // Validar si hay al menos 2 opciones
-          console.log(question.type)
+          console.log(question.type);
           if (
             question.options.length < 2 &&
             question.type.toLowerCase() !== "texto" &&
@@ -414,10 +294,6 @@ export default function Discussion({
 
     // Si no hay errores en ningún demográfico o pregunta, devuelve true. De lo contrario, devuelve false.
     return !hasErrors;
-  };
-
-  const handletoggle = (event, newAlignment) => {
-    setToggle(newAlignment);
   };
 
   useEffect(() => {

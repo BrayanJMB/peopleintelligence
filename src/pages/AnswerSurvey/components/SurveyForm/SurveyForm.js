@@ -531,6 +531,7 @@ const SurveyForm = ({
                 <FormLabel
                   id={`${questionId}-${typeQuestion}`}
                   style={{
+                    wordBreak:"break-all",
                     fontSize: '1.1',
                     fontWeight: 'bold',
                     marginBottom: '0.8m',
@@ -580,6 +581,7 @@ const SurveyForm = ({
                 <FormLabel
                   id={`${questionId}-${typeQuestion}`}
                   style={{
+                    wordBreak:"break-all",
                     fontSize: '1.1',
                     fontWeight: 'bold',
                     marginBottom: '0.8m',
@@ -641,6 +643,7 @@ const SurveyForm = ({
               <Fragment>
                 <FormLabel
                   style={{
+                    wordBreak:"break-all",
                     fontSize: '1.1',
                     fontWeight: 'bold',
                     marginBottom: '1.1em',
@@ -690,6 +693,7 @@ const SurveyForm = ({
               <Fragment>
                 <FormLabel
                   style={{
+                    wordBreak:"break-all",
                     fontSize: '1.1',
                     fontWeight: 'bold',
                     marginBottom: '0.8m',
@@ -755,6 +759,7 @@ const SurveyForm = ({
               <Fragment>
                 <FormLabel
                   style={{
+                    wordBreak:"break-all",
                     fontSize: '1.1',
                     fontWeight: 'bold',
                     marginBottom: '1.1em',
@@ -795,6 +800,7 @@ const SurveyForm = ({
               <FormLabel
               id={`${questionId}-${typeQuestion}`}
               style={{
+                wordBreak:"break-all",
                 fontSize: '1.1',
                 fontWeight: 'bold',
                 marginBottom: '1.1m',
