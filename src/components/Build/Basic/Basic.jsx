@@ -3,8 +3,9 @@ import { useSelector } from 'react-redux';
 import InterestsOutlinedIcon from '@mui/icons-material/InterestsOutlined';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import MyLoader from '../../MyLoader/MyLoader';
+
 import { selectCompanyById } from '../../../features/companies/companiesSlice';
+import MyLoader from '../../MyLoader/MyLoader';
 
 import { InputsFields } from './InputsFields';
 import { PreviewSurvey } from './PreviewSurvey';
