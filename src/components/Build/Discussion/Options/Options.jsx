@@ -1,4 +1,10 @@
-import { useCallback, useContext, useState } from 'react';
+import {
+  useCallback,
+  useContext,
+  useInsertionEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import { useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -7,6 +13,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { Button, TextField } from '@mui/material';
 import { Box } from '@mui/material';
 import { Grid } from '@mui/material';
+import Alert from '@mui/material/Alert';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
@@ -16,10 +23,8 @@ import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
-
-import { filesImageQuestionContext } from '../Discussion';
-
 const tiempoPregunta = [1, 2, 3, 4, 5];
 function Options({
   currentIndex,
@@ -33,33 +38,134 @@ function Options({
   handleRemoveConversation,
   errors,
 }) {
+  const [files, setFiles] = useState([]);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('info');
   const [time, setTime] = useState('00:00');
-  const files = useContext(filesImageQuestionContext);
-  const onDrop = useCallback((acceptedFiles) => {
-    files.ImageQuestion(
-      acceptedFiles.map((file) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        })
-      )
+  //const files = useContext(filesImageQuestionContext);
+  const onDropImages = useCallback((acceptedFiles) => {
+    // Crear una URL de objeto para cada archivo
+    const mappedFiles = acceptedFiles.map((file) =>
+      Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      })
     );
+
+    // Actualizar el estado con los nuevos archivos, incluidos sus previews
+    setFiles(mappedFiles);
+    const newConversation = { ...question, urlMedia: mappedFiles[0] };
+    setQuestion((prevState) => {
+      const newConversations = [...prevState];
+      const index = newConversations.findIndex((d) => d === question);
+      newConversations[index] = newConversation;
+      return newConversations;
+    });
   }, []);
 
-  const removeFile = (file) => () => {
-    const newFiles = files.filesImageQuestion.filter(
-      (f) => f.name !== file.name
+  const onDropRejectedImages = useCallback((fileRejections) => {
+    // Lógica para manejar archivos rechazados
+    // Puedes personalizar el mensaje de error basado en tu lógica
+    const message =
+      fileRejections.length > 0
+        ? 'Tipo de archivo no válido. Por favor, sube un archivo con extensión .jpeg, .png.'
+        : '';
+    setOpenSnackbar(true);
+    setSnackbarMessage(message);
+    setSnackbarSeverity('warning');
+  }, []);
+
+  const onDropVideos = useCallback((acceptedFiles) => {
+    // Crear una URL de objeto para cada archivo
+    const mappedFiles = acceptedFiles.map((file) =>
+      Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      })
     );
-    files.setFiles(newFiles);
+
+    // Actualizar el estado con los nuevos archivos, incluidos sus previews
+    setFiles(mappedFiles);
+    const newConversation = { ...question, urlMedia: mappedFiles[0] };
+    setQuestion((prevState) => {
+      const newConversations = [...prevState];
+      const index = newConversations.findIndex((d) => d === question);
+      newConversations[index] = newConversation;
+      return newConversations;
+    });
+  }, []);
+
+  const onDropRejectedVideos = useCallback((fileRejections) => {
+    // Lógica para manejar archivos rechazados
+    // Puedes personalizar el mensaje de error basado en tu lógica
+    const message =
+      fileRejections.length > 0
+        ? 'Tipo de archivo no válido. Por favor, sube un archivo con extensión.mp4.'
+        : '';
+    setOpenSnackbar(true);
+    setSnackbarMessage(message);
+    setSnackbarSeverity('warning');
+  }, []);
+  // Configuración para dropzone de imágenes
+  const {
+    getRootProps: getRootPropsImages,
+    getInputProps: getInputPropsImages,
+    isDragActive: isDragActiveImages,
+  } = useDropzone({
+    onDrop: onDropImages,
+    onDropRejected: onDropRejectedImages,
+    accept: {
+      'image/jpeg': [],
+      'image/png': [],
+    },
+    maxFiles: 2,
+  });
+
+  // Configuración para dropzone de vídeos
+  const {
+    getRootProps: getRootPropsVideos,
+    getInputProps: getInputPropsVideos,
+    isDragActive: isDragActiveVideos,
+  } = useDropzone({
+    onDrop: onDropVideos,
+    onDropRejected: onDropRejectedVideos,
+    accept: { 'video/mp4': ['.mp4', '.MP4'] },
+    maxFiles: 1,
+  });
+
+  const removeFile = (file) => {
+    const newFiles = files.filter((f) => f.name !== file.name);
+    setFiles(newFiles);
   };
 
-  const previews = Object.values(files.filesImageQuestion).map((file) => (
-    <div key={file.name}>
-      <img src={file.preview} style={{ width: '100%' }} alt="Preview" />
-      <IconButton onClick={() => removeFile(file)}>
-        <DeleteOutlineIcon />
-      </IconButton>
-    </div>
-  ));
+  const previews = files.map((file) => {
+    // Determinar si el archivo es un vídeo o una imagen por su tipo MIME
+    const isVideo = file.type.startsWith('video');
+
+    // Crear un elemento JSX basado en el tipo de archivo
+    let mediaElement;
+    if (isVideo) {
+      mediaElement = (
+        <video
+          src={file.preview}
+          style={{ width: '100%' }}
+          controls
+          alt="Preview"
+        />
+      );
+    } else {
+      mediaElement = (
+        <img src={file.preview} style={{ width: '100%' }} alt="Preview" />
+      );
+    }
+    return (
+      <div key={file.name}>
+        {mediaElement}
+        <IconButton onClick={() => removeFile(file)}>
+          <DeleteOutlineIcon />
+        </IconButton>
+      </div>
+    );
+  });
 
   function limpiarTexto(texto) {
     let textoSinEspacios = texto.replace(/\s+/g, '');
@@ -69,7 +175,7 @@ function Options({
 
     return textoSinTildes;
   }
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
   const isText = (item) => {
     switch (item.toLowerCase()) {
       case 'texto':
@@ -97,18 +203,6 @@ function Options({
       default:
         return false;
     }
-  };
-
-  const handleFileChange = (event) => {
-    // Acceder al archivo seleccionado
-    files.setFilesImageQuestion(event.target.files[0]);
-    const newConversation = { ...question };
-    setQuestion((prevState) => {
-      const newConversations = [...prevState];
-      const index = newConversations.findIndex((d) => d === question);
-      newConversations[index] = newConversation;
-      return newConversations;
-    });
   };
 
   const handleDemographicNameChange = (e) => {
@@ -269,9 +363,7 @@ function Options({
 
   useEffect(() => {
     return () =>
-      Object.values(files.filesImageQuestion).forEach((file) =>
-        URL.revokeObjectURL(file.preview)
-      );
+      Object.values(files).forEach((file) => URL.revokeObjectURL(file.preview));
   }, [files]);
 
   const handleChangeTime = (event) => {
@@ -326,6 +418,11 @@ function Options({
 
   return (
     <div style={{ marginBottom: '20px' }}>
+      <Snackbar open={openSnackbar} autoHideDuration={2000}>
+        <Alert severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
       {!isConversation ? (
         <>
           <Card
@@ -853,37 +950,43 @@ function Options({
                   <div
                     style={{
                       display: 'flex',
-                      alignItems: 'center',
+                      alignItems: 'start',
+                      flexDirection: 'column',
                     }}
                   >
-                    {files.filesImageQuestion.length === 0 && (
+                    {files.length === 0 && (
                       <Box
-                        {...getRootProps()}
+                        {...getRootPropsImages()}
                         sx={{
                           border: '2px dashed gray',
                           borderRadius: '10px',
                           padding: '20px',
                           textAlign: 'center',
                           cursor: 'pointer',
-                          backgroundColor: isDragActive ? '#eeeeee' : '#fafafa',
+                          backgroundColor: isDragActiveImages
+                            ? '#eeeeee'
+                            : '#fafafa',
                         }}
                       >
-                        <input
-                          {...getInputProps({
-                            onChange: (event) => {
-                              handleFileChange(event); // Asumiendo que handleFileChange maneja el evento de cambio
-                            },
-                          })}
-                          accept="image/*,video/*"
-                        />
-                        <CloudUploadIcon sx={{ fontSize: 60 }} />
-                        <Typography variant="body1">
-                          {isDragActive
-                            ? 'Suelta los archivos aquí...'
-                            : 'Arrastra y suelta archivos aquí, o haz clic para seleccionar archivos'}
-                        </Typography>
+                        <input {...getInputPropsImages()} />
+                        {
+                          <>
+                            <CloudUploadIcon sx={{ fontSize: 60 }} />
+                            <Typography variant="body1">
+                              {isDragActiveImages
+                                ? 'Suelta los archivos aquí...'
+                                : 'Arrastra y suelta archivos aquí, o haz clic para seleccionar archivos'}
+                            </Typography>
+                          </>
+                        }
                       </Box>
                     )}
+                    {!!errors.questions?.[currentIndex]?.name && (
+                      <Typography color="error" style={{ marginTop: '10px' }}>
+                        {errors.questions?.[currentIndex]?.name}
+                      </Typography>
+                    )}
+
                     <Grid container spacing={2} style={{ marginTop: '20px' }}>
                       {previews}
                     </Grid>
@@ -917,30 +1020,43 @@ function Options({
                   <div
                     style={{
                       display: 'flex',
-                      alignItems: 'center',
+                      alignItems: 'start',
+                      flexDirection: 'column',  
                     }}
                   >
-                    <Box
-                      {...getRootProps()}
-                      sx={{
-                        border: '2px dashed gray',
-                        borderRadius: '10px',
-                        padding: '20px',
-                        textAlign: 'center',
-                        cursor: 'pointer',
-                        backgroundColor: isDragActive ? '#eeeeee' : '#fafafa',
-                      }}
-                    >
-                      <input {...getInputProps()} accept="image/*,video/*" />
-                      {isDragActive ? (
-                        <Typography>Arrastra los archivos aquí...</Typography>
-                      ) : (
-                        <Typography>
-                          Arrastra y suelta imágenes o vídeos aquí, o haz clic
-                          para seleccionar archivos
-                        </Typography>
-                      )}
-                    </Box>
+                    {files.length === 0 && (
+                      <Box
+                        {...getRootPropsVideos()}
+                        sx={{
+                          border: '2px dashed gray',
+                          borderRadius: '10px',
+                          padding: '20px',
+                          textAlign: 'center',
+                          cursor: 'pointer',
+                          backgroundColor: isDragActiveVideos
+                            ? '#eeeeee'
+                            : '#fafafa',
+                        }}
+                      >
+                        <input {...getInputPropsVideos()} />
+                        <>
+                          <CloudUploadIcon sx={{ fontSize: 60 }} />
+                          <Typography variant="body1">
+                            {isDragActiveVideos
+                              ? 'Suelta los archivos aquí...'
+                              : 'Arrastra y suelta archivos aquí, o haz clic para seleccionar archivos'}
+                          </Typography>
+                        </>
+                      </Box>
+                    )}
+                    {!!errors.questions?.[currentIndex]?.name && (
+                      <Typography color="error" style={{ marginTop: '10px' }}>
+                        {errors.questions?.[currentIndex]?.name}
+                      </Typography>
+                    )}
+                    <Grid container spacing={2} style={{ marginTop: '20px' }}>
+                      {previews}
+                    </Grid>
                   </div>
                 </div>
               </CardContent>

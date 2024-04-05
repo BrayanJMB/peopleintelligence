@@ -487,6 +487,7 @@ const SurveyDetailPage = () => {
                           key={questionId}
                           className={styles.SurveyDetailPage__question}
                         >
+                          <div style={{display:'flex'}}>
                           <Typography
                             className={
                               styles.SurveyDetailPage__question__number
@@ -500,7 +501,7 @@ const SurveyDetailPage = () => {
                           <Box sx={{ width: 1 }}>
                             <Typography
                               variant="body1"
-                              style={{ fontWeight: 'bold' }}
+                              style={{ fontWeight: 'bold', wordBreak:'break-word' }}
                               gutterBottom
                             >
                               {questionName}
@@ -525,6 +526,7 @@ const SurveyDetailPage = () => {
                               </Grid>
                             </div>
                           </Box>
+                        </div>
                         </div>
                       )
                     )}

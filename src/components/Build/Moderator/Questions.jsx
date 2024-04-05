@@ -1,4 +1,4 @@
-import { useCallback, useContext,useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import LinearProgress from '@mui/material/LinearProgress';
 
@@ -6,7 +6,8 @@ import CircularWithValueLabel from './CircularWithValueLabel';
 import {
   answerSingleQuestionContext,
   nextQuestionTimerContext,
-  singleQuestionContext} from './Moderator';
+  singleQuestionContext,
+} from './Moderator';
 
 import styles from './ChatBox.module.css';
 
@@ -39,8 +40,13 @@ export const Questions = ({
   const isExperience = () => {
     return 'experiencia';
   };
-  const isImage = () => {
-    return 'imagen';
+  const isImage = (item) => {
+    switch (item.toLowerCase()) {
+      case 'imagen':
+        return true;
+      default:
+        return false;
+    }
   };
   const isVideo = () => {
     return 'video';
@@ -67,17 +73,6 @@ export const Questions = ({
     <>
       <div className={styles.chatApp__convMessageValue}>
         {isText(question.type) && <p>{question.name}</p>}
-        {isOpinion(question.type) && (
-          <>
-            <p>{nextQuestionTimer}lol</p>
-            <p>{question.name}</p>
-            {answersOpinion.map((option) => (
-              <p>
-                {option.respuesta}--{option.porcentaje}
-              </p>
-            ))}
-          </>
-        )}
         {isSelecionSimple(question.type) && (
           <>
             {!isAnswer ? (
@@ -112,8 +107,7 @@ export const Questions = ({
                           <p>
                             <CircularWithValueLabel
                               data={
-                                answerSingleQuestion &&
-                                answerSingleQuestion 
+                                answerSingleQuestion && answerSingleQuestion
                                   ? (answerSingleQuestion.answer[index]
                                       .contador *
                                       100) /
@@ -138,6 +132,25 @@ export const Questions = ({
             )}
           </>
         )}
+        {isImage(question.type) && (
+          <img
+            src={question.urlMedia}
+            alt="imagenPregunta"
+            style={{ width: '100%', height: 'auto' }}
+          />
+        )}
+        {isOpinion(question.type) && (
+          <>
+            <p>{nextQuestionTimer}lol</p>
+            <p>{question.name}</p>
+            {answersOpinion.map((option) => (
+              <p>
+                {option.respuesta}--{option.porcentaje}
+              </p>
+            ))}
+          </>
+        )}
+
       </div>
     </>
   );

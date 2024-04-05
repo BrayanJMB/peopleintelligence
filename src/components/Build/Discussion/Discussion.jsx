@@ -1,6 +1,4 @@
-import { createContext,createRef, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { createContext, createRef, useEffect, useRef, useState } from 'react';
 import ClearIcon from '@mui/icons-material/Clear';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
@@ -8,46 +6,29 @@ import { List, ListItem, ListItemText } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
+import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
-import axios from 'axios';
 
 import { storeSurveyChatAPI } from '../../../services/ChatLive/storeSurveyChat.service';
-import { updateModeratorChatAPI,updateSurveyChatAPI } from '../../../services/ChatLive/updateSurveyChat.service';
+import {
+  updateModeratorChatAPI,
+  updateSurveyChatAPI,
+} from '../../../services/ChatLive/updateSurveyChat.service';
 
 import AccordionDiscussion from './AccordionDicussion/AccordionDiscussion';
+import {
+  storeAvatarAndSurveyImage,
+  storeSurveyImageQuestion,
+  storeSurveyVideoQuestion,
+} from './services/service';
 
 import styles from './Discussion.module.css';
-function stringToColor(string) {
-  let hash = 0;
-  let i;
 
-  /* eslint-disable no-bitwise */
-  for (i = 0; i < string.length; i += 1) {
-    hash = string.charCodeAt(i) + ((hash << 5) - hash);
-  }
-
-  let color = '#';
-
-  for (i = 0; i < 3; i += 1) {
-    const value = (hash >> (i * 8)) & 0xff;
-    color += `00${value.toString(16)}`.slice(-2);
-  }
-  /* eslint-enable no-bitwise */
-
-  return color;
-}
-
-function stringAvatar(name) {
-  return {
-    style: { backgroundColor: stringToColor(name) },
-    children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
-  };
-}
-//Context
 export const filesImageQuestionContext = createContext();
 //
 export default function Discussion({
@@ -61,28 +42,23 @@ export default function Discussion({
   handleBack,
   surveyImage,
   avatarImage,
-  setSurvey,
-  setModerator,
   surveyChat,
   isUpdate,
 }) {
-  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  const navigate = useNavigate();
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('info');
   const [open, setOpen] = useState(false);
-  const [opentemplate, setOpentemplate] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
   const [accordionOpen, setAccordionOpen] = useState(false);
   const handleOpenModal = () => setOpen(true);
   const handleCloseModal = () => setOpen(false);
-  const handleOpenModaltemplate = () => setOpentemplate(true);
-  const handleCloseModaltemplate = () => setOpentemplate(false);
   const [filesImageQuestion, setFilesImageQuestion] = useState([]);
-  const [toogle, setToggle] = useState('edit');
   const [errors, setErrors] = useState([]);
   const [isDemographicsAccordionOpen, setIsDemographicsAccordionOpen] =
     useState(false);
   const [isConversationAccordionOpen, setIsConversationAccordionOpen] =
     useState(false);
-  const currentCompany = useSelector((state) => state.companies.currentCompany);
   const demographicRefs = useRef([]);
 
   const handleOpenAccordion = () => {
@@ -93,141 +69,121 @@ export default function Discussion({
     setAccordionOpen(false);
   };
 
-  const handleSubmit = async () => {
-    let urls = null;
-    const payload = {
-      moderator: {
-        ...moderator,
-      },
-      survey: {
-        ...survey,
-        questions: questions.map((q, index) => ({
-          ...q,
-          orderNumber: index + 1,
-          options: q.options.map((option) => {
-            const { ...rest } = option;
-            return rest;
-          }),
-        })),
-        demographic: demographics.map((demo) => ({
-          ...demo,
-          demographicDetails: demo.demographicDetails.map((detail) => {
-            const { ...rest } = detail;
-            return rest;
-          }),
-        })),
-      },
-    };
-    //Javascript, Js
+  const handleSubmit = async (event) => {
+    if (validate()) {
+      event.preventDefault();
+      setIsDisabled(true);
+      setOpenSnackbar(true);
+      setSnackbarMessage('Creando encuesta, por favor espere...');
+      setSnackbarSeverity('info');
+      let urls = null;
+      const filesImage =
+        questions?.filter((q) => q.type === 'imagen').map((q) => q.urlMedia) ??
+        [];
+      const filesVideo =
+        questions?.filter((q) => q.type === 'video').map((q) => q.urlMedia) ??
+        [];
 
-    let response;
-
-    if (!isUpdate) {
-      // Manejar creación
-      const imageQuestions = payload.survey.questions.filter(
-        (question) => question.type === 'imagen'
-      );
-      response = await storeSurveyChatAPI(payload);
-      if (surveyImage || avatarImage) {
-        urls = await storeAvatarAndSurveyImage(response.data.survey.id);
-        payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
-        payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
-      }
-      const updateData = {
-        id: payload.survey.id,
-        title: payload.survey.title,
-        imageUrl: payload.survey.imageUrl,
-        description: payload.survey.description,
-        moderatorName: payload.moderator.name,
-        moderatorId: payload.moderator.moderatorId,
-        avatarUrl: payload.moderator.avatarUrl,
+      const payload = {
+        moderator: {
+          ...moderator,
+        },
+        survey: {
+          ...survey,
+          questions: questions.map((q, index) => ({
+            ...q,
+            orderNumber: index + 1,
+            urlMedia: '',
+            options: q.options.map((option) => {
+              const { ...rest } = option;
+              return rest;
+            }),
+          })),
+          demographic: demographics.map((demo) => ({
+            ...demo,
+            demographicDetails: demo.demographicDetails.map((detail) => {
+              const { ...rest } = detail;
+              return rest;
+            }),
+          })),
+        },
       };
-      await updateModeratorChatAPI(updateData);
-      await storeSurveyImageQuestion(imageQuestions, response.data.survey.id);
-    } else {
-      // Manejar actualización
-      if (surveyImage || avatarImage) {   
-        urls = await storeAvatarAndSurveyImage(payload.survey.id);
-        payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
-        payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
-      }
-      response = await updateSurveyChatAPI(payload.survey);
-      const updateData = {
-        id: payload.survey.id,
-        title: payload.survey.title,
-        imageUrl: payload.survey.imageUrl,
-        description: payload.survey.description,
-        moderatorName: payload.moderator.name,
-        moderatorId: payload.moderator.moderatorId,
-        avatarUrl: payload.moderator.avatarUrl,
-      };
-      await updateModeratorChatAPI(updateData);
-    }
+      let response;
 
-    // Manejar respuesta
-    if (response.status === 200) {
-      alert(
-        `Chat Live ${!isUpdate ? 'creado' : 'actualizado'} satisfactoriamente`
-      );
-      handleMove('/conversation/Live', 'basic');
-    } else {
-      alert('Hubo un error al crear la encuesta de chat');
-    }
-  };
-
-  const storeSurveyImageQuestion = async (questions, surveyId) => {
-    const promises = questions.map(async (question, index) => {
-      const formData = new FormData();
-      formData.append('questionImage', filesImageQuestion[index]);
-      formData.append('questionNumber', question.orderNumber);
-      formData.append('surveyId', surveyId);
-
-      try {
-        const response = await axios.post(
-          'https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImagesQuestion',
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
+      if (!isUpdate) {
+        // Manejar creación
+        const imageQuestions = payload.survey.questions.filter(
+          (question) => question.type === 'imagen'
         );
-        return response.data; // Retorna los datos de respuesta para su uso posterior
-      } catch (error) {
-        console.error('Error al subir la imagen:', error);
-        throw error; // Lanza el error para manejar rechazos en Promise.all
-      }
-    });
-
-    try {
-      const results = await Promise.all(promises); // Espera a que todas las promesas se resuelvan// Aquí manejas las respuestas
-    } catch (error) {
-      console.error('Error en alguna solicitud:', error);
-    }
-  };
-
-  const storeAvatarAndSurveyImage = async (surveyId) => {
-    const formData = new FormData();
-    formData.append('surveyImage', surveyImage);
-    formData.append('moderatorAvatar', avatarImage);
-    formData.append('companyId', currentCompany?.id);
-    formData.append('surveyId', surveyId);
-    try {
-      const response = await axios.post(
-        'https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImages',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+        const videoQuestions = payload.survey.questions.filter(
+          (video) => video.type === 'video'
+        );
+        response = await storeSurveyChatAPI(payload);
+        if (surveyImage || avatarImage) {
+          urls = await storeAvatarAndSurveyImage(response.data.survey.id);
+          payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
+          payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
         }
-      );
-      if (response) {
-        return response;
+        const updateData = {
+          id: payload.survey.id,
+          title: payload.survey.title,
+          imageUrl: payload.survey.imageUrl,
+          description: payload.survey.description,
+          moderatorName: payload.moderator.name,
+          moderatorId: payload.moderator.moderatorId,
+          avatarUrl: payload.moderator.avatarUrl,
+        };
+        await updateModeratorChatAPI(updateData);
+        if (imageQuestions.length > 0) {
+          await storeSurveyImageQuestion(
+            filesImage,
+            imageQuestions,
+            response.data.survey.id
+          );
+        }
+        /*if (videoQuestions.length > 0) {
+          await storeSurveyVideoQuestion(
+            filesVideo,
+            videoQuestions,
+            response.data.survey.id
+          );
+        }*/
       } else {
-        console.error('Error al subir la imagen:', response);
+        // Manejar actualización
+        if (surveyImage || avatarImage) {
+          urls = await storeAvatarAndSurveyImage(payload.survey.id);
+          payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
+          payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
+        }
+        response = await updateSurveyChatAPI(payload.survey);
+        const updateData = {
+          id: payload.survey.id,
+          title: payload.survey.title,
+          imageUrl: payload.survey.imageUrl,
+          description: payload.survey.description,
+          moderatorName: payload.moderator.name,
+          moderatorId: payload.moderator.moderatorId,
+          avatarUrl: payload.moderator.avatarUrl,
+        };
+        await updateModeratorChatAPI(updateData);
       }
-    } catch (error) {}
+
+      // Manejar respuesta
+      if (response.status === 200) {
+        setSnackbarMessage(
+          `Chat Live ${!isUpdate ? 'creado' : 'actualizado'} satisfactoriamente`
+        );
+        setSnackbarSeverity('success');
+        setIsDisabled(false);
+        setTimeout(() => {
+          handleMove('/conversation/Live', 'basic');
+        }, 2000);
+      } else {
+        setIsDisabled(false);
+        setSnackbarMessage('Hubo un error al crear la encuesta de chat');
+        setSnackbarSeverity('error');
+      }
+    }
   };
 
   const validate = () => {
@@ -258,27 +214,49 @@ export default function Discussion({
 
       allErrors.demographics[demoIndex] = currentErrors;
     });
-
     questions.forEach((question, questionIndex) => {
       let currentQuestionErrors = {};
 
       // Validar si el nombre de la pregunta está vacío
-      if (!question.name.trim()) {
-        currentQuestionErrors.name =
-          'El nombre de la pregunta no puede estar vacío.';
+      if (question.type !== 'imagen' && question.type !== 'video') {
+        if (!question.name.trim()) {
+          currentQuestionErrors.name =
+            'El nombre de la pregunta no puede estar vacío.';
+        } else {
+          // Validar si hay al menos 2 opciones
+          console.log(question.type);
+          if (
+            question.options.length < 2 &&
+            question.type.toLowerCase() !== 'texto' &&
+            question.type !== 'Opinión'
+          ) {
+            currentQuestionErrors.name = 'Debe haber al menos 2 opciones.';
+          }
+        }
       } else {
-        // Validar si hay al menos 2 opciones
         if (
-          question.options.length < 2 &&
-          question.type !== 'texto' &&
-          question.type !== 'Opinión'
+          typeof question.urlMedia === 'string' &&
+          !question.urlMedia.trim()
         ) {
-          currentQuestionErrors.name = 'Debe haber al menos 2 opciones.';
+          currentQuestionErrors.name =
+            'No puede ir vacío, debe subir un archivo';
+        }
+        // Verifica si question.urlMedia es un objeto File pero no tiene tamaño (lo que indicaría un archivo vacío)
+        else if (
+          question.urlMedia instanceof File &&
+          question.urlMedia.size === 0
+        ) {
+          currentQuestionErrors.name = 'El archivo no puede estar vacío.';
         }
       }
 
       // Validar si el timeLimit es nulo
-      if (!question.timeLimit && question.type !== 'texto') {
+      if (
+        !question.timeLimit &&
+        question.type.toLowerCase() !== 'texto' &&
+        question.type !== 'imagen' &&
+        question.type !== 'video'
+      ) {
         currentQuestionErrors.timeLimit = 'Debe seleccionar un tiempo';
       }
 
@@ -296,7 +274,7 @@ export default function Discussion({
 
       allErrors.questions[questionIndex] = currentQuestionErrors;
     });
-
+    console.log(allErrors);
     setErrors(allErrors);
 
     const hasErrorsInDemographics = allErrors.demographics.some(
@@ -319,10 +297,6 @@ export default function Discussion({
     return !hasErrors;
   };
 
-  const handletoggle = (event, newAlignment) => {
-    setToggle(newAlignment);
-  };
-
   useEffect(() => {
     // Si hay más demográficos que referencias, agregamos las referencias faltantes
     while (demographicRefs.current.length < demographics.length) {
@@ -338,6 +312,11 @@ export default function Discussion({
 
   return (
     <div className={styles.discussion}>
+      <Snackbar open={openSnackbar} autoHideDuration={2000}>
+        <Alert severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
       <Button
         onClick={() => {
           handleMove('', 'basic');
@@ -372,9 +351,10 @@ export default function Discussion({
               Compartir
             </Button>
             <Button
-              onClick={handleSubmit}
+              onClick={(event) => handleSubmit(event)}
+              disabled={isDisabled}
               sx={{
-                color: '#00B0F0',
+                color: isDisabled ? '#9b9b9b' : '#00B0F0',
               }}
             >
               {isUpdate ? 'Editar' : 'Publicar'}
