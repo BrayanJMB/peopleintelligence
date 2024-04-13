@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 
 import { Demographics } from './Demographics';
 import { Questions } from './Questions';
-
+import Logo from '../../../assets/multicompani.jpeg'
 import styles from './ChatBox.module.css';
 export const MessageItem = ({
   owner,
@@ -29,7 +29,7 @@ export const MessageItem = ({
       {messageType === 'demographic' && (
         <>
           <img
-            src={senderAvatar || currentCompany.Logotipo}
+            src={(senderAvatar || currentCompany.Logotipo) || Logo}
             alt={'ImagenModerador'}
             className={styles.chatApp__convMessageAvatar}
           />
@@ -43,7 +43,7 @@ export const MessageItem = ({
       {messageType === 'question' && (
         <>
           <img
-            src={senderAvatar || currentCompany.Logotipo}
+            src={(senderAvatar || currentCompany.Logotipo) || Logo}
             alt={'ImagenModerador'}
             className={styles.chatApp__convMessageAvatar}
           />
