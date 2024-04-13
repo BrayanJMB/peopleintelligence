@@ -44,6 +44,7 @@ export default function Discussion({
   avatarImage,
   surveyChat,
   isUpdate,
+  currentCompany
 }) {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -120,7 +121,7 @@ export default function Discussion({
         );
         response = await storeSurveyChatAPI(payload);
         if (surveyImage || avatarImage) {
-          urls = await storeAvatarAndSurveyImage(response.data.survey.id);
+          urls = await storeAvatarAndSurveyImage(response.data.survey.id, surveyImage, avatarImage, currentCompany);
           payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
           payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
         }
@@ -151,7 +152,7 @@ export default function Discussion({
       } else {
         // Manejar actualización
         if (surveyImage || avatarImage) {
-          urls = await storeAvatarAndSurveyImage(payload.survey.id);
+          urls = await storeAvatarAndSurveyImage(payload.survey.id, surveyImage, avatarImage);
           payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
           payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
         }
