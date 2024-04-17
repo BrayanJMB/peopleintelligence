@@ -31,6 +31,29 @@ export const storeSurveyImageQuestion = async (filesImage, questions, surveyId) 
     }
   };
 
+  export const storeSurveyImageQuestionSingle = async (fileImage, orderNumber, surveyId) => {
+      const formData = new FormData();
+      formData.append('questionImage', fileImage);
+      formData.append('questionNumber', orderNumber);
+      formData.append('surveyId', surveyId);
+
+      try {
+        const response = await axios.post(
+          'https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImagesQuestion',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+        return response.data; // Retorna los datos de respuesta para su uso posterior
+      } catch (error) {
+        console.error('Error al subir la imagen:', error);
+        throw error; // Lanza el error para manejar rechazos en Promise.all
+      }
+  };
+
 export const storeSurveyVideoQuestion = async (filesVideo, questions, surveyId, currentCompany) => {
     const promises = questions.map(async (question, index) => {
       const formData = new FormData();

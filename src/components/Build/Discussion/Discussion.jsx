@@ -122,17 +122,17 @@ export default function Discussion({
         response = await storeSurveyChatAPI(payload);
         if (surveyImage || avatarImage) {
           urls = await storeAvatarAndSurveyImage(response.data.survey.id, surveyImage, avatarImage, currentCompany);
-          payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
-          payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
+          payload.moderator.avatarUrl = urls ? urls.data.files[1].url : '';
+          payload.survey.imageUrl = urls ? urls.data.files[0].url : survey.imageUrl;
         }
         const updateData = {
           id: payload.survey.id,
           title: payload.survey.title,
-          imageUrl: payload.survey.imageUrl,
+          imageUrl: payload.survey.imageUrl, //Se cambia debido a que el objeto cambio
           description: payload.survey.description,
           moderatorName: payload.moderator.name,
           moderatorId: payload.moderator.moderatorId,
-          avatarUrl: payload.moderator.avatarUrl,
+          avatarUrl: payload.moderator.avatarUrl, //Se cambia debido a que el objeto cambio
         };
         await updateModeratorChatAPI(updateData);
         if (imageQuestions.length > 0) {
@@ -152,9 +152,10 @@ export default function Discussion({
       } else {
         // Manejar actualización
         if (surveyImage || avatarImage) {
-          urls = await storeAvatarAndSurveyImage(payload.survey.id, surveyImage, avatarImage);
-          payload.moderator.avatarUrl = urls ? urls.data.files[1] : '';
-          payload.survey.imageUrl = urls ? urls.data.files[0] : survey.imageUrl;
+          console.log("entro aca ")
+          urls = await storeAvatarAndSurveyImage(payload.survey.id, surveyImage, avatarImage, currentCompany);
+          payload.moderator.avatarUrl = urls ? urls.data.files[1].url : '';
+          payload.survey.imageUrl = urls ? urls.data.files[0].url : survey.imageUrl;
         }
         response = await updateSurveyChatAPI(payload.survey);
         const updateData = {

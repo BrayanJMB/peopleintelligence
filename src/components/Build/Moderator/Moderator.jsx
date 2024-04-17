@@ -41,6 +41,7 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
   const [answerSingleQuestion, answerSetSingleQuestion] = useState(null);
   const indexCurrentQuestion = useRef(null);
   const [complexQuestion, setComplexQuestion] = useState(true);
+  
 
   function detectURL(message) {
     var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
@@ -49,6 +50,15 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
     });
   }
 
+  function limpiarTexto(texto) {
+    let textoSinEspacios = texto.replace(/\s+/g, '');
+    let textoSinTildes = textoSinEspacios
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+    return textoSinTildes;
+  }
+  console.log(questions)
   const users = {
     0: { name: 'Shun', avatar: '' },
   };
@@ -159,6 +169,7 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
         connection.off('ReceiveDemographics');
         connection.off('clientConnected', setConnectedUsers);
         connection.off('clientDisconnected', setConnectedUsers);
+        connection.off('QuestionSingleOptions')
       };
     }
   }, [connection]);
@@ -212,11 +223,16 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
       return console.error(err.toString());
     });
     setQuestionTimer(timeLimit);
+    setTimeout(() => {
+      console.log("El temporizador ha finalizado, procediendo a la siguiente pregunta...");
+      indexCurrentQuestion.current += 1;
+  }, timeInt * 1000); 
   };
 
   const SendQuestionByType = (type, question, index) => {
+    console.log(type)
     let currentQuestion = question.orderNumber;
-    switch (type.toLowerCase()) {
+    switch (limpiarTexto(type.toLowerCase())) {
       case 'texto':
         connection
           .invoke('SendText', question.name)
@@ -272,8 +288,7 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
         };
         setMessages((prevMessages) => [...prevMessages, newMessageItem]);
 
-        indexCurrentQuestion.current = currentQuestion;
-        nextQuestionTimer(question.timeLimit);
+        nextQuestionTimer(question.timeLimit, currentQuestion);
         setComplexQuestion(false);
         //setNextQuestion(currentQuestion);
         break;
@@ -320,8 +335,7 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
 
   useEffect(() => {
     fetchSurvey();
-    console.log('entré acá :3');
-  }, [questions]);
+  }, [question]);
 
   
   return (
@@ -544,6 +558,7 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
                               questions={questions}
                               setQuestions2={setQuestions2}
                               setQuestions={setQuestions}
+                              indexCurrentQuestion={indexCurrentQuestion.current}
                             />
                           </nextQuestionTimerContext.Provider>
                         </singleQuestionContext.Provider>
