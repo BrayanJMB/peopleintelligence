@@ -1,5 +1,7 @@
 import { useSelector } from 'react-redux';
 
+import Logo from '../../../assets/multicompani.jpeg';
+
 import { Demographics } from './Demographics';
 import { Questions } from './Questions';
 
@@ -29,7 +31,7 @@ export const MessageItem = ({
       {messageType === 'demographic' && (
         <>
           <img
-            src={senderAvatar || currentCompany.Logotipo}
+            src={(senderAvatar || currentCompany.Logotipo) || Logo}
             alt={'ImagenModerador'}
             className={styles.chatApp__convMessageAvatar}
           />
@@ -43,7 +45,7 @@ export const MessageItem = ({
       {messageType === 'question' && (
         <>
           <img
-            src={senderAvatar || currentCompany.Logotipo}
+            src={(senderAvatar || currentCompany.Logotipo) || Logo}
             alt={'ImagenModerador'}
             className={styles.chatApp__convMessageAvatar}
           />

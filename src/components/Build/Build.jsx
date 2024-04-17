@@ -215,6 +215,7 @@ export default function Build({
             surveyChat={surveyChat}
             isUpdate={isUpdate}
             setSurveyChat={setSurveyChat}
+            currentCompany={currentCompany}
           />
         );
       default:

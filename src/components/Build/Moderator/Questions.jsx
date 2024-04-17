@@ -48,6 +48,15 @@ export const Questions = ({
         return false;
     }
   };
+
+  function limpiarTexto(texto) {
+    let textoSinEspacios = texto.replace(/\s+/g, '');
+    let textoSinTildes = textoSinEspacios
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+    return textoSinTildes;
+  }
   const isVideo = () => {
     return 'video';
   };
@@ -73,7 +82,7 @@ export const Questions = ({
     <>
       <div className={styles.chatApp__convMessageValue}>
         {isText(question.type) && <p>{question.name}</p>}
-        {isSelecionSimple(question.type) && (
+        {isSelecionSimple(limpiarTexto(question.type)) && (
           <>
             {!isAnswer ? (
               <>
