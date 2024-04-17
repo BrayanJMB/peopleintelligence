@@ -104,8 +104,28 @@ export default function AccordionDiscussion({
         <AccordionDetails style={{ overflow: 'auto', maxHeight: '400px' }}>
           {isConversation ? (
             <>
+              <Grid container spacing={2} alignItems="center">
+                {questions.map((question, index) => (
+                  <Grid item xs={8}>
+                    <Options
+                      key={index}
+                      isConversation={isConversation}
+                      currentIndex={index}
+                      item={question.type}
+                      question={question}
+                      setQuestion={setQuestions}
+                      handleRemoveConversation={() =>
+                        handleRemoveConversation(index)
+                      }
+                      errors={errors}
+                      ref={demographicRefs.current[index]}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
               <FormControl
-                sx={{ marginBottom: 5, minWidth: 300 }}
+                sx={{ marginBottom: questions > 0 ? 0 : 5, minWidth: 300,
+                marginTop: questions > 0 ? 0 : 5 }}
                 variant="outlined"
               >
                 <InputLabel id="demo-simple-select-outlined-label">
@@ -126,25 +146,6 @@ export default function AccordionDiscussion({
                   ))}
                 </Select>
               </FormControl>
-              <Grid container spacing={2} alignItems="center">
-                {questions.map((question, index) => (
-                  <Grid item xs={8}>
-                    <Options
-                      key={index}
-                      isConversation={isConversation}
-                      currentIndex={index}
-                      item={question.type}
-                      question={question}
-                      setQuestion={setQuestions}
-                      handleRemoveConversation={() =>
-                        handleRemoveConversation(index)
-                      }
-                      errors={errors}
-                      ref={demographicRefs.current[index]}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
             </>
           ) : (
             <>

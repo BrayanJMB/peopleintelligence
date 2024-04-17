@@ -39,6 +39,7 @@ export const ChatBox = (props) => {
           questions={props.questions}
           setQuestions2={props.setQuestions2}
           setQuestions={props.setQuestions}
+          indexCurrentQuestion={props.indexCurrentQuestion}
         />
       </div>
     </div>
