@@ -1,8 +1,10 @@
 import { useSelector } from 'react-redux';
 
+import Logo from '../../../assets/multicompani.jpeg';
+
 import { Demographics } from './Demographics';
 import { Questions } from './Questions';
-import Logo from '../../../assets/multicompani.jpeg'
+
 import styles from './ChatBox.module.css';
 export const MessageItem = ({
   owner,

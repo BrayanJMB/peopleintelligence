@@ -44,7 +44,7 @@ export default function Discussion({
   avatarImage,
   surveyChat,
   isUpdate,
-  currentCompany
+  currentCompany,
 }) {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -152,7 +152,7 @@ export default function Discussion({
       } else {
         // Manejar actualización
         if (surveyImage || avatarImage) {
-          console.log("entro aca ")
+          console.log('entro aca ');
           urls = await storeAvatarAndSurveyImage(payload.survey.id, surveyImage, avatarImage, currentCompany);
           payload.moderator.avatarUrl = urls ? urls.data.files[1].url : '';
           payload.survey.imageUrl = urls ? urls.data.files[0].url : survey.imageUrl;

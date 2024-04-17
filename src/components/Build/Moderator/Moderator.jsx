@@ -58,7 +58,7 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
 
     return textoSinTildes;
   }
-  console.log(questions)
+  console.log(questions);
   const users = {
     0: { name: 'Shun', avatar: '' },
   };
@@ -169,7 +169,7 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
         connection.off('ReceiveDemographics');
         connection.off('clientConnected', setConnectedUsers);
         connection.off('clientDisconnected', setConnectedUsers);
-        connection.off('QuestionSingleOptions')
+        connection.off('QuestionSingleOptions');
       };
     }
   }, [connection]);
@@ -224,13 +224,13 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
     });
     setQuestionTimer(timeLimit);
     setTimeout(() => {
-      console.log("El temporizador ha finalizado, procediendo a la siguiente pregunta...");
+      console.log('El temporizador ha finalizado, procediendo a la siguiente pregunta...');
       indexCurrentQuestion.current += 1;
   }, timeInt * 1000); 
   };
 
   const SendQuestionByType = (type, question, index) => {
-    console.log(type)
+    console.log(type);
     let currentQuestion = question.orderNumber;
     switch (limpiarTexto(type.toLowerCase())) {
       case 'texto':
