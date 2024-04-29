@@ -42,7 +42,14 @@ function Options({
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('info');
-  const [time, setTime] = useState('00:00');
+  const [time, setTime] = useState(() => {
+    // Aquí puedes poner tu condición
+    if (item == 'Opinión') {
+      return '03:00';
+    } else {
+      return '00:00';
+    }
+  });
   //const files = useContext(filesImageQuestionContext);
   const onDropImages = useCallback((acceptedFiles) => {
     // Crear una URL de objeto para cada archivo
@@ -396,11 +403,20 @@ function Options({
     // Convertir minutos y segundos a segundos totales
     let totalSeconds = parseInt(minutes) * 60 + parseInt(seconds);
 
+    // Si el ítem es "Opinión" y los minutos son menores a 03, ajusta después de la entrada
+    if (item === 'Opinión' && totalSeconds < 180) {
+      minutes = '03';
+      seconds = '00';
+      newValue = '03:00';
+      totalSeconds = 180; // Fija los segundos a 180 para garantizar el mínimo de 03:00
+    }
+
     const newConversation = {
       ...question,
       timeLimit: totalSeconds, // Aquí se asignan los segundos totales calculados
     };
 
+    console.log(newConversation);
     // Actualiza el estado con el nuevo valor y la nueva conversación
     setTime(newValue); // Actualiza el tiempo mostrado en la interfaz
 
@@ -623,21 +639,20 @@ function Options({
                       sx={{ minWidth: 120 }}
                       size="small"
                     >
-                      <InputLabel id="demo-simple-select-helper-label">
-                        Tiempo
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-helper-label"
-                        id="demo-simple-select-helper"
-                        value={Math.round(question.timeLimit / 60)}
-                        onChange={handleChangeTimeLimit}
-                      >
-                        {tiempoPregunta.map((value, index) => (
-                          <MenuItem key={index} value={value}>
-                            {`${value} ${value === 1 ? 'minuto' : 'minutos'}`}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                      <TextField
+                        label="Tiempo (MM:SS)"
+                        size="small"
+                        value={time}
+                        onChange={handleChangeTime}
+                        placeholder="MM:SS"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        inputProps={{
+                          maxLength: 5, // Limita la longitud del input a MM:SS
+                        }}
+                        sx={{ width: 120 }}
+                      />
                       <FormHelperText>
                         {errors.questions?.[currentIndex]?.timeLimit}
                       </FormHelperText>
@@ -689,25 +704,20 @@ function Options({
                       sx={{ minWidth: 120 }}
                       size="small"
                     >
-                      <InputLabel id="demo-simple-select-helper-label">
-                        Tiempo
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-helper-label"
-                        id="demo-simple-select-helper"
-                        value={
-                          question.timeLimit < 60
-                            ? question.timeLimit
-                            : question.timeLimit / 60
-                        }
-                        onChange={handleChangeTimeLimit}
-                      >
-                        {tiempoPregunta.map((value, index) => (
-                          <MenuItem key={index} value={value}>
-                            {`${value} ${value === 1 ? 'minuto' : 'minutos'}`}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                      <TextField
+                        label="Tiempo (MM:SS)"
+                        size="small"
+                        value={time}
+                        onChange={handleChangeTime}
+                        placeholder="MM:SS"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        inputProps={{
+                          maxLength: 5, // Limita la longitud del input a MM:SS
+                        }}
+                        sx={{ width: 120 }}
+                      />
                       <FormHelperText>
                         {errors.questions?.[currentIndex]?.timeLimit}
                       </FormHelperText>
@@ -1021,7 +1031,7 @@ function Options({
                     style={{
                       display: 'flex',
                       alignItems: 'start',
-                      flexDirection: 'column',  
+                      flexDirection: 'column',
                     }}
                   >
                     {files.length === 0 && (
