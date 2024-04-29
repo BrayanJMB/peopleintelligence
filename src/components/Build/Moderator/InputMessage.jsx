@@ -1,4 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import SendIcon from '@mui/icons-material/Send';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -19,6 +20,8 @@ import { connectionContext, moderatorAvatarContext } from './Moderator';
 import styles from './ChatBox.module.css';
 export const InputMessage = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { id } = useParams();
+  console.log(id);
   const [item, setItem] = useState('');
   const ownerInput = useRef(null);
   const ownerAvatarInput = useRef(null);
@@ -109,21 +112,32 @@ export const InputMessage = (props) => {
   };
   const questionTypes = [
     'Selección simple',
-     'experiencia', 'Opinión', 'imagen', /*'video'*/,
+    'experiencia',
+    'Opinión',
+    'imagen' /*'video'*/,
+    ,
   ];
 
   const handleRemoveConversation = (index) => {};
 
   const handleNewQuestionConversation = async () => {
     let orderNumber = props.indexCurrentQuestion + 2; // Asignar número de orden adecuado
-  
+
     // Usamos Promise.all para esperar todas las promesas resultantes de la función map
     try {
       const responses = await Promise.all(
-        props.questions.map(async (question, index) => { // Convierte la función dentro de map en una función asíncrona
-          const data = await storeSurveyImageQuestionSingle(question.urlMedia, orderNumber + index, 'e93b7bc3-db95-4c77-b342-c2b6683ab7df');
+        props.questions.map(async (question, index) => {
+          let data = { urlMedia: question.urlMedia };
+          if (question.type == 'imagen') {
+            // Convierte la función dentro de map en una función asíncrona
+              data = await storeSurveyImageQuestionSingle(
+              question.urlMedia,
+              orderNumber + index,
+              id
+            );
+          }
           let payload = {
-            surveyId: 'e93b7bc3-db95-4c77-b342-c2b6683ab7df',
+            surveyId: id,
             question: {
               orderNumber: orderNumber + index,
               name: question.name, // Asume que quieres usar el nombre actual de la pregunta
@@ -133,7 +147,7 @@ export const InputMessage = (props) => {
               options: question.options,
             },
           };
-  
+
           // Llama a axios.patch y devuelve la promesa resultante
           return axios.patch(
             'https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/CreateQuestionLive',
@@ -141,9 +155,9 @@ export const InputMessage = (props) => {
           );
         })
       );
-  
+
       // Actualiza el estado con los datos obtenidos de todas las promesas resueltas
-      props.setQuestions(responses.map(response => response.data));
+      props.setQuestions(responses.map((response) => response.data));
       props.setQuestions2([]); // Asumiendo que deseas limpiar otro estado
       setIsModalOpen(false); // Cierra el modal después de las operaciones
     } catch (error) {

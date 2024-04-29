@@ -15,6 +15,8 @@ import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import axios from 'axios';
 
+import ConSidebar from '../../../Layout/ConSidebar/ConSidebar';
+
 import { ChatBox } from './ChatBox';
 import { ConnectDisconnectUser } from './ConnectDisconnectUser';
 import CountdownTimer from './CountdownTimer';
@@ -25,7 +27,7 @@ export const singleQuestionContext = createContext();
 export const answerSingleQuestionContext = createContext();
 export const opinionQuestionContext = createContext();
 export const answerOpinionQuestionContext = createContext();
-export const answerExperienceQuestionContext =  createContext();
+export const answerExperienceQuestionContext = createContext();
 export const nextQuestionTimerContext = createContext();
 export const connectionContext = createContext();
 export const moderatorAvatarContext = createContext();
@@ -37,6 +39,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
   const [question, setQuestions] = useState([]);
   const [responseDemographic, setResponseDemographic] = useState([]);
   const [connectedUsers, setConnectedUsers] = useState(0);
+  const connectedUsersRef = useRef(0);
   const [nextQuestion, setNextQuestion] = useState(0);
   const [questionTimer, setQuestionTimer] = useState(null);
   const [opinionQuestion, setOpinionQuestion] = useState(null);
@@ -50,7 +53,9 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
   const [complexQuestion, setComplexQuestion] = useState(true);
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState({});
-  const [hasRun, setHasRun] = useState(true);
+  const [hasRunSingleSelect, setHasRunSingleSelect] = useState(true);
+  const [hasRunExperience, setHasRunExperience] = useState(true);
+  const [hasRunOpinion, setHasRunOpinion] = useState(true);
   function detectURL(message) {
     var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
     return message.replace(urlRegex, function (urlMatch) {
@@ -208,8 +213,8 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
           messageType: 'question',
           content: question,
         };
+        indexCurrentQuestion.current = currentQuestion;
         setMessages((prevMessages) => [...prevMessages, newMessageItem]);
-
         nextQuestionTimer(question.timeLimit, currentQuestion);
         setComplexQuestion(false);
         //setNextQuestion(currentQuestion);
@@ -225,6 +230,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
           messageType: 'question',
           content: question,
         };
+        indexCurrentQuestion.current = currentQuestion;
         setMessages((prevMessages) => [
           ...prevMessages,
           newMessageItemExperiencia,
@@ -243,6 +249,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
           messageType: 'question',
           content: question,
         };
+        indexCurrentQuestion.current = currentQuestion;
         setMessages((prevMessages) => [...prevMessages, newMessageItemOpinion]);
         nextQuestionTimer(question.timeLimit, currentQuestion);
         setComplexQuestion(false);
@@ -251,6 +258,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
         break;
     }
   };
+
   useEffect(() => {
     initializeConnectionAndFetchData();
   }, []);
@@ -271,6 +279,11 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
               return console.error(err.toString());
             });
 
+          connection.on('clientConnected', (count) => {
+            connectedUsersRef.current =  count;
+            setConnectedUsers(count);
+          });
+
           //Pregunta selección simple
           connection.on('QuestionSingleOptions', (question) => {
             setSingleQuestion(question);
@@ -282,7 +295,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
               answer: answer,
               counter: counter,
             });
-            if (counter >= connectedUsers) {
+            if (counter >=connectedUsersRef.current) {
               setComplexQuestion(true);
               setNextQuestion(indexCurrentQuestion.current);
             }
@@ -312,11 +325,15 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
 
           // Respuesta pregunta Opinión
           connection.on('SendRespuestasDos', (tablarespuestas) => {
+            console.log(tablarespuestas);
             setAnswersOpinion(tablarespuestas);
-            /*if (counter >= connectedUsers) {
+          });
+
+          connection.on('top10opinionanswer', (response) => {
+            if (response.every((item) => item.contadorRespuesta === connectedUsersRef.current)) {
               setComplexQuestion(true);
-              setNextQuestx|ion(indexCurrentQuestion.current);
-            }*/
+              setNextQuestion(indexCurrentQuestion.current);
+            }
           });
 
           // Actualiza la interfaz de usuario con el tiempo actual
@@ -331,7 +348,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
         .catch((error) =>
           console.error('Error al conectar con SignalR:', error)
         );
-      connection.on('clientConnected', setConnectedUsers);
+
       connection.on('clientDisconnected', setConnectedUsers);
       connection.on('DemographicCount', (idDemo, count) => {
         setResponseDemographic((prevCounts) => ({
@@ -339,14 +356,6 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
           [idDemo]: count,
         }));
       });
-
-      // Limpieza al desmontar
-      return () => {
-        connection.off('ReceiveDemographics');
-        connection.off('clientConnected', setConnectedUsers);
-        connection.off('clientDisconnected', setConnectedUsers);
-        connection.off('QuestionSingleOptions');
-      };
     }
   }, [connection]);
 
@@ -368,7 +377,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
 
   useEffect(() => {
     // Verificar que singleQuestion tiene datos para proceder
-    if (singleQuestion) {
+    if (answerSingleQuestion && hasRunSingleSelect) {
       let newMessageItemSender = {
         id: messages.length + 1,
         sender: 'Cliente',
@@ -378,12 +387,13 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
         isAnswer: true,
       };
       setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
+      setHasRunSingleSelect(false);
     }
-  }, [singleQuestion]);
+  }, [answerSingleQuestion]);
 
   useEffect(() => {
     // Verificar que singleQuestion tiene datos para proceder
-    if (answersOpinion.length > 0 && hasRun) {
+    if (answersOpinion.length > 0 && hasRunOpinion) {
       let newMessageItemSender = {
         id: messages.length + 1,
         sender: 'Cliente',
@@ -393,13 +403,12 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
         isAnswer: true,
       };
       setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
-      setHasRun(false);
+      setHasRunOpinion(false);
     }
   }, [answersOpinion]);
 
   useEffect(() => {
-    // Verificar que singleQuestion tiene datos para proceder
-    if (experienceQuestion) {
+    if (answerExperienceQuestion && hasRunSingleSelect) {
       let newMessageItemSender = {
         id: messages.length + 1,
         sender: 'Cliente',
@@ -409,10 +418,10 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
         isAnswer: true,
       };
       setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
-      setHasRun(false);
+      setHasRunSingleSelect(false);
     }
-  }, [experienceQuestion]);
-  
+  }, [answerExperienceQuestion]);
+
   useEffect(() => {
     initializeConnectionAndFetchData();
   }, []);
@@ -490,11 +499,16 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
               variant="outlined"
               style={{ width: '100%', backgroundColor: '#00B0F0' }}
             >
-              <CardContent>
+              <CardContent sx={{}}>
                 <Typography variant="h6" component="div" gutterBottom>
                   Preguntas
                 </Typography>
-                <List>
+                <List
+                  style={{
+                    maxHeight: '400px', // Ajusta esta altura según necesites
+                    overflowY: 'auto', // Habilita el desplazamiento vertical
+                  }}
+                >
                   {survey.preguntas &&
                     survey.preguntas.map((option, index) => {
                       const iconObject = questionIcons.find(
@@ -629,29 +643,31 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
                               <nextQuestionTimerContext.Provider
                                 value={questionTimer}
                               >
-                                <answerExperienceQuestionContext.Provider value={answerExperienceQuestion}>
-                                <ChatBox
-                                  key={key}
-                                  owner={user.name}
-                                  ownerAvatar={user.avatar}
-                                  sendMessage={sendMessage}
-                                  typing={typing}
-                                  resetTyping={resetTyping}
-                                  messages={messages}
-                                  setMessages={setMessages}
-                                  isTyping={isTyping}
-                                  responseDemographic={responseDemographic}
-                                  demographics={survey.demographicList}
-                                  question={question}
-                                  nextQuestionTimer={questionTimer}
-                                  answersOpinion={answersOpinion}
-                                  questions={questions}
-                                  setQuestions2={setQuestions2}
-                                  setQuestions={setQuestions}
-                                  indexCurrentQuestion={
-                                    indexCurrentQuestion.current
-                                  }
-                                />
+                                <answerExperienceQuestionContext.Provider
+                                  value={answerExperienceQuestion}
+                                >
+                                  <ChatBox
+                                    key={key}
+                                    owner={user.name}
+                                    ownerAvatar={user.avatar}
+                                    sendMessage={sendMessage}
+                                    typing={typing}
+                                    resetTyping={resetTyping}
+                                    messages={messages}
+                                    setMessages={setMessages}
+                                    isTyping={isTyping}
+                                    responseDemographic={responseDemographic}
+                                    demographics={survey.demographicList}
+                                    question={question}
+                                    nextQuestionTimer={questionTimer}
+                                    answersOpinion={answersOpinion}
+                                    questions={questions}
+                                    setQuestions2={setQuestions2}
+                                    setQuestions={setQuestions}
+                                    indexCurrentQuestion={
+                                      indexCurrentQuestion.current
+                                    }
+                                  />
                                 </answerExperienceQuestionContext.Provider>
                               </nextQuestionTimerContext.Provider>
                             </singleQuestionContext.Provider>
