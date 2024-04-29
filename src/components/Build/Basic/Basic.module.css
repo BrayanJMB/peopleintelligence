@@ -8,7 +8,6 @@
   width: 100%;
   justify-content: space-evenly;
   flex-wrap: nowrap;
-  height: 105%;
   margin-top: 0.4rem;
 }
 .left {
@@ -48,6 +47,10 @@
 }
 .cover {
   margin-bottom: 1rem;
+}
+
+.cover, .avatar {
+  width: 45%; /* esto define el ancho de cada elemento a un 50% del contenedor */
 }
 .right {
   width: 48%;

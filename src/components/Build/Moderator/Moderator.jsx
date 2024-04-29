@@ -490,11 +490,14 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
               variant="outlined"
               style={{ width: '100%', backgroundColor: '#00B0F0' }}
             >
-              <CardContent>
+              <CardContent sx={{}}>
                 <Typography variant="h6" component="div" gutterBottom>
                   Preguntas
                 </Typography>
-                <List>
+                <List   style={{
+                  maxHeight: "400px", // Ajusta esta altura según necesites
+                  overflowY: "auto", // Habilita el desplazamiento vertical
+                }}>
                   {survey.preguntas &&
                     survey.preguntas.map((option, index) => {
                       const iconObject = questionIcons.find(

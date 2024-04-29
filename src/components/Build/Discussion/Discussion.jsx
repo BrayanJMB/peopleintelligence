@@ -112,6 +112,7 @@ export default function Discussion({
       let response;
 
       if (!isUpdate) {
+        console.log("OKI")
         // Manejar creación
         const imageQuestions = payload.survey.questions.filter(
           (question) => question.type === 'imagen'
@@ -152,10 +153,9 @@ export default function Discussion({
       } else {
         // Manejar actualización
         if (surveyImage || avatarImage) {
-          console.log('entro aca ');
           urls = await storeAvatarAndSurveyImage(payload.survey.id, surveyImage, avatarImage, currentCompany);
-          payload.moderator.avatarUrl = urls ? urls.data.files[1].url : '';
-          payload.survey.imageUrl = urls ? urls.data.files[0].url : survey.imageUrl;
+          payload.moderator.avatarUrl = urls ? urls.data.files[0].url : '';
+          payload.survey.imageUrl = urls ? urls.data.files[1].url : survey.imageUrl;
         }
         response = await updateSurveyChatAPI(payload.survey);
         const updateData = {
