@@ -253,6 +253,7 @@ export default function Discussion({
       }
 
       // Validar si el timeLimit es nulo
+
       if (
         !question.timeLimit &&
         question.type.toLowerCase() !== 'texto' &&
