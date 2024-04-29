@@ -112,7 +112,7 @@ export default function Discussion({
       let response;
 
       if (!isUpdate) {
-        console.log("OKI")
+        console.log('OKI');
         // Manejar creación
         const imageQuestions = payload.survey.questions.filter(
           (question) => question.type === 'imagen'

@@ -1,27 +1,28 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import SendIcon from "@mui/icons-material/Send";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import FormControl from "@mui/material/FormControl";
-import Grid from "@mui/material/Grid";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Modal from "@mui/material/Modal";
-import Select from "@mui/material/Select";
-import Typography from "@mui/material/Typography";
-import axios from "axios";
-
-import Options from "../Discussion/Options/Options";
-import { storeSurveyImageQuestionSingle } from "../Discussion/services/service";
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { connectionContext, moderatorAvatarContext } from "./Moderator";
+import SendIcon from '@mui/icons-material/Send';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Modal from '@mui/material/Modal';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
+import axios from 'axios';
 
-import styles from "./ChatBox.module.css";
+import Options from '../Discussion/Options/Options';
+import { storeSurveyImageQuestionSingle } from '../Discussion/services/service';
+
+import { connectionContext, moderatorAvatarContext } from './Moderator';
+
+import styles from './ChatBox.module.css';
 export const InputMessage = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { id } = useParams();
-  console.log(id)
-  const [item, setItem] = useState("");
+  console.log(id);
+  const [item, setItem] = useState('');
   const ownerInput = useRef(null);
   const ownerAvatarInput = useRef(null);
   const messageInput = useRef(null);
@@ -31,19 +32,19 @@ export const InputMessage = (props) => {
     event.preventDefault();
     if (messageInput.current.value.length > 0) {
       connection
-        .invoke("SendText", messageInput.current.value)
+        .invoke('SendText', messageInput.current.value)
         .then(() => {
           let newMessageItem = {
             id: props.messages.length + 1,
-            sender: "Shun",
+            sender: 'Shun',
             senderAvatar: moderatorAvatar.avatarUrl,
-            messageType: "question",
+            messageType: 'question',
             content: {
               orderNumber: 1,
               name: messageInput.current.value,
               timeLimit: null,
-              type: "Texto",
-              urlMedia: "",
+              type: 'Texto',
+              urlMedia: '',
               prentQuestionId: null,
               options: [],
             },
@@ -52,7 +53,7 @@ export const InputMessage = (props) => {
             ...prevMessages,
             newMessageItem,
           ]);
-          messageInput.current.value = "";
+          messageInput.current.value = '';
         })
         .catch(function (err) {
           return console.error(err.toString());
@@ -68,7 +69,7 @@ export const InputMessage = (props) => {
     }
   };
 
-  let loadingClass = props.isLoading ? "chatApp__convButton--loading" : "";
+  let loadingClass = props.isLoading ? 'chatApp__convButton--loading' : '';
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -87,33 +88,33 @@ export const InputMessage = (props) => {
       ...prevState,
       {
         orderNumber: null,
-        name: "",
+        name: '',
         timeLimit: null,
         type: valor,
-        urlMedia: "",
+        urlMedia: '',
         options: [],
       },
     ]);
   };
 
   const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
     width: 800,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
     boxShadow: 24,
     pt: 2,
     px: 4,
     pb: 3,
   };
   const questionTypes = [
-    "Selección simple",
-    "experiencia",
-    "Opinión",
-    "imagen" /*'video'*/,
+    'Selección simple',
+    'experiencia',
+    'Opinión',
+    'imagen' /*'video'*/,
     ,
   ];
 
@@ -127,7 +128,7 @@ export const InputMessage = (props) => {
       const responses = await Promise.all(
         props.questions.map(async (question, index) => {
           let data = { urlMedia: question.urlMedia };
-          if (question.type == "imagen") {
+          if (question.type == 'imagen') {
             // Convierte la función dentro de map en una función asíncrona
               data = await storeSurveyImageQuestionSingle(
               question.urlMedia,
@@ -149,7 +150,7 @@ export const InputMessage = (props) => {
 
           // Llama a axios.patch y devuelve la promesa resultante
           return axios.patch(
-            "https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/CreateQuestionLive",
+            'https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/CreateQuestionLive',
             payload
           );
         })
@@ -160,7 +161,7 @@ export const InputMessage = (props) => {
       props.setQuestions2([]); // Asumiendo que deseas limpiar otro estado
       setIsModalOpen(false); // Cierra el modal después de las operaciones
     } catch (error) {
-      console.error("Error al subir la pregunta:", error);
+      console.error('Error al subir la pregunta:', error);
     }
   };
 
@@ -194,7 +195,7 @@ export const InputMessage = (props) => {
                   handleRemoveConversation={() =>
                     handleRemoveConversation(index)
                   }
-                  errors={""}
+                  errors={''}
                 />
               </Grid>
             ))}
