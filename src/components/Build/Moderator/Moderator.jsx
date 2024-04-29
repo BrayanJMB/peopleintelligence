@@ -313,10 +313,10 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
           // Respuesta pregunta Opinión
           connection.on('SendRespuestasDos', (tablarespuestas) => {
             setAnswersOpinion(tablarespuestas);
-            if (counter >= connectedUsers) {
+            /*if (counter >= connectedUsers) {
               setComplexQuestion(true);
-              setNextQuestion(indexCurrentQuestion.current);
-            }
+              setNextQuestx|ion(indexCurrentQuestion.current);
+            }*/
           });
 
           // Actualiza la interfaz de usuario con el tiempo actual

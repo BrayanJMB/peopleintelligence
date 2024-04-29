@@ -109,8 +109,7 @@ export const InputMessage = (props) => {
   };
   const questionTypes = [
     'Selección simple',
-    'imagen',
-    'video' /*'Opinión', 'experiencia', 'imagen', 'video'*/,
+     'experiencia', 'Opinión', 'imagen', /*'video'*/,
   ];
 
   const handleRemoveConversation = (index) => {};
