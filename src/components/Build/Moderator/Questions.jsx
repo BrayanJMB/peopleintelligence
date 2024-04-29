@@ -1,15 +1,23 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import LinearProgress from '@mui/material/LinearProgress';
-
-import CircularWithValueLabel from './CircularWithValueLabel';
+import { useCallback, useContext, useEffect, useState } from "react";
+import LinearProgress from "@mui/material/LinearProgress";
+import React from "react";
+import Box from "@mui/material/Box";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import CircularWithValueLabel from "./CircularWithValueLabel";
 import {
   answerSingleQuestionContext,
   nextQuestionTimerContext,
   singleQuestionContext,
-} from './Moderator';
+  opinionQuestionContext,
+  answerOpinionQuestionContext,
+  answerExperienceQuestionContext,
+} from "./Moderator";
 
-import styles from './ChatBox.module.css';
+import styles from "./ChatBox.module.css";
 
 export const Questions = ({
   question,
@@ -19,30 +27,40 @@ export const Questions = ({
 }) => {
   const singleQuestion = useContext(singleQuestionContext);
   const answerSingleQuestion = useContext(answerSingleQuestionContext);
+  const answerOpinionQuestion = useContext(answerOpinionQuestionContext);
   const questionTimer = useContext(nextQuestionTimerContext);
-
+  const answerExperienceQuestion = useContext(answerExperienceQuestionContext);
+  
   const isText = (item) => {
     switch (item.toLowerCase()) {
-      case 'texto':
+      case "texto":
         return true;
       default:
         return false;
     }
   };
+
   const isOpinion = (item) => {
     switch (item.toLowerCase()) {
-      case 'opinión':
+      case "opinion":
         return true;
       default:
         return false;
     }
   };
-  const isExperience = () => {
-    return 'experiencia';
+
+  const isExperience = (item) => {
+    switch (item.toLowerCase()) {
+      case "experiencia":
+        return true;
+      default:
+        return false;
+    }
   };
+
   const isImage = (item) => {
     switch (item.toLowerCase()) {
-      case 'imagen':
+      case "imagen":
         return true;
       default:
         return false;
@@ -50,19 +68,24 @@ export const Questions = ({
   };
 
   function limpiarTexto(texto) {
-    let textoSinEspacios = texto.replace(/\s+/g, '');
+    let textoSinEspacios = texto.replace(/\s+/g, "");
     let textoSinTildes = textoSinEspacios
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
 
     return textoSinTildes;
   }
-  const isVideo = () => {
-    return 'video';
+  const isVideo = (item) => {
+    switch (item.toLowerCase()) {
+      case "video":
+        return true;
+      default:
+        return false;
+    }
   };
   const isSelecionSimple = (item) => {
     switch (item.toLowerCase()) {
-      case 'seleccionsimple':
+      case "seleccionsimple":
         return true;
       default:
         return false;
@@ -71,13 +94,15 @@ export const Questions = ({
 
   function getColorForPercentage(percentage) {
     if (percentage <= 33) {
-      return '#ff0000'; // Rojo
+      return "#ff0000"; // Rojo
     } else if (percentage <= 66) {
-      return '#ffff00'; // Amarillo
+      return "#ffff00"; // Amarillo
     } else {
-      return '#008000'; // Verde
+      return "#008000"; // Verde
     }
   }
+  console.log(question);
+  console.log(answerExperienceQuestion);
   return (
     <>
       <div className={styles.chatApp__convMessageValue}>
@@ -96,18 +121,18 @@ export const Questions = ({
                     <>
                       <div
                         style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
                         }}
                       >
                         <p>{option.value}</p>
-                        <div style={{ width: '100%' }}>
+                        <div style={{ width: "100%" }}>
                           <LinearProgress
                             sx={{
-                              backgroundColor: 'white',
-                              '& .MuiLinearProgress-bar': {
-                                backgroundColor: 'green',
+                              backgroundColor: "white",
+                              "& .MuiLinearProgress-bar": {
+                                backgroundColor: "green",
                               },
                             }}
                           />
@@ -141,25 +166,117 @@ export const Questions = ({
             )}
           </>
         )}
+        {isExperience(limpiarTexto(question.type)) && (
+          <>
+            {!isAnswer ? (
+              <>
+                <p>{question.name}</p>
+                <p>{questionTimer}</p>
+              </>
+            ) : (
+              <Box>
+                {question &&
+                  question.options.map((pregunta, index) => (
+                    <Accordion /*key={pregunta.numeroOpcion}*/>
+                      <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls={`panel${index}a-content`}
+                        id={`panel${index}a-header`}
+                      >
+                        <Typography>{`${pregunta.value}`}</Typography>
+                        <Typography variant="body2" color="text.primary">
+                          {`${
+                            answerExperienceQuestion && answerExperienceQuestion
+                              ? (answerExperienceQuestion.answer[index]
+                                  .contador *
+                                  100) /
+                                answerExperienceQuestion.counter
+                              : 0
+                          }%`}
+                        </Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        {/* Inserta aquí el LinearProgress con el valor correspondiente */}
+                        {answerExperienceQuestion &&
+                          answerExperienceQuestion.option ===
+                          answerExperienceQuestion.answer[index].numeroOpcion.toString() && (                          
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              style={{ marginTop: "8px" }}
+                            >
+                              {answerExperienceQuestion.answertext}
+                            </Typography>
+                          )}
+                      </AccordionDetails>
+                    </Accordion>
+                  ))}
+              </Box>
+            )}
+          </>
+        )}
+        {isOpinion(limpiarTexto(question && question.type)) && (
+          <>
+            {!isAnswer ? (
+              <>
+                <p>{question.name}</p>
+                <p>{questionTimer}</p>
+              </>
+            ) : (
+              <>
+                {answerOpinionQuestion.map((result) => (
+                  <div
+                    key={result.idres}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    <p>{result.respuesta}</p>
+                    <div style={{ width: "100%" }}>
+                      <LinearProgress
+                        variant="determinate"
+                        value={result.porcentaje}
+                        sx={{
+                          backgroundColor: "white",
+                          "& .MuiLinearProgress-bar": {
+                            backgroundColor: getColorForPercentage(
+                              result.porcentaje
+                            ),
+                          },
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <p>
+                        <CircularWithValueLabel
+                          data={result.porcentaje}
+                          color={getColorForPercentage(result.porcentaje)}
+                        />
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+          </>
+        )}
         {isImage(question.type) && (
           <img
             src={question.urlMedia}
             alt="imagenPregunta"
-            style={{ width: '100%', height: 'auto' }}
+            style={{ width: "100%", height: "auto" }}
           />
         )}
-        {isOpinion(question.type) && (
-          <>
-            <p>{nextQuestionTimer}lol</p>
-            <p>{question.name}</p>
-            {answersOpinion.map((option) => (
-              <p>
-                {option.respuesta}--{option.porcentaje}
-              </p>
-            ))}
-          </>
+        {isVideo(question.type) && (
+          <img
+            src={question.urlMedia}
+            alt="imagenPregunta"
+            style={{ width: "100%", height: "auto" }}
+          />
         )}
-
       </div>
     </>
   );
