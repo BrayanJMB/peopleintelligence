@@ -23,11 +23,14 @@ import styles from './ChatBox.module.css';
 
 export const singleQuestionContext = createContext();
 export const answerSingleQuestionContext = createContext();
+export const opinionQuestionContext = createContext();
+export const answerOpinionQuestionContext = createContext();
+export const answerExperienceQuestionContext =  createContext();
 export const nextQuestionTimerContext = createContext();
 export const connectionContext = createContext();
 export const moderatorAvatarContext = createContext();
 
-export const Moderator = ({ id,questions,setQuestions2 }) => {
+export const Moderator = ({ id, questions, setQuestions2 }) => {
   const [connection, setConnection] = useState(null);
   const [survey, setSurvey] = useState([]);
   const [moderatorAvatar, setModeratorAvatar] = useState();
@@ -36,13 +39,18 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
   const [connectedUsers, setConnectedUsers] = useState(0);
   const [nextQuestion, setNextQuestion] = useState(0);
   const [questionTimer, setQuestionTimer] = useState(null);
+  const [opinionQuestion, setOpinionQuestion] = useState(null);
   const [answersOpinion, setAnswersOpinion] = useState([]);
   const [singleQuestion, setSingleQuestion] = useState(null);
   const [answerSingleQuestion, answerSetSingleQuestion] = useState(null);
+  const [experienceQuestion, setExperienceQuestion] = useState(null);
+  const [answerExperienceQuestion, setAnswerExperienceQuestion] =
+    useState(null);
   const indexCurrentQuestion = useRef(null);
   const [complexQuestion, setComplexQuestion] = useState(true);
-  
-
+  const [messages, setMessages] = useState([]);
+  const [isTyping, setIsTyping] = useState({});
+  const [hasRun, setHasRun] = useState(true);
   function detectURL(message) {
     var urlRegex = /(((https?:\/\/)|(www\.))[^\s]+)/g;
     return message.replace(urlRegex, function (urlMatch) {
@@ -58,7 +66,7 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
 
     return textoSinTildes;
   }
-  console.log(questions);
+
   const users = {
     0: { name: 'Shun', avatar: '' },
   };
@@ -97,7 +105,9 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
       await fetchModerator();
       const signalRConnection = new HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
-        .withUrl('https://chatapppeopleintelligence.azurewebsites.net/discusion')
+        .withUrl(
+          'https://chatapppeopleintelligence.azurewebsites.net/discusion'
+        )
         .withAutomaticReconnect()
         .build();
 
@@ -106,92 +116,6 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
       console.error(err);
     }
   };
-  useEffect(() => {
-    initializeConnectionAndFetchData();
-  }, []);
-
-  useEffect(() => {
-    if (connection && survey) {
-      connection
-        .start()
-        .then(() => {
-          connection
-            .invoke(
-              'ChargeDemographics', //Carga de Demográficos apeans carga el chat, si existen.
-              survey.demographicList,
-              survey.timeDemographics,
-              survey.description
-            )
-            .catch(function (err) {
-              return console.error(err.toString());
-            });
-          connection.on('RecibirRespuestaSingle', (answer, counter) => {
-            answerSetSingleQuestion({
-              answer: answer,
-              counter: counter,
-            });
-            if (counter >= connectedUsers) {
-              setComplexQuestion(true);
-              setNextQuestion(indexCurrentQuestion.current);
-            }
-          });
-          connection.on('SendRespuestasDos', (tablarespuestas) => {
-            setAnswersOpinion(tablarespuestas);
-          });
-          connection.on('clientConnected', setConnectedUsers);
-          connection.on('clientDisconnected', setConnectedUsers);
-          connection.on('DemographicCount', (idDemo, count) => {
-            setResponseDemographic((prevCounts) => ({
-              ...prevCounts,
-              [idDemo]: count,
-            }));
-          });
-
-          connection.on('QuestionSingleOptions', (question) => {
-            setSingleQuestion(question);
-          });
-
-          // Actualiza la interfaz de usuario con el tiempo actual
-          connection.on('UpdateTime', (time) => {
-            setQuestionTimer(time);
-            if (time === 0) {
-              setComplexQuestion(true);
-              setNextQuestion(indexCurrentQuestion.current);
-            }
-          });
-        })
-        .catch((error) =>
-          console.error('Error al conectar con SignalR:', error)
-        );
-
-      // Limpieza al desmontar
-      return () => {
-        connection.off('ReceiveDemographics');
-        connection.off('clientConnected', setConnectedUsers);
-        connection.off('clientDisconnected', setConnectedUsers);
-        connection.off('QuestionSingleOptions');
-      };
-    }
-  }, [connection]);
-
-  useEffect(() => {
-    if (
-      moderatorAvatar &&
-      survey.demographicList &&
-      survey.demographicList.length > 0
-    ) {
-      let newMessageItem = {
-        id: messages.length + 1,
-        sender: 'Shun',
-        senderAvatar: moderatorAvatar.avatarUrl,
-        messageType: 'demographic',
-      };
-      setMessages((prevMessages) => [...prevMessages, newMessageItem]);
-    }
-  }, [moderatorAvatar]);
-
-  const [messages, setMessages] = useState([]);
-  const [isTyping, setIsTyping] = useState({});
 
   const sendMessage = (sender, senderAvatar, message) => {
     setTimeout(() => {
@@ -224,13 +148,11 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
     });
     setQuestionTimer(timeLimit);
     setTimeout(() => {
-      console.log('El temporizador ha finalizado, procediendo a la siguiente pregunta...');
       indexCurrentQuestion.current += 1;
-  }, timeInt * 1000); 
+    }, timeInt * 1000);
   };
 
   const SendQuestionByType = (type, question, index) => {
-    console.log(type);
     let currentQuestion = question.orderNumber;
     switch (limpiarTexto(type.toLowerCase())) {
       case 'texto':
@@ -296,23 +218,153 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
         connection.invoke('SendExperiencia', question).catch(function (err) {
           return console.error(err.toString());
         });
+        let newMessageItemExperiencia = {
+          id: messages.length + 1,
+          sender: 'Shun',
+          senderAvatar: moderatorAvatar.avatarUrl,
+          messageType: 'question',
+          content: question,
+        };
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          newMessageItemExperiencia,
+        ]);
+        nextQuestionTimer(question.timeLimit, currentQuestion);
+        setComplexQuestion(false);
         break;
-      /*case 'opinión':
+      case 'opinion':
         connection.invoke('SendOpinion', question).catch(function (err) {
-            return console.error(err.toString());
+          return console.error(err.toString());
         });
-          setQuestions(prevQuestions => {   
-            const newQuestion = question;
-            return [...prevQuestions, newQuestion];
-          });
-          nextQuestionTimer(question.timeLimit);
-          setIndexCurrentQuestion(currentQuestion);
-          setNextQuestion(currentQuestion);
-        break;*/
+        let newMessageItemOpinion = {
+          id: messages.length + 1,
+          sender: 'Shun',
+          senderAvatar: moderatorAvatar.avatarUrl,
+          messageType: 'question',
+          content: question,
+        };
+        setMessages((prevMessages) => [...prevMessages, newMessageItemOpinion]);
+        nextQuestionTimer(question.timeLimit, currentQuestion);
+        setComplexQuestion(false);
+        break;
       default:
         break;
     }
   };
+  useEffect(() => {
+    initializeConnectionAndFetchData();
+  }, []);
+
+  useEffect(() => {
+    if (connection && survey) {
+      connection
+        .start()
+        .then(() => {
+          connection
+            .invoke(
+              'ChargeDemographics', //Carga de Demográficos apeans carga el chat, si existen.
+              survey.demographicList,
+              survey.timeDemographics,
+              survey.description
+            )
+            .catch(function (err) {
+              return console.error(err.toString());
+            });
+
+          //Pregunta selección simple
+          connection.on('QuestionSingleOptions', (question) => {
+            setSingleQuestion(question);
+          });
+
+          //Respuesta selección simple
+          connection.on('RecibirRespuestaSingle', (answer, counter) => {
+            answerSetSingleQuestion({
+              answer: answer,
+              counter: counter,
+            });
+            if (counter >= connectedUsers) {
+              setComplexQuestion(true);
+              setNextQuestion(indexCurrentQuestion.current);
+            }
+          });
+
+          //Pregunta Experiencia
+          connection.on('experiencia', (pregunta) => {
+            setExperienceQuestion(pregunta);
+          });
+          // Respuesta experiencia
+          connection.on(
+            'recibirrespuestaesxperiencia',
+            (answer, option, answertext, counter) => {
+              setAnswerExperienceQuestion({
+                answer: answer,
+                option: option,
+                answertext: answertext,
+                counter: counter,
+              });
+            }
+          );
+
+          //Pregunta opinión
+          connection.on('opinion', (question) => {
+            setOpinionQuestion(question);
+          });
+
+          // Respuesta pregunta Opinión
+          connection.on('SendRespuestasDos', (tablarespuestas) => {
+            setAnswersOpinion(tablarespuestas);
+            if (counter >= connectedUsers) {
+              setComplexQuestion(true);
+              setNextQuestion(indexCurrentQuestion.current);
+            }
+          });
+
+          // Actualiza la interfaz de usuario con el tiempo actual
+          connection.on('UpdateTime', (time) => {
+            setQuestionTimer(time);
+            if (time === 0) {
+              setComplexQuestion(true);
+              setNextQuestion(indexCurrentQuestion.current);
+            }
+          });
+        })
+        .catch((error) =>
+          console.error('Error al conectar con SignalR:', error)
+        );
+      connection.on('clientConnected', setConnectedUsers);
+      connection.on('clientDisconnected', setConnectedUsers);
+      connection.on('DemographicCount', (idDemo, count) => {
+        setResponseDemographic((prevCounts) => ({
+          ...prevCounts,
+          [idDemo]: count,
+        }));
+      });
+
+      // Limpieza al desmontar
+      return () => {
+        connection.off('ReceiveDemographics');
+        connection.off('clientConnected', setConnectedUsers);
+        connection.off('clientDisconnected', setConnectedUsers);
+        connection.off('QuestionSingleOptions');
+      };
+    }
+  }, [connection]);
+
+  useEffect(() => {
+    if (
+      moderatorAvatar &&
+      survey.demographicList &&
+      survey.demographicList.length > 0
+    ) {
+      let newMessageItem = {
+        id: messages.length + 1,
+        sender: 'Shun',
+        senderAvatar: moderatorAvatar.avatarUrl,
+        messageType: 'demographic',
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+    }
+  }, [moderatorAvatar]);
 
   useEffect(() => {
     // Verificar que singleQuestion tiene datos para proceder
@@ -330,6 +382,38 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
   }, [singleQuestion]);
 
   useEffect(() => {
+    // Verificar que singleQuestion tiene datos para proceder
+    if (answersOpinion.length > 0 && hasRun) {
+      let newMessageItemSender = {
+        id: messages.length + 1,
+        sender: 'Cliente',
+        senderAvatar: 'https://i.pravatar.cc/150?img=32',
+        messageType: 'question',
+        content: opinionQuestion,
+        isAnswer: true,
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
+      setHasRun(false);
+    }
+  }, [answersOpinion]);
+
+  useEffect(() => {
+    // Verificar que singleQuestion tiene datos para proceder
+    if (experienceQuestion) {
+      let newMessageItemSender = {
+        id: messages.length + 1,
+        sender: 'Cliente',
+        senderAvatar: 'https://i.pravatar.cc/150?img=32',
+        messageType: 'question',
+        content: experienceQuestion,
+        isAnswer: true,
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
+      setHasRun(false);
+    }
+  }, [experienceQuestion]);
+  
+  useEffect(() => {
     initializeConnectionAndFetchData();
   }, []);
 
@@ -337,7 +421,6 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
     fetchSurvey();
   }, [question]);
 
-  
   return (
     <Box
       sx={{
@@ -533,36 +616,48 @@ export const Moderator = ({ id,questions,setQuestions2 }) => {
                 return (
                   <connectionContext.Provider value={connection}>
                     <moderatorAvatarContext.Provider value={moderatorAvatar}>
-                      <answerSingleQuestionContext.Provider
-                        value={answerSingleQuestion}
-                      >
-                        <singleQuestionContext.Provider value={singleQuestion}>
-                          <nextQuestionTimerContext.Provider
-                            value={questionTimer}
+                      <opinionQuestionContext.Provider value={opinionQuestion}>
+                        <answerOpinionQuestionContext.Provider
+                          value={answersOpinion}
+                        >
+                          <answerSingleQuestionContext.Provider
+                            value={answerSingleQuestion}
                           >
-                            <ChatBox
-                              key={key}
-                              owner={user.name}
-                              ownerAvatar={user.avatar}
-                              sendMessage={sendMessage}
-                              typing={typing}
-                              resetTyping={resetTyping}
-                              messages={messages}
-                              setMessages={setMessages}
-                              isTyping={isTyping}
-                              responseDemographic={responseDemographic}
-                              demographics={survey.demographicList}
-                              question={question}
-                              nextQuestionTimer={questionTimer}
-                              answersOpinion={answersOpinion}
-                              questions={questions}
-                              setQuestions2={setQuestions2}
-                              setQuestions={setQuestions}
-                              indexCurrentQuestion={indexCurrentQuestion.current}
-                            />
-                          </nextQuestionTimerContext.Provider>
-                        </singleQuestionContext.Provider>
-                      </answerSingleQuestionContext.Provider>
+                            <singleQuestionContext.Provider
+                              value={singleQuestion}
+                            >
+                              <nextQuestionTimerContext.Provider
+                                value={questionTimer}
+                              >
+                                <answerExperienceQuestionContext.Provider value={answerExperienceQuestion}>
+                                <ChatBox
+                                  key={key}
+                                  owner={user.name}
+                                  ownerAvatar={user.avatar}
+                                  sendMessage={sendMessage}
+                                  typing={typing}
+                                  resetTyping={resetTyping}
+                                  messages={messages}
+                                  setMessages={setMessages}
+                                  isTyping={isTyping}
+                                  responseDemographic={responseDemographic}
+                                  demographics={survey.demographicList}
+                                  question={question}
+                                  nextQuestionTimer={questionTimer}
+                                  answersOpinion={answersOpinion}
+                                  questions={questions}
+                                  setQuestions2={setQuestions2}
+                                  setQuestions={setQuestions}
+                                  indexCurrentQuestion={
+                                    indexCurrentQuestion.current
+                                  }
+                                />
+                                </answerExperienceQuestionContext.Provider>
+                              </nextQuestionTimerContext.Provider>
+                            </singleQuestionContext.Provider>
+                          </answerSingleQuestionContext.Provider>
+                        </answerOpinionQuestionContext.Provider>
+                      </opinionQuestionContext.Provider>
                     </moderatorAvatarContext.Provider>
                   </connectionContext.Provider>
                 );

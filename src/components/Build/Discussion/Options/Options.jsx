@@ -890,7 +890,7 @@ function Options({
                           style={{
                             display: 'flex',
                             alignItems: 'center',
-                            marginBottom: '5px',
+                            marginBottom: '20px',
                           }}
                         >
                           <TextField
