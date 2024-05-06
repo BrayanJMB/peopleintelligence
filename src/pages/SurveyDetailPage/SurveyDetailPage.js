@@ -194,13 +194,31 @@ const SurveyDetailPage = () => {
    *
    * @param event
    */
-  const handleClickDownload = (event) => {
+
+  const handleClickDownload = async (event) => {
     event.preventDefault();
-
+  
     const companyId = userInfo.Company;
-    const url = `${API}JourneyDownloadFile/${companyId}/${surveyId}`;
-
-    window.open(url, '_blank');
+  
+    try {
+      const response = await client.get(`JourneyDownloadFile/${companyId}/${surveyId}`, {
+        responseType: 'blob',  // Indica que se espera un archivo binario (como un PDF, imagen, etc.)
+      });
+      const filename = response.headers['content-disposition'].split('filename=')[1].split(';')[0].replace(/"/g, '');
+      // Crear un enlace temporal para descargar el archivo
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);  // Aquí puedes especificar el nombre del archivo
+      document.body.appendChild(link);
+      link.click();
+  
+      // Limpiar el enlace temporal después de la descarga
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading the file:', error);
+    }
   };
 
   /**
@@ -408,7 +426,6 @@ const SurveyDetailPage = () => {
                         }
                       >
                         <Stack spacing={2} direction="row">
-                          {currentSurvey.ispersonal && (
                             <Button
                               onClick={sendReminder}
                               startIcon={<ScheduleSendIcon />}
@@ -416,8 +433,6 @@ const SurveyDetailPage = () => {
                             >
                               Enviar recordatorio
                             </Button>
-                          )}
-
                           <Snackbar
                             open={reminderSent}
                             autoHideDuration={3000}
