@@ -152,6 +152,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
       return console.error(err.toString());
     });
     setQuestionTimer(timeLimit);
+    console.log(timeLimit);
     setTimeout(() => {
       indexCurrentQuestion.current += 1;
     }, timeInt * 1000);
