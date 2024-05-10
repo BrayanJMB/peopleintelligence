@@ -359,7 +359,7 @@ const SendInvitationDialog = ({
     bodyFormData.append('data', csvFile);
     bodyFormData.append('jmails', informationMail);
 
-    client.post(`sendMailJourney`, bodyFormData)
+    client.post('sendMailJourney', bodyFormData)
     .then((response) => {
       enqueueSnackbar('Invitación enviada satisfactoriamente', {
         variant: 'success',
