@@ -94,6 +94,7 @@ export default function CreateSurvey() {
   const [mapsLoaded, setMapsLoaded] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const isMap = searchParams.get('isMap') === 'true';
+  const isEdit = searchParams.get('isEdit') === 'true';
   const isTemplate =
     searchParams.get('isTemplate') === 'true' ||
     location.pathname.indexOf('journey/update-template') !== -1;
@@ -292,13 +293,10 @@ export default function CreateSurvey() {
 
           return;
         }
-
         if (isTemplate) {
           createTemplate();
-
           return;
         }
-
         setActiveStep((val) => val + 1);
         break;
       case 2:
@@ -869,8 +867,11 @@ export default function CreateSurvey() {
    * @returns {string}
    */
   const getHeaderTitle = () => {
-    if (isTemplate && isMap) {
+    if (isTemplate && isMap && !isEdit) {
       return 'Crear encuesta de mapa';
+    }
+    else if (isTemplate && isMap && isEdit) {
+      return 'Editar encuesta de mapa';
     }else if (isTemplate) {
       return 'Crear plantilla';
     }
@@ -913,7 +914,7 @@ export default function CreateSurvey() {
         return;
       }
       const {data:survey} = await client.get(`ShowQuestion/${surveyId}/${currentCompany.id}`);
-
+      console.log(survey)
       let dataCopy = {
         ...data,
       };
@@ -922,7 +923,7 @@ export default function CreateSurvey() {
       if (survey.response) {
         dataCopy = {
           ...dataCopy,
-          map: survey.response,
+          map: survey.response.map,
         };
       }
       // fill name
@@ -957,7 +958,9 @@ export default function CreateSurvey() {
           mailingMessage: survey.response.emailMessage,
         };
       }
+      console.log(dataCopy)
       setData(dataCopy);
+
 
       let questionsCopy = [...questions];
 
@@ -967,20 +970,21 @@ export default function CreateSurvey() {
         questionsCopy.push({
           id: uuid.v4(),
           questionId: question.questionId,
-          typeId: question.question.typeQuestionId,
+          typeId: question.typeQuestionId,
           categoryId: question.categoryId,
           type: question.typeQuestionId,
           name: question.questionName,
-          description: question.question.description,
+          description: question.description,
           customOptions: question.options.map(
             (option) => option.templateOptionsName
           ),
           options: question.options.map((option) => option.templateOptionsName),
           questionOptions: question.options,
-          stars: question.question.score,
+          stars: question.score,
         })
       );
       setQuestions(questionsCopy);
+      console.log(questionsCopy)
       /*
       setTemplateDemographics(
         template.templateDemographics.map((demographic) => demographic.name)
@@ -998,7 +1002,7 @@ export default function CreateSurvey() {
     if (!template) {
       return;
     }
-
+    console.log(template)
     let dataCopy = {
       ...data,
     };
@@ -1032,7 +1036,7 @@ export default function CreateSurvey() {
       };
     }
     setData(dataCopy);
-
+    console.log(dataCopy)
     let questionsCopy = [...questions];
 
     // fill questions
@@ -1075,7 +1079,7 @@ export default function CreateSurvey() {
     if (!templateId) {
       return;
     }
-
+    console.log(templateId)
     fetchTemplate(templateId);
   }, [templateId]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -1083,6 +1087,7 @@ export default function CreateSurvey() {
     if (!surveyId) {
       return;
     }
+    console.log(surveyId)
     fetchSurvey(templateId);
   }, [surveyId, currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
 

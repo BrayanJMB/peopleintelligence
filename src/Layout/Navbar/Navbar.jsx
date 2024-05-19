@@ -126,36 +126,19 @@ export default function Navbar() {
 
 
   const handleSelect = (value) => {
-    if (!value){
+    if (!value) {
       dispatch(setDrop(null));
       return;
     }
-    let holder = JSON.parse(localStorage.getItem('userInfo'));
-    localStorage.removeItem('userInfo');
-    //let company = search(value, data.ids.company);
-    /*
-    dispatch(
-      setCredentials({
-        user: holder.user,
-        Company: value.id,
-        accessToken: holder.token,
-        role: holder.role,
-      })
-    );*/
+    const holder = JSON.parse(localStorage.getItem('userInfo')) || {};
+
     dispatch(currentCompanySelected(value.id));
-
-
-    localStorage.setItem(
-      'userInfo',
-      JSON.stringify({
-        user: holder.user,
-        username:holder.username,
-        Company: value.id,
-        accessToken: holder.accessToken,
-        role: holder.role,
-      })
-    );
     dispatch(setDrop(value));
+
+    localStorage.setItem('userInfo', JSON.stringify({
+      ...holder,
+      Company: value.id,
+    }));
   };
 
   useEffect(() => {
@@ -171,24 +154,27 @@ export default function Navbar() {
 
 
   useEffect(() => {
-    if (!drop && activeCompanies && activeCompanies.length > 0) {
-      dispatch(setDrop(activeCompanies[0]));
-      let holder = JSON.parse(localStorage.getItem('userInfo'));
-      localStorage.removeItem('userInfo');
-      dispatch(currentCompanySelected(activeCompanies[0].id));
-  
-  
-      localStorage.setItem(
-        'userInfo',
-        JSON.stringify({
-          user: holder.user,
-          Company: activeCompanies[0].id,
-          username:holder.username,
-          accessToken: holder.accessToken,
-          role: holder.role,
-        })
-      );
+    const storedUserInfo = JSON.parse(localStorage.getItem('userInfo'));
 
+    if (storedUserInfo && storedUserInfo.Company) {
+      // Si hay una compañía almacenada en el localStorage, úsala
+      const storedCompany = activeCompanies.find(company => company.id === storedUserInfo.Company);
+      if (storedCompany) {
+        dispatch(setDrop(storedCompany));
+        dispatch(currentCompanySelected(storedCompany.id));
+      }
+    } else if (!drop && activeCompanies && activeCompanies.length > 0) {
+      // Si no hay compañía almacenada, selecciona la primera por defecto
+      const firstCompany = activeCompanies[0];
+      dispatch(setDrop(firstCompany));
+      dispatch(currentCompanySelected(firstCompany.id));
+
+      // Actualiza el localStorage
+      const holder = JSON.parse(localStorage.getItem('userInfo')) || {};
+      localStorage.setItem('userInfo', JSON.stringify({
+        ...holder,
+        Company: firstCompany.id,
+      }));
     }
   }, [activeCompanies, drop, dispatch]);
 

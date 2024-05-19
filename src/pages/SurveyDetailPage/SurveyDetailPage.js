@@ -52,10 +52,10 @@ import styles from './SurveyDetailPage.module.css';
 
 // survey options
 const options = [
-  /*{
+  {
     option: "Editar",
     icon: <EditIcon />,
-  },
+  },/*
   {
     option: 'Duplicar',
     icon: <ContentCopyIcon />,
@@ -137,7 +137,7 @@ const SurveyDetailPage = () => {
       handleDeleteSurvey(currentSurvey.response.surveyId);
     }
     if (option === 'Editar'){
-      navigate(`/journey/edit-survey/${currentSurvey.response.surveyId}?isTemplate=true&isMap=true`);
+      navigate(`/journey/edit-survey/${currentSurvey.response.surveyId}?isTemplate=False&isEdit=true`);
     }
     if(option === 'Duplicar'){
       handleEditSurvey(currentSurvey.response.surveyId);

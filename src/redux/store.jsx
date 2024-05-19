@@ -6,6 +6,7 @@ import companiesSlice from '../features/companies/companiesSlice';
 import activeCompaniesSlice from '../features/employe/employe';
 import powerBiReducer from '../features/powerBiSlice';
 import surveysSlice from '../features/surveys/surveysSlice';
+import CarouselSlice from '../features/CarouselSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     auth: authReducer,
     companies: companiesSlice,
     surveys : surveysSlice,
+    carousel  : CarouselSlice,
     activeCompanies : activeCompaniesSlice,
   },
   devTools: true,
