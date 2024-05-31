@@ -94,6 +94,7 @@ export default function CreateSurvey() {
   const [mapsLoaded, setMapsLoaded] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const isMap = searchParams.get('isMap') === 'true';
+  const isEdit = searchParams.get('isEdit') === 'true';
   const isTemplate =
     searchParams.get('isTemplate') === 'true' ||
     location.pathname.indexOf('journey/update-template') !== -1;
@@ -189,6 +190,49 @@ export default function CreateSurvey() {
       variant: 'success',
     });
   };
+
+  /**
+   * Edit survey.
+   */
+    const editSurvey = async () => {
+      setLoading(true);
+      console.log(questions);
+      const newSurvey = {
+        survey: {
+          id: surveyId,
+          nameSurvey: data.title,
+          descriptionSurvey: data.description,
+          messageMail: data.mailingMessage,
+          emailSubject: data.emailSubject,
+          emailMask: data.emailMask,
+          isPersonal: !anonymous,
+          mapId: data.map.id,
+          companyId: currentCompany.id,
+        },
+        questions: questions.map((question) => ({
+          question: {
+            nameQuestion: question.name,
+            description:question.description,
+            typeQuestionId: question.typeId,
+            score: question.stars?.length,
+          },
+          options: question.customOptions?.map((option, index) => ({
+            optionsName: option,
+            numberOption: index + 1,
+          })),
+          categoryId: question.categoryId,
+        })),
+        demographics: getDemographics(),
+      };
+      console.log(newSurvey);
+      
+      const { data: createdJourney } = await client.put('/editSurvey',newSurvey);
+      setLoading(false);
+      navigate(`/journey/survey/${createdJourney.id}/detail`);
+      enqueueSnackbar('Cuestionario editado con éxito', {
+        variant: 'success',
+      });
+    };
 
   /**
    * Create survey template.
@@ -292,17 +336,18 @@ export default function CreateSurvey() {
 
           return;
         }
-
         if (isTemplate) {
           createTemplate();
-
           return;
         }
-
         setActiveStep((val) => val + 1);
         break;
       case 2:
-        createSurvey();
+        if (isEdit){
+          editSurvey();
+        }else{
+          createSurvey();
+        }
         break;
       default:
         setActiveStep(0);
@@ -869,13 +914,21 @@ export default function CreateSurvey() {
    * @returns {string}
    */
   const getHeaderTitle = () => {
-    if (isTemplate && isMap) {
+
+    if (isTemplate && isMap && !isEdit) {
       return 'Crear encuesta de mapa';
+    }
+    else if (isTemplate && isMap && isEdit) {
+      return 'Editar encuesta de mapa';
     }else if (isTemplate) {
       return 'Crear plantilla';
     }
+    if (isEdit) {
+      return 'Editar encuesta';
+    }else{
+      return 'Crear encuesta';
+    }
 
-    return 'Crear encuesta';
   };
 
   /**
@@ -913,7 +966,7 @@ export default function CreateSurvey() {
         return;
       }
       const {data:survey} = await client.get(`ShowQuestion/${surveyId}/${currentCompany.id}`);
-
+      console.log(survey);
       let dataCopy = {
         ...data,
       };
@@ -922,7 +975,7 @@ export default function CreateSurvey() {
       if (survey.response) {
         dataCopy = {
           ...dataCopy,
-          map: survey.response,
+          map: survey.response.map,
         };
       }
       // fill name
@@ -959,27 +1012,30 @@ export default function CreateSurvey() {
       }
       setData(dataCopy);
 
+
       let questionsCopy = [...questions];
 
       // fill questions
-      
+      console.log(survey.response.preguntas);
       survey.response.preguntas.map((question) =>
         questionsCopy.push({
           id: uuid.v4(),
           questionId: question.questionId,
-          typeId: question.question.typeQuestionId,
+          typeId: question.typeQuestionId,
           categoryId: question.categoryId,
-          type: question.typeQuestionId,
+          type: question.typeQuestion,
           name: question.questionName,
-          description: question.question.description,
+          description: question.description,
           customOptions: question.options.map(
-            (option) => option.templateOptionsName
+            (option) => option.optionName
           ),
-          options: question.options.map((option) => option.templateOptionsName),
+          //options: question.options.map((option) => option.templateOptionsName),
+          options: question.options.map((option) => option.optionName),
           questionOptions: question.options,
-          stars: question.question.score,
+          stars: question.score,
         })
       );
+      console.log(questionsCopy);
       setQuestions(questionsCopy);
       /*
       setTemplateDemographics(
@@ -998,7 +1054,7 @@ export default function CreateSurvey() {
     if (!template) {
       return;
     }
-
+    console.log(template);
     let dataCopy = {
       ...data,
     };
@@ -1032,7 +1088,6 @@ export default function CreateSurvey() {
       };
     }
     setData(dataCopy);
-
     let questionsCopy = [...questions];
 
     // fill questions
@@ -1075,7 +1130,6 @@ export default function CreateSurvey() {
     if (!templateId) {
       return;
     }
-
     fetchTemplate(templateId);
   }, [templateId]); // eslint-disable-line react-hooks/exhaustive-deps
 
