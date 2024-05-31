@@ -224,9 +224,9 @@ export default function CreateSurvey() {
         })),
         demographics: getDemographics(),
       };
-      console.log(newSurvey)
+      console.log(newSurvey);
       
-      const { data: createdJourney } = await client.put(`/editSurvey`,newSurvey);
+      const { data: createdJourney } = await client.put('/editSurvey',newSurvey);
       setLoading(false);
       navigate(`/journey/survey/${createdJourney.id}/detail`);
       enqueueSnackbar('Cuestionario editado con éxito', {
@@ -966,7 +966,7 @@ export default function CreateSurvey() {
         return;
       }
       const {data:survey} = await client.get(`ShowQuestion/${surveyId}/${currentCompany.id}`);
-      console.log(survey)
+      console.log(survey);
       let dataCopy = {
         ...data,
       };
@@ -1016,7 +1016,7 @@ export default function CreateSurvey() {
       let questionsCopy = [...questions];
 
       // fill questions
-      console.log(survey.response.preguntas)
+      console.log(survey.response.preguntas);
       survey.response.preguntas.map((question) =>
         questionsCopy.push({
           id: uuid.v4(),
@@ -1035,7 +1035,7 @@ export default function CreateSurvey() {
           stars: question.score,
         })
       );
-      console.log(questionsCopy)
+      console.log(questionsCopy);
       setQuestions(questionsCopy);
       /*
       setTemplateDemographics(
@@ -1054,7 +1054,7 @@ export default function CreateSurvey() {
     if (!template) {
       return;
     }
-    console.log(template)
+    console.log(template);
     let dataCopy = {
       ...data,
     };

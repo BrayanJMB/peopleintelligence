@@ -2,11 +2,11 @@ import { configureStore } from '@reduxjs/toolkit';
 
 import adminReducer from '../features/adminSlice';
 import authReducer from '../features/authSlice';
+import CarouselSlice from '../features/CarouselSlice';
 import companiesSlice from '../features/companies/companiesSlice';
 import activeCompaniesSlice from '../features/employe/employe';
 import powerBiReducer from '../features/powerBiSlice';
 import surveysSlice from '../features/surveys/surveysSlice';
-import CarouselSlice from '../features/CarouselSlice';
 
 export const store = configureStore({
   reducer: {

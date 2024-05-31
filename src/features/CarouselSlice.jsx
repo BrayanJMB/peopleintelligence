@@ -8,7 +8,7 @@ const carouselSlice = createSlice({
   reducers: {
     setCurrentSlide: (state, action) => {
       state.currentSlide = action.payload;
-    }
+    },
   },
 });
 
