@@ -57,7 +57,7 @@ const EditForm = ({
     props.handleCategoryIdChange(target.value);
     setCategoryId(target.value);
   };
-
+  console.log(question)
   return (
     <Fragment>
       <div className={styles.form}>
@@ -148,7 +148,7 @@ const EditForm = ({
           )}
   
           {/* multiple option */}
-          {(question.typeId === 3) && (
+          {(question.typeId === 3 || question.typeId === 8) && (
             <div className={styles.options}>
               {question.customOptions.map((val, key) => (
                 <div

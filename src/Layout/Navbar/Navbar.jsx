@@ -155,26 +155,39 @@ export default function Navbar() {
 
   useEffect(() => {
     const storedUserInfo = JSON.parse(localStorage.getItem('userInfo'));
-
-    if (storedUserInfo && storedUserInfo.Company) {
-      // Si hay una compañía almacenada en el localStorage, úsala
-      const storedCompany = activeCompanies.find(company => company.id === storedUserInfo.Company);
-      if (storedCompany) {
-        dispatch(setDrop(storedCompany));
-        dispatch(currentCompanySelected(storedCompany.id));
+  
+    if (activeCompanies && activeCompanies.length > 0) {
+      if (storedUserInfo && storedUserInfo.Company) {
+        // Si hay una compañía almacenada en el localStorage, úsala
+        const storedCompany = activeCompanies.find(company => company.id === storedUserInfo.Company);
+        if (storedCompany) {
+          dispatch(setDrop(storedCompany));
+          dispatch(currentCompanySelected(storedCompany.id));
+        } else {
+          // Si la compañía almacenada no se encuentra, selecciona la primera por defecto
+          const firstCompany = activeCompanies[0];
+          dispatch(setDrop(firstCompany));
+          dispatch(currentCompanySelected(firstCompany.id));
+          
+          const holder = JSON.parse(localStorage.getItem('userInfo')) || {};
+          localStorage.setItem('userInfo', JSON.stringify({
+            ...holder,
+            Company: firstCompany.id,
+          }));
+        }
+      } else {
+        // Si no hay compañía almacenada, selecciona la primera por defecto
+        const firstCompany = activeCompanies[0];
+        dispatch(setDrop(firstCompany));
+        dispatch(currentCompanySelected(firstCompany.id));
+  
+        // Actualiza el localStorage
+        const holder = JSON.parse(localStorage.getItem('userInfo')) || {};
+        localStorage.setItem('userInfo', JSON.stringify({
+          ...holder,
+          Company: firstCompany.id,
+        }));
       }
-    } else if (!drop && activeCompanies && activeCompanies.length > 0) {
-      // Si no hay compañía almacenada, selecciona la primera por defecto
-      const firstCompany = activeCompanies[0];
-      dispatch(setDrop(firstCompany));
-      dispatch(currentCompanySelected(firstCompany.id));
-
-      // Actualiza el localStorage
-      const holder = JSON.parse(localStorage.getItem('userInfo')) || {};
-      localStorage.setItem('userInfo', JSON.stringify({
-        ...holder,
-        Company: firstCompany.id,
-      }));
     }
   }, [activeCompanies, drop, dispatch]);
 
