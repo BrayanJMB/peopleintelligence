@@ -141,6 +141,7 @@ export default function Basic({
                       fontSize: '0.8rem',
                       fontWeight: '500',
                       resize: 'none',
+                      marginTop: '10px'
                     }}
                   >
                     Los participantes verán esto antes de los onboarding polls

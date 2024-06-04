@@ -17,8 +17,9 @@ export default function UploadImage({informationConversation, handlePhoto, text,
           variant="text"
           onClick={() => handleReset(nameInput)}
           color="blue"
+          style={{ textTransform: 'none' }}
         >
-          reset
+          Reset
         </Button>
       ) : null}
       <div>
