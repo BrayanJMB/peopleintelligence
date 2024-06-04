@@ -191,17 +191,37 @@ function Options({
         return false;
     }
   };
-  const isOpinion = () => {
-    return 'Opinión';
+  const isOpinion = (item) => {
+    switch (limpiarTexto(item.toLowerCase())) {
+      case 'opinion':
+        return true;
+      default:
+        return false;
+    }
   };
-  const isExperience = () => {
-    return 'experiencia';
+  const isExperience = (item) => {
+    switch (limpiarTexto(item.toLowerCase())) {
+      case 'experiencia':
+        return true;
+      default:
+        return false;
+    }
   };
-  const isImage = () => {
-    return 'imagen';
+  const isImage = (item) => {
+    switch (limpiarTexto(item.toLowerCase())) {
+      case 'imagen':
+        return true;
+      default:
+        return false;
+    }
   };
-  const isVideo = () => {
-    return 'video';
+  const isVideo = (item) => {
+    switch (limpiarTexto(item.toLowerCase())) {
+      case 'video':
+        return true;
+      default:
+        return false;
+    }
   };
   const isSelecionSimple = (item) => {
     switch (limpiarTexto(item.toLowerCase())) {
@@ -597,7 +617,7 @@ function Options({
               </CardContent>
             </Card>
           )}
-          {isOpinion() === item && (
+          {isOpinion(item) && (
             <Card>
               <CardContent>
                 <div
@@ -662,7 +682,7 @@ function Options({
               </CardContent>
             </Card>
           )}
-          {isExperience(item) === item && (
+          {isExperience(item) && (
             <Card>
               <CardContent>
                 <div
@@ -935,7 +955,7 @@ function Options({
               </CardContent>
             </Card>
           )}
-          {isImage() === item && (
+          {isImage(item) && (
             <Card>
               <CardContent>
                 <div
@@ -1005,7 +1025,7 @@ function Options({
               </CardContent>
             </Card>
           )}
-          {isVideo() === item && (
+          {isVideo(item) && (
             <Card>
               <CardContent>
                 <div
