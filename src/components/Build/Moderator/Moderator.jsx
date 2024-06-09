@@ -220,7 +220,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
         setComplexQuestion(false);
         //setNextQuestion(currentQuestion);
         break;
-      case 'experiencia':
+      case 'Pregunta Condicional':
         connection.invoke('SendExperiencia', question).catch(function (err) {
           return console.error(err.toString());
         });

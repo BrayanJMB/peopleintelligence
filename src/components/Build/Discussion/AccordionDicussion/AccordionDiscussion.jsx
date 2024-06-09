@@ -17,7 +17,7 @@ const questionTypes = [
   'Texto',
   'Selección simple',
   'Opinión',
-  'Experiencia',
+  'Pregunta Condicional',
   'Imagen' /*'video'*/,
   ,
 ];
@@ -100,6 +100,7 @@ export default function AccordionDiscussion({
   };
 
   const handleChange = (event) => {
+    console.log(event.target.value)
     setItem(event.target.value);
     handleAddConversation(event.target.value);
   };

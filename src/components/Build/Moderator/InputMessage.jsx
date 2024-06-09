@@ -112,7 +112,7 @@ export const InputMessage = (props) => {
   };
   const questionTypes = [
     'Selección simple',
-    'experiencia',
+    'Pregunta Condicional',
     'Opinión',
     'imagen' /*'video'*/,
     ,

@@ -52,7 +52,7 @@ export const Questions = ({
 
   const isExperience = (item) => {
     switch (item.toLowerCase()) {
-      case 'experiencia':
+      case 'preguntacondicional':
         return true;
       default:
         return false;
