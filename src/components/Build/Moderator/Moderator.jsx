@@ -159,6 +159,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
   };
 
   const SendQuestionByType = (type, question, index) => {
+    console.log(type)
     let currentQuestion = question.orderNumber;
     switch (limpiarTexto(type.toLowerCase())) {
       case "texto":
@@ -204,6 +205,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
             console.log('soy video');
             break;*/
       case "seleccionsimple":
+        console.log("entro acá");
         connection.invoke("SendSingleOption", question).catch(function (err) {
           return console.error(err.toString());
         });
@@ -220,7 +222,8 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
         setComplexQuestion(false);
         //setNextQuestion(currentQuestion);
         break;
-      case "Pregunta Condicional":
+      case "preguntacondicional":
+        console.log("entroaca")
         connection.invoke("SendExperiencia", question).catch(function (err) {
           return console.error(err.toString());
         });
@@ -304,12 +307,14 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
 
           //Pregunta Experiencia
           connection.on("experiencia", (pregunta) => {
+            console.log(pregunta);
             setExperienceQuestion(pregunta);
           });
           // Respuesta experiencia
           connection.on(
             "recibirrespuestaesxperiencia",
             (answer, option, answertext, counter) => {
+              console.log(answer,option, answertext, counter)
               setAnswerExperienceQuestion({
                 answer: answer,
                 option: option,
@@ -413,7 +418,8 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
   }, [answersOpinion]);
 
   useEffect(() => {
-    if (answerExperienceQuestion && hasRunSingleSelect) {
+    if (answerExperienceQuestion && hasRunExperience) {
+      
       let newMessageItemSender = {
         id: messages.length + 1,
         sender: "Cliente",
@@ -423,7 +429,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
         isAnswer: true,
       };
       setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
-      setHasRunSingleSelect(false);
+      setHasRunExperience(false);
     }
   }, [answerExperienceQuestion]);
 

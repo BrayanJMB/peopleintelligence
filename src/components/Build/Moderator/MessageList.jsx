@@ -12,6 +12,7 @@ export const MessageList = ({
   nextQuestionTimer,
   answersOpinion,
 }) => {
+  console.log(messages)
   return (
     <div className={styles.chatApp__convTimeline}>
       {messages
