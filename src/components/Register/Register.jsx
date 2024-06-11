@@ -7,9 +7,10 @@ import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import axios from 'axios';
 import MuiPhoneNumber from 'material-ui-phone-number-2';
-import { Policies } from '../Policies/Policies';
+
 import Logo from '../../assets/Logo.svg';
 import Notification from '../../components/Notification';
+import { Policies } from '../Policies/Policies';
 
 import styles from './Multiple.module.css';
 
@@ -331,4 +332,4 @@ export const Register = () => {
         />
       </form>
     );
-}
+};

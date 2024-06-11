@@ -142,7 +142,7 @@ export default function Basic({
                       fontWeight: '500',
                       resize: 'none',
                       marginTop: '5px',
-                      marginBottom: '10px'
+                      marginBottom: '10px',
                     }}
                   >
                     Los participantes verán esto antes de los onboarding polls

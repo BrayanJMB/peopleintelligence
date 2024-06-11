@@ -1,31 +1,33 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Grid } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
-import TextField from "@mui/material/TextField";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { esES } from "@mui/x-date-pickers/locales";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import dayjs from "dayjs";
-import PropTypes from "prop-types";
+import React, { useEffect, useRef, useState } from 'react';
+import { Grid } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import TextField from '@mui/material/TextField';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { esES } from '@mui/x-date-pickers/locales';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import dayjs from 'dayjs';
+import PropTypes from 'prop-types';
 
-import defaultImage from "../../assets/default.png";
-import { fetchUserGetRolsAPI } from "../../services/fetchUser.service";
-import { validateField, validateForm } from "../../utils/helpers";
-import { DynamicInputs } from "./DynamicInputs/DynamicInputs";
-import styles from "./MyCreateDialog2.module.css";
+import defaultImage from '../../assets/default.png';
+import { fetchUserGetRolsAPI } from '../../services/fetchUser.service';
+import { validateField, validateForm } from '../../utils/helpers';
+
+import { DynamicInputs } from './DynamicInputs/DynamicInputs';
+
+import styles from './MyCreateDialog2.module.css';
 
 // form field types
 const FIELD_TYPES = {
-  TEXT: "text",
+  TEXT: 'text',
 };
 
 function TabPanel(props) {
@@ -68,18 +70,18 @@ const MyCreateDialog = ({
   currentCreate,
   setCurrentCreate,
 }) => {
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState('');
   const [showDeleteIcon, setShowDeleteIcon] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
-  const [maxWidth, setMaxWidth] = useState("80%");
-  const maxDate = dayjs().subtract(18, "years");
+  const [maxWidth, setMaxWidth] = useState('80%');
+  const maxDate = dayjs().subtract(18, 'years');
   const createInitialValues = () => {
     const initialValues = {};
-    if (type === "employee") {
+    if (type === 'employee') {
       fields.forEach((sectionObj) =>
         Object.keys(sectionObj).forEach((section) =>
           sectionObj[section].forEach((field) => {
-            initialValues[field.name] = "";
+            initialValues[field.name] = '';
           })
         )
       );
@@ -104,7 +106,7 @@ const MyCreateDialog = ({
       [`${name}Error`]: validationResult.error,
       [`${name}HelperText`]: validationResult.helperText,
     };
-    if (name === "dateBirth") {
+    if (name === 'dateBirth') {
       const today = new Date();
       const birthDate = new Date(value);
       let age = today.getFullYear() - birthDate.getFullYear();
@@ -119,7 +121,7 @@ const MyCreateDialog = ({
     }
     setValues(updatedValues);
 
-    if (name === "userRolChange") {
+    if (name === 'userRolChange') {
       setUserRol([]);
       const { data } = await fetchUserGetRolsAPI(event.target.value);
       setUserRol(data);
@@ -139,7 +141,7 @@ const MyCreateDialog = ({
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = "";
+        updatedValues[name] = '';
       }
     }
     // Actualizar el objeto `values` con la copia actualizada
@@ -159,7 +161,7 @@ const MyCreateDialog = ({
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = "";
+        updatedValues[name] = '';
       }
     }
 
@@ -179,7 +181,7 @@ const MyCreateDialog = ({
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = "";
+        updatedValues[name] = '';
       }
     }
 
@@ -201,7 +203,7 @@ const MyCreateDialog = ({
   const fileInputRef = useRef();
 
   const hiddenFileInput = {
-    display: "none",
+    display: 'none',
   };
 
   const handleClick = () => {
@@ -214,7 +216,7 @@ const MyCreateDialog = ({
         setFile(e.target.files[0]); // Guarda el objeto File en lugar de la URL
         setShowDeleteIcon(true);
       } else {
-        alert("El tamaño de la imagen no puede ser mayor a 500kB");
+        alert('El tamaño de la imagen no puede ser mayor a 500kB');
       }
     }
   };
@@ -249,23 +251,23 @@ const MyCreateDialog = ({
       <Dialog open={open} onClose={onClose} maxWidth={maxWidth}>
         <DialogTitle>{title}</DialogTitle>
         <form onSubmit={handleFormSubmit} noValidate>
-          <DialogContent sx={{ maxWidth: "80vw" }}>
+          <DialogContent sx={{ maxWidth: '80vw' }}>
             <Box
               sx={{
                 marginTop: 1,
               }}
             >
-              {type === "employee" && (
+              {type === 'employee' && (
                 <>
                   <Box
                     sx={{
                       borderBottom: 1,
-                      borderColor: "divider",
+                      borderColor: 'divider',
                     }}
                   >
-                    <Box sx={{ display: "flex", justifyContent: "between" }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'between' }}>
                       <Tabs
-                        sx={{ width: "90%", justifyContent: "center" }}
+                        sx={{ width: '90%', justifyContent: 'center' }}
                         value={currentTab}
                         onChange={(event, newValue) =>
                           handleTabChange(event, newValue)
@@ -282,7 +284,7 @@ const MyCreateDialog = ({
                       Object.keys(sectionObj).map((section, tabIndex) => {
                         return tabIndex === currentTab
                           ? sectionObj[section].map((field) => {
-                              if (field.type === "text") {
+                              if (field.type === 'text') {
                                 return (
                                   <Grid
                                     item
@@ -298,12 +300,12 @@ const MyCreateDialog = ({
                                       name={field.name}
                                       onChange={handleInputChange}
                                       type="text"
-                                      value={values[field.name] || ""}
+                                      value={values[field.name] || ''}
                                       variant="outlined"
                                       required={field.isRequired}
                                       error={values[`${field.name}Error`]}
                                       helperText={
-                                        values[`${field.name}HelperText`] || ""
+                                        values[`${field.name}HelperText`] || ''
                                       }
                                       sx={{
                                         marginBottom: 2,
@@ -311,7 +313,7 @@ const MyCreateDialog = ({
                                     />
                                   </Grid>
                                 );
-                              } else if (field.type === "date") {
+                              } else if (field.type === 'date') {
                                 return (
                                   <Grid
                                     item
@@ -328,7 +330,7 @@ const MyCreateDialog = ({
                                     >
                                       <DatePicker
                                         maxDate={
-                                          field.name === "dateBirth"
+                                          field.name === 'dateBirth'
                                             ? maxDate
                                             : undefined
                                         }
@@ -337,13 +339,13 @@ const MyCreateDialog = ({
                                             helperText:
                                               values[
                                                 `${field.name}HelperText`
-                                              ] || "",
+                                              ] || '',
                                             error: values[`${field.name}Error`],
                                           },
                                         }}
                                         sx={{
                                           marginBottom: 2,
-                                          width: "100%",
+                                          width: '100%',
                                         }}
                                         disableFuture
                                         label={field.label}
@@ -361,7 +363,7 @@ const MyCreateDialog = ({
                                     </LocalizationProvider>
                                   </Grid>
                                 );
-                              } else if (field.type === "select") {
+                              } else if (field.type === 'select') {
                                 return (
                                   <Grid
                                     item
@@ -386,7 +388,7 @@ const MyCreateDialog = ({
                                             name: field.name,
                                             value: newValue
                                               ? newValue.value
-                                              : "",
+                                              : '',
                                           },
                                         });
                                       }}
@@ -398,7 +400,7 @@ const MyCreateDialog = ({
                                           error={values[`${field.name}Error`]}
                                           helperText={
                                             values[`${field.name}HelperText`] ||
-                                            ""
+                                            ''
                                           }
                                         />
                                       )}
@@ -455,7 +457,7 @@ const MyCreateDialog = ({
                   </DialogActions>
                 </>
               )}
-              {type === "company" && (
+              {type === 'company' && (
                 <div className={styles.containerImage}>
                   <img
                     src={file ? URL.createObjectURL(file) : image} // Muestra la URL del objeto File
@@ -483,7 +485,7 @@ const MyCreateDialog = ({
                 {/* form fields */}
                 {fields.map((field) => {
                   const gridColumnSize = fields.length === 1 ? 12 : 6;
-                  if (field.type === "text") {
+                  if (field.type === 'text') {
                     return (
                       <Grid item xs={12} sm={gridColumnSize} key={field.name}>
                         <TextField
@@ -493,18 +495,18 @@ const MyCreateDialog = ({
                           name={field.name}
                           onChange={handleInputChange}
                           type="text"
-                          value={values[field.name] || ""}
+                          value={values[field.name] || ''}
                           variant="outlined"
                           required={field.isRequired}
                           error={values[`${field.name}Error`]}
-                          helperText={values[`${field.name}HelperText`] || ""}
+                          helperText={values[`${field.name}HelperText`] || ''}
                           sx={{
                             marginBottom: 2,
                           }}
                         />
                       </Grid>
                     );
-                  } else if (field.type === "select") {
+                  } else if (field.type === 'select') {
                     return (
                       <Grid
                         item
@@ -526,7 +528,7 @@ const MyCreateDialog = ({
                             handleInputChange({
                               target: {
                                 name: field.name,
-                                value: newValue ? newValue.value : "",
+                                value: newValue ? newValue.value : '',
                               },
                             });
                           }}
@@ -538,24 +540,24 @@ const MyCreateDialog = ({
                               required={field.isRequired}
                               error={values[`${field.name}Error`]}
                               helperText={
-                                values[`${field.name}HelperText`] || ""
+                                values[`${field.name}HelperText`] || ''
                               }
                             />
                           )}
                         />
                       </Grid>
                     );
-                  } else if (field.type === "options") {
+                  } else if (field.type === 'options') {
                     return (
                       <Grid item xs={12} sm={12} key={`${field.name}`}>
                         <DynamicInputs
                           values={
                             currentCreate.fields.find(
-                              (field) => field.name === "dominio1"
+                              (field) => field.name === 'dominio1'
                             ).options
                           }
                           field={currentCreate.fields.find(
-                            (field) => field.name === "dominio1"
+                            (field) => field.name === 'dominio1'
                           )}
                           handleInputChange={handleDynamicInputChange}
                         />
@@ -566,7 +568,7 @@ const MyCreateDialog = ({
               </Grid>
             </Box>
           </DialogContent>
-          {type !== "employee" && (
+          {type !== 'employee' && (
             <DialogActions>
               <Button onClick={onClose} type="button">
                 Cancelar
