@@ -1,4 +1,4 @@
-import { createContext, createRef, useEffect, useRef, useState } from 'react';
+import { useContext,createContext, createRef, useEffect, useRef, useState } from 'react';
 import ClearIcon from '@mui/icons-material/Clear';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
@@ -28,7 +28,7 @@ import {
 } from './services/service';
 
 import styles from './Discussion.module.css';
-
+import { DemographicContext } from '../../../pages/Conversation/Conversation';
 export const filesImageQuestionContext = createContext();
 //
 export default function Discussion({
@@ -46,6 +46,8 @@ export default function Discussion({
   isUpdate,
   currentCompany,
 }) {
+
+  const demographicRefs = useContext(DemographicContext);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('info');
@@ -60,7 +62,6 @@ export default function Discussion({
     useState(false);
   const [isConversationAccordionOpen, setIsConversationAccordionOpen] =
     useState(false);
-  const demographicRefs = useRef([]);
 
   const handleOpenAccordion = () => {
     setAccordionOpen(true);
