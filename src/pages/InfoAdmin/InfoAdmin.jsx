@@ -644,6 +644,12 @@ export default function InfoAdmin() {
             label: sector.Sector,
           })),
         },
+        {
+          label: 'Dominios',
+          name: 'dominio',
+          type: 'options',
+          isRequired: true,
+        },
       ],
     });
     setOpenCreateDialog(true);

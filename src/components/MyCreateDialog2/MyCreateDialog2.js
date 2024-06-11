@@ -1,31 +1,31 @@
-import React, { useEffect, useRef,useState } from 'react';
-import { Grid } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import TextField from '@mui/material/TextField';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { esES } from '@mui/x-date-pickers/locales';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import dayjs from 'dayjs';
-import PropTypes from 'prop-types';
+import React, { useEffect, useRef, useState } from "react";
+import { Grid } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import TextField from "@mui/material/TextField";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { esES } from "@mui/x-date-pickers/locales";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs from "dayjs";
+import PropTypes from "prop-types";
 
-import defaultImage from '../../assets/default.png';
-import { fetchUserGetRolsAPI } from '../../services/fetchUser.service';
-import { validateField,validateForm } from '../../utils/helpers';
-
-import styles from './MyCreateDialog2.module.css';
+import defaultImage from "../../assets/default.png";
+import { fetchUserGetRolsAPI } from "../../services/fetchUser.service";
+import { validateField, validateForm } from "../../utils/helpers";
+import { DynamicInputs } from "./DynamicInputs/DynamicInputs";
+import styles from "./MyCreateDialog2.module.css";
 
 // form field types
 const FIELD_TYPES = {
-  TEXT: 'text',
+  TEXT: "text",
 };
 
 function TabPanel(props) {
@@ -55,19 +55,30 @@ function TabPanel(props) {
  * @returns {JSX.Element}
  * @constructor
  */
-const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, setFile, setUserRol}) => {
-  const [image, setImage] = useState('');
+const MyCreateDialog = ({
+  title,
+  fields,
+  open,
+  onClose,
+  onSubmit,
+  type,
+  file,
+  setFile,
+  setUserRol,
+}) => {
+  console.log(fields)
+  const [image, setImage] = useState("");
   const [showDeleteIcon, setShowDeleteIcon] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
-  const [maxWidth, setMaxWidth] = useState('80%');
-  const maxDate = dayjs().subtract(18, 'years');
+  const [maxWidth, setMaxWidth] = useState("80%");
+  const maxDate = dayjs().subtract(18, "years");
   const createInitialValues = () => {
     const initialValues = {};
-    if (type === 'employee'){
+    if (type === "employee") {
       fields.forEach((sectionObj) =>
         Object.keys(sectionObj).forEach((section) =>
           sectionObj[section].forEach((field) => {
-            initialValues[field.name] = '';
+            initialValues[field.name] = "";
           })
         )
       );
@@ -83,35 +94,35 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
    * @param event
    */
   const handleInputChange = async (event) => {
-    
     const { name, value } = event.target;
+    console.log(name, value)
     const validationResult = validateField(name, value);
-    
+
     let updatedValues = {
       ...values,
       [name]: value,
       [`${name}Error`]: validationResult.error,
       [`${name}HelperText`]: validationResult.helperText,
     };
-
-    if (name === 'dateBirth') {
-        const today = new Date();
-        const birthDate = new Date(value);
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        updatedValues = {
-          ...updatedValues,
-          ageEmployee: age,
-        };
+    console.log(updatedValues)
+    if (name === "dateBirth") {
+      const today = new Date();
+      const birthDate = new Date(value);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      updatedValues = {
+        ...updatedValues,
+        ageEmployee: age,
+      };
     }
     setValues(updatedValues);
 
-    if (name === 'userRolChange') {
+    if (name === "userRolChange") {
       setUserRol([]);
-      const { data } =  await fetchUserGetRolsAPI(event.target.value);
+      const { data } = await fetchUserGetRolsAPI(event.target.value);
       setUserRol(data);
     }
   };
@@ -126,14 +137,17 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
 
     // Agregar los campos que no tengan valor al objeto `values`
     let updatedValues = { ...values };
+    console.log(values);
+    console.log(fields)
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = '';
+        updatedValues[name] = "";
       }
     }
-
+    console.log(updatedValues)
     // Actualizar el objeto `values` con la copia actualizada
+    console.log(fields, values, type)
     setValues(updatedValues);
     const validationErrors = validateForm(fields, values, type);
     if (Object.keys(validationErrors).length > 0) {
@@ -143,13 +157,17 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
     }
   };
 
+  useEffect(() => {
+    console.log(values);
+  }, [values])
+  
   const handleTabChange = (event, newValue) => {
     // Agregar los campos que no tengan valor al objeto `values`
     let updatedValues = { ...values };
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = '';
+        updatedValues[name] = "";
       }
     }
 
@@ -169,7 +187,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = '';
+        updatedValues[name] = "";
       }
     }
 
@@ -191,7 +209,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
   const fileInputRef = useRef();
 
   const hiddenFileInput = {
-    display: 'none',
+    display: "none",
   };
 
   const handleClick = () => {
@@ -204,7 +222,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
         setFile(e.target.files[0]); // Guarda el objeto File en lugar de la URL
         setShowDeleteIcon(true);
       } else {
-        alert('El tamaño de la imagen no puede ser mayor a 500kB');
+        alert("El tamaño de la imagen no puede ser mayor a 500kB");
       }
     }
   };
@@ -222,31 +240,28 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
     }
   }, [file]);
 
-
-
   return (
     <div>
-      <Dialog open={open} onClose={onClose}
-        maxWidth={maxWidth}>
+      <Dialog open={open} onClose={onClose} maxWidth={maxWidth}>
         <DialogTitle>{title}</DialogTitle>
         <form onSubmit={handleFormSubmit} noValidate>
-          <DialogContent sx={{ maxWidth: '80vw' }} >
+          <DialogContent sx={{ maxWidth: "80vw" }}>
             <Box
               sx={{
                 marginTop: 1,
               }}
             >
-              {type === 'employee' && (
+              {type === "employee" && (
                 <>
                   <Box
                     sx={{
                       borderBottom: 1,
-                      borderColor: 'divider',
+                      borderColor: "divider",
                     }}
                   >
-                    <Box sx={{ display: 'flex', justifyContent: 'between' }}>
+                    <Box sx={{ display: "flex", justifyContent: "between" }}>
                       <Tabs
-                        sx={{ width: '90%', justifyContent: 'center' }}
+                        sx={{ width: "90%", justifyContent: "center" }}
                         value={currentTab}
                         onChange={(event, newValue) =>
                           handleTabChange(event, newValue)
@@ -263,109 +278,133 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
                       Object.keys(sectionObj).map((section, tabIndex) => {
                         return tabIndex === currentTab
                           ? sectionObj[section].map((field) => {
-                            if (field.type === 'text') {
-                              return (
-                                <Grid
-                                  item
-                                  xs={12}
-                                  sm={6}
-                                  key={`${field.name}-${index}`}
-                                >
-                                  <TextField
-                                    fullWidth
-                                    disabled={field.isDisabled}
-                                    id={field.name}
-                                    label={field.label}
-                                    name={field.name}
-                                    onChange={handleInputChange}
-                                    type="text"
-                                    value={values[field.name] || ''}
-                                    variant="outlined"
-                                    required={field.isRequired}
-                                    error={values[`${field.name}Error`]}
-                                    helperText={values[`${field.name}HelperText`] || ''}
-                                    sx={{
-                                      marginBottom: 2,
-                                    }}
-                                  />
-                                </Grid>
-                              );
-                            }
-                            else if (field.type === 'date') {
-                              return (
-                                <Grid
-                                  item
-                                  xs={12}
-                                  sm={6}
-                                  key={`${field.name}-${index}`}
-                                >
-                                  <LocalizationProvider dateAdapter={AdapterDayjs} localeText={esES.components.MuiLocalizationProvider.defaultProps.localeText}>
-                                    <DatePicker
-                                    maxDate={field.name === 'dateBirth' ? maxDate :undefined}
-                                    slotProps={{
-                                      textField: {
-                                        helperText: values[`${field.name}HelperText`] || '',
-                                        error:values[`${field.name}Error`],
-                                      },
-                                    }}
-                                    sx={{
-                                      marginBottom: 2,
-                                      width: '100%',
-                                    }}
-                                      disableFuture
+                              if (field.type === "text") {
+                                return (
+                                  <Grid
+                                    item
+                                    xs={12}
+                                    sm={6}
+                                    key={`${field.name}-${index}`}
+                                  >
+                                    <TextField
+                                      fullWidth
+                                      disabled={field.isDisabled}
+                                      id={field.name}
                                       label={field.label}
-                                      value={values[field.name] || null}
-                                      inputFormat="MM/dd/yyyy"
-                                      onChange={(date) => handleInputChange({ target: { name: field.name, value: date } })}                                    
+                                      name={field.name}
+                                      onChange={handleInputChange}
+                                      type="text"
+                                      value={values[field.name] || ""}
+                                      variant="outlined"
+                                      required={field.isRequired}
+                                      error={values[`${field.name}Error`]}
+                                      helperText={
+                                        values[`${field.name}HelperText`] || ""
+                                      }
+                                      sx={{
+                                        marginBottom: 2,
+                                      }}
                                     />
-                                  </LocalizationProvider>
-                                </Grid>
-                              );
-                            } else if (field.type === 'select') {
-                              return (
-                                <Grid
-                                  item
-                                  xs={12}
-                                  sm={6}
-                                  key={`${field.name}-${index}`}
-                                >
-                                  <Autocomplete
-                                    fullWidth
-                                    id={field.name}
-                                    options={field.options}
-                                    getOptionLabel={(option) => option.label}
-                                    value={
-                                      field.options.find(
-                                        (option) =>
-                                          option.value === values[field.name]
-                                      ) || null
-                                    }
-                                    onChange={(event, newValue) => {
-                                      handleInputChange({
-                                        target: {
-                                          name: field.name,
-                                          value: newValue
-                                            ? newValue.value
-                                            : '',
-                                        },
-                                      });
-                                    }}
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
+                                  </Grid>
+                                );
+                              } else if (field.type === "date") {
+                                return (
+                                  <Grid
+                                    item
+                                    xs={12}
+                                    sm={6}
+                                    key={`${field.name}-${index}`}
+                                  >
+                                    <LocalizationProvider
+                                      dateAdapter={AdapterDayjs}
+                                      localeText={
+                                        esES.components.MuiLocalizationProvider
+                                          .defaultProps.localeText
+                                      }
+                                    >
+                                      <DatePicker
+                                        maxDate={
+                                          field.name === "dateBirth"
+                                            ? maxDate
+                                            : undefined
+                                        }
+                                        slotProps={{
+                                          textField: {
+                                            helperText:
+                                              values[
+                                                `${field.name}HelperText`
+                                              ] || "",
+                                            error: values[`${field.name}Error`],
+                                          },
+                                        }}
+                                        sx={{
+                                          marginBottom: 2,
+                                          width: "100%",
+                                        }}
+                                        disableFuture
                                         label={field.label}
-                                        required={field.isRequired}
-                                        error={values[`${field.name}Error`]}
-                                        helperText={values[`${field.name}HelperText`] || ''}
+                                        value={values[field.name] || null}
+                                        inputFormat="MM/dd/yyyy"
+                                        onChange={(date) =>
+                                          handleInputChange({
+                                            target: {
+                                              name: field.name,
+                                              value: date,
+                                            },
+                                          })
+                                        }
                                       />
-                                    )}
-                                  />
-                                </Grid>
-                              );
-                            } else {
-                              return null;
-                            }
-                          })
+                                    </LocalizationProvider>
+                                  </Grid>
+                                );
+                              } else if (field.type === "select") {
+                                return (
+                                  <Grid
+                                    item
+                                    xs={12}
+                                    sm={6}
+                                    key={`${field.name}-${index}`}
+                                  >
+                                    <Autocomplete
+                                      fullWidth
+                                      id={field.name}
+                                      options={field.options}
+                                      getOptionLabel={(option) => option.label}
+                                      value={
+                                        field.options.find(
+                                          (option) =>
+                                            option.value === values[field.name]
+                                        ) || null
+                                      }
+                                      onChange={(event, newValue) => {
+                                        handleInputChange({
+                                          target: {
+                                            name: field.name,
+                                            value: newValue
+                                              ? newValue.value
+                                              : "",
+                                          },
+                                        });
+                                      }}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          label={field.label}
+                                          required={field.isRequired}
+                                          error={values[`${field.name}Error`]}
+                                          helperText={
+                                            values[`${field.name}HelperText`] ||
+                                            ""
+                                          }
+                                        />
+                                      )}
+                                    />
+                                  </Grid>
+                                );
+                              } else {
+                                return null;
+                              }
+                            })
                           : null;
                       })
                     )}
@@ -380,66 +419,69 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
                           Guardar
                         </Button>
                         {currentTab !== 0 && (
-                          <Button variant="contained" type="button" onClick={handlePreviousButtonClick}>
+                          <Button
+                            variant="contained"
+                            type="button"
+                            onClick={handlePreviousButtonClick}
+                          >
                             Regresar
                           </Button>
                         )}
                       </>
-
                     ) : (
                       <>
                         {currentTab !== 0 && (
-                          <Button variant="contained" type="button" onClick={handlePreviousButtonClick}>
+                          <Button
+                            variant="contained"
+                            type="button"
+                            onClick={handlePreviousButtonClick}
+                          >
                             Regresar
                           </Button>
                         )}
-                        <Button variant="contained" type="button" onClick={handleContinueButtonClick}>
+                        <Button
+                          variant="contained"
+                          type="button"
+                          onClick={handleContinueButtonClick}
+                        >
                           Continuar
                         </Button>
-
                       </>
                     )}
                   </DialogActions>
                 </>
-
               )}
-              {type === 'company' && (
-              <div className={styles.containerImage}>
-               <img
-                src={file ? URL.createObjectURL(file) : image} // Muestra la URL del objeto File
-                alt="profile"
-                className={styles.photo}
-                onClick={handleClick}
-              />
-                
-                <input
-                  ref={fileInputRef}
-                  style={hiddenFileInput}
-                  type="file"
-                  onChange={handlePhoto}
-                  accept="image/*"
-                  name="profile_image"
-                />
-                {showDeleteIcon && (
-                  <Button 
-                    variant="text"
-                    onClick={handleDeleteImage}
-                    >
-                    Eliminar logotipo
-                  </Button>
-                )}
-                </div>
+              {type === "company" && (
+                <div className={styles.containerImage}>
+                  <img
+                    src={file ? URL.createObjectURL(file) : image} // Muestra la URL del objeto File
+                    alt="profile"
+                    className={styles.photo}
+                    onClick={handleClick}
+                  />
 
+                  <input
+                    ref={fileInputRef}
+                    style={hiddenFileInput}
+                    type="file"
+                    onChange={handlePhoto}
+                    accept="image/*"
+                    name="profile_image"
+                  />
+                  {showDeleteIcon && (
+                    <Button variant="text" onClick={handleDeleteImage}>
+                      Eliminar logotipo
+                    </Button>
+                  )}
+                </div>
               )}
               <Grid container spacing={2}>
-
                 {/* form fields */}
                 {fields.map((field) => {
                   const gridColumnSize = fields.length === 1 ? 12 : 6;
-                  if (field.type === 'text') {
+                  if (field.type === "text") {
                     return (
-                      <Grid item xs={12} sm={gridColumnSize} key={field.name} >
-                        
+                      <Grid item xs={12} sm={gridColumnSize} key={field.name}>
                         <TextField
                           fullWidth
                           id={field.name}
@@ -447,19 +489,18 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
                           name={field.name}
                           onChange={handleInputChange}
                           type="text"
-                          value={values[field.name] || ''}
+                          value={values[field.name] || ""}
                           variant="outlined"
                           required={field.isRequired}
                           error={values[`${field.name}Error`]}
-                          helperText={values[`${field.name}HelperText`] || ''}
+                          helperText={values[`${field.name}HelperText`] || ""}
                           sx={{
                             marginBottom: 2,
-                            
                           }}
                         />
                       </Grid>
                     );
-                  } else if (field.type === 'select') {
+                  } else if (field.type === "select") {
                     return (
                       <Grid
                         item
@@ -474,31 +515,41 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
                           getOptionLabel={(option) => option.label}
                           value={
                             field.options.find(
-                              (option) =>
-                                option.value === values[field.name]
+                              (option) => option.value === values[field.name]
                             ) || null
                           }
                           onChange={(event, newValue) => {
                             handleInputChange({
                               target: {
                                 name: field.name,
-                                value: newValue
-                                  ? newValue.value
-                                  : '',
+                                value: newValue ? newValue.value : "",
                               },
                             });
                           }}
                           renderInput={(params) => (
                             <TextField
-                            fullWidth
+                              fullWidth
                               {...params}
                               label={field.label}
                               required={field.isRequired}
                               error={values[`${field.name}Error`]}
-                              helperText={values[`${field.name}HelperText`] || ''}
+                              helperText={
+                                values[`${field.name}HelperText`] || ""
+                              }
                             />
                           )}
                         />
+                      </Grid>
+                    );
+                  } else if (field.type === "options") {
+                    return (
+                      <Grid
+                        item
+                        xs={12}
+                        sm={12}
+                        key={`${field.name}`}
+                      >
+                        < DynamicInputs handleInputChange={handleInputChange} values={values} field={field}/>
                       </Grid>
                     );
                   }
@@ -506,7 +557,7 @@ const MyCreateDialog = ({ title, fields, open, onClose, onSubmit, type , file, s
               </Grid>
             </Box>
           </DialogContent>
-          {type !== 'employee' && (
+          {type !== "employee" && (
             <DialogActions>
               <Button onClick={onClose} type="button">
                 Cancelar

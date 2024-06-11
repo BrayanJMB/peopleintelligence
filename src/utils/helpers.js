@@ -153,17 +153,32 @@ export const validateForm = (fields, values, type) => {
   } else {
     fields.forEach((field) => {
       const { name, isRequired } = field;
-      const value = values[name] || '';
-      const { error, helperText } = validateField(name, value);
-      if (
-        isRequired &&
-        (!value || (typeof value === 'string' && value.trim() === ''))
-      ) {
-        validationErrors[`${name}Error`] = true;
-        validationErrors[`${name}HelperText`] = 'Este campo es obligatorio';
-      } else if (error) {
-        validationErrors[`${name}Error`] = error;
-        validationErrors[`${name}HelperText`] = helperText;
+      if (name.includes('dominio')){
+        const value = values[name] || '';
+        const { error, helperText } = validateField(name, value);
+        if (
+          isRequired &&
+          (!value || (typeof value === 'string' && value.trim() === ''))
+        ) {
+          validationErrors[`${name}1Error`] = true;
+          validationErrors[`${name}1HelperText`] = 'Este campo es obligatorio';
+        } else if (error) {
+          validationErrors[`${name}1Error`] = error;
+          validationErrors[`${name}1HelperText`] = helperText;
+        }
+      }else{
+        const value = values[name] || '';
+        const { error, helperText } = validateField(name, value);
+        if (
+          isRequired &&
+          (!value || (typeof value === 'string' && value.trim() === ''))
+        ) {
+          validationErrors[`${name}Error`] = true;
+          validationErrors[`${name}HelperText`] = 'Este campo es obligatorio';
+        } else if (error) {
+          validationErrors[`${name}Error`] = error;
+          validationErrors[`${name}HelperText`] = helperText;
+        }
       }
     });
   }
