@@ -152,14 +152,12 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
       return console.error(err.toString());
     });
     setQuestionTimer(timeLimit);
-    console.log(timeLimit);
     setTimeout(() => {
       indexCurrentQuestion.current += 1;
     }, timeInt * 1000);
   };
 
   const SendQuestionByType = (type, question, index) => {
-    console.log(type)
     let currentQuestion = question.orderNumber;
     switch (limpiarTexto(type.toLowerCase())) {
       case "texto":
@@ -205,7 +203,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
             console.log('soy video');
             break;*/
       case "seleccionsimple":
-        console.log("entro acá");
+
         connection.invoke("SendSingleOption", question).catch(function (err) {
           return console.error(err.toString());
         });
@@ -223,7 +221,6 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
         //setNextQuestion(currentQuestion);
         break;
       case "preguntacondicional":
-        console.log("entroaca")
         connection.invoke("SendExperiencia", question).catch(function (err) {
           return console.error(err.toString());
         });
@@ -307,14 +304,12 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
 
           //Pregunta Experiencia
           connection.on("experiencia", (pregunta) => {
-            console.log(pregunta);
             setExperienceQuestion(pregunta);
           });
           // Respuesta experiencia
           connection.on(
             "recibirrespuestaesxperiencia",
             (answer, option, answertext, counter) => {
-              console.log(answer,option, answertext, counter)
               setAnswerExperienceQuestion({
                 answer: answer,
                 option: option,
@@ -331,7 +326,6 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
 
           // Respuesta pregunta Opinión
           connection.on("SendRespuestasDos", (tablarespuestas) => {
-            console.log(tablarespuestas);
             setAnswersOpinion(tablarespuestas);
           });
 
@@ -440,7 +434,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
   useEffect(() => {
     fetchSurvey();
   }, [question]);
-
+  
   return (
     <Box
       sx={{

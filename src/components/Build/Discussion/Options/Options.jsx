@@ -437,7 +437,6 @@ function Options({
       timeLimit: totalSeconds, // Aquí se asignan los segundos totales calculados
     };
 
-    console.log(newConversation);
     // Actualiza el estado con el nuevo valor y la nueva conversación
     setTime(newValue); // Actualiza el tiempo mostrado en la interfaz
 

@@ -57,7 +57,6 @@ const EditForm = ({
     props.handleCategoryIdChange(target.value);
     setCategoryId(target.value);
   };
-  console.log(question);
   return (
     <Fragment>
       <div className={styles.form}>

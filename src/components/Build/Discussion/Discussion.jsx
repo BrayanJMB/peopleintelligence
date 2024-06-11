@@ -79,7 +79,7 @@ export default function Discussion({
       setSnackbarSeverity('info');
       let urls = null;
       const filesImage =
-        questions?.filter((q) => q.type === 'imagen').map((q) => q.urlMedia) ??
+        questions?.filter((q) => q.type === 'Imagen').map((q) => q.urlMedia) ??
         [];
       const filesVideo =
         questions?.filter((q) => q.type === 'video').map((q) => q.urlMedia) ??
@@ -112,10 +112,9 @@ export default function Discussion({
       let response;
 
       if (!isUpdate) {
-        console.log('OKI');
         // Manejar creación
         const imageQuestions = payload.survey.questions.filter(
-          (question) => question.type === 'imagen'
+          (question) => question.type === 'Imagen'
         );
         const videoQuestions = payload.survey.questions.filter(
           (video) => video.type === 'video'
@@ -220,13 +219,12 @@ export default function Discussion({
       let currentQuestionErrors = {};
 
       // Validar si el nombre de la pregunta está vacío
-      if (question.type !== 'imagen' && question.type !== 'video') {
+      if (question.type.toLowerCase() !== 'imagen' && question.type !== 'video') {
         if (!question.name.trim()) {
           currentQuestionErrors.name =
             'El nombre de la pregunta no puede estar vacío.';
         } else {
           // Validar si hay al menos 2 opciones
-          console.log(question.type);
           if (
             question.options.length < 2 &&
             question.type.toLowerCase() !== 'texto' &&
@@ -257,7 +255,7 @@ export default function Discussion({
       if (
         !question.timeLimit &&
         question.type.toLowerCase() !== 'texto' &&
-        question.type !== 'imagen' &&
+        question.type.toLowerCase() !== 'imagen' &&
         question.type !== 'video'
       ) {
         currentQuestionErrors.timeLimit = 'Debe seleccionar un tiempo';
@@ -277,7 +275,6 @@ export default function Discussion({
 
       allErrors.questions[questionIndex] = currentQuestionErrors;
     });
-    console.log(allErrors);
     setErrors(allErrors);
 
     const hasErrorsInDemographics = allErrors.demographics.some(

@@ -646,9 +646,10 @@ export default function InfoAdmin() {
         },
         {
           label: 'Dominios',
-          name: 'dominio',
+          name: 'dominio1',
           type: 'options',
           isRequired: true,
+          options: [{ id: 1, value: '', error: false }],
         },
       ],
     });
@@ -2123,6 +2124,8 @@ export default function InfoAdmin() {
                         type={currentCreate.type}
                         file={file}
                         setFile={setFile}
+                        setCurrentCreate={setCurrentCreate}
+                        currentCreate={currentCreate}
                       />
                     )}
                     {currentEdit !== null && (

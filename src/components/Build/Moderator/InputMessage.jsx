@@ -21,7 +21,6 @@ import styles from './ChatBox.module.css';
 export const InputMessage = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { id } = useParams();
-  console.log(id);
   const [item, setItem] = useState('');
   const ownerInput = useRef(null);
   const ownerAvatarInput = useRef(null);

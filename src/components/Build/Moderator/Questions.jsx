@@ -52,7 +52,6 @@ export const Questions = ({
   };
 
   const isExperience = (item) => {
-    console.log("entré acá :3");
     switch (item.toLowerCase()) {
       case "preguntacondicional":
         return true;
@@ -87,7 +86,6 @@ export const Questions = ({
     }
   };
   const isSelecionSimple = (item) => {
-    console.log("entro acá");
     switch (item.toLowerCase()) {
       case "seleccionsimple":
         return true;
@@ -105,7 +103,6 @@ export const Questions = ({
       return "#008000"; // Verde
     }
   }
-  console.log(answerExperienceQuestion);
   useEffect(() => {
     if (answerExperienceQuestion && answerExperienceQuestion.answer) {
       setAllAnswers((prevAnswers) => {
@@ -163,12 +160,6 @@ export const Questions = ({
     }
   }, [answerExperienceQuestion]);
 
-  useEffect(() => {
-    console.log(allAnswers);
-  }, [allAnswers]);
-
-  console.log(question);
-  console.log(answerExperienceQuestion);
   return (
     <>
       <div className={styles.chatApp__convMessageValue}>

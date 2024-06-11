@@ -198,8 +198,7 @@ const Introduction = ({ checkForm, onUpdated, previousData, isUpdate, mapsLoaded
   useEffect(() => {
     if (!previousData || !mapsLoaded) {
       return;
-    }
-    console.log(previousData.map);      
+    }   
     // if map is not number then find the map by name
       if (previousData.map) {
         // el amtc se usa cuando el editar y el else para cuando es crear, toca verificarlo

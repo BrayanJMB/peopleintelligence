@@ -65,8 +65,9 @@ const MyCreateDialog = ({
   file,
   setFile,
   setUserRol,
+  currentCreate,
+  setCurrentCreate,
 }) => {
-  console.log(fields)
   const [image, setImage] = useState("");
   const [showDeleteIcon, setShowDeleteIcon] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
@@ -95,7 +96,6 @@ const MyCreateDialog = ({
    */
   const handleInputChange = async (event) => {
     const { name, value } = event.target;
-    console.log(name, value)
     const validationResult = validateField(name, value);
 
     let updatedValues = {
@@ -104,7 +104,6 @@ const MyCreateDialog = ({
       [`${name}Error`]: validationResult.error,
       [`${name}HelperText`]: validationResult.helperText,
     };
-    console.log(updatedValues)
     if (name === "dateBirth") {
       const today = new Date();
       const birthDate = new Date(value);
@@ -137,17 +136,13 @@ const MyCreateDialog = ({
 
     // Agregar los campos que no tengan valor al objeto `values`
     let updatedValues = { ...values };
-    console.log(values);
-    console.log(fields)
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
         updatedValues[name] = "";
       }
     }
-    console.log(updatedValues)
     // Actualizar el objeto `values` con la copia actualizada
-    console.log(fields, values, type)
     setValues(updatedValues);
     const validationErrors = validateForm(fields, values, type);
     if (Object.keys(validationErrors).length > 0) {
@@ -157,10 +152,7 @@ const MyCreateDialog = ({
     }
   };
 
-  useEffect(() => {
-    console.log(values);
-  }, [values])
-  
+
   const handleTabChange = (event, newValue) => {
     // Agregar los campos que no tengan valor al objeto `values`
     let updatedValues = { ...values };
@@ -239,6 +231,18 @@ const MyCreateDialog = ({
       setImage(defaultImage); // Ruta a la imagen por defecto
     }
   }, [file]);
+
+  const handleDynamicInputChange = (name, value) => {
+    setCurrentCreate((prevState) => {
+      const fields = prevState.fields.map((field) => {
+        if (field.name === name) {
+          return { ...field, options: value };
+        }
+        return field;
+      });
+      return { ...prevState, fields };
+    });
+  };
 
   return (
     <div>
@@ -543,13 +547,18 @@ const MyCreateDialog = ({
                     );
                   } else if (field.type === "options") {
                     return (
-                      <Grid
-                        item
-                        xs={12}
-                        sm={12}
-                        key={`${field.name}`}
-                      >
-                        < DynamicInputs handleInputChange={handleInputChange} values={values} field={field}/>
+                      <Grid item xs={12} sm={12} key={`${field.name}`}>
+                        <DynamicInputs
+                          values={
+                            currentCreate.fields.find(
+                              (field) => field.name === "dominio1"
+                            ).options
+                          }
+                          field={currentCreate.fields.find(
+                            (field) => field.name === "dominio1"
+                          )}
+                          handleInputChange={handleDynamicInputChange}
+                        />
                       </Grid>
                     );
                   }
