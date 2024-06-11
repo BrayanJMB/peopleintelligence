@@ -1,9 +1,9 @@
-import Typography from '@mui/material/Typography';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Typography from '@mui/material/Typography';
 export const Policies = () => {
   <Dialog
     open={open}
@@ -15,7 +15,7 @@ export const Policies = () => {
     <DialogTitle id="scroll-dialog-title">
       Políticas de proteccion de datos
     </DialogTitle>
-    <DialogContent dividers={scroll === "paper"}>
+    <DialogContent dividers={scroll === 'paper'}>
       <DialogContentText
         id="scroll-dialog-description"
         ref={descriptionElementRef}

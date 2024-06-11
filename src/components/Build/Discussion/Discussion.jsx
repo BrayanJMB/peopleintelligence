@@ -1,4 +1,4 @@
-import { useContext,createContext, createRef, useEffect, useRef, useState } from 'react';
+import { createContext, createRef, useContext,useEffect, useRef, useState } from 'react';
 import ClearIcon from '@mui/icons-material/Clear';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
@@ -14,6 +14,7 @@ import Modal from '@mui/material/Modal';
 import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 
+import { DemographicContext } from '../../../pages/Conversation/Conversation';
 import { storeSurveyChatAPI } from '../../../services/ChatLive/storeSurveyChat.service';
 import {
   updateModeratorChatAPI,
@@ -28,7 +29,6 @@ import {
 } from './services/service';
 
 import styles from './Discussion.module.css';
-import { DemographicContext } from '../../../pages/Conversation/Conversation';
 export const filesImageQuestionContext = createContext();
 //
 export default function Discussion({
