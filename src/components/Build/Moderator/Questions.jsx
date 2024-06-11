@@ -1,14 +1,14 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
-import React from 'react';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import Box from '@mui/material/Box';
-import LinearProgress from '@mui/material/LinearProgress';
-import Typography from '@mui/material/Typography';
+import { useCallback, useContext, useEffect, useState } from "react";
+import React from "react";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import Box from "@mui/material/Box";
+import LinearProgress from "@mui/material/LinearProgress";
+import Typography from "@mui/material/Typography";
 
-import CircularWithValueLabel from './CircularWithValueLabel';
+import CircularWithValueLabel from "./CircularWithValueLabel";
 import {
   answerExperienceQuestionContext,
   answerOpinionQuestionContext,
@@ -16,9 +16,9 @@ import {
   nextQuestionTimerContext,
   opinionQuestionContext,
   singleQuestionContext,
-} from './Moderator';
+} from "./Moderator";
 
-import styles from './ChatBox.module.css';
+import styles from "./ChatBox.module.css";
 
 export const Questions = ({
   question,
@@ -26,15 +26,16 @@ export const Questions = ({
   answersOpinion,
   isAnswer,
 }) => {
+  const [allAnswers, setAllAnswers] = useState([]);
   const singleQuestion = useContext(singleQuestionContext);
   const answerSingleQuestion = useContext(answerSingleQuestionContext);
   const answerOpinionQuestion = useContext(answerOpinionQuestionContext);
   const questionTimer = useContext(nextQuestionTimerContext);
   const answerExperienceQuestion = useContext(answerExperienceQuestionContext);
-  
+
   const isText = (item) => {
     switch (item.toLowerCase()) {
-      case 'texto':
+      case "texto":
         return true;
       default:
         return false;
@@ -43,7 +44,7 @@ export const Questions = ({
 
   const isOpinion = (item) => {
     switch (item.toLowerCase()) {
-      case 'opinion':
+      case "opinion":
         return true;
       default:
         return false;
@@ -52,7 +53,7 @@ export const Questions = ({
 
   const isExperience = (item) => {
     switch (item.toLowerCase()) {
-      case 'experiencia':
+      case "preguntacondicional":
         return true;
       default:
         return false;
@@ -61,7 +62,7 @@ export const Questions = ({
 
   const isImage = (item) => {
     switch (item.toLowerCase()) {
-      case 'imagen':
+      case "imagen":
         return true;
       default:
         return false;
@@ -69,16 +70,16 @@ export const Questions = ({
   };
 
   function limpiarTexto(texto) {
-    let textoSinEspacios = texto.replace(/\s+/g, '');
+    let textoSinEspacios = texto.replace(/\s+/g, "");
     let textoSinTildes = textoSinEspacios
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
 
     return textoSinTildes;
   }
   const isVideo = (item) => {
     switch (item.toLowerCase()) {
-      case 'video':
+      case "video":
         return true;
       default:
         return false;
@@ -86,7 +87,7 @@ export const Questions = ({
   };
   const isSelecionSimple = (item) => {
     switch (item.toLowerCase()) {
-      case 'seleccionsimple':
+      case "seleccionsimple":
         return true;
       default:
         return false;
@@ -95,15 +96,70 @@ export const Questions = ({
 
   function getColorForPercentage(percentage) {
     if (percentage <= 33) {
-      return '#ff0000'; // Rojo
+      return "#ff0000"; // Rojo
     } else if (percentage <= 66) {
-      return '#ffff00'; // Amarillo
+      return "#ffff00"; // Amarillo
     } else {
-      return '#008000'; // Verde
+      return "#008000"; // Verde
     }
   }
-  console.log(question);
-  console.log(answerExperienceQuestion);
+  useEffect(() => {
+    if (answerExperienceQuestion && answerExperienceQuestion.answer) {
+      setAllAnswers((prevAnswers) => {
+        // Crear un mapa para encontrar fácilmente los objetos existentes por numeroOpcion
+        const answerMap = new Map(
+          prevAnswers.map((answer) => [answer.numeroOpcion, answer])
+        );
+
+        // Mapeamos las respuestas para crear nuevos objetos o actualizar los existentes
+        const newAnswers = answerExperienceQuestion.answer.map(
+          (opcion, index) => {
+            const numeroOpcion = index; // Suponiendo que 'index' se utiliza como 'numeroOpcion'
+
+            // Verificar si el 'numeroOpcion' coincide con 'answerExperienceQuestion.option'
+            if (numeroOpcion.toString() === answerExperienceQuestion.option) {
+              if (answerMap.has(numeroOpcion)) {
+                // Si el objeto ya existe, agrega la opción a la lista de opciones
+                const existingAnswer = answerMap.get(numeroOpcion);
+                return {
+                  ...existingAnswer,
+                  opciones: [
+                    ...existingAnswer.opciones,
+                    answerExperienceQuestion.answertext,
+                  ],
+                };
+              } else {
+                // Si el objeto no existe, crea un nuevo objeto
+                return {
+                  numeroOpcion,
+                  opciones: [answerExperienceQuestion.answertext],
+                };
+              }
+            } else {
+              // Si 'numeroOpcion' no coincide, devolver el objeto sin cambios o crearlo si no existe
+              if (answerMap.has(numeroOpcion)) {
+                return answerMap.get(numeroOpcion);
+              } else {
+                return {
+                  numeroOpcion,
+                  opciones: opcion.opciones || [], // Suponiendo que 'opcion' tiene una propiedad 'opciones'
+                };
+              }
+            }
+          }
+        );
+
+        // Actualizar el mapa con las nuevas respuestas
+        newAnswers.forEach((answer) => {
+          answerMap.set(answer.numeroOpcion, answer);
+        });
+
+        // Convertir el mapa de vuelta a un array
+        return Array.from(answerMap.values());
+      });
+    }
+  }, [answerExperienceQuestion]);
+
   return (
     <>
       <div className={styles.chatApp__convMessageValue}>
@@ -122,18 +178,18 @@ export const Questions = ({
                     <>
                       <div
                         style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
                         }}
                       >
                         <p>{option.value}</p>
-                        <div style={{ width: '100%' }}>
+                        <div style={{ width: "100%" }}>
                           <LinearProgress
                             sx={{
-                              backgroundColor: 'white',
-                              '& .MuiLinearProgress-bar': {
-                                backgroundColor: 'green',
+                              backgroundColor: "white",
+                              "& .MuiLinearProgress-bar": {
+                                backgroundColor: "green",
                               },
                             }}
                           />
@@ -176,42 +232,56 @@ export const Questions = ({
               </>
             ) : (
               <Box>
-                {question &&
-                  question.options.map((pregunta, index) => (
-                    <Accordion /*key={pregunta.numeroOpcion}*/>
+                {question.options.map((pregunta, index) => {
+                  const answer = allAnswers.find(
+                    (a) => a.numeroOpcion === index
+                  );
+                  const opciones = answer ? answer.opciones : [];
+
+                  return (
+                    <Accordion key={index}>
                       <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls={`panel${index}a-content`}
                         id={`panel${index}a-header`}
                       >
-                        <Typography>{`${pregunta.value}`}</Typography>
-                        <Typography variant="body2" color="text.primary">
-                          {`${
-                            answerExperienceQuestion && answerExperienceQuestion
-                              ? (answerExperienceQuestion.answer[index]
-                                  .contador *
-                                  100) /
-                                answerExperienceQuestion.counter
-                              : 0
-                          }%`}
-                        </Typography>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            flex: "1",
+                          }}
+                        >
+                          <Typography>{`${pregunta.value}`}</Typography>
+                          <Typography variant="body2" color="text.primary">
+                            {`${
+                              answerExperienceQuestion &&
+                              answerExperienceQuestion
+                                ? ((answerExperienceQuestion.answer[index]
+                                    .contador *
+                                    100) /
+                                  answerExperienceQuestion.counter).toFixed(2)
+                                : 0
+                            }%`}
+                          </Typography>
+                        </div>
                       </AccordionSummary>
                       <AccordionDetails>
                         {/* Inserta aquí el LinearProgress con el valor correspondiente */}
-                        {answerExperienceQuestion &&
-                          answerExperienceQuestion.option ===
-                          answerExperienceQuestion.answer[index].numeroOpcion.toString() && (                          
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              style={{ marginTop: '8px' }}
-                            >
-                              {answerExperienceQuestion.answertext}
-                            </Typography>
-                          )}
+                        {opciones.map((opcion, opcionIndex) => (
+                          <Typography
+                            key={opcionIndex}
+                            variant="body2"
+                            color="text.secondary"
+                            style={{ marginTop: "8px" }}
+                          >
+                            {opcion}
+                          </Typography>
+                        ))}
                       </AccordionDetails>
                     </Accordion>
-                  ))}
+                  );
+                })}
               </Box>
             )}
           </>
@@ -229,20 +299,20 @@ export const Questions = ({
                   <div
                     key={result.idres}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      marginBottom: '10px',
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      marginBottom: "10px",
                     }}
                   >
                     <p>{result.respuesta}</p>
-                    <div style={{ width: '100%' }}>
+                    <div style={{ width: "100%" }}>
                       <LinearProgress
                         variant="determinate"
                         value={result.porcentaje}
                         sx={{
-                          backgroundColor: 'white',
-                          '& .MuiLinearProgress-bar': {
+                          backgroundColor: "white",
+                          "& .MuiLinearProgress-bar": {
                             backgroundColor: getColorForPercentage(
                               result.porcentaje
                             ),
@@ -268,14 +338,14 @@ export const Questions = ({
           <img
             src={question.urlMedia}
             alt="imagenPregunta"
-            style={{ width: '100%', height: 'auto' }}
+            style={{ width: "100%", height: "auto" }}
           />
         )}
         {isVideo(question.type) && (
           <img
             src={question.urlMedia}
             alt="imagenPregunta"
-            style={{ width: '100%', height: 'auto' }}
+            style={{ width: "100%", height: "auto" }}
           />
         )}
       </div>

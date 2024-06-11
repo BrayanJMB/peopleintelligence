@@ -191,17 +191,38 @@ function Options({
         return false;
     }
   };
-  const isOpinion = () => {
-    return 'Opinión';
+  const isOpinion = (item) => {
+    switch (limpiarTexto(item.toLowerCase())) {
+      case 'opinion':
+        return true;
+      default:
+        return false;
+    }
   };
-  const isExperience = () => {
-    return 'experiencia';
+  const isExperience = (item) => {
+    
+    switch (limpiarTexto(item.toLowerCase())) {
+      case 'preguntacondicional':
+        return true;
+      default:
+        return false;
+    }
   };
-  const isImage = () => {
-    return 'imagen';
+  const isImage = (item) => {
+    switch (limpiarTexto(item.toLowerCase())) {
+      case 'imagen':
+        return true;
+      default:
+        return false;
+    }
   };
-  const isVideo = () => {
-    return 'video';
+  const isVideo = (item) => {
+    switch (limpiarTexto(item.toLowerCase())) {
+      case 'video':
+        return true;
+      default:
+        return false;
+    }
   };
   const isSelecionSimple = (item) => {
     switch (limpiarTexto(item.toLowerCase())) {
@@ -286,7 +307,7 @@ function Options({
         statisticvalue: question.options.length + 1,
       };
 
-      if (item === 'experiencia') {
+      if (item === 'pregunta condicional') {
         newOption.experienceQuestion = '';
       }
 
@@ -416,7 +437,6 @@ function Options({
       timeLimit: totalSeconds, // Aquí se asignan los segundos totales calculados
     };
 
-    console.log(newConversation);
     // Actualiza el estado con el nuevo valor y la nueva conversación
     setTime(newValue); // Actualiza el tiempo mostrado en la interfaz
 
@@ -597,7 +617,7 @@ function Options({
               </CardContent>
             </Card>
           )}
-          {isOpinion() === item && (
+          {isOpinion(item) && (
             <Card>
               <CardContent>
                 <div
@@ -662,7 +682,7 @@ function Options({
               </CardContent>
             </Card>
           )}
-          {isExperience(item) === item && (
+          {isExperience(item) && (
             <Card>
               <CardContent>
                 <div
@@ -674,7 +694,7 @@ function Options({
                 >
                   <div style={{ marginBottom: '10px', color: '#00B0F0' }}>
                     <Chip
-                      label="Experiencia"
+                      label="Pregunta Condicional"
                       color="primary"
                       size="small"
                       variant="outlined"
@@ -693,7 +713,7 @@ function Options({
                     <TextField
                       size="small"
                       fullWidth
-                      label="Experiencia"
+                      label="Pregunta Condicional"
                       value={question.name}
                       onChange={handleDemographicNameChange}
                       error={!!errors.questions?.[currentIndex]?.name}
@@ -775,10 +795,10 @@ function Options({
                             }
                             style={{ marginRight: '10px' }}
                           />
-                          <p>Por favor ingresa la pregunta para esta opción</p>
+                          <p style={{ marginTop: '10px', marginBottom:'10px' }}>Por favor ingresa la pregunta para esta opción</p>
                           <TextField
                             size="small"
-                            label={`Opción ${opcion.id}`}
+                            label={`Pregunta Opción ${index + 1}`}
                             value={opcion.experienceQuestion}
                             onChange={(e) =>
                               handleOptionChange(
@@ -935,7 +955,7 @@ function Options({
               </CardContent>
             </Card>
           )}
-          {isImage() === item && (
+          {isImage(item) && (
             <Card>
               <CardContent>
                 <div
@@ -1005,7 +1025,7 @@ function Options({
               </CardContent>
             </Card>
           )}
-          {isVideo() === item && (
+          {isVideo(item) && (
             <Card>
               <CardContent>
                 <div

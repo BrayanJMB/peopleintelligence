@@ -644,6 +644,13 @@ export default function InfoAdmin() {
             label: sector.Sector,
           })),
         },
+        {
+          label: 'Dominios',
+          name: 'dominio1',
+          type: 'options',
+          isRequired: true,
+          options: [{ id: 1, value: '', error: false }],
+        },
       ],
     });
     setOpenCreateDialog(true);
@@ -2117,6 +2124,8 @@ export default function InfoAdmin() {
                         type={currentCreate.type}
                         file={file}
                         setFile={setFile}
+                        setCurrentCreate={setCurrentCreate}
+                        currentCreate={currentCreate}
                       />
                     )}
                     {currentEdit !== null && (

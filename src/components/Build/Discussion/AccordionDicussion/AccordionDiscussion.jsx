@@ -17,8 +17,8 @@ const questionTypes = [
   'Texto',
   'Selección simple',
   'Opinión',
-  'experiencia',
-  'imagen' /*'video'*/,
+  'Pregunta Condicional',
+  'Imagen' /*'video'*/,
   ,
 ];
 export default function AccordionDiscussion({

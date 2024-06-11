@@ -196,7 +196,6 @@ export default function CreateSurvey() {
    */
     const editSurvey = async () => {
       setLoading(true);
-      console.log(questions);
       const newSurvey = {
         survey: {
           id: surveyId,
@@ -224,7 +223,6 @@ export default function CreateSurvey() {
         })),
         demographics: getDemographics(),
       };
-      console.log(newSurvey);
       
       const { data: createdJourney } = await client.put('/editSurvey',newSurvey);
       setLoading(false);
@@ -966,7 +964,6 @@ export default function CreateSurvey() {
         return;
       }
       const {data:survey} = await client.get(`ShowQuestion/${surveyId}/${currentCompany.id}`);
-      console.log(survey);
       let dataCopy = {
         ...data,
       };
@@ -1016,7 +1013,6 @@ export default function CreateSurvey() {
       let questionsCopy = [...questions];
 
       // fill questions
-      console.log(survey.response.preguntas);
       survey.response.preguntas.map((question) =>
         questionsCopy.push({
           id: uuid.v4(),
@@ -1035,7 +1031,6 @@ export default function CreateSurvey() {
           stars: question.score,
         })
       );
-      console.log(questionsCopy);
       setQuestions(questionsCopy);
       /*
       setTemplateDemographics(
@@ -1054,7 +1049,6 @@ export default function CreateSurvey() {
     if (!template) {
       return;
     }
-    console.log(template);
     let dataCopy = {
       ...data,
     };
