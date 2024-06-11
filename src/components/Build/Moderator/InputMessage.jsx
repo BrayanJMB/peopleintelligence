@@ -253,13 +253,10 @@ export const InputMessage = (props) => {
     });
     setErrors(allErrors);
 
-    const hasErrorsInDemographics = allErrors.demographics.some(
-      (errorObj) => Object.keys(errorObj).length > 0
-    );
     const hasErrorsInQuestions = allErrors.questions.some(
       (errorObj) => Object.keys(errorObj).length > 0
     );
-    const hasErrors = hasErrorsInDemographics || hasErrorsInQuestions;
+    const hasErrors = hasErrorsInQuestions;
 
     if (hasErrors) {
       //setIsAccordionOpen(true);
