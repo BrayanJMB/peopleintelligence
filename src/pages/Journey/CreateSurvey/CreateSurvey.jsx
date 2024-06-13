@@ -839,6 +839,13 @@ export default function CreateSurvey() {
         description: information.description,
       });
       
+    } else if (type.id === 14) {
+      handleAddQuestion({
+        type: 'Sentimental',
+        name: information.name,
+        description: information.description,
+        options: information.options,
+      });
     }
 
     setInformation({

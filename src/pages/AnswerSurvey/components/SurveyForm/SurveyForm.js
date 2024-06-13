@@ -145,10 +145,8 @@ const SurveyForm = ({
 
   const isRadioFace = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      /*
-      case 'escala likert':
+      case 'sentimental':
         return true;
-        */
       default:
         return false;
     }
@@ -169,7 +167,6 @@ const SurveyForm = ({
         return false;
     }
   };
-
   /**
    * Returns true if the type of question is checkbox.
    *

@@ -290,7 +290,7 @@ export const InputMessage = (props) => {
                 <Options
                   key={index}
                   isConversation={true}
-                  currentIndex={index}
+                  currentIndex={index}  
                   item={question.type}
                   question={question}
                   setQuestion={props.setQuestions2}
