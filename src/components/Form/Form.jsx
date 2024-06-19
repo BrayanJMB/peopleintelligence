@@ -572,15 +572,6 @@ export default function Form(props) {
                         >
                           Añadir pregunta
                         </Button>
-                        {open && (
-                          <FormChildren
-                            {...props}
-                            open={open}
-                            handleCloseModal={handleCloseModal}
-                            handleAgregar={handleAgregar}
-                            // Pasa los demás props necesarios aquí
-                          />
-                        )}
                       </div>
                     </div>
                   ))}
