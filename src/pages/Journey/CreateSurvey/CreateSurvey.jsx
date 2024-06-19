@@ -175,7 +175,7 @@ export default function CreateSurvey() {
           description:question.description,
           typeQuestionId: question.typeId,
           score: question.stars?.length,
-          conditional: question.conditionalQuestion
+          conditional: question.conditionalQuestion,
         },
         options: question.customOptions?.map((option, index) => {
           // Extraer el número de pregunta hijo desde 'childQuestionNotes' si los índices son iguales
@@ -183,7 +183,7 @@ export default function CreateSurvey() {
           return {
             optionsName: option,
             numberOption: index + 1,
-            questionChildren: questionChild || "" // Si no hay un valor correspondiente, devuelve un string vacío
+            questionChildren: questionChild || '', // Si no hay un valor correspondiente, devuelve un string vacío
           };
         }),
         categoryId: question.categoryId,
@@ -674,7 +674,7 @@ export default function CreateSurvey() {
     setAnonymous(event.target.value === 'true');
   };
 
-  const reorder = (list, start, end) => {setQuestions
+  const reorder = (list, start, end) => {setQuestions;
     const result = Array.from(list);
     const [removed] = result.splice(start, 1);
     result.splice(end, 0, removed);
@@ -838,7 +838,7 @@ export default function CreateSurvey() {
         name: information.name,
         description: information.description,
         customOptions: information.customOptions,
-        conditionalQuestion: conditionalQuestion
+        conditionalQuestion: conditionalQuestion,
       });
     } else if (type.id === 5) {
       handleAddQuestion({
@@ -915,8 +915,8 @@ export default function CreateSurvey() {
     setQuestions((previousQuestions) => [...previousQuestions, newQuestion]);
   };
   useEffect(() => {
-    console.log(questions)
-  }, [questions])
+    console.log(questions);
+  }, [questions]);
   
 
 

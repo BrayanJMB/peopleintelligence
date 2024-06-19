@@ -261,14 +261,14 @@ const SurveyForm = ({
     setUnansweredQuestions((prevUnanswered) =>
       prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
     );
-    console.log(childrenQuestionNumber)
+    console.log(childrenQuestionNumber);
     if (conditional) {
       updateVisibility(index, childrenQuestionNumber);
     }
   };
 
   const updateVisibility = (index, childrenQuestionNumber) => {
-    console.log(questions)
+    console.log(questions);
     let newVisibleQuestions = [...visibleQuestions];
     // Mostrar preguntas desde el índice de childrenQuestionNumber
     for (let i = childrenQuestionNumber -1; i < questions.length; i++) {
@@ -323,7 +323,7 @@ const SurveyForm = ({
 
     return unansweredIndexes.length === 0;
   };
-  console.log(questions)
+  console.log(questions);
   /**
    * Handles the change of the checkbox.
    *
@@ -554,7 +554,7 @@ const SurveyForm = ({
             score,
             urlParam,
             description,
-            conditional
+            conditional,
           },
           index
         ) => (

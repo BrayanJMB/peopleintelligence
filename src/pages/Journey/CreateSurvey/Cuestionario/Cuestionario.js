@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
-import ModeOutlinedIcon from "@mui/icons-material/ModeOutlined";
-import { Typography } from "@mui/material";
-import Button from "@mui/material/Button";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import Switch from "@mui/material/Switch";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import MyConfirmation from "../../../../components/MyConfirmation/MyConfirmation";
+import React, { useEffect,useState } from 'react';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
+import ModeOutlinedIcon from '@mui/icons-material/ModeOutlined';
+import { Typography } from '@mui/material';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import IconButton from '@mui/material/IconButton';
+import Switch from '@mui/material/Switch';
 
-import styles from "./Cuestionario.module.css";
+import MyConfirmation from '../../../../components/MyConfirmation/MyConfirmation';
+
+import styles from './Cuestionario.module.css';
 
 export default function Cuestionario(props) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -58,7 +59,7 @@ export default function Cuestionario(props) {
           // Verificar si es la pregunta que queremos actualizar
           if (question.id === idQuestion) {
             // Si es así, actualizar la propiedad específica
-            return { ...question, ["conditionalQuestion"]: true };
+            return { ...question, 'conditionalQuestion': true };
           }
           // Si no es la pregunta que estamos buscando, retornarla sin cambios
           return question;
@@ -73,7 +74,7 @@ export default function Cuestionario(props) {
           // Verificar si es la pregunta que queremos actualizar
           if (question.id === idQuestion) {
             // Si es así, actualizar la propiedad específica
-            return { ...question, ["conditionalQuestion"]: false };
+            return { ...question, 'conditionalQuestion': false };
           }
           // Si no es la pregunta que estamos buscando, retornarla sin cambios
           return question;
@@ -102,10 +103,10 @@ export default function Cuestionario(props) {
 
             <p
               style={{
-                fontSize: "14px",
-                fontWeight: "300",
-                lineHeight: "20px",
-                letterSpacing: "0.25px",
+                fontSize: '14px',
+                fontWeight: '300',
+                lineHeight: '20px',
+                letterSpacing: '0.25px',
               }}
             >
               Puede reorganizar, editar o eliminar preguntas de esta sección
@@ -123,10 +124,10 @@ export default function Cuestionario(props) {
         {props.questions.length === 0 ? (
           <p
             style={{
-              fontSize: "12px",
-              fontWeight: "300",
-              lineHeight: "16px",
-              letterSpacing: "0.25px",
+              fontSize: '12px',
+              fontWeight: '300',
+              lineHeight: '16px',
+              letterSpacing: '0.25px',
             }}
           >
             ¡Aún no se agregaron preguntas!
@@ -177,7 +178,7 @@ export default function Cuestionario(props) {
                                           >
                                             <ModeOutlinedIcon
                                               sx={{
-                                                fontSize: "30px",
+                                                fontSize: '30px',
                                               }}
                                             />
                                           </IconButton>
@@ -189,7 +190,7 @@ export default function Cuestionario(props) {
                                           >
                                             <DeleteForeverOutlinedIcon
                                               sx={{
-                                                fontSize: "30px",
+                                                fontSize: '30px',
                                               }}
                                             />
                                           </IconButton>

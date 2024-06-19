@@ -1,14 +1,16 @@
-import { Fragment, useState } from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import TextField from "@mui/material/TextField";
-import styles from '../../pages/Journey/CreateSurvey/CreateSurvey.module.css'
-import { Autocomplete } from "@mui/material";
-import Form from "./Form";
+import { Fragment, useState } from 'react';
+import { Autocomplete } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+
+import Form from './Form';
+
+import styles from '../../pages/Journey/CreateSurvey/CreateSurvey.module.css';
 export default function FormChildren(props) {
   return (
     <Fragment>
@@ -21,14 +23,14 @@ export default function FormChildren(props) {
                 <div className={styles.input}>
                   <Autocomplete
                     id="combo-box-demo"
-                    style={{ flexBasis: "40%" }}
+                    style={{ flexBasis: '40%' }}
                     options={props.questionTypes}
                     value={props.type}
                     onChange={(e, value) => {
                       props.handleAutocomplete(value);
                     }}
                     getOptionLabel={(option) => option.typeQuestionName}
-                    noOptionsText={"No se encontraron tipos de pregunta"}
+                    noOptionsText={'No se encontraron tipos de pregunta'}
                     renderInput={(params) => (
                       <TextField
                         {...params}
