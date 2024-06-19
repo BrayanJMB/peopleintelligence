@@ -73,7 +73,7 @@ const EditForm = ({
     setChildQuestionNumber(prevNumbers => {
       // Creamos una copia del arreglo actual
       const newNumbers = [...prevNumbers];
-      newNumbers[index] = questionNumber.toString();
+        newNumbers[index] = questionNumber?.toString();
       return newNumbers;
     });
 
