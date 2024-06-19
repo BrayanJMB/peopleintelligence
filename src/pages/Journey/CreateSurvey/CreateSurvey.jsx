@@ -47,6 +47,7 @@ import styles from './CreateSurvey.module.css';
 
 export default function CreateSurvey() {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  const [questionChildNumer, setQuestionChilNumber] = useState();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -79,7 +80,12 @@ export default function CreateSurvey() {
       'Rango 9-10',
     ],
   });
+
+  const [selections, setSelections] = useState({});
   const dispatch = useDispatch();
+
+  const [childQuestionNumber, setChildQuestionNumber] = useState([]);
+  const [conditionalQuestion, setConditionalQuestion] = useState(false);
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
   const [categoryError, setCategoryError] = useState('');
@@ -169,16 +175,21 @@ export default function CreateSurvey() {
           description:question.description,
           typeQuestionId: question.typeId,
           score: question.stars?.length,
+          conditional: question.conditionalQuestion
         },
-        options: question.customOptions?.map((option, index) => ({
-          optionsName: option,
-          numberOption: index + 1,
-        })),
+        options: question.customOptions?.map((option, index) => {
+          // Extraer el número de pregunta hijo desde 'childQuestionNotes' si los índices son iguales
+          const questionChild = childQuestionNumber[index]; // Obtiene el valor directamente del estado 'childQuestionNotes' basado en el índice
+          return {
+            optionsName: option,
+            numberOption: index + 1,
+            questionChildren: questionChild || "" // Si no hay un valor correspondiente, devuelve un string vacío
+          };
+        }),
         categoryId: question.categoryId,
       })),
       demographics: getDemographics(),
     };
-
     const { data: createdJourney } = await client.post(
       `/createJourney/${currentCompany.id}`,
       newSurvey
@@ -456,6 +467,8 @@ export default function CreateSurvey() {
     });
     setQuestion({ ...question, customOptions: holder });
   };
+
+
   const handleaddstars = () => {
     if (information.stars.length === 10) {
       setStarmsg('Elija un valor entre 3 y 10');
@@ -637,10 +650,12 @@ export default function CreateSurvey() {
             <Divider />
             <Cuestionario
               questions={questions}
+              setQuestions={setQuestions}
               onEnd={onEnd}
               handleAdd={handleAdd}
               handleDelete={handleDelete}
               handleEdit={handleEdit}
+              setConditionalQuestion={setConditionalQuestion}
             />
           </Box>
         );
@@ -659,7 +674,7 @@ export default function CreateSurvey() {
     setAnonymous(event.target.value === 'true');
   };
 
-  const reorder = (list, start, end) => {
+  const reorder = (list, start, end) => {setQuestions
     const result = Array.from(list);
     const [removed] = result.splice(start, 1);
     result.splice(end, 0, removed);
@@ -823,6 +838,7 @@ export default function CreateSurvey() {
         name: information.name,
         description: information.description,
         customOptions: information.customOptions,
+        conditionalQuestion: conditionalQuestion
       });
     } else if (type.id === 5) {
       handleAddQuestion({
@@ -879,6 +895,7 @@ export default function CreateSurvey() {
       typeId: type.id,
       questionId: null,
       questionOptions: [],
+      questionNumber: questions.length + 1,
       ...question,
     };
 
@@ -897,6 +914,11 @@ export default function CreateSurvey() {
 
     setQuestions((previousQuestions) => [...previousQuestions, newQuestion]);
   };
+  useEffect(() => {
+    console.log(questions)
+  }, [questions])
+  
+
 
   /**
    * Handle delete question.
@@ -1202,6 +1224,8 @@ export default function CreateSurvey() {
                   categoryError={categoryError}
                   questions={questions.length + 1}
                   customOptionError={customOptionError}
+                  questionTypes={questionTypes}
+                  handleAutocomplete={handleAutocomplete}
                 />
               </div>
             </div>
@@ -1225,6 +1249,8 @@ export default function CreateSurvey() {
                 {question && (
                   <EditForm
                     question={question}
+                    setQuestion={setQuestion}
+                    questions={questions}
                     handleInformation={handleQuestion}
                     errorMessage={errorMessage}
                     helperText={helperText}
@@ -1239,6 +1265,10 @@ export default function CreateSurvey() {
                     categoryError={categoryError}
                     handleChangeOptions={handleChangeOptions}
                     customOptionError={customOptionError}
+                    conditionalQuestion={conditionalQuestion}
+                    selections={selections}
+                    setSelections={setSelections}
+                    setChildQuestionNumber={setChildQuestionNumber}
                   />
                 )}
               </div>

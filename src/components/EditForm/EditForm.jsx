@@ -1,18 +1,19 @@
-import React, { Fragment } from 'react';
-import { useState } from 'react';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import TextareaAutosize from '@mui/material/TextareaAutosize';
-import TextField from '@mui/material/TextField';
-import PropTypes from 'prop-types';
+import React, { Fragment } from "react";
+import { useState } from "react";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import FormControl from "@mui/material/FormControl";
+import FormHelperText from "@mui/material/FormHelperText";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import TextareaAutosize from "@mui/material/TextareaAutosize";
+import TextField from "@mui/material/TextField";
+import PropTypes from "prop-types";
+import { Autocomplete } from "@mui/material";
+import styles from "./EditForm.module.css";
 
-import styles from './EditForm.module.css';
 
 /**
  * Edit form component for create survey page.
@@ -32,6 +33,8 @@ import styles from './EditForm.module.css';
  */
 const EditForm = ({
   question,
+  setQuestion,
+  questions,
   handleInformation,
   errorMessage,
   helperText,
@@ -44,29 +47,60 @@ const EditForm = ({
   categoryError,
   categories,
   handleChangeOptions,
+  conditionalQuestion,
+  setChildQuestionNumber,
   ...props
 }) => {
-  const [categoryId, setCategoryId] = useState('');
+  const [categoryId, setCategoryId] = useState("");
 
   /**
    * Handle category id change.
-   * 
+   *
    * @param {object} event
    */
   const handleCategoryIdChange = ({ target }) => {
     props.handleCategoryIdChange(target.value);
     setCategoryId(target.value);
   };
+
+  const handleSelect = (uniqueId, { selectedValue, questionNumber, index }) => {
+    props.setSelections((prev) => ({
+      ...prev,
+      [uniqueId]: selectedValue // Asumiendo que deseas almacenar solo el valor seleccionado
+
+    }));
+    setChildQuestionNumber(prevNumbers => {
+      // Creamos una copia del arreglo actual
+      const newNumbers = [...prevNumbers];
+      newNumbers[index] = questionNumber.toString();
+      return newNumbers;
+    });
+
+  };
+
+  const getFilteredOptions = (uniqueId, questionNumber) => {
+    const lastDashIndex = uniqueId.lastIndexOf("-");
+    const currentQuestionId = uniqueId.substring(0, lastDashIndex);
+    // Extracción de todas las ids de preguntas ya seleccionadas, excluyendo la id de la pregunta actual
+    const selectedValues = Object.values(props.selections)
+      .map((value) => value?.id)
+      .filter((id) => id && id !== props.selections[uniqueId]?.id);
+    return questions.filter(
+      (question) =>
+        question.id !== currentQuestionId &&
+        !selectedValues.includes(question.id) &&
+        question.questionNumber > questionNumber
+        //&& !question.conditionalQuestion  // Solo incluye preguntas con un número mayor al actual
+    );
+  };
+
   return (
     <Fragment>
       <div className={styles.form}>
         <div className={styles.top}>
-  
           {/* question name */}
           <div className={styles.question}>
-            <div className={styles.number}>
-              {`Q${questionNumber}`}
-            </div>
+            <div className={styles.number}>{`Q${questionNumber}`}</div>
             <div className={styles.input}>
               <TextField
                 error={errorMessage.name}
@@ -83,7 +117,7 @@ const EditForm = ({
               />
             </div>
           </div>
-  
+
           {/* question description  */}
           <div className={styles.input}>
             <TextField
@@ -92,7 +126,7 @@ const EditForm = ({
                 inputComponent: TextareaAutosize,
                 inputProps: {
                   style: {
-                    height: '80px',
+                    height: "80px",
                   },
                 },
               }}
@@ -101,30 +135,27 @@ const EditForm = ({
               onChange={handleInformation}
               placeholder="Añadir descripción aquí (opcional)..."
               style={{
-                width: '100%',
-                marginTop: '0.5rem',
+                width: "100%",
+                marginTop: "0.5rem",
               }}
               value={question.description}
             />
           </div>
-  
+
           {/* likert scale */}
           {question.typeId === 2 && (
             <div className={styles.options}>
               {question.options.map((val, key) => (
-                <div
-                  className={styles.option}
-                  key={key}
-                >
+                <div className={styles.option} key={key}>
                   <div
                     style={{
-                      backgroundColor: '#fce4e4',
-                      borderRadius: '4px',
-                      color: '#808080',
-                      fontSize: '12px',
-                      marginRight: '15px',
-                      padding: '3px 9px',
-                      textAlign: 'center',
+                      backgroundColor: "#fce4e4",
+                      borderRadius: "4px",
+                      color: "#808080",
+                      fontSize: "12px",
+                      marginRight: "15px",
+                      padding: "3px 9px",
+                      textAlign: "center",
                     }}
                   >
                     {key + 1}
@@ -145,51 +176,78 @@ const EditForm = ({
               ))}
             </div>
           )}
-  
+
           {/* multiple option */}
           {(question.typeId === 3 || question.typeId === 8) && (
             <div className={styles.options}>
               {question.customOptions.map((val, key) => (
-                <div
-                  className={styles.option}
-                  key={key}
-                >
-                  <div
-                    style={{
-                      backgroundColor: '#F0F2F5',
-                      borderRadius: '4px',
-                      color: 'rgb(134, 140, 204)',
-                      fontSize: '14px',
-                      marginRight: '15px',
-                      padding: '3px 9px',
-                      textAlign: 'center',
-                    }}
-                  >
-                    {key + 1}
+                <>
+                  <div className={styles.option} key={key}>
+                    <div
+                      style={{
+                        backgroundColor: "#F0F2F5",
+                        borderRadius: "4px",
+                        color: "rgb(134, 140, 204)",
+                        fontSize: "14px",
+                        marginRight: "15px",
+                        padding: "3px 9px",
+                        textAlign: "center",
+                      }}
+                    >
+                      {key + 1}
+                    </div>
+                    <TextField
+                      fullWidth
+                      id={"option-{key}"}
+                      InputProps={{
+                        disableUnderline: true,
+                      }}
+                      onChange={handleInformationOptions(key)}
+                      placeholder="Añadir opción..."
+                      size="small"
+                      value={question.customOptions[key]}
+                      variant="standard"
+                      error={props.customOptionError[key]}
+                      helperText={
+                        props.customOptionError[key]
+                          ? "La opción no puede estar vacía"
+                          : ""
+                      }
+                    />
                   </div>
-                  <TextField
-                    fullWidth
-                    id={'option-{key}'}
-                    InputProps={{
-                      disableUnderline: true,
-                    }}
-                    onChange={handleInformationOptions(key)}
-                    placeholder="Añadir opción..."
-                    size="small"
-                    value={question.customOptions[key]}
-                    variant="standard"
-                    error={props.customOptionError[key]}
-                    helperText={props.customOptionError[key] ? 'La opción no puede estar vacía': ''}
-                  />
-                </div>
+                  {question.typeId === 8 && question.conditionalQuestion && (
+                    <Autocomplete
+                      key={key}
+                      disablePortal
+                      id={`autocomplete-${question.id}-${key}`}
+                      options={getFilteredOptions(`${question.id}-${key}`, question.questionNumber)}
+                      getOptionLabel={(option) =>
+                        `${option.questionNumber}. ${option.name}`
+                      }
+                      value={props.selections[`${question.id}-${key}`] || null}
+                      onChange={(event, value) => {
+                        // Crear un objeto que incluya el valor seleccionado y el número de la pregunta
+                        const dataToSend = {
+                          selectedValue: value,
+                          questionNumber: value ? value.questionNumber : null,
+                          index:key
+                        };
+                        handleSelect(`${question.id}-${key}`, dataToSend);
+                      }}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Preguntas" />
+                      )}
+                    />
+                  )}
+                </>
               ))}
               {question.customOptions.length < 10 && (
                 <Button
                   onClick={handleAddOption}
                   startIcon={<AddCircleOutlineIcon />}
                   style={{
-                    backgroundColor: '#F7F7F7',
-                    width: '255px',
+                    backgroundColor: "#F7F7F7",
+                    width: "255px",
                   }}
                   variant="text"
                 >
@@ -198,17 +256,17 @@ const EditForm = ({
               )}
             </div>
           )}
-  
+
           {/* ratings */}
-          {question.type === 'Calificaciones' && (
+          {question.type === "Calificaciones" && (
             <Fragment>
               <div className={styles.stars}>
                 <Button
                   onClick={handleDeleteStars}
                   style={{
-                    backgroundColor: '#F7F7F7',
-                    color: 'black',
-                    fontSize: '1.8rem',
+                    backgroundColor: "#F7F7F7",
+                    color: "black",
+                    fontSize: "1.8rem",
                     padding: 0,
                   }}
                   variant="text"
@@ -217,9 +275,9 @@ const EditForm = ({
                 </Button>
                 <div
                   style={{
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    padding: '18px 20px',
+                    border: "1px solid #ddd",
+                    borderRadius: "4px",
+                    padding: "18px 20px",
                   }}
                 >
                   {question.stars.length}
@@ -227,9 +285,9 @@ const EditForm = ({
                 <Button
                   onClick={handleAddStars}
                   style={{
-                    backgroundColor: '#F7F7F7',
-                    color: 'black',
-                    fontSize: '1.8rem',
+                    backgroundColor: "#F7F7F7",
+                    color: "black",
+                    fontSize: "1.8rem",
                     padding: 0,
                   }}
                   variant="text"
@@ -238,9 +296,9 @@ const EditForm = ({
                 </Button>
                 <div
                   style={{
-                    alignItems: 'center',
-                    display: 'flex',
-                    marginTop: '0.3em',
+                    alignItems: "center",
+                    display: "flex",
+                    marginTop: "0.3em",
                   }}
                 >
                   {question.stars.map((val, index) => (
@@ -265,20 +323,17 @@ const EditForm = ({
           )}
         </div>
       </div>
-      <Box 
+      <Box
         sx={{
           mt: 4,
         }}
       >
-        <FormControl
-          fullWidth
-          error={categoryError.length > 0}
-        >
+        <FormControl fullWidth error={categoryError.length > 0}>
           <InputLabel
             id="category-id-label"
             sx={{
-              backgroundColor: 'white',
-              paddingRight: '0 6px',
+              backgroundColor: "white",
+              paddingRight: "0 6px",
             }}
           >
             Seleccionar categoría
@@ -294,18 +349,13 @@ const EditForm = ({
               <em>Seleccione</em>
             </MenuItem>
             {categories.map((category) => (
-              <MenuItem
-                key={category.id}
-                value={category.id}
-              >
+              <MenuItem key={category.id} value={category.id}>
                 {category.nameCatogory}
               </MenuItem>
             ))}
           </Select>
           {categoryError.length > 0 && (
-            <FormHelperText>
-              {categoryError}
-            </FormHelperText>
+            <FormHelperText>{categoryError}</FormHelperText>
           )}
         </FormControl>
       </Box>
