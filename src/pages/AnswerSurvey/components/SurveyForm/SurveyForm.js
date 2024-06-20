@@ -261,16 +261,20 @@ const SurveyForm = ({
     setUnansweredQuestions((prevUnanswered) =>
       prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
     );
-    console.log(childrenQuestionNumber);
+
     if (conditional) {
       updateVisibility(index, childrenQuestionNumber);
     }
   };
 
   const updateVisibility = (index, childrenQuestionNumber) => {
-    console.log(questions);
     let newVisibleQuestions = [...visibleQuestions];
     // Mostrar preguntas desde el índice de childrenQuestionNumber
+    if (parseInt(childrenQuestionNumber) === 0){
+      //if (verifyCurrentStepAnswersSelected()) {
+        handleNextAnswer();
+      //}
+    }
     for (let i = childrenQuestionNumber -1; i < questions.length; i++) {
       if (questions[i].questionNumber >= parseInt(childrenQuestionNumber)) {
 

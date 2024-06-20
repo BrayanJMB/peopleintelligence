@@ -52,6 +52,7 @@ const EditForm = ({
   setChildQuestionNumber,
   ...props
 }) => {
+
   const [categoryId, setCategoryId] = useState('');
 
   /**
@@ -63,35 +64,34 @@ const EditForm = ({
     props.handleCategoryIdChange(target.value);
     setCategoryId(target.value);
   };
-
   const handleSelect = (uniqueId, { selectedValue, questionNumber, index }) => {
     props.setSelections((prev) => ({
       ...prev,
       [uniqueId]: selectedValue, // Asumiendo que deseas almacenar solo el valor seleccionado
-
     }));
-    setChildQuestionNumber(prevNumbers => {
-      // Creamos una copia del arreglo actual
-      const newNumbers = [...prevNumbers];
-        newNumbers[index] = questionNumber?.toString();
-      return newNumbers;
-    });
-
+    if (question.conditionalQuestion){
+      setQuestion((prev) => {
+        const newChildQuestionIds = [...prev.childQuestionIds]; // Asume que ya tienes este array en tu estado
+    
+        // Asignar el ID de la pregunta hija en la posición correspondiente
+        newChildQuestionIds[index] = questionNumber?.toString();
+    
+        return {
+          ...prev,
+          childQuestionIds: newChildQuestionIds, // Actualiza solo el array de IDs de preguntas hijas
+        };
+      });
+    }
   };
 
   const getFilteredOptions = (uniqueId, questionNumber) => {
     const lastDashIndex = uniqueId.lastIndexOf('-');
     const currentQuestionId = uniqueId.substring(0, lastDashIndex);
-    console.log(props.selections);
-    questions.map(
-      (question) =>{
-        console.log(question);
-      });
     // Extracción de todas las ids de preguntas ya seleccionadas, excluyendo la id de la pregunta actual
     const selectedValues = Object.values(props.selections)
       .map((value) => value?.id)
       .filter((id) => id && id !== props.selections[uniqueId]?.id);
-    console.log(selectedValues);
+
     const filteredQuestions = questions.filter(
       (question) =>
         question.id !== currentQuestionId &&
@@ -109,13 +109,13 @@ const EditForm = ({
       questionOptions: [],
       questionNumber: 0,
       type: 'Texto corto',
-      name: 'Pregunta final',
+      name: 'Fin de la encuesta',
       description: '321321',
       customOptions: undefined,
     };
+
     // Añadir el objeto "pregunta final" al array filtrado
     filteredQuestions.push(preguntaFinal);
-    
     return filteredQuestions;
   };
 
@@ -260,7 +260,12 @@ const EditForm = ({
                         handleSelect(`${question.id}-${key}`, dataToSend);
                       }}
                       renderInput={(params) => (
-                        <TextField {...params} label="Preguntas" />
+                        <TextField
+                        {...params}
+                        label="Preguntas"
+                        error={errorMessage.autocomplete && !props.selections[`${question.id}-${key}`]}
+                        helperText={(errorMessage.autocomplete && !props.selections[`${question.id}-${key}`]) ? helperText.autocomplete : ''}
+                      />
                       )}
                     />
                   )}

@@ -15,6 +15,7 @@ import MyConfirmation from '../../../../components/MyConfirmation/MyConfirmation
 import styles from './Cuestionario.module.css';
 
 export default function Cuestionario(props) {
+  const anyConditional = props.questions.some(question => question.conditionalQuestion);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [currentQuestionId, setCurrentQuestionId] = useState(null);
   const [checked, setChecked] = useState(props.questions.map(() => false));
@@ -91,7 +92,7 @@ export default function Cuestionario(props) {
       setShouldEdit(false); // Resetear el indicador para futuras ediciones
     }
   }, [props.questions, shouldEdit, editIndex]);
-  
+
   return (
     <div className={styles.title}>
       <div className={styles.questions}>
@@ -145,6 +146,7 @@ export default function Cuestionario(props) {
                             key={val.id}
                             draggableId={val.id}
                             index={index}
+                            isDragDisabled={anyConditional} // Deshabilitar el drag si 'conditionalQuestion' es true
                           >
                             {(provided, snapshot) => {
                               return (
