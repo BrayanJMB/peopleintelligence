@@ -52,7 +52,7 @@ import styles from './SurveyDetailPage.module.css';
 
 // survey options
 const options = [
-  {
+  /*{
     option: 'Editar',
     icon: <EditIcon />,
   },/*
