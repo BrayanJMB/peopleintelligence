@@ -159,7 +159,7 @@ export default function CreateSurvey() {
    */
   const createSurvey = async () => {
     setLoading(true);
-    console.log(questions)
+    console.log(questions);
     const newSurvey = {
       survey: {
         nameSurvey: data.title,
@@ -190,7 +190,7 @@ export default function CreateSurvey() {
       })),
       demographics: getDemographics(),
     };
-    console.log(newSurvey)
+    console.log(newSurvey);
     const { data: createdJourney } = await client.post(
       `/createJourney/${currentCompany.id}`,
       newSurvey
@@ -516,8 +516,8 @@ export default function CreateSurvey() {
     setInformation({ ...information, customOptions: holder });
   };
   useEffect(() => {
-console.log(information)
-  }, [information])
+console.log(information);
+  }, [information]);
   
   const handleRemoveOption = (index) => {
     let holder = [...information.customOptions];
@@ -696,7 +696,7 @@ console.log(information)
 
     const updatedQuestions = reorderedItems.map((item, index) => ({
       ...item,
-      questionNumber: index + 1  // Actualizar el número de la pregunta
+      questionNumber: index + 1,  // Actualizar el número de la pregunta
     }));
   
     setQuestions(updatedQuestions );
