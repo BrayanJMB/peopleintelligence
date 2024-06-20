@@ -72,6 +72,7 @@ export default function CreateSurvey() {
       'En Desacuerdo',
       'Totalmente en Desacuerdo',
     ],
+
     customOptions: Array(2).fill(''),
     stars: Array(3).fill(''),
     rangeOptions:[
@@ -158,6 +159,7 @@ export default function CreateSurvey() {
    */
   const createSurvey = async () => {
     setLoading(true);
+    console.log(questions)
     const newSurvey = {
       survey: {
         nameSurvey: data.title,
@@ -178,18 +180,18 @@ export default function CreateSurvey() {
           conditional: question.conditionalQuestion,
         },
         options: question.customOptions?.map((option, index) => {
-          // Extraer el número de pregunta hijo desde 'childQuestionNotes' si los índices son iguales
-          const questionChild = childQuestionNumber[index]; // Obtiene el valor directamente del estado 'childQuestionNotes' basado en el índice
           return {
             optionsName: option,
             numberOption: index + 1,
-            questionChildren: questionChild || '', // Si no hay un valor correspondiente, devuelve un string vacío
+            questionChildrenId: question.childQuestionIds?.[index] || '',  // Corrección aquí usando encadenamiento opcional
           };
         }),
         categoryId: question.categoryId,
       })),
       demographics: getDemographics(),
     };
+    console.log(newSurvey)
+    /*
     const { data: createdJourney } = await client.post(
       `/createJourney/${currentCompany.id}`,
       newSurvey
@@ -199,9 +201,9 @@ export default function CreateSurvey() {
     navigate(`/journey/survey/${createdJourney.id}/detail?sendMail=true`);
     enqueueSnackbar('Cuestionario creado con éxito', {
       variant: 'success',
-    });
+    });*/
   };
-
+  console.log(question)
   /**
    * Edit survey.
    */
@@ -689,8 +691,18 @@ export default function CreateSurvey() {
       result.source.index,
       result.destination.index
     );
-    setQuestions(reorderedItems);
+
+    const updatedQuestions = reorderedItems.map((item, index) => ({
+      ...item,
+      questionNumber: index + 1  // Actualizar el número de la pregunta
+    }));
+  
+    setQuestions(updatedQuestions );
   };
+  useEffect(() => {
+    console.log(questions)
+  }, [questions])
+  
   const handleAutocomplete = (val) => {
     setType(val);
   };
@@ -839,6 +851,7 @@ export default function CreateSurvey() {
         description: information.description,
         customOptions: information.customOptions,
         conditionalQuestion: conditionalQuestion,
+        childQuestionIds:[],
       });
     } else if (type.id === 5) {
       handleAddQuestion({
@@ -914,12 +927,12 @@ export default function CreateSurvey() {
 
     setQuestions((previousQuestions) => [...previousQuestions, newQuestion]);
   };
+
+
   useEffect(() => {
     console.log(questions);
   }, [questions]);
   
-
-
   /**
    * Handle delete question.
    *
