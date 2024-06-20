@@ -82,16 +82,16 @@ const EditForm = ({
   const getFilteredOptions = (uniqueId, questionNumber) => {
     const lastDashIndex = uniqueId.lastIndexOf('-');
     const currentQuestionId = uniqueId.substring(0, lastDashIndex);
-    console.log(props.selections)
+    console.log(props.selections);
     questions.map(
       (question) =>{
-        console.log(question)
-      })
+        console.log(question);
+      });
     // Extracción de todas las ids de preguntas ya seleccionadas, excluyendo la id de la pregunta actual
     const selectedValues = Object.values(props.selections)
       .map((value) => value?.id)
       .filter((id) => id && id !== props.selections[uniqueId]?.id);
-    console.log(selectedValues)
+    console.log(selectedValues);
     const filteredQuestions = questions.filter(
       (question) =>
         question.id !== currentQuestionId &&
@@ -111,8 +111,8 @@ const EditForm = ({
       type: 'Texto corto',
       name: 'Pregunta final',
       description: '321321',
-      customOptions: undefined
-    }
+      customOptions: undefined,
+    };
     // Añadir el objeto "pregunta final" al array filtrado
     filteredQuestions.push(preguntaFinal);
     
