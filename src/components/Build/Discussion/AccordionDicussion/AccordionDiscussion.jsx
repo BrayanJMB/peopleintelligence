@@ -15,7 +15,11 @@ import Options from '../Options/Options';
 
 const questionTypes = [
   'Texto',
-  'Selección simple' ,'imagen', 'video'/*'Opinión', 'experiencia', 'imagen', 'video'*/,
+  'Selección simple',
+  'Opinión',
+  'Pregunta Condicional',
+  'Imagen' /*'video'*/,
+  ,
 ];
 export default function AccordionDiscussion({
   isConversation,
@@ -56,17 +60,31 @@ export default function AccordionDiscussion({
   };
 
   const handleAddConversation = (valor) => {
-    setQuestions((prevState) => [
-      ...prevState,
-      {
-        orderNumber: null,
-        name: '',
-        timeLimit: null,
-        type: valor,
-        urlMedia: '',
-        options: [],
-      },
-    ]);
+    if (valor == 'Opinión') {
+      setQuestions((prevState) => [
+        ...prevState,
+        {
+          orderNumber: null,
+          name: '',
+          timeLimit: 180,
+          type: valor,
+          urlMedia: '',
+          options: [],
+        },
+      ]);
+    } else {
+      setQuestions((prevState) => [
+        ...prevState,
+        {
+          orderNumber: null,
+          name: '',
+          timeLimit: null,
+          type: valor,
+          urlMedia: '',
+          options: [],
+        },
+      ]);
+    }
   };
 
   const handleRemoveConversation = (index) => {
@@ -124,8 +142,11 @@ export default function AccordionDiscussion({
                 ))}
               </Grid>
               <FormControl
-                sx={{ marginBottom: questions > 0 ? 0 : 5, minWidth: 300,
-                marginTop: questions > 0 ? 0 : 5 }}
+                sx={{
+                  marginBottom: questions > 0 ? 0 : 5,
+                  minWidth: 300,
+                  marginTop: questions > 0 ? 0 : 5,
+                }}
                 variant="outlined"
               >
                 <InputLabel id="demo-simple-select-outlined-label">

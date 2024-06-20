@@ -47,6 +47,7 @@ import styles from './CreateSurvey.module.css';
 
 export default function CreateSurvey() {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  const [questionChildNumer, setQuestionChilNumber] = useState();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -71,6 +72,7 @@ export default function CreateSurvey() {
       'En Desacuerdo',
       'Totalmente en Desacuerdo',
     ],
+
     customOptions: Array(2).fill(''),
     stars: Array(3).fill(''),
     rangeOptions:[
@@ -79,7 +81,12 @@ export default function CreateSurvey() {
       'Rango 9-10',
     ],
   });
+
+  const [selections, setSelections] = useState({});
   const dispatch = useDispatch();
+
+  const [childQuestionNumber, setChildQuestionNumber] = useState([]);
+  const [conditionalQuestion, setConditionalQuestion] = useState(false);
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
   const [categoryError, setCategoryError] = useState('');
@@ -94,6 +101,7 @@ export default function CreateSurvey() {
   const [mapsLoaded, setMapsLoaded] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const isMap = searchParams.get('isMap') === 'true';
+  const isEdit = searchParams.get('isEdit') === 'true';
   const isTemplate =
     searchParams.get('isTemplate') === 'true' ||
     location.pathname.indexOf('journey/update-template') !== -1;
@@ -151,6 +159,7 @@ export default function CreateSurvey() {
    */
   const createSurvey = async () => {
     setLoading(true);
+    console.log(questions);
     const newSurvey = {
       survey: {
         nameSurvey: data.title,
@@ -168,16 +177,20 @@ export default function CreateSurvey() {
           description:question.description,
           typeQuestionId: question.typeId,
           score: question.stars?.length,
+          conditional: question.conditionalQuestion,
         },
-        options: question.customOptions?.map((option, index) => ({
-          optionsName: option,
-          numberOption: index + 1,
-        })),
+        options: question.customOptions?.map((option, index) => {
+          return {
+            optionsName: option,
+            numberOption: index + 1,
+            questionChildren: question.childQuestionIds?.[index] || '',  // Corrección aquí usando encadenamiento opcional
+          };
+        }),
         categoryId: question.categoryId,
       })),
       demographics: getDemographics(),
     };
-
+    console.log(newSurvey);
     const { data: createdJourney } = await client.post(
       `/createJourney/${currentCompany.id}`,
       newSurvey
@@ -189,6 +202,46 @@ export default function CreateSurvey() {
       variant: 'success',
     });
   };
+  /**
+   * Edit survey.
+   */
+    const editSurvey = async () => {
+      setLoading(true);
+      const newSurvey = {
+        survey: {
+          id: surveyId,
+          nameSurvey: data.title,
+          descriptionSurvey: data.description,
+          messageMail: data.mailingMessage,
+          emailSubject: data.emailSubject,
+          emailMask: data.emailMask,
+          isPersonal: !anonymous,
+          mapId: data.map.id,
+          companyId: currentCompany.id,
+        },
+        questions: questions.map((question) => ({
+          question: {
+            nameQuestion: question.name,
+            description:question.description,
+            typeQuestionId: question.typeId,
+            score: question.stars?.length,
+          },
+          options: question.customOptions?.map((option, index) => ({
+            optionsName: option,
+            numberOption: index + 1,
+          })),
+          categoryId: question.categoryId,
+        })),
+        demographics: getDemographics(),
+      };
+      
+      const { data: createdJourney } = await client.put('/editSurvey',newSurvey);
+      setLoading(false);
+      navigate(`/journey/survey/${createdJourney.id}/detail`);
+      enqueueSnackbar('Cuestionario editado con éxito', {
+        variant: 'success',
+      });
+    };
 
   /**
    * Create survey template.
@@ -292,17 +345,18 @@ export default function CreateSurvey() {
 
           return;
         }
-
         if (isTemplate) {
           createTemplate();
-
           return;
         }
-
         setActiveStep((val) => val + 1);
         break;
       case 2:
-        createSurvey();
+        if (isEdit){
+          editSurvey();
+        }else{
+          createSurvey();
+        }
         break;
       default:
         setActiveStep(0);
@@ -413,6 +467,8 @@ export default function CreateSurvey() {
     });
     setQuestion({ ...question, customOptions: holder });
   };
+
+
   const handleaddstars = () => {
     if (information.stars.length === 10) {
       setStarmsg('Elija un valor entre 3 y 10');
@@ -453,12 +509,16 @@ export default function CreateSurvey() {
       setQuestion({ ...question, stars: holder });
     }
   };
+
   const handleaddoption = () => {
     let holder = [...information.customOptions];
     holder.push('');
     setInformation({ ...information, customOptions: holder });
   };
-
+  useEffect(() => {
+console.log(information);
+  }, [information]);
+  
   const handleRemoveOption = (index) => {
     let holder = [...information.customOptions];
     holder.splice(index, 1);
@@ -594,10 +654,12 @@ export default function CreateSurvey() {
             <Divider />
             <Cuestionario
               questions={questions}
+              setQuestions={setQuestions}
               onEnd={onEnd}
               handleAdd={handleAdd}
               handleDelete={handleDelete}
               handleEdit={handleEdit}
+              setConditionalQuestion={setConditionalQuestion}
             />
           </Box>
         );
@@ -631,8 +693,15 @@ export default function CreateSurvey() {
       result.source.index,
       result.destination.index
     );
-    setQuestions(reorderedItems);
+
+    const updatedQuestions = reorderedItems.map((item, index) => ({
+      ...item,
+      questionNumber: index + 1,  // Actualizar el número de la pregunta
+    }));
+  
+    setQuestions(updatedQuestions );
   };
+
   const handleAutocomplete = (val) => {
     setType(val);
   };
@@ -679,8 +748,7 @@ export default function CreateSurvey() {
       }
 
       if (
-        question.customOptions !== null &&
-        question.typeId === 3 &&
+        question.customOptions !== null && (question.typeId === 3 || question.typeId === 8) &&
         question.customOptions.some((option) => option === '')
       ) {
         setCustomOptionError(
@@ -688,6 +756,27 @@ export default function CreateSurvey() {
         );
         return;
       }
+
+      if (question.typeId === 8 && question.conditionalQuestion) { // Asumiendo que tipo 8 es el que usa Autocomplete
+        const autoCompleteErrors = question.customOptions.map((option, index) => {
+            const selection = selections[`${question.id}-${index}`];
+            return !selection; // Retorna true si la selección es nula o indefinida
+        });
+    
+        // Verifica si algún Autocomplete está vacío
+        if (autoCompleteErrors.some(error => error)) {
+            setErrorMessage({
+                ...errorMessage,
+                autocomplete: true,
+            });
+            setHelperText({
+                ...helperText,
+                autocomplete: 'Debe seleccionar una pregunta para cada opción.',
+            });
+            return; // Detiene la ejecución si hay errores
+        }
+    }
+      
       setErrorMessage({});
       setHelperText({});
       setCustomOptionError([]);
@@ -732,8 +821,7 @@ export default function CreateSurvey() {
 
     }
     if (
-      !information.customOptions.every((elemento) => elemento !== '') &&
-      type.id === 3
+      !information.customOptions.every((elemento) => elemento !== '') && (type.id === 3 || type.id === 8)
     ) {
       let checkCustomOptions = information.customOptions.map(
         (elemento) => elemento === ''
@@ -741,6 +829,8 @@ export default function CreateSurvey() {
       setCustomOptionError(checkCustomOptions);
       return;
     }
+
+
 
     // validate category id
     if (categoryId === '' || categoryId === null) {
@@ -780,6 +870,8 @@ export default function CreateSurvey() {
         name: information.name,
         description: information.description,
         customOptions: information.customOptions,
+        conditionalQuestion: conditionalQuestion,
+        childQuestionIds:[],
       });
     } else if (type.id === 5) {
       handleAddQuestion({
@@ -796,6 +888,13 @@ export default function CreateSurvey() {
         description: information.description,
       });
       
+    } else if (type.id === 14) {
+      handleAddQuestion({
+        type: 'Sentimental',
+        name: information.name,
+        description: information.description,
+        options: information.options,
+      });
     }
 
     setInformation({
@@ -829,6 +928,7 @@ export default function CreateSurvey() {
       typeId: type.id,
       questionId: null,
       questionOptions: [],
+      questionNumber: questions.length + 1,
       ...question,
     };
 
@@ -848,6 +948,11 @@ export default function CreateSurvey() {
     setQuestions((previousQuestions) => [...previousQuestions, newQuestion]);
   };
 
+
+  useEffect(() => {
+    console.log(questions);
+  }, [questions]);
+  
   /**
    * Handle delete question.
    *
@@ -869,13 +974,21 @@ export default function CreateSurvey() {
    * @returns {string}
    */
   const getHeaderTitle = () => {
-    if (isTemplate && isMap) {
+
+    if (isTemplate && isMap && !isEdit) {
       return 'Crear encuesta de mapa';
+    }
+    else if (isTemplate && isMap && isEdit) {
+      return 'Editar encuesta de mapa';
     }else if (isTemplate) {
       return 'Crear plantilla';
     }
+    if (isEdit) {
+      return 'Editar encuesta';
+    }else{
+      return 'Crear encuesta';
+    }
 
-    return 'Crear encuesta';
   };
 
   /**
@@ -913,7 +1026,6 @@ export default function CreateSurvey() {
         return;
       }
       const {data:survey} = await client.get(`ShowQuestion/${surveyId}/${currentCompany.id}`);
-
       let dataCopy = {
         ...data,
       };
@@ -922,7 +1034,7 @@ export default function CreateSurvey() {
       if (survey.response) {
         dataCopy = {
           ...dataCopy,
-          map: survey.response,
+          map: survey.response.map,
         };
       }
       // fill name
@@ -959,25 +1071,26 @@ export default function CreateSurvey() {
       }
       setData(dataCopy);
 
+
       let questionsCopy = [...questions];
 
       // fill questions
-      
       survey.response.preguntas.map((question) =>
         questionsCopy.push({
           id: uuid.v4(),
           questionId: question.questionId,
-          typeId: question.question.typeQuestionId,
+          typeId: question.typeQuestionId,
           categoryId: question.categoryId,
-          type: question.typeQuestionId,
+          type: question.typeQuestion,
           name: question.questionName,
-          description: question.question.description,
+          description: question.description,
           customOptions: question.options.map(
-            (option) => option.templateOptionsName
+            (option) => option.optionName
           ),
-          options: question.options.map((option) => option.templateOptionsName),
+          //options: question.options.map((option) => option.templateOptionsName),
+          options: question.options.map((option) => option.optionName),
           questionOptions: question.options,
-          stars: question.question.score,
+          stars: question.score,
         })
       );
       setQuestions(questionsCopy);
@@ -998,7 +1111,6 @@ export default function CreateSurvey() {
     if (!template) {
       return;
     }
-
     let dataCopy = {
       ...data,
     };
@@ -1032,7 +1144,6 @@ export default function CreateSurvey() {
       };
     }
     setData(dataCopy);
-
     let questionsCopy = [...questions];
 
     // fill questions
@@ -1075,7 +1186,6 @@ export default function CreateSurvey() {
     if (!templateId) {
       return;
     }
-
     fetchTemplate(templateId);
   }, [templateId]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -1147,6 +1257,8 @@ export default function CreateSurvey() {
                   categoryError={categoryError}
                   questions={questions.length + 1}
                   customOptionError={customOptionError}
+                  questionTypes={questionTypes}
+                  handleAutocomplete={handleAutocomplete}
                 />
               </div>
             </div>
@@ -1170,6 +1282,8 @@ export default function CreateSurvey() {
                 {question && (
                   <EditForm
                     question={question}
+                    setQuestion={setQuestion}
+                    questions={questions}
                     handleInformation={handleQuestion}
                     errorMessage={errorMessage}
                     helperText={helperText}
@@ -1184,6 +1298,10 @@ export default function CreateSurvey() {
                     categoryError={categoryError}
                     handleChangeOptions={handleChangeOptions}
                     customOptionError={customOptionError}
+                    conditionalQuestion={conditionalQuestion}
+                    selections={selections}
+                    setSelections={setSelections}
+                    setChildQuestionNumber={setChildQuestionNumber}
                   />
                 )}
               </div>

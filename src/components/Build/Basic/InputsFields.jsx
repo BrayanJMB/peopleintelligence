@@ -24,8 +24,8 @@ export const InputsFields = ({
       parameterOnChange: 'survey',
     },
     {
-      labelInput: 'Nombre moderador (Requerido)',
-      label: 'Nombre moderador',
+      labelInput: 'Nombre Moderador (Requerido)',
+      label: 'Nombre Moderador',
       name: 'name',
       value: moderator.name,
       size: 'small',

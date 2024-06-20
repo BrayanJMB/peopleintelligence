@@ -198,19 +198,17 @@ const Introduction = ({ checkForm, onUpdated, previousData, isUpdate, mapsLoaded
   useEffect(() => {
     if (!previousData || !mapsLoaded) {
       return;
-    }
-    
-    if (previousData.map) {
-      // if map is not number then find the map by name
+    }   
+    // if map is not number then find the map by name
       if (previousData.map) {
-        const matchingMap = maps.find((item) => item.label === previousData.map);
+        // el amtc se usa cuando el editar y el else para cuando es crear, toca verificarlo
+        const matchingMap = maps.find((item) => item.label === previousData.map.mapJourney);
         if (matchingMap) {
           setMap(matchingMap);
         }
         else{
           setMap(previousData.map);
         }
-      }
     }
 
     if (previousData.title) {

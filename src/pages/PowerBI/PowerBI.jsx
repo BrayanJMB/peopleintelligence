@@ -12,7 +12,6 @@ import axios from '../../utils/axiosInstance';
 import styles from './PowerBI.module.css';
 // Lifetime is 3600 sec/ 1 hour
 export default function PowerBi() {
-  
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [response, setResponse] = useState('');
   const navigate = useNavigate();
@@ -42,13 +41,12 @@ export default function PowerBi() {
         navigate('/powerbi');
       } else {
         setResponse({
-           token: res.data.powerBiEmbedToken?.token,
-            id: res.data.powerBiReport?.id,
-            embedUrl: res.data.powerBiReport?.embedUrl,
-          });
+          token: res.data.powerBiEmbedToken?.token,
+          id: res.data.powerBiReport?.id,
+          embedUrl: res.data.powerBiReport?.embedUrl,
+        });
       }
-    } catch (e) 
-    {
+    } catch (e) {
       if (e.response && e.response.status === 400) {
         alert('Este dashboard no está habilitado');
         navigate('/powerbi');
@@ -80,10 +78,14 @@ export default function PowerBi() {
               accessToken: response?.token,
               tokenType: models.TokenType.Embed,
               settings: {
+                navContentPaneEnabled: true,
+                  actionBar: {
+                    visible: true,
+                  },
                 panes: {
                   filters: {
                     expanded: false,
-                    visible: false,
+                    visible: true,
                   },
                 },
               },
