@@ -82,17 +82,41 @@ const EditForm = ({
   const getFilteredOptions = (uniqueId, questionNumber) => {
     const lastDashIndex = uniqueId.lastIndexOf('-');
     const currentQuestionId = uniqueId.substring(0, lastDashIndex);
+    console.log(props.selections)
+    questions.map(
+      (question) =>{
+        console.log(question)
+      })
     // Extracción de todas las ids de preguntas ya seleccionadas, excluyendo la id de la pregunta actual
     const selectedValues = Object.values(props.selections)
       .map((value) => value?.id)
       .filter((id) => id && id !== props.selections[uniqueId]?.id);
-    return questions.filter(
+    console.log(selectedValues)
+    const filteredQuestions = questions.filter(
       (question) =>
         question.id !== currentQuestionId &&
         !selectedValues.includes(question.id) &&
         question.questionNumber > questionNumber
         //&& !question.conditionalQuestion  // Solo incluye preguntas con un número mayor al actual
     );
+    
+    // Definir el objeto "pregunta final"
+    const preguntaFinal =   {
+      id: 'cc12a501-cf65-4f2f-bd23-44c79e5c4a64',
+      categoryId: 6,
+      typeId: 1,
+      questionId: null,
+      questionOptions: [],
+      questionNumber: 0,
+      type: 'Texto corto',
+      name: 'Pregunta final',
+      description: '321321',
+      customOptions: undefined
+    }
+    // Añadir el objeto "pregunta final" al array filtrado
+    filteredQuestions.push(preguntaFinal);
+    
+    return filteredQuestions;
   };
 
   return (
