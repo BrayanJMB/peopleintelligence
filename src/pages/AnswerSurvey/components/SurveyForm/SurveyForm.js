@@ -274,6 +274,7 @@ const SurveyForm = ({
       //if (verifyCurrentStepAnswersSelected()) {
         handleNextAnswer();
       //}
+    }
     for (let i = childrenQuestionNumber -1; i < questions.length; i++) {
       if (questions[i].questionNumber >= parseInt(childrenQuestionNumber)) {
 
