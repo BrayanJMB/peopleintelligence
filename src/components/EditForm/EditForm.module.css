@@ -23,10 +23,10 @@
   width: 100%;
 }
 .options {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px; 
+  width: 100%;
   gap: 1em;
   margin-top: 1.5em;
 }

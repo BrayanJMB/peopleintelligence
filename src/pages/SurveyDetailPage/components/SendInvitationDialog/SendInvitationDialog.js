@@ -359,29 +359,21 @@ const SendInvitationDialog = ({
     bodyFormData.append('data', csvFile);
     bodyFormData.append('jmails', informationMail);
 
-    await fetch(
-      `${process.env.REACT_APP_API_URL}sendMailJourney`,
-      {
-        method: 'POST',
-        body: bodyFormData,
-      }
-    )
-      .then((response) => response.json())
-      .then((res) => {
-        enqueueSnackbar('Invitación enviada satisfactoriamente', {
-          variant: 'success',
+    client.post('sendMailJourney', bodyFormData)
+    .then((response) => {
+      enqueueSnackbar('Invitación enviada satisfactoriamente', {
+        variant: 'success',
+        autoHideDuration: 2000,
+      });
+    })
+    .catch((error) => {
+      enqueueSnackbar(
+        'Error al enviar la invitación. Intenta más tarde o comuníquese con HelpDesk', {
+          variant: 'error',
           autoHideDuration: 2000,
-        });
-      })
-      .catch((err) =>
-        enqueueSnackbar(
-          'Error al enviar la invitación. Intenta más tarde o comuníquese con HelpDesk',
-          {
-            variant: 'error',
-            autoHideDuration: 2000,
-          }
-        )
+        }
       );
+    });
     setIsLoading(false);
     handleClose();
   };

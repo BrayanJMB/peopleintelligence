@@ -103,36 +103,46 @@ export default function Basic({
               <p>Personalizar (Opcional)</p>
             </div>
             <div className={styles.images}>
-              <div className={styles.cover}>
-                <UploadImage
-                  informationConversation={survey.imageUrl}
-                  text="Conversación"
-                  nameInput="imageUrl"
-                  handlePhoto={handlePhoto}
-                  handleReset={handleReset}
-                  sizeImage={styles.avatarleft}
-                />
-              </div>
-              <div className={styles.avatar}>
-                <UploadImage
-                  informationConversation={moderator.avatarUrl}
-                  text="Avatar"
-                  nameInput="avatarUrl"
-                  handlePhoto={handlePhoto}
-                  handleReset={handleReset}
-                  sizeImage={styles.avatarleft}
-                />
+              <div style={{display:'flex', justifyContent:'space-between'}}>
+                <div className={styles.cover}>
+                  <UploadImage
+                    informationConversation={survey.imageUrl}
+                    text="Conversación"
+                    nameInput="imageUrl"
+                    handlePhoto={handlePhoto}
+                    handleReset={handleReset}
+                    sizeImage={styles.avatarleft}
+                  />
+                </div>
+                <div className={styles.avatar}>
+                  <UploadImage
+                    informationConversation={moderator.avatarUrl}
+                    text="Avatar"
+                    nameInput="avatarUrl"
+                    handlePhoto={handlePhoto}
+                    handleReset={handleReset}
+                    sizeImage={styles.avatarleft}
+                  />
+                </div>
               </div>
 
               <div>
                 <span>Introducción</span>
-                <div style={{ marginTop: '0.2rem' }}>
+                <div
+                  style={{
+                    marginTop: '0.2rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
                   <span
                     style={{
                       color: 'grey',
                       fontSize: '0.8rem',
                       fontWeight: '500',
                       resize: 'none',
+                      marginTop: '5px',
+                      marginBottom: '10px',
                     }}
                   >
                     Los participantes verán esto antes de los onboarding polls
@@ -143,12 +153,8 @@ export default function Basic({
                     aria-label="empty textarea"
                     placeholder="Escribe tú mensaje de bienvenida :)"
                     multiline
-                    minRows={6}
-                    maxRows={8}
-                    style={{
-                      width: '100%',
-                      marginTop: '0.5rem',
-                    }}
+                    minRows={3}
+                    maxRows={4}
                     name="description"
                     value={survey.description}
                     onChange={(event) => handleChange(event, 'survey')}

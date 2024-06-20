@@ -57,6 +57,7 @@ const SurveyForm = ({
   handleNextAnswer,
   descriptionSurvey,
 }) => {
+  const [visibleQuestions, setVisibleQuestions] = useState(questions.map(() => true));
   const [formValues, setFormValues] = useState(() => {
     return (questions.map((question) => ({
       id: question.questionId,
@@ -145,10 +146,8 @@ const SurveyForm = ({
 
   const isRadioFace = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      /*
-      case 'escala likert':
+      case 'sentimental':
         return true;
-        */
       default:
         return false;
     }
@@ -169,7 +168,6 @@ const SurveyForm = ({
         return false;
     }
   };
-
   /**
    * Returns true if the type of question is checkbox.
    *
@@ -253,18 +251,51 @@ const SurveyForm = ({
    * @param event
    * @param index
    */
-  const handleRadioChange = (event, index) => {
-    setFormValues((prevFormValues) => {
-      const newFormValues = [...prevFormValues];
 
-      newFormValues[index].value = event.target.value;
 
-      setUnansweredQuestions((prevUnanswered) =>
-        prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
-      );
+  const handleRadioChange = (event, index, conditional, childrenQuestionNumber) => {
+    const newFormValues = [...formValues];
+    newFormValues[index].value = event.target.value;
+    setFormValues(newFormValues);
 
-      return newFormValues;
-    });
+    setUnansweredQuestions((prevUnanswered) =>
+      prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
+    );
+
+    if (conditional) {
+      updateVisibility(index, childrenQuestionNumber);
+    }
+  };
+
+  const updateVisibility = (index, childrenQuestionNumber) => {
+    let newVisibleQuestions = [...visibleQuestions];
+    // Mostrar preguntas desde el índice de childrenQuestionNumber
+    if (parseInt(childrenQuestionNumber) === 0){
+      //if (verifyCurrentStepAnswersSelected()) {
+        handleNextAnswer();
+      //}
+    }
+    for (let i = childrenQuestionNumber -1; i < questions.length; i++) {
+      if (questions[i].questionNumber >= parseInt(childrenQuestionNumber)) {
+
+        newVisibleQuestions[i] = true;
+        // Si la pregunta es condicional, ocultar las preguntas hijas de esta
+        if (questions[i].conditional) {
+          for (let j = i + 1; j < questions.length; j++) {
+            if (questions[j].conditional) {
+              newVisibleQuestions[j] = false;
+            }
+          }
+        }
+      } else {
+        newVisibleQuestions[i] = false;
+      }
+    }
+
+    for (let k = index + 1; k < childrenQuestionNumber - 1; k++) {
+      newVisibleQuestions[k] = false;
+    }
+    setVisibleQuestions(newVisibleQuestions);
   };
 
   const verifyCurrentStepAnswersSelected = () => {
@@ -296,7 +327,7 @@ const SurveyForm = ({
 
     return unansweredIndexes.length === 0;
   };
-
+  console.log(questions);
   /**
    * Handles the change of the checkbox.
    *
@@ -467,6 +498,21 @@ const SurveyForm = ({
     onAnswered(formValues);
   }, [formValues]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    // Al iniciar, solo mostrar las preguntas no condicionales
+    let isConditional = true;
+    let isConditional2 = true;
+    const visibility = questions.map((question, index) => {
+      isConditional = isConditional2;
+      if (question.conditional) {
+        isConditional2 = !isConditional; // Niega el valor de isConditional
+      }
+      return isConditional;
+    });
+    
+    setVisibleQuestions(visibility);
+  }, [questions]);
+
   let firstUncheckedIndex = -1;
   let firstUnansweredQuestionIndex = unansweredQuestions[0];
   // Estos bucles buscan el primer checkbox sin marcar
@@ -512,6 +558,7 @@ const SurveyForm = ({
             score,
             urlParam,
             description,
+            conditional,
           },
           index
         ) => (
@@ -521,9 +568,9 @@ const SurveyForm = ({
               marginBottom: '1.1em',
               width: '100%',
               display:
-                index >= activeStep * 5 && index < (activeStep + 1) * 5
-                  ? 'inherit'
-                  : 'none',
+              (visibleQuestions[index] && index >= activeStep * 5 && index < (activeStep + 1) * 5)
+                ? 'inherit'
+                : 'none',
             }}
           >
             {isRadio(typeQuestion) && (
@@ -549,7 +596,10 @@ const SurveyForm = ({
                 </Typography>
                 <RadioGroup
                   name={`${questionId}-${typeQuestion}`}
-                  onChange={(event) => handleRadioChange(event, index)}
+                  onChange={(event) => {
+                    const selectedOption = options.find(opt => opt.optionName === event.target.value);
+                    handleRadioChange(event, index, conditional, selectedOption?.childrenQuestionNumber);
+                  }}
                   row
                   style={{
                     margin: '1.2em 0',

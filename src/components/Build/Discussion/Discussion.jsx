@@ -1,4 +1,4 @@
-import { createContext, createRef, useEffect, useRef, useState } from 'react';
+import { createContext, createRef, useContext,useEffect, useRef, useState } from 'react';
 import ClearIcon from '@mui/icons-material/Clear';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
@@ -14,6 +14,7 @@ import Modal from '@mui/material/Modal';
 import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 
+import { DemographicContext } from '../../../pages/Conversation/Conversation';
 import { storeSurveyChatAPI } from '../../../services/ChatLive/storeSurveyChat.service';
 import {
   updateModeratorChatAPI,
@@ -28,7 +29,6 @@ import {
 } from './services/service';
 
 import styles from './Discussion.module.css';
-
 export const filesImageQuestionContext = createContext();
 //
 export default function Discussion({
@@ -46,6 +46,8 @@ export default function Discussion({
   isUpdate,
   currentCompany,
 }) {
+
+  const demographicRefs = useContext(DemographicContext);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('info');
@@ -60,7 +62,6 @@ export default function Discussion({
     useState(false);
   const [isConversationAccordionOpen, setIsConversationAccordionOpen] =
     useState(false);
-  const demographicRefs = useRef([]);
 
   const handleOpenAccordion = () => {
     setAccordionOpen(true);
@@ -79,7 +80,7 @@ export default function Discussion({
       setSnackbarSeverity('info');
       let urls = null;
       const filesImage =
-        questions?.filter((q) => q.type === 'imagen').map((q) => q.urlMedia) ??
+        questions?.filter((q) => q.type === 'Imagen').map((q) => q.urlMedia) ??
         [];
       const filesVideo =
         questions?.filter((q) => q.type === 'video').map((q) => q.urlMedia) ??
@@ -114,7 +115,7 @@ export default function Discussion({
       if (!isUpdate) {
         // Manejar creación
         const imageQuestions = payload.survey.questions.filter(
-          (question) => question.type === 'imagen'
+          (question) => question.type === 'Imagen'
         );
         const videoQuestions = payload.survey.questions.filter(
           (video) => video.type === 'video'
@@ -152,10 +153,9 @@ export default function Discussion({
       } else {
         // Manejar actualización
         if (surveyImage || avatarImage) {
-          console.log('entro aca ');
           urls = await storeAvatarAndSurveyImage(payload.survey.id, surveyImage, avatarImage, currentCompany);
-          payload.moderator.avatarUrl = urls ? urls.data.files[1].url : '';
-          payload.survey.imageUrl = urls ? urls.data.files[0].url : survey.imageUrl;
+          payload.moderator.avatarUrl = urls ? urls.data.files[0].url : '';
+          payload.survey.imageUrl = urls ? urls.data.files[1].url : survey.imageUrl;
         }
         response = await updateSurveyChatAPI(payload.survey);
         const updateData = {
@@ -220,13 +220,12 @@ export default function Discussion({
       let currentQuestionErrors = {};
 
       // Validar si el nombre de la pregunta está vacío
-      if (question.type !== 'imagen' && question.type !== 'video') {
+      if (question.type.toLowerCase() !== 'imagen' && question.type !== 'video') {
         if (!question.name.trim()) {
           currentQuestionErrors.name =
             'El nombre de la pregunta no puede estar vacío.';
         } else {
           // Validar si hay al menos 2 opciones
-          console.log(question.type);
           if (
             question.options.length < 2 &&
             question.type.toLowerCase() !== 'texto' &&
@@ -253,10 +252,11 @@ export default function Discussion({
       }
 
       // Validar si el timeLimit es nulo
+
       if (
         !question.timeLimit &&
         question.type.toLowerCase() !== 'texto' &&
-        question.type !== 'imagen' &&
+        question.type.toLowerCase() !== 'imagen' &&
         question.type !== 'video'
       ) {
         currentQuestionErrors.timeLimit = 'Debe seleccionar un tiempo';
@@ -276,7 +276,6 @@ export default function Discussion({
 
       allErrors.questions[questionIndex] = currentQuestionErrors;
     });
-    console.log(allErrors);
     setErrors(allErrors);
 
     const hasErrorsInDemographics = allErrors.demographics.some(
