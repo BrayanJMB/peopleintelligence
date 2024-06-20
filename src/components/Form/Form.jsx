@@ -344,6 +344,12 @@ export default function Form(props) {
                       placeholder="Añadir opción..."
                       value={props.information.customOptions[key]}
                       onChange={props.handleinformationoptions(key)}
+                      error={props.customOptionError[key]}
+                      helperText={
+                        props.customOptionError[key]
+                          ? 'La opción no puede estar vacía'
+                          : ''
+                      }
                       InputProps={{
                         disableUnderline: true,
                       }}
@@ -366,6 +372,20 @@ export default function Form(props) {
                   Añadir opción
                 </Button>
               ) : null}
+              {props.information.customOptions.length >= 3 ? (
+              <Button
+                variant="text"
+                startIcon={<AddCircleOutlineIcon />}
+                onClick={() =>
+                  props.handleRemoveOption(
+                    props.information.customOptions.length - 1
+                  )
+                }
+                style={{ backgroundColor: '#F7F7F7', width: '255px' }}
+              >
+                Eliminar opción
+              </Button>
+            ) : null}
             </div>
           </div>
         );

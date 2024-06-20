@@ -183,7 +183,7 @@ export default function CreateSurvey() {
           return {
             optionsName: option,
             numberOption: index + 1,
-            questionChildrenId: question.childQuestionIds?.[index] || '',  // Corrección aquí usando encadenamiento opcional
+            questionChildren: question.childQuestionIds?.[index] || '',  // Corrección aquí usando encadenamiento opcional
           };
         }),
         categoryId: question.categoryId,
@@ -191,7 +191,6 @@ export default function CreateSurvey() {
       demographics: getDemographics(),
     };
     console.log(newSurvey)
-    /*
     const { data: createdJourney } = await client.post(
       `/createJourney/${currentCompany.id}`,
       newSurvey
@@ -201,9 +200,8 @@ export default function CreateSurvey() {
     navigate(`/journey/survey/${createdJourney.id}/detail?sendMail=true`);
     enqueueSnackbar('Cuestionario creado con éxito', {
       variant: 'success',
-    });*/
+    });
   };
-  console.log(question)
   /**
    * Edit survey.
    */
@@ -511,12 +509,16 @@ export default function CreateSurvey() {
       setQuestion({ ...question, stars: holder });
     }
   };
+
   const handleaddoption = () => {
     let holder = [...information.customOptions];
     holder.push('');
     setInformation({ ...information, customOptions: holder });
   };
-
+  useEffect(() => {
+console.log(information)
+  }, [information])
+  
   const handleRemoveOption = (index) => {
     let holder = [...information.customOptions];
     holder.splice(index, 1);
@@ -699,10 +701,7 @@ export default function CreateSurvey() {
   
     setQuestions(updatedQuestions );
   };
-  useEffect(() => {
-    console.log(questions)
-  }, [questions])
-  
+
   const handleAutocomplete = (val) => {
     setType(val);
   };
@@ -749,8 +748,7 @@ export default function CreateSurvey() {
       }
 
       if (
-        question.customOptions !== null &&
-        question.typeId === 3 &&
+        question.customOptions !== null && (question.typeId === 3 || question.typeId === 8) &&
         question.customOptions.some((option) => option === '')
       ) {
         setCustomOptionError(
@@ -758,6 +756,27 @@ export default function CreateSurvey() {
         );
         return;
       }
+
+      if (question.typeId === 8 && question.conditionalQuestion) { // Asumiendo que tipo 8 es el que usa Autocomplete
+        const autoCompleteErrors = question.customOptions.map((option, index) => {
+            const selection = selections[`${question.id}-${index}`];
+            return !selection; // Retorna true si la selección es nula o indefinida
+        });
+    
+        // Verifica si algún Autocomplete está vacío
+        if (autoCompleteErrors.some(error => error)) {
+            setErrorMessage({
+                ...errorMessage,
+                autocomplete: true,
+            });
+            setHelperText({
+                ...helperText,
+                autocomplete: 'Debe seleccionar una pregunta para cada opción.',
+            });
+            return; // Detiene la ejecución si hay errores
+        }
+    }
+      
       setErrorMessage({});
       setHelperText({});
       setCustomOptionError([]);
@@ -802,8 +821,7 @@ export default function CreateSurvey() {
 
     }
     if (
-      !information.customOptions.every((elemento) => elemento !== '') &&
-      type.id === 3
+      !information.customOptions.every((elemento) => elemento !== '') && (type.id === 3 || type.id === 8)
     ) {
       let checkCustomOptions = information.customOptions.map(
         (elemento) => elemento === ''
@@ -811,6 +829,8 @@ export default function CreateSurvey() {
       setCustomOptionError(checkCustomOptions);
       return;
     }
+
+
 
     // validate category id
     if (categoryId === '' || categoryId === null) {

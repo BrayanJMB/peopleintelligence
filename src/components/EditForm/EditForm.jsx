@@ -52,7 +52,7 @@ const EditForm = ({
   setChildQuestionNumber,
   ...props
 }) => {
-  console.log(questions)
+
   const [categoryId, setCategoryId] = useState('');
 
   /**
@@ -74,7 +74,7 @@ const EditForm = ({
         const newChildQuestionIds = [...prev.childQuestionIds]; // Asume que ya tienes este array en tu estado
     
         // Asignar el ID de la pregunta hija en la posición correspondiente
-        newChildQuestionIds[index] = questionNumber.toString();
+        newChildQuestionIds[index] = questionNumber?.toString();
     
         return {
           ...prev,
@@ -109,13 +109,13 @@ const EditForm = ({
       questionOptions: [],
       questionNumber: 0,
       type: 'Texto corto',
-      name: 'Pregunta final',
+      name: 'Fin de la encuesta',
       description: '321321',
       customOptions: undefined,
     };
+
     // Añadir el objeto "pregunta final" al array filtrado
     filteredQuestions.push(preguntaFinal);
-    
     return filteredQuestions;
   };
 
@@ -260,7 +260,12 @@ const EditForm = ({
                         handleSelect(`${question.id}-${key}`, dataToSend);
                       }}
                       renderInput={(params) => (
-                        <TextField {...params} label="Preguntas" />
+                        <TextField
+                        {...params}
+                        label="Preguntas"
+                        error={errorMessage.autocomplete && !props.selections[`${question.id}-${key}`]}
+                        helperText={(errorMessage.autocomplete && !props.selections[`${question.id}-${key}`]) ? helperText.autocomplete : ''}
+                      />
                       )}
                     />
                   )}
