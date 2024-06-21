@@ -271,9 +271,9 @@ const SurveyForm = ({
     let newVisibleQuestions = [...visibleQuestions];
     // Mostrar preguntas desde el índice de childrenQuestionNumber
     if (parseInt(childrenQuestionNumber) === 0){
-      //if (verifyCurrentStepAnswersSelected()) {
+      if (verifyCurrentStepAnswersSelected()) {
         handleNextAnswer();
-      //}
+      }
     }
     for (let i = childrenQuestionNumber -1; i < questions.length; i++) {
       if (questions[i].questionNumber >= parseInt(childrenQuestionNumber)) {
@@ -305,6 +305,9 @@ const SurveyForm = ({
     );
     const unansweredIndexes = currentStepAnswers
       .map((formValue, i) => {
+        if (!visibleQuestions[i + activeStep * 5]) {
+          return -1; // Ignora las preguntas no visibles
+        }
         let isUnanswered;
         if (formValue.questionType === 'Opción Múltiple') {
           isUnanswered =
@@ -568,10 +571,15 @@ const SurveyForm = ({
               marginBottom: '1.1em',
               width: '100%',
               display:
-              (visibleQuestions[index] && index >= activeStep * 5 && index < (activeStep + 1) * 5)
+              index >= activeStep * 5 && index < (activeStep + 1) * 5
                 ? 'inherit'
                 : 'none',
             }}
+            className={
+              visibleQuestions[index] && index >= activeStep * 5 && index < (activeStep + 1) * 5
+                ? ''
+                : styles.hiddenQuestion
+            }
           >
             {isRadio(typeQuestion) && (
               <Fragment>
