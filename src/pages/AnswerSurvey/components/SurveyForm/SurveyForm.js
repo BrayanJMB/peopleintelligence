@@ -309,7 +309,7 @@ const SurveyForm = ({
         handleNextAnswer();
       }
     }
-  }, [visibleQuestions])
+  }, [visibleQuestions]);
 
   const verifyCurrentStepAnswersSelected = () => {
     const currentStepAnswers = formValues.slice(
