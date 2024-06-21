@@ -67,6 +67,7 @@ const SurveyForm = ({
     })));
   });
   const [apiOptions, setApiOptions] = useState({});
+  const [isZeroIndexActive, setIsZeroIndexActive] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [unansweredQuestions, setUnansweredQuestions] = useState([]);
   const [error, setError] = useState(formValues.map(() => false));
@@ -269,14 +270,16 @@ const SurveyForm = ({
 
   const updateVisibility = (index, childrenQuestionNumber) => {
     let newVisibleQuestions = [...visibleQuestions];
+
     // Mostrar preguntas desde el índice de childrenQuestionNumber
-    if (parseInt(childrenQuestionNumber) === 0){
-      //if (verifyCurrentStepAnswersSelected()) {
-        handleNextAnswer();
-      //}
+    let questionNumber = parseInt(childrenQuestionNumber) === 0 ? questions.length + 1: childrenQuestionNumber;
+    if (parseInt(childrenQuestionNumber) === 0) { // Verifica si i es igual a 0 y actualiza el estado
+      setIsZeroIndexActive(true);
+    } else {
+      setIsZeroIndexActive(false);
     }
-    for (let i = childrenQuestionNumber -1; i < questions.length; i++) {
-      if (questions[i].questionNumber >= parseInt(childrenQuestionNumber)) {
+    for (let i = questionNumber -1; i < questions.length; i++) {
+      if (questions[i].questionNumber >= parseInt(questionNumber)) {
 
         newVisibleQuestions[i] = true;
         // Si la pregunta es condicional, ocultar las preguntas hijas de esta
@@ -292,11 +295,21 @@ const SurveyForm = ({
       }
     }
 
-    for (let k = index + 1; k < childrenQuestionNumber - 1; k++) {
+    for (let k = index + 1; k < questionNumber - 1; k++) {
       newVisibleQuestions[k] = false;
     }
-    setVisibleQuestions(newVisibleQuestions);
+
+      setVisibleQuestions(newVisibleQuestions);
+
   };
+
+  useEffect(() => {
+    if (isZeroIndexActive){
+      if (verifyCurrentStepAnswersSelected()) {
+        handleNextAnswer();
+      }
+    }
+  }, [visibleQuestions])
 
   const verifyCurrentStepAnswersSelected = () => {
     const currentStepAnswers = formValues.slice(
@@ -305,6 +318,9 @@ const SurveyForm = ({
     );
     const unansweredIndexes = currentStepAnswers
       .map((formValue, i) => {
+        if (!visibleQuestions[i + activeStep * 5]) {
+          return -1; // Ignora las preguntas no visibles
+        }
         let isUnanswered;
         if (formValue.questionType === 'Opción Múltiple') {
           isUnanswered =
@@ -327,7 +343,7 @@ const SurveyForm = ({
 
     return unansweredIndexes.length === 0;
   };
-  console.log(questions);
+
   /**
    * Handles the change of the checkbox.
    *
@@ -568,10 +584,15 @@ const SurveyForm = ({
               marginBottom: '1.1em',
               width: '100%',
               display:
-              (visibleQuestions[index] && index >= activeStep * 5 && index < (activeStep + 1) * 5)
+              index >= activeStep * 5 && index < (activeStep + 1) * 5
                 ? 'inherit'
                 : 'none',
             }}
+            className={
+              visibleQuestions[index] && index >= activeStep * 5 && index < (activeStep + 1) * 5
+                ? ''
+                : styles.hiddenQuestion
+            }
           >
             {isRadio(typeQuestion) && (
               <Fragment>
