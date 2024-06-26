@@ -14,13 +14,12 @@ export default function PrivateRoutes() {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   if (!userInfo) {
     window.location.replace(
-      `https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2F${process.env.REACT_APP_DOMAIN_B2C}.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login`
+      `${process.env.REACT_APP_DOMAIN_INSTANCE}.b2clogin.com/${process.env.REACT_APP_DOMAIN_TENANT}/oauth2/v2.0/authorize?p=${process.env.REACT_APP_USER_FLOW}&client_id=${process.env.REACT_APP_CLIENT_ID}&nonce=defaultNonce&redirect_uri=https%3A%2F%2F${process.env.REACT_APP_DOMAIN_B2C}.peopleintelligence.app%2F&scope=https%3A%2F%2F${process.env.REACT_APP_DOMAIN_TENANT}%2Fapi%2FFiles.Read&response_type=token&prompt=login`
     );
   }
   getCompaniesAPI(userInfo?.user).then((res) => {
     const hasActiveCompany = res.data.some((company) => company.isActive);
     if (res.data.length === 0 && location.pathname !== '/infoadmin/Empresas') {
-      //alert('No tienes una compañía registrada, por favor registra una.');
       setSnackbarMessage(
         'Tu registro ha sido existoso pero no estas asociado a una compañía registrada, uno de nuestros asesores se comunicará contigo.'
       );
@@ -32,13 +31,11 @@ export default function PrivateRoutes() {
       setSnackbarMessage(
         'No tienes ninguna compañía activa por favor, comunícate con soporte técnico.'
       );
-      //alert('No tienes ninguna compañía activa por favor, comunicate con soporte');
       setOpenSnackbar(true);
     }
   });
 
-  return userInfo &&
-    userInfo.role.findIndex((p) => p === 'Registrado') === 0 ? (
+  return userInfo  ? (
     <>
       <Outlet />x
       <Snackbar
