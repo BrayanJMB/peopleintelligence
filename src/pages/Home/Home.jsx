@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
-import { setCredentials } from "../../features/authSlice";
-import MyLoader from "../../components/MyLoader/MyLoader";
-import axios from "../../utils/axiosInstance";
-import Snackbar from "@mui/material/Snackbar";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+import Snackbar from '@mui/material/Snackbar';
+
+import MyLoader from '../../components/MyLoader/MyLoader';
+import { setCredentials } from '../../features/authSlice';
+import axios from '../../utils/axiosInstance';
 
 const config = {
   headers: {
-    "Content-type": "application/json",
+    'Content-type': 'application/json',
   },
 };
 
@@ -19,14 +20,14 @@ export default function Home() {
   const navigate = useNavigate();
   const location = useLocation();
   const urlParams = new URLSearchParams(location.hash.substring(1)); // Eliminar el '#' inicial para correcto parsing
-  const access_token = urlParams.get("access_token");
-  console.log(access_token)
+  const access_token = urlParams.get('access_token');
+  console.log(access_token);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
 
   const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
+    if (reason === 'clickaway') {
       return;
     }
     setOpen(false);
@@ -39,14 +40,14 @@ export default function Home() {
   };
 
   const decodeToken = (token) => {
-    var base64Url = token.split(".")[1];
+    var base64Url = token.split('.')[1];
     var base64 = decodeURIComponent(
       atob(base64Url)
-        .split("")
+        .split('')
         .map((c) => {
-          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         })
-        .join("")
+        .join('')
     );
     return JSON.parse(base64);
   };
@@ -55,7 +56,7 @@ export default function Home() {
     try {
       setLoading(true);
       await axios
-        .post("Aut/", { bearer: `Bearer ${access_token}` }, config)
+        .post('Aut/', { bearer: `Bearer ${access_token}` }, config)
         .then((res) => {
           let token = res.data.token;
           let decodedToken = decodeToken(token);
@@ -75,7 +76,7 @@ export default function Home() {
           );
 
           localStorage.setItem(
-            "userInfo",
+            'userInfo',
             JSON.stringify({
               user: decodedToken.user,
               username: decodedToken.name,
@@ -84,19 +85,19 @@ export default function Home() {
               role: decodedToken.role,
             })
           );
-          navigate("/dashboard"); 
+          navigate('/dashboard'); 
           setLoading(false);
         });
     } catch (error) {
       if (error.response.status === 401) {
-        handleOpen("No se puede mi rey");
+        handleOpen('No se puede mi rey');
         window.location.replace(
           //`https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2F${process.env.REACT_APP_DOMAIN_B2C}.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login`
           `${process.env.REACT_APP_DOMAIN_INSTANCE}.b2clogin.com/${process.env.REACT_APP_DOMAIN_TENANT}/oauth2/v2.0/authorize?p=${process.env.REACT_APP_USER_FLOW}&client_id=${process.env.REACT_APP_CLIENT_ID}&nonce=defaultNonce&redirect_uri=https%3A%2F%2F${process.env.REACT_APP_DOMAIN_B2C}.peopleintelligence.app%2F&scope=https%3A%2F%2F${process.env.REACT_APP_DOMAIN_TENANT}%2Fapi%2FFiles.Read&response_type=token&prompt=login`
         );
       }
       if (error.response.status === 400) {
-        alert("El correo ingresado no es un correo corporativo");
+        alert('El correo ingresado no es un correo corporativo');
         window.location.replace(
           //`https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2F${process.env.REACT_APP_DOMAIN_B2C}.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login`
           `${process.env.REACT_APP_DOMAIN_INSTANCE}.b2clogin.com/${process.env.REACT_APP_DOMAIN_TENANT}/oauth2/v2.0/authorize?p=${process.env.REACT_APP_USER_FLOW}&client_id=${process.env.REACT_APP_CLIENT_ID}&nonce=defaultNonce&redirect_uri=https%3A%2F%2F${process.env.REACT_APP_DOMAIN_B2C}.peopleintelligence.app%2F&scope=https%3A%2F%2F${process.env.REACT_APP_DOMAIN_TENANT}%2Fapi%2FFiles.Read&response_type=token&prompt=login`
