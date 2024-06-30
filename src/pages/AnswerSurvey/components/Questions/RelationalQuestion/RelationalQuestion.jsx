@@ -40,6 +40,8 @@ export const RelationalQuestion = ({
     });
   };
 
+  
+
   const availableSelectOptions = useMemo(() => {
     return selectOptions.filter(
       (option) =>
@@ -68,12 +70,12 @@ export const RelationalQuestion = ({
 
         return (
           <Grid container item spacing={2} alignItems="center" key={index}>
-            <Grid item xs={8}>
+            <Grid item sm={8} xs={12}>
               <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
                 <li key={option.numberOption}>{option.optionName}</li>
               </ul>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item sm={4} xs={12}>
               {selectedOption ? (
                 <ChipSelectionOption
                   selectedOption={selectedOption}

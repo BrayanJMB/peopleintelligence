@@ -9,6 +9,10 @@ export const SelectOptions = ({
   optionName,
   indexQuestion,
 }) => {
+  const handleFocus = (event) => {
+    // Evitar que se muestre el teclado en dispositivos móviles
+    event.target.blur();
+  };
   return (
     <Autocomplete
       options={availableSelectOptions}
@@ -20,6 +24,7 @@ export const SelectOptions = ({
           label="Opciones"
           variant="outlined"
           error={unansweredQuestions.includes(indexQuestion)}
+          onFocus={handleFocus}
         />
       )}
       renderTags={() => null}
