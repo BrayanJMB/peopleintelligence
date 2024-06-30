@@ -1,4 +1,4 @@
-import { useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
@@ -17,7 +17,11 @@ import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
-import { companiesAdded, currentCompanySelected, fetchCompanies } from '../../features/companies/companiesSlice';
+import {
+  companiesAdded,
+  currentCompanySelected,
+  fetchCompanies,
+} from '../../features/companies/companiesSlice';
 import { fetchActiveCompany, setDrop } from '../../features/employe/employe';
 import axios from '../../utils/axiosInstance';
 
@@ -55,7 +59,9 @@ const drawerWidth = 240;
 export default function Navbar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const activeCompanies = useSelector((state) => state.activeCompanies.activeCompanies);
+  const activeCompanies = useSelector(
+    (state) => state.activeCompanies.activeCompanies
+  );
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorEl2, setAnchorEl2] = useState(null);
   //const [drop, setDrop] = useState(null);
@@ -95,11 +101,17 @@ export default function Navbar() {
   };
   const handleLogOut = () => {
     localStorage.removeItem('userInfo');
-    window.location.replace(
-      `https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2F${process.env.REACT_APP_DOMAIN_B2C}.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login`
-    );
+    if (process.env.REACT_APP_DOMAIN_B2C === 'suite') {
+      window.location.replace(
+        `https://peopleintelligenceb2c.b2clogin.com/peopleintelligenceb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_sisu&client_id=a6ae19dc-57c8-44ce-b8b9-c096366ba4a2&nonce=defaultNonce&redirect_uri=https%3A%2F%2F${process.env.REACT_APP_DOMAIN_B2C}.peopleintelligence.app&scope=https%3A%2F%2Fpeopleintelligenceb2c.onmicrosoft.com%2Fa6ae19dc-57c8-44ce-b8b9-c096366ba4a2%2FFiles.Read&response_type=token&prompt=login`
+      );
+    } else {
+      window.location.replace(
+        `${process.env.REACT_APP_DOMAIN_INSTANCE}.b2clogin.com/${process.env.REACT_APP_DOMAIN_TENANT}/oauth2/v2.0/authorize?p=${process.env.REACT_APP_USER_FLOW}&client_id=${process.env.REACT_APP_CLIENT_ID}&nonce=defaultNonce&redirect_uri=https%3A%2F%2F${process.env.REACT_APP_DOMAIN_B2C}.peopleintelligence.app%2F&scope=https%3A%2F%2F${process.env.REACT_APP_DOMAIN_TENANT}%2Fapi%2FFiles.Read&response_type=token&prompt=login`
+      );
+    }
   };
-  
+
   const companyConsume = async (id) => {
     try {
       await axios.get('companias/MultiCompani/' + id).then((response) => {
@@ -119,11 +131,8 @@ export default function Navbar() {
         holder.ids.company = id;
         setData(holder);
       });
-    } catch (error) {
-    }
+    } catch (error) {}
   };
-
-
 
   const handleSelect = (value) => {
     if (!value) {
@@ -135,10 +144,13 @@ export default function Navbar() {
     dispatch(currentCompanySelected(value.id));
     dispatch(setDrop(value));
 
-    localStorage.setItem('userInfo', JSON.stringify({
-      ...holder,
-      Company: value.id,
-    }));
+    localStorage.setItem(
+      'userInfo',
+      JSON.stringify({
+        ...holder,
+        Company: value.id,
+      })
+    );
   };
 
   useEffect(() => {
@@ -146,20 +158,21 @@ export default function Navbar() {
       //companyConsume(userInfo.user);
       dispatch(fetchCompanies({ idUser: userInfo.user }));
       dispatch(fetchActiveCompany({ idUser: userInfo.user }));
-    }else{
+    } else {
       dispatch(fetchCompanies({ idUser: userInfo.user }));
       dispatch(fetchActiveCompany({ idUser: userInfo.user }));
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-
   useEffect(() => {
     const storedUserInfo = JSON.parse(localStorage.getItem('userInfo'));
-  
+
     if (activeCompanies && activeCompanies.length > 0) {
       if (storedUserInfo && storedUserInfo.Company) {
         // Si hay una compañía almacenada en el localStorage, úsala
-        const storedCompany = activeCompanies.find(company => company.id === storedUserInfo.Company);
+        const storedCompany = activeCompanies.find(
+          (company) => company.id === storedUserInfo.Company
+        );
         if (storedCompany) {
           dispatch(setDrop(storedCompany));
           dispatch(currentCompanySelected(storedCompany.id));
@@ -168,30 +181,34 @@ export default function Navbar() {
           const firstCompany = activeCompanies[0];
           dispatch(setDrop(firstCompany));
           dispatch(currentCompanySelected(firstCompany.id));
-          
+
           const holder = JSON.parse(localStorage.getItem('userInfo')) || {};
-          localStorage.setItem('userInfo', JSON.stringify({
-            ...holder,
-            Company: firstCompany.id,
-          }));
+          localStorage.setItem(
+            'userInfo',
+            JSON.stringify({
+              ...holder,
+              Company: firstCompany.id,
+            })
+          );
         }
       } else {
         // Si no hay compañía almacenada, selecciona la primera por defecto
         const firstCompany = activeCompanies[0];
         dispatch(setDrop(firstCompany));
         dispatch(currentCompanySelected(firstCompany.id));
-  
+
         // Actualiza el localStorage
         const holder = JSON.parse(localStorage.getItem('userInfo')) || {};
-        localStorage.setItem('userInfo', JSON.stringify({
-          ...holder,
-          Company: firstCompany.id,
-        }));
+        localStorage.setItem(
+          'userInfo',
+          JSON.stringify({
+            ...holder,
+            Company: firstCompany.id,
+          })
+        );
       }
     }
   }, [activeCompanies, drop, dispatch]);
-
-
 
   return (
     <AppBar
@@ -214,26 +231,34 @@ export default function Navbar() {
           >
             {userInfo.role.findIndex((p) => p === 'MultiCompania') > -1 ? (
               <Autocomplete
-              sx={{ width: '100%' }}
-              id="combo-box-demo"
-              style={{ flexBasis: '180px' }}
-              options={activeCompanies}
-              clearOnEscape
-              disableClearable={true}
-              value={drop}
-              onChange={(e, value) => handleSelect(value)}
-              getOptionLabel={(option) => option.nombreCompañia || null}
-              noOptionsText={'No Options'}
-              renderInput={(params) => (
-                <TextField {...params} label="Compañias" variant="standard"  
-                sx={{ width: 300 }}     
-                />
-              )}
-
-            />
-            ) : (<Typography color="textPrimary" variant="h6" style={{ fontStyle: 'italic' }}>
-            {currentCompany && currentCompany.nombreCompania}
-          </Typography>)}
+                sx={{ width: '100%' }}
+                id="combo-box-demo"
+                style={{ flexBasis: '180px' }}
+                options={activeCompanies}
+                clearOnEscape
+                disableClearable={true}
+                value={drop}
+                onChange={(e, value) => handleSelect(value)}
+                getOptionLabel={(option) => option.nombreCompañia || null}
+                noOptionsText={'No Options'}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Compañias"
+                    variant="standard"
+                    sx={{ width: 300 }}
+                  />
+                )}
+              />
+            ) : (
+              <Typography
+                color="textPrimary"
+                variant="h6"
+                style={{ fontStyle: 'italic' }}
+              >
+                {currentCompany && currentCompany.nombreCompania}
+              </Typography>
+            )}
 
             <IconButton onClick={handleHome}>
               <HomeOutlinedIcon sx={{ fontSize: '40px' }} />
