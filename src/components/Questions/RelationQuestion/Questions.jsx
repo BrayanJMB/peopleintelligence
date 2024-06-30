@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material";
+import { TextField } from '@mui/material';
 
 export const Questions = (props) => {
   return (
@@ -12,7 +12,7 @@ export const Questions = (props) => {
         onChange={props.handleinformationoptions(props.key)}
         error={props.customOptionError[props.key]}
         helperText={
-          props.customOptionError[props.key] ? "La opción no puede estar vacía" : ""
+          props.customOptionError[props.key] ? 'La opción no puede estar vacía' : ''
         }
         fullWidth
         multiline // Esto convierte el TextField en un área de texto

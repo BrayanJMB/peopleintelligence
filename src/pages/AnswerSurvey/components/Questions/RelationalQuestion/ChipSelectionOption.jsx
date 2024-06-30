@@ -1,4 +1,4 @@
-import Chip from "@mui/material/Chip";
+import Chip from '@mui/material/Chip';
 
 export const ChipSelectionOption = ({selectedOption, handleOptionDelete, indexQuestion}) => {
   return (
@@ -7,10 +7,10 @@ export const ChipSelectionOption = ({selectedOption, handleOptionDelete, indexQu
       label={selectedOption.selectOptionName}
       onDelete={() => handleOptionDelete(selectedOption.optionName)}
       sx={{
-        height: "auto",
-        "& .MuiChip-label": {
-          display: "block",
-          whiteSpace: "normal",
+        height: 'auto',
+        '& .MuiChip-label': {
+          display: 'block',
+          whiteSpace: 'normal',
         },
       }}
     />

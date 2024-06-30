@@ -1,6 +1,6 @@
-import { TextField } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import IconButton from "@mui/material/IconButton";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { TextField } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
 
 export const RelationalOptions = ({ index, removePreguntaOpcionInput }) => {
   return (

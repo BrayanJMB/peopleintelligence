@@ -1,6 +1,7 @@
-import styles from "../Form/Form.module.css";
-import TextareaAutosize from "@mui/material/TextareaAutosize";
-import TextField from "@mui/material/TextField";
+import TextareaAutosize from '@mui/material/TextareaAutosize';
+import TextField from '@mui/material/TextField';
+
+import styles from '../Form/Form.module.css';
 
 export const LayoutQuestion = ({ children, ...props }) => {
   return (
@@ -35,14 +36,14 @@ export const LayoutQuestion = ({ children, ...props }) => {
             inputComponent: TextareaAutosize,
             inputProps: {
               style: {
-                height: "80px",
+                height: '80px',
               },
             },
           }}
           value={props.information.description}
           style={{
-            width: "100%",
-            marginTop: "0.5rem",
+            width: '100%',
+            marginTop: '0.5rem',
           }}
           name="description"
           onChange={props.handleInformation}

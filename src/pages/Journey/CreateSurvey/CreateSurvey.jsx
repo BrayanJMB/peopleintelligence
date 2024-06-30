@@ -531,7 +531,7 @@ export default function CreateSurvey() {
       let holder = [...information.customOptions];
       holder.push('');
       let holder2 = [...information.opcionesInputs];
-      holder2.push('')
+      holder2.push('');
       setInformation({ ...information, customOptions: holder, opcionesInputs: holder2 });
     }else{
       let holder = [...information.customOptions];
@@ -811,7 +811,7 @@ console.log(information);
       handleCloseModal();
       return;
     }
-    console.log(information)
+    console.log(information);
     if (information.name.length < 5) {
       setErrorMessage({
         ...errorMessage,
@@ -846,7 +846,7 @@ console.log(information);
       });
 
     }
-    console.log(information)
+    console.log(information);
     if (
       !information.customOptions.every((elemento) => elemento !== '') && (type.id === 3 || type.id === 8 || type.id === 15)
     ) {

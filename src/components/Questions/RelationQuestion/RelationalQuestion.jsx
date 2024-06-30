@@ -1,10 +1,13 @@
-import React, { useState } from "react";
-import { Grid, Button, TextField } from "@mui/material";
-import { LayoutQuestion } from "../LayoutQuestion";
-import { RelationalOptions } from "./RelationalOptions";
-import styles from "../../Form/Form.module.css";
-import DeleteIcon from "@mui/icons-material/Delete";
-import IconButton from "@mui/material/IconButton";
+import React, { useState } from 'react';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Button, Grid, TextField } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+
+import { LayoutQuestion } from '../LayoutQuestion';
+
+import { RelationalOptions } from './RelationalOptions';
+
+import styles from '../../Form/Form.module.css';
 
 export const RelationalQuestions = (props) => {
   const addPreguntaOpcionInput = () => {
@@ -30,7 +33,7 @@ export const RelationalQuestions = (props) => {
   };
 
   const handleKeyPress = (event) => {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       event.preventDefault();
     }
   };
@@ -48,8 +51,8 @@ export const RelationalQuestions = (props) => {
             <div
               key={key}
               style={{
-                display: "flex",
-                alignItems: "center",
+                display: 'flex',
+                alignItems: 'center',
                 marginBottom: 8,
                 flex: 1,
               }}
@@ -64,8 +67,8 @@ export const RelationalQuestions = (props) => {
                 error={props.customOptionError[key]}
                 helperText={
                   props.customOptionError[key]
-                    ? "La opción no puede estar vacía"
-                    : ""
+                    ? 'La opción no puede estar vacía'
+                    : ''
                 }
                 InputProps={{
                   disableUnderline: true,
@@ -84,8 +87,8 @@ export const RelationalQuestions = (props) => {
             <div
               key={key}
               style={{
-                display: "flex",
-                alignItems: "center",
+                display: 'flex',
+                alignItems: 'center',
                 marginBottom: 8,
                 flex: 1,
               }}
@@ -99,8 +102,8 @@ export const RelationalQuestions = (props) => {
                 error={props.optionRelationalError[key]}
                 helperText={
                   props.optionRelationalError[key]
-                    ? "La opción no puede estar vacía"
-                    : ""
+                    ? 'La opción no puede estar vacía'
+                    : ''
                 }
                 fullWidth
                 multiline // Esto convierte el TextField en un área de texto

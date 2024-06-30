@@ -1,7 +1,8 @@
-import React, { useState, useMemo, useEffect } from "react";
-import Grid from "@mui/material/Grid";
-import { ChipSelectionOption } from "./ChipSelectionOption";
-import { SelectOptions } from "./SelectOptions";
+import React, { useEffect,useMemo, useState } from 'react';
+import Grid from '@mui/material/Grid';
+
+import { ChipSelectionOption } from './ChipSelectionOption';
+import { SelectOptions } from './SelectOptions';
 
 export const RelationalQuestion = ({
   options,
@@ -34,7 +35,7 @@ export const RelationalQuestion = ({
     );
     setQuestionOptionMap((prev) => {
       const updatedMap = { ...prev };
-      updatedMap[optionName] = "";
+      updatedMap[optionName] = '';
       return updatedMap;
     });
   };
@@ -57,7 +58,7 @@ export const RelationalQuestion = ({
       container
       spacing={3}
       sx={{
-        marginTop: "0.5em",
+        marginTop: '0.5em',
       }}
     >
       {options.map((option, index) => {
@@ -68,7 +69,7 @@ export const RelationalQuestion = ({
         return (
           <Grid container item spacing={2} alignItems="center" key={index}>
             <Grid item xs={8}>
-              <ul style={{ listStyleType: "none", padding: 0, margin: 0 }}>
+              <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
                 <li key={option.numberOption}>{option.optionName}</li>
               </ul>
             </Grid>

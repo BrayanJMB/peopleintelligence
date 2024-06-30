@@ -1,13 +1,13 @@
-import React from "react";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
+import React from 'react';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 
 export const SelectOptions = ({
   availableSelectOptions,
   unansweredQuestions,
   handleOptionSelect,
   optionName,
-  indexQuestion
+  indexQuestion,
 }) => {
   return (
     <Autocomplete

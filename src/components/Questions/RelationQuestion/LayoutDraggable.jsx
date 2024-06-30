@@ -1,5 +1,5 @@
-import { Grid, Paper, TextField } from "@mui/material";
-import { Draggable, Droppable } from "react-beautiful-dnd";
+import { Draggable, Droppable } from 'react-beautiful-dnd';
+import { Grid, Paper, TextField } from '@mui/material';
 
 export const LayoutDraggable = ({
   children,
@@ -27,8 +27,8 @@ export const LayoutDraggable = ({
                   >
                     <div
                       style={{
-                        display: "flex",
-                        alignItems: "center",
+                        display: 'flex',
+                        alignItems: 'center',
                         marginBottom: 8,
                       }}
                     >
