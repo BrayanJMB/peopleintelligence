@@ -72,8 +72,8 @@ export default function CreateSurvey() {
       'En Desacuerdo',
       'Totalmente en Desacuerdo',
     ],
-
     customOptions: Array(2).fill(''),
+    opcionesInputs: Array(2).fill(''),
     stars: Array(3).fill(''),
     rangeOptions:[
       'Rango 0-6',
@@ -91,6 +91,7 @@ export default function CreateSurvey() {
   const [categoryId, setCategoryId] = useState(null);
   const [categoryError, setCategoryError] = useState('');
   const [customOptionError, setCustomOptionError] = useState([]);
+  const [optionRelationalError, setOptionRelationalError] = useState([]);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [question, setQuestion] = useState();
   const [anonymous, setAnonymous] = useState(true);
@@ -159,7 +160,7 @@ export default function CreateSurvey() {
    */
   const createSurvey = async () => {
     setLoading(true);
-    console.log(questions);
+
     const newSurvey = {
       survey: {
         nameSurvey: data.title,
@@ -186,11 +187,16 @@ export default function CreateSurvey() {
             questionChildren: question.childQuestionIds?.[index] || '',  // Corrección aquí usando encadenamiento opcional
           };
         }),
+        selectOptions: question.selectOptions?.map((option, index) => {
+          return {
+            nameSelectOption: option,
+          };
+        }),
         categoryId: question.categoryId,
       })),
       demographics: getDemographics(),
     };
-    console.log(newSurvey);
+
     const { data: createdJourney } = await client.post(
       `/createJourney/${currentCompany.id}`,
       newSurvey
@@ -407,6 +413,26 @@ export default function CreateSurvey() {
     setInformation({ ...information, customOptions: holder });
   };
 
+  
+  const handleInformationRelationalOptions = (key) => (event) => {
+    let holder = information.opcionesInputs.map((val, index) => {
+      if (index === key) {
+        return event.target.value;
+      } else return val;
+    });
+    setInformation({ ...information, opcionesInputs: holder });
+};
+
+const handleInformationRelationalOptionsEdit = (key) => (event) => {
+
+  let holder = question.selectOptions.map((val, index) => {
+    if (index === key) {
+      return event.target.value;
+    } else return val;
+  });
+  setQuestion({ ...question, selectOptions: holder });
+};
+
   /**
    * Handle change for options.
    *
@@ -510,15 +536,21 @@ export default function CreateSurvey() {
     }
   };
 
-  const handleaddoption = () => {
-    let holder = [...information.customOptions];
-    holder.push('');
-    setInformation({ ...information, customOptions: holder });
+  const handleaddoption = (type) => {
+    if (type === 15){
+      let holder = [...information.customOptions];
+      holder.push('');
+      let holder2 = [...information.opcionesInputs];
+      holder2.push('');
+      setInformation({ ...information, customOptions: holder, opcionesInputs: holder2 });
+    }else{
+      let holder = [...information.customOptions];
+      holder.push('');
+      setInformation({ ...information, customOptions: holder });
+    }
+
   };
-  useEffect(() => {
-console.log(information);
-  }, [information]);
-  
+ 
   const handleRemoveOption = (index) => {
     let holder = [...information.customOptions];
     holder.splice(index, 1);
@@ -821,7 +853,7 @@ console.log(information);
 
     }
     if (
-      !information.customOptions.every((elemento) => elemento !== '') && (type.id === 3 || type.id === 8)
+      !information.customOptions.every((elemento) => elemento !== '') && (type.id === 3 || type.id === 8 || type.id === 15)
     ) {
       let checkCustomOptions = information.customOptions.map(
         (elemento) => elemento === ''
@@ -830,7 +862,15 @@ console.log(information);
       return;
     }
 
-
+    if (
+      !information.opcionesInputs.every((elemento) => elemento !== '') && (type.id === 15)
+    ) {
+      let relationalOptions = information.opcionesInputs.map(
+        (elemento) => elemento === ''
+      );
+      setOptionRelationalError(relationalOptions);
+      return;
+    }
 
     // validate category id
     if (categoryId === '' || categoryId === null) {
@@ -842,6 +882,7 @@ console.log(information);
     setErrorMessage({});
     setHelperText({});
     setCustomOptionError([]);
+    setOptionRelationalError([]);
 
     // validate questions
     if (type.id === 1) {
@@ -895,6 +936,14 @@ console.log(information);
         description: information.description,
         options: information.options,
       });
+    } else if (type.id === 15) {
+      handleAddQuestion({
+        type: 'Relacional',
+        name: information.name,
+        description: information.description,
+        customOptions: information.customOptions,
+        selectOptions : information.opcionesInputs,
+      });
     }
 
     setInformation({
@@ -908,6 +957,7 @@ console.log(information);
         'Totalmente en Desacuerdo',
       ],
       customOptions: Array(2).fill(''),
+      opcionesInputs: Array(2).fill(''),
       stars: Array(3).fill(''),
     });
     setQuestion(null);
@@ -948,10 +998,6 @@ console.log(information);
     setQuestions((previousQuestions) => [...previousQuestions, newQuestion]);
   };
 
-
-  useEffect(() => {
-    console.log(questions);
-  }, [questions]);
   
   /**
    * Handle delete question.
@@ -1242,10 +1288,12 @@ console.log(information);
                 <Form
                   type={type}
                   information={information}
+                  setInformation={setInformation}
                   handleInformation={handleInformation}
                   errorMessage={errorMessage}
                   helperText={helperText}
                   handleinformationoptions={handleinformationoptions}
+                  handleInformationRelationalOptions={handleInformationRelationalOptions}
                   handleChangeOptions={handleChangeOptions}
                   handleaddoption={handleaddoption}
                   handleRemoveOption={handleRemoveOption}
@@ -1257,6 +1305,7 @@ console.log(information);
                   categoryError={categoryError}
                   questions={questions.length + 1}
                   customOptionError={customOptionError}
+                  optionRelationalError={optionRelationalError}
                   questionTypes={questionTypes}
                   handleAutocomplete={handleAutocomplete}
                 />
@@ -1302,6 +1351,8 @@ console.log(information);
                     selections={selections}
                     setSelections={setSelections}
                     setChildQuestionNumber={setChildQuestionNumber}
+                    handleInformationRelationalOptions={handleInformationRelationalOptionsEdit}
+                    optionRelationalError={optionRelationalError}
                   />
                 )}
               </div>
