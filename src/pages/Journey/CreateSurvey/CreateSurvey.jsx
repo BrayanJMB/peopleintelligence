@@ -160,7 +160,7 @@ export default function CreateSurvey() {
    */
   const createSurvey = async () => {
     setLoading(true);
-    console.log(questions);
+
     const newSurvey = {
       survey: {
         nameSurvey: data.title,
@@ -196,7 +196,7 @@ export default function CreateSurvey() {
       })),
       demographics: getDemographics(),
     };
-    console.log(newSurvey);
+
     const { data: createdJourney } = await client.post(
       `/createJourney/${currentCompany.id}`,
       newSurvey
@@ -424,7 +424,7 @@ export default function CreateSurvey() {
 };
 
 const handleInformationRelationalOptionsEdit = (key) => (event) => {
-  console.log(question)
+
   let holder = question.selectOptions.map((val, index) => {
     if (index === key) {
       return event.target.value;
@@ -550,11 +550,7 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
     }
 
   };
-
-  useEffect(() => {
-console.log(information);
-  }, [information]);
-  
+ 
   const handleRemoveOption = (index) => {
     let holder = [...information.customOptions];
     holder.splice(index, 1);
@@ -821,7 +817,7 @@ console.log(information);
       handleCloseModal();
       return;
     }
-    console.log(information);
+
     if (information.name.length < 5) {
       setErrorMessage({
         ...errorMessage,
@@ -856,7 +852,6 @@ console.log(information);
       });
 
     }
-    console.log(information);
     if (
       !information.customOptions.every((elemento) => elemento !== '') && (type.id === 3 || type.id === 8 || type.id === 15)
     ) {
