@@ -21,7 +21,7 @@ export default function Home() {
   const location = useLocation();
   const urlParams = new URLSearchParams(location.hash.substring(1)); // Eliminar el '#' inicial para correcto parsing
   const access_token = urlParams.get('access_token');
-  console.log(access_token);
+
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
@@ -34,7 +34,7 @@ export default function Home() {
   };
 
   const handleOpen = (msg) => {
-    console.log(msg);
+
     setMessage(msg);
     setOpen(true);
   };

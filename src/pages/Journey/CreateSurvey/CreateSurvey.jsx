@@ -160,7 +160,7 @@ export default function CreateSurvey() {
    */
   const createSurvey = async () => {
     setLoading(true);
-    console.log(questions);
+
     const newSurvey = {
       survey: {
         nameSurvey: data.title,
@@ -196,7 +196,7 @@ export default function CreateSurvey() {
       })),
       demographics: getDemographics(),
     };
-    console.log(newSurvey);
+
     const { data: createdJourney } = await client.post(
       `/createJourney/${currentCompany.id}`,
       newSurvey
@@ -423,6 +423,16 @@ export default function CreateSurvey() {
     setInformation({ ...information, opcionesInputs: holder });
 };
 
+const handleInformationRelationalOptionsEdit = (key) => (event) => {
+
+  let holder = question.selectOptions.map((val, index) => {
+    if (index === key) {
+      return event.target.value;
+    } else return val;
+  });
+  setQuestion({ ...question, selectOptions: holder });
+};
+
   /**
    * Handle change for options.
    *
@@ -540,11 +550,7 @@ export default function CreateSurvey() {
     }
 
   };
-
-  useEffect(() => {
-console.log(information);
-  }, [information]);
-  
+ 
   const handleRemoveOption = (index) => {
     let holder = [...information.customOptions];
     holder.splice(index, 1);
@@ -811,7 +817,7 @@ console.log(information);
       handleCloseModal();
       return;
     }
-    console.log(information);
+
     if (information.name.length < 5) {
       setErrorMessage({
         ...errorMessage,
@@ -846,7 +852,6 @@ console.log(information);
       });
 
     }
-    console.log(information);
     if (
       !information.customOptions.every((elemento) => elemento !== '') && (type.id === 3 || type.id === 8 || type.id === 15)
     ) {
@@ -1346,7 +1351,7 @@ console.log(information);
                     selections={selections}
                     setSelections={setSelections}
                     setChildQuestionNumber={setChildQuestionNumber}
-                    handleInformationRelationalOptions={handleInformationRelationalOptions}
+                    handleInformationRelationalOptions={handleInformationRelationalOptionsEdit}
                     optionRelationalError={optionRelationalError}
                   />
                 )}

@@ -61,7 +61,6 @@ const SurveyForm = ({
   const [visibleQuestions, setVisibleQuestions] = useState(
     questions.map(() => true)
   );
-  console.log(questions);
   const [formValues, setFormValues] = useState(() => {
     return questions.map((question) => ({
       id: question.questionId,
@@ -352,7 +351,7 @@ const SurveyForm = ({
         if (!visibleQuestions[i + activeStep * 5]) {
           return -1; // Ignora las preguntas no visibles
         }
-        console.log(formValue);
+
         let isUnanswered;
         if (formValue.questionType === 'Opción Múltiple') {
           isUnanswered =
