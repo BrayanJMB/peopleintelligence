@@ -235,9 +235,9 @@ const EditForm = ({
                       size="small"
                       value={question.customOptions[key]}
                       variant="standard"
-                      error={props.customOptionError[key]}
+                      error={customOptionError[key]}
                       helperText={
-                        props.customOptionError[key]
+                        customOptionError[key]
                           ? 'La opción no puede estar vacía'
                           : ''
                       }
