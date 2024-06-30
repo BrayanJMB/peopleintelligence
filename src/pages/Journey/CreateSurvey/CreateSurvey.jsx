@@ -423,6 +423,16 @@ export default function CreateSurvey() {
     setInformation({ ...information, opcionesInputs: holder });
 };
 
+const handleInformationRelationalOptionsEdit = (key) => (event) => {
+  console.log(question)
+  let holder = question.selectOptions.map((val, index) => {
+    if (index === key) {
+      return event.target.value;
+    } else return val;
+  });
+  setQuestion({ ...question, selectOptions: holder });
+};
+
   /**
    * Handle change for options.
    *
@@ -1346,7 +1356,7 @@ console.log(information);
                     selections={selections}
                     setSelections={setSelections}
                     setChildQuestionNumber={setChildQuestionNumber}
-                    handleInformationRelationalOptions={handleInformationRelationalOptions}
+                    handleInformationRelationalOptions={handleInformationRelationalOptionsEdit}
                     optionRelationalError={optionRelationalError}
                   />
                 )}
