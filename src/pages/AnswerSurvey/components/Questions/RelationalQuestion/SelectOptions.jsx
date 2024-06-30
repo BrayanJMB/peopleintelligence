@@ -10,8 +10,13 @@ export const SelectOptions = ({
   indexQuestion,
 }) => {
   const handleFocus = (event) => {
-    // Evitar que se muestre el teclado en dispositivos móviles
-    event.target.blur();
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const isMobile = /android|iphone|ipad|ipod/i.test(userAgent);
+
+    if (isMobile) {
+      // Evitar que se muestre el teclado en dispositivos móviles
+      event.target.blur();
+    }
   };
   return (
     <Autocomplete
