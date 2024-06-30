@@ -1,47 +1,48 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import StarIcon from '@mui/icons-material/Star';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import Divider from '@mui/material/Divider';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
-import FormLabel from '@mui/material/FormLabel';
-import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import MobileStepper from '@mui/material/MobileStepper';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import Select from '@mui/material/Select';
-import Slider from '@mui/material/Slider';
-import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import axios from 'axios';
-import PropTypes from 'prop-types';
+import React, { Fragment, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import StarIcon from "@mui/icons-material/Star";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import Divider from "@mui/material/Divider";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
+import FormLabel from "@mui/material/FormLabel";
+import IconButton from "@mui/material/IconButton";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import MobileStepper from "@mui/material/MobileStepper";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import Select from "@mui/material/Select";
+import Slider from "@mui/material/Slider";
+import TextField from "@mui/material/TextField";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import axios from "axios";
+import PropTypes from "prop-types";
 
-import Deacuerdo from '../../../../assets/icons/deacuerdo.svg';
-import EnDesacuerdo from '../../../../assets/icons/en desacuerdo.svg';
-import NiDeacuerdoNiEnDesacuerdo from '../../../../assets/icons/ni deacuerdo ni en desacuerdo.svg';
-import TotalmenteDeAcuerdo from '../../../../assets/icons/totalmente de acuerdo.svg';
-import TotalmenteEnDesacuerdo from '../../../../assets/icons/totalmente en desacuerdo.svg';
-import { storeSurvey } from '../../../../features/surveys/surveysSlice';
+import Deacuerdo from "../../../../assets/icons/deacuerdo.svg";
+import EnDesacuerdo from "../../../../assets/icons/en desacuerdo.svg";
+import NiDeacuerdoNiEnDesacuerdo from "../../../../assets/icons/ni deacuerdo ni en desacuerdo.svg";
+import TotalmenteDeAcuerdo from "../../../../assets/icons/totalmente de acuerdo.svg";
+import TotalmenteEnDesacuerdo from "../../../../assets/icons/totalmente en desacuerdo.svg";
+import { storeSurvey } from "../../../../features/surveys/surveysSlice";
 
-import styles from './SurveyForm.module.css';
+import styles from "./SurveyForm.module.css";
+import { RelationalQuestion } from "../Questions/RelationalQuestion/RelationalQuestion";
 
 const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return isMobile;
@@ -57,14 +58,18 @@ const SurveyForm = ({
   handleNextAnswer,
   descriptionSurvey,
 }) => {
-  const [visibleQuestions, setVisibleQuestions] = useState(questions.map(() => true));
+  const [visibleQuestions, setVisibleQuestions] = useState(
+    questions.map(() => true)
+  );
+  console.log(questions);
   const [formValues, setFormValues] = useState(() => {
-    return (questions.map((question) => ({
+    return questions.map((question) => ({
       id: question.questionId,
       questionType: question.typeQuestion,
-      value: '',
+      value: "",
       values: {},
-    })));
+      selectionValues: {},
+    }));
   });
   const [apiOptions, setApiOptions] = useState({});
   const [isZeroIndexActive, setIsZeroIndexActive] = useState(false);
@@ -74,13 +79,15 @@ const SurveyForm = ({
   const [values, setValues] = useState({});
   const isMobile = useIsMobile();
   const [verMas, setVerMas] = useState(false);
-  const textoSinBr = descriptionSurvey ? descriptionSurvey.replace(/<br\/>/g, '\n') : '';
+  const textoSinBr = descriptionSurvey
+    ? descriptionSurvey.replace(/<br\/>/g, "\n")
+    : "";
   const textoAMostrar =
-  !isMobile || verMas || !descriptionSurvey
-    ? textoSinBr
-    : `${textoSinBr.substring(0, 30)}...`;
+    !isMobile || verMas || !descriptionSurvey
+      ? textoSinBr
+      : `${textoSinBr.substring(0, 30)}...`;
 
-    const [questionRefs, setQuestionRefs] = useState({});
+  const [questionRefs, setQuestionRefs] = useState({});
 
   const handleNext = () => {
     if (verifyCurrentStepAnswersSelected()) {
@@ -108,11 +115,10 @@ const SurveyForm = ({
 
       return newFormValues;
     });
-    setValues(prevValues => ({
-      ...prevValues,  // Copia los valores actuales
-      [index]: event.target.value,  // Actualiza el valor para el Slider actual
-  }));
-    
+    setValues((prevValues) => ({
+      ...prevValues, // Copia los valores actuales
+      [index]: event.target.value, // Actualiza el valor para el Slider actual
+    }));
   };
 
   const marks = [];
@@ -129,12 +135,15 @@ const SurveyForm = ({
   }
 
   const sliderColor = (index) => {
-    if (values[index] === undefined || values[index] >= 0 && values[index] <= 6) {
-      return 'red';
+    if (
+      values[index] === undefined ||
+      (values[index] >= 0 && values[index] <= 6)
+    ) {
+      return "red";
     } else if (values[index] >= 7 && values[index] <= 8) {
-      return 'yellow';
+      return "yellow";
     } else {
-      return 'green';
+      return "green";
     }
   };
 
@@ -147,7 +156,7 @@ const SurveyForm = ({
 
   const isRadioFace = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case 'sentimental':
+      case "sentimental":
         return true;
       default:
         return false;
@@ -162,8 +171,8 @@ const SurveyForm = ({
    */
   const isRadio = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case 'selección':
-      case 'escala likert':
+      case "selección":
+      case "escala likert":
         return true;
       default:
         return false;
@@ -177,9 +186,9 @@ const SurveyForm = ({
    */
   const isCheckbox = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case 'opción múltiple':
+      case "opción múltiple":
         return true;
-      case 'opcion multiple con imagenes':
+      case "opcion multiple con imagenes":
         return true;
       default:
         return false;
@@ -194,7 +203,7 @@ const SurveyForm = ({
    */
   const isRange = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case 'calificaciones':
+      case "calificaciones":
         return true;
       default:
         return false;
@@ -209,7 +218,7 @@ const SurveyForm = ({
    */
   const isText = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case 'texto':
+      case "texto":
         return true;
       default:
         return false;
@@ -224,7 +233,22 @@ const SurveyForm = ({
    */
   const isSelect = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case 'select':
+      case "select":
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  /**
+   * Returns true if the type of question is select .
+   *
+   * @param typeQuestion
+   * @returns {boolean}
+   */
+  const isRelational = (typeQuestion) => {
+    switch (typeQuestion.toLowerCase()) {
+      case "relacional":
         return true;
       default:
         return false;
@@ -239,7 +263,7 @@ const SurveyForm = ({
    */
   const isSlider = (typeQuestion) => {
     switch (typeQuestion) {
-      case 'E-NPS':
+      case "E-NPS":
         return true;
       default:
         return false;
@@ -253,8 +277,12 @@ const SurveyForm = ({
    * @param index
    */
 
-
-  const handleRadioChange = (event, index, conditional, childrenQuestionNumber) => {
+  const handleRadioChange = (
+    event,
+    index,
+    conditional,
+    childrenQuestionNumber
+  ) => {
     const newFormValues = [...formValues];
     newFormValues[index].value = event.target.value;
     setFormValues(newFormValues);
@@ -272,15 +300,18 @@ const SurveyForm = ({
     let newVisibleQuestions = [...visibleQuestions];
 
     // Mostrar preguntas desde el índice de childrenQuestionNumber
-    let questionNumber = parseInt(childrenQuestionNumber) === 0 ? questions.length + 1: childrenQuestionNumber;
-    if (parseInt(childrenQuestionNumber) === 0) { // Verifica si i es igual a 0 y actualiza el estado
+    let questionNumber =
+      parseInt(childrenQuestionNumber) === 0
+        ? questions.length + 1
+        : childrenQuestionNumber;
+    if (parseInt(childrenQuestionNumber) === 0) {
+      // Verifica si i es igual a 0 y actualiza el estado
       setIsZeroIndexActive(true);
     } else {
       setIsZeroIndexActive(false);
     }
-    for (let i = questionNumber -1; i < questions.length; i++) {
+    for (let i = questionNumber - 1; i < questions.length; i++) {
       if (questions[i].questionNumber >= parseInt(questionNumber)) {
-
         newVisibleQuestions[i] = true;
         // Si la pregunta es condicional, ocultar las preguntas hijas de esta
         if (questions[i].conditional) {
@@ -299,12 +330,11 @@ const SurveyForm = ({
       newVisibleQuestions[k] = false;
     }
 
-      setVisibleQuestions(newVisibleQuestions);
-
+    setVisibleQuestions(newVisibleQuestions);
   };
 
   useEffect(() => {
-    if (isZeroIndexActive){
+    if (isZeroIndexActive) {
       if (verifyCurrentStepAnswersSelected()) {
         handleNextAnswer();
       }
@@ -316,20 +346,30 @@ const SurveyForm = ({
       activeStep * 5,
       (activeStep + 1) * 5
     );
+
     const unansweredIndexes = currentStepAnswers
       .map((formValue, i) => {
         if (!visibleQuestions[i + activeStep * 5]) {
           return -1; // Ignora las preguntas no visibles
         }
+        console.log(formValue);
         let isUnanswered;
-        if (formValue.questionType === 'Opción Múltiple') {
+        if (formValue.questionType === "Opción Múltiple") {
           isUnanswered =
             formValue.values === null ||
             Object.keys(formValue.values).length === 0 ||
             !Object.values(formValue.values).some((val) => val === true);
+        } else if (formValue.questionType === "Relacional") {
+          // Verifica cada selección individual en preguntas relacionales
+          isUnanswered =
+            formValue.selectionValues === null ||
+            Object.keys(formValue.selectionValues).length === 0 ||
+            Object.values(formValue.selectionValues).some(
+              (val) => val === "" || val === null
+            );
         } else {
           // Para otros tipos de preguntas, verifica si value es nulo o vacío
-          isUnanswered = formValue.value === null || formValue.value === '';
+          isUnanswered = formValue.value === null || formValue.value === "";
         }
 
         return isUnanswered ? i + activeStep * 5 : -1;
@@ -338,7 +378,9 @@ const SurveyForm = ({
     setUnansweredQuestions(unansweredIndexes);
 
     if (unansweredIndexes.length > 0) {
-      questionRefs[questions[unansweredIndexes[0]].questionId].current.scrollIntoView({behavior: 'smooth',  block: 'center'});
+      questionRefs[
+        questions[unansweredIndexes[0]].questionId
+      ].current.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
     return unansweredIndexes.length === 0;
@@ -359,6 +401,26 @@ const SurveyForm = ({
         prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
       );
 
+      return newFormValues;
+    });
+  };
+
+  /**
+   * Handles the change of the checkbox.
+   *
+   * @param event
+   * @param index
+   */
+  const handleRelationalChange = (newValue, index) => {
+    setFormValues((prevFormValues) => {
+      const newFormValues = [...prevFormValues];
+      newFormValues[index].selectionValues = {
+        ...newFormValues[index].selectionValues,
+        ...newValue,
+      };
+      setUnansweredQuestions((prevUnanswered) =>
+        prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
+      );
       return newFormValues;
     });
   };
@@ -390,19 +452,19 @@ const SurveyForm = ({
    * @returns {*|string}
    */
   const getLikertIcon = (value) => {
-    switch (value.toLowerCase().replace(/\s\s+/g, ' ')) {
-      case 'de acuerdo':
+    switch (value.toLowerCase().replace(/\s\s+/g, " ")) {
+      case "de acuerdo":
         return Deacuerdo;
-      case 'en desacuerdo':
+      case "en desacuerdo":
         return EnDesacuerdo;
-      case 'ni de acuerdo ni en desacuerdo':
+      case "ni de acuerdo ni en desacuerdo":
         return NiDeacuerdoNiEnDesacuerdo;
-      case 'totalmente de acuerdo':
+      case "totalmente de acuerdo":
         return TotalmenteDeAcuerdo;
-      case 'totalmente en desacuerdo':
+      case "totalmente en desacuerdo":
         return TotalmenteEnDesacuerdo;
       default:
-        return '';
+        return "";
     }
   };
 
@@ -431,7 +493,7 @@ const SurveyForm = ({
    */
   const fetchApiOptionsByParamId = async (paramName, paramId, options) => {
     for (const question of questions) {
-      const regex = new RegExp(`{${paramName}}`, 'g');
+      const regex = new RegExp(`{${paramName}}`, "g");
       const option = options.find((option) => option.optionName === paramId);
       if (question.api && question.api.match(regex)) {
         const url = question.api.replace(regex, option.numberOption);
@@ -460,13 +522,13 @@ const SurveyForm = ({
   };
 
   useEffect(() => {
-      // Establecer refs para cada pregunta en la primera renderización
-      const newRefs = questions.reduce((acc, { questionId }) => {
-          acc[questionId] = React.createRef();
-          return acc;
-      }, {});
+    // Establecer refs para cada pregunta en la primera renderización
+    const newRefs = questions.reduce((acc, { questionId }) => {
+      acc[questionId] = React.createRef();
+      return acc;
+    }, {});
 
-      setQuestionRefs(newRefs);
+    setQuestionRefs(newRefs);
   }, []);
 
   // component did mount
@@ -485,10 +547,10 @@ const SurveyForm = ({
           }));
         } else if (
           question.api &&
-          question.api.includes('{CompanyId}') &&
-          (question.urlParam === null || question.urlParam === '')
+          question.api.includes("{CompanyId}") &&
+          (question.urlParam === null || question.urlParam === "")
         ) {
-          let consumo = question.api.replace('{CompanyId}', companyId);
+          let consumo = question.api.replace("{CompanyId}", companyId);
           const { data } = await axios.get(consumo);
           setApiOptions((prevState) => ({
             ...prevState,
@@ -508,8 +570,8 @@ const SurveyForm = ({
 
   // watch changes in form values
   useEffect(() => {
-    if (nameStep && nameStep[activeStepper] === 'Datos demográficos') {
-      localStorage.setItem('formValues', JSON.stringify(formValues));
+    if (nameStep && nameStep[activeStepper] === "Datos demográficos") {
+      localStorage.setItem("formValues", JSON.stringify(formValues));
     }
     onAnswered(formValues);
   }, [formValues]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -525,10 +587,22 @@ const SurveyForm = ({
       }
       return isConditional;
     });
-    
+
     setVisibleQuestions(visibility);
   }, [questions]);
 
+  useEffect(() => {
+    setFormValues((prevFormValues) =>
+      prevFormValues.map((formValue, index) => ({
+        ...formValue,
+        selectionValues: questions[index].options.reduce((acc, option) => {
+          acc[option.optionName] = "";
+          return acc;
+        }, {}),
+      }))
+    );
+  }, []);
+  
   let firstUncheckedIndex = -1;
   let firstUnansweredQuestionIndex = unansweredQuestions[0];
   // Estos bucles buscan el primer checkbox sin marcar
@@ -549,19 +623,19 @@ const SurveyForm = ({
       <Typography
         variant="h6"
         style={{
-          whiteSpace: 'pre-line',
-          textAlign: 'justify',
-          fontSize: '15px',
-          display: 'block',
-          fontStyle: 'italic',
-          marginBottom: '10px',
+          whiteSpace: "pre-line",
+          textAlign: "justify",
+          fontSize: "15px",
+          display: "block",
+          fontStyle: "italic",
+          marginBottom: "10px",
         }}
       >
         {textoAMostrar}
       </Typography>
       {isMobile && (
         <Button onClick={() => setVerMas(!verMas)}>
-          {verMas ? 'Ver menos' : 'Ver más'}
+          {verMas ? "Ver menos" : "Ver más"}
         </Button>
       )}
       {questions.map(
@@ -575,22 +649,25 @@ const SurveyForm = ({
             urlParam,
             description,
             conditional,
+            selectOptions,
           },
           index
         ) => (
           <FormControl
             key={questionId}
             style={{
-              marginBottom: '1.1em',
-              width: '100%',
+              marginBottom: "1.1em",
+              width: "100%",
               display:
-              index >= activeStep * 5 && index < (activeStep + 1) * 5
-                ? 'inherit'
-                : 'none',
+                index >= activeStep * 5 && index < (activeStep + 1) * 5
+                  ? "inherit"
+                  : "none",
             }}
             className={
-              visibleQuestions[index] && index >= activeStep * 5 && index < (activeStep + 1) * 5
-                ? ''
+              visibleQuestions[index] &&
+              index >= activeStep * 5 &&
+              index < (activeStep + 1) * 5
+                ? ""
                 : styles.hiddenQuestion
             }
           >
@@ -599,46 +676,53 @@ const SurveyForm = ({
                 <FormLabel
                   id={`${questionId}-${typeQuestion}`}
                   style={{
-                    fontSize: '1.1',
-                    fontWeight: 'bold',
-                    marginBottom: '0.8m',
+                    fontSize: "1.1",
+                    fontWeight: "bold",
+                    marginBottom: "0.8m",
                     color: unansweredQuestions.includes(index)
-                      ? 'red'
-                      : 'rgba(0, 0, 0, 0.6)',
+                      ? "red"
+                      : "rgba(0, 0, 0, 0.6)",
                   }}
                 >
                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: 'block', fontStyle: 'italic' }}
+                  style={{ display: "block", fontStyle: "italic" }}
                 >
                   {description}
                 </Typography>
                 <RadioGroup
                   name={`${questionId}-${typeQuestion}`}
                   onChange={(event) => {
-                    const selectedOption = options.find(opt => opt.optionName === event.target.value);
-                    handleRadioChange(event, index, conditional, selectedOption?.childrenQuestionNumber);
+                    const selectedOption = options.find(
+                      (opt) => opt.optionName === event.target.value
+                    );
+                    handleRadioChange(
+                      event,
+                      index,
+                      conditional,
+                      selectedOption?.childrenQuestionNumber
+                    );
                   }}
                   row
                   style={{
-                    margin: '1.2em 0',
+                    margin: "1.2em 0",
                     color: unansweredQuestions.includes(index)
-                      ? 'red'
-                      : 'inherit',
+                      ? "red"
+                      : "inherit",
                   }}
                 >
                   {options.map(({ numberOption, optionName }, indexOption) => (
                     <FormControlLabel
-                      ref={ indexOption === 0 ? questionRefs[questionId] : null}
+                      ref={indexOption === 0 ? questionRefs[questionId] : null}
                       key={numberOption}
                       value={optionName}
                       control={<Radio />}
                       label={<Box>{optionName}</Box>}
                       style={{
-                        fontSize: '0.5em !important',
-                        width: '100%',
+                        fontSize: "0.5em !important",
+                        width: "100%",
                       }}
                     />
                   ))}
@@ -651,16 +735,16 @@ const SurveyForm = ({
                 <FormLabel
                   id={`${questionId}-${typeQuestion}`}
                   style={{
-                    fontSize: '1.1',
-                    fontWeight: 'bold',
-                    marginBottom: '0.8m',
+                    fontSize: "1.1",
+                    fontWeight: "bold",
+                    marginBottom: "0.8m",
                   }}
                 >
                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: 'block', fontStyle: 'italic' }}
+                  style={{ display: "block", fontStyle: "italic" }}
                 >
                   {description}
                 </Typography>
@@ -669,8 +753,8 @@ const SurveyForm = ({
                   onChange={(event) => handleRadioChange(event, index)}
                   row
                   style={{
-                    justifyContent: 'center',
-                    margin: '1.2em 0',
+                    justifyContent: "center",
+                    margin: "1.2em 0",
                   }}
                 >
                   {options.map(({ numberOption, optionName }) => (
@@ -682,7 +766,7 @@ const SurveyForm = ({
                       label={
                         <Box
                           sx={{
-                            textAlign: 'center',
+                            textAlign: "center",
                           }}
                         >
                           {getLikertIcon(optionName) && (
@@ -691,8 +775,8 @@ const SurveyForm = ({
                                 src={getLikertIcon(optionName)}
                                 alt={optionName}
                                 style={{
-                                  width: '3em',
-                                  verticalAlign: 'middle',
+                                  width: "3em",
+                                  verticalAlign: "middle",
                                 }}
                               />
                             </Tooltip>
@@ -700,7 +784,7 @@ const SurveyForm = ({
                         </Box>
                       }
                       style={{
-                        fontSize: '0.5em !important',
+                        fontSize: "0.5em !important",
                       }}
                     />
                   ))}
@@ -712,19 +796,19 @@ const SurveyForm = ({
               <Fragment>
                 <FormLabel
                   style={{
-                    fontSize: '1.1',
-                    fontWeight: 'bold',
-                    marginBottom: '1.1em',
+                    fontSize: "1.1",
+                    fontWeight: "bold",
+                    marginBottom: "1.1em",
                     color: unansweredQuestions.includes(index)
-                      ? 'red'
-                      : 'rgba(0, 0, 0, 0.6)',
+                      ? "red"
+                      : "rgba(0, 0, 0, 0.6)",
                   }}
                 >
                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: 'block', fontStyle: 'italic' }}
+                  style={{ display: "block", fontStyle: "italic" }}
                 >
                   {description}
                 </Typography>
@@ -745,8 +829,8 @@ const SurveyForm = ({
                           }
                           style={{
                             color: unansweredQuestions.includes(index)
-                              ? 'red'
-                              : '#03aae4',
+                              ? "red"
+                              : "#03aae4",
                           }}
                         />
                       }
@@ -761,44 +845,46 @@ const SurveyForm = ({
               <Fragment>
                 <FormLabel
                   style={{
-                    fontSize: '1.1',
-                    fontWeight: 'bold',
-                    marginBottom: '0.8m',
+                    fontSize: "1.1",
+                    fontWeight: "bold",
+                    marginBottom: "0.8m",
                     color: unansweredQuestions.includes(index)
-                      ? 'red'
-                      : 'rgba(0, 0, 0, 0.6)',
+                      ? "red"
+                      : "rgba(0, 0, 0, 0.6)",
                   }}
                 >
                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: 'block', fontStyle: 'italic' }}
+                  style={{ display: "block", fontStyle: "italic" }}
                 >
                   {description}
                 </Typography>
                 <Box
                   sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '1.1em 0',
-                    overflow: 'auto',
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "1.1em 0",
+                    overflow: "auto",
                   }}
                 >
                   {[...Array(score).keys()].map((value, scoreIndex) => (
                     <Box key={value}>
                       <div>
                         <IconButton
-                          ref={scoreIndex === 0 ? questionRefs[questionId] : null}
+                          ref={
+                            scoreIndex === 0 ? questionRefs[questionId] : null
+                          }
                           color="primary"
                           component="label"
                           onClick={() => handleRangeChange(value + 1, index)}
                           style={{
                             color: unansweredQuestions.includes(index)
-                              ? 'red'
-                              : '#03aae4',
+                              ? "red"
+                              : "#03aae4",
                           }}
                         >
                           {formValues[index].value >= value + 1 ? (
@@ -815,7 +901,7 @@ const SurveyForm = ({
                   variant="caption"
                   display="block"
                   gutterBottom
-                  style={{ textAlign: 'center' }}
+                  style={{ textAlign: "center" }}
                 >
                   {Number(formValues[index].value)} / {score}
                 </Typography>
@@ -826,28 +912,28 @@ const SurveyForm = ({
               <Fragment>
                 <FormLabel
                   style={{
-                    fontSize: '1.1',
-                    fontWeight: 'bold',
-                    marginBottom: '1.1em',
+                    fontSize: "1.1",
+                    fontWeight: "bold",
+                    marginBottom: "1.1em",
                     color: unansweredQuestions.includes(index)
-                      ? 'red'
-                      : 'rgba(0, 0, 0, 0.6)',
+                      ? "red"
+                      : "rgba(0, 0, 0, 0.6)",
                   }}
                 >
                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: 'block', fontStyle: 'italic' }}
+                  style={{ display: "block", fontStyle: "italic" }}
                 >
                   {description}
                 </Typography>
                 <TextField
-                  inputRef={questionRefs[questionId]} 
+                  inputRef={questionRefs[questionId]}
                   id={`${questionId}-${typeQuestion}`}
                   name={`${questionId}-${typeQuestion}`}
                   onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
+                    if (event.key === "Enter") {
                       event.preventDefault();
                     }
                   }}
@@ -863,65 +949,64 @@ const SurveyForm = ({
             )}
             {isSlider(typeQuestion) && (
               <>
-              <FormLabel
-              id={`${questionId}-${typeQuestion}`}
-              style={{
-                fontSize: '1.1',
-                fontWeight: 'bold',
-                marginBottom: '1.1m',
-                color: unansweredQuestions.includes(index)
-                  ? 'red'
-                  : 'rgba(0, 0, 0, 0.6)',
-              }}
-            >
-              {questionName}
-            </FormLabel>
-            <Typography
-              variant="caption"
-              style={{ display: 'block', fontStyle: 'italic' }}
-            >
-              {description}
-            </Typography>
-              <Box 
-                width="100%"
-                ref={questionRefs[questionId]} 
-              >
-                <Slider
-                  ref={questionRefs[questionId]} 
-                  value={values[index] || 0} 
-                  min={0}
-                  step={1}
-                  max={10}
-                  scale={calculateValue}
-                  onChange={(event, newValue) => handleChangeSlider(event, newValue, index)}
-                  valueLabelDisplay="off"
-                  aria-labelledby="non-linear-slider"
-                  marks={marks}
-                  style={{ color: sliderColor(index) }}
-                  sx={{
-                    '& .MuiSlider-track': {
-                      height: 10, // Cambia este valor para ajustar el tamaño del control deslizante
-                    },
-                    '& .MuiSlider-rail': {
-                      height: 10, // Cambia este valor para ajustar el tamaño del control deslizante
-                    },
+                <FormLabel
+                  id={`${questionId}-${typeQuestion}`}
+                  style={{
+                    fontSize: "1.1",
+                    fontWeight: "bold",
+                    marginBottom: "1.1m",
+                    color: unansweredQuestions.includes(index)
+                      ? "red"
+                      : "rgba(0, 0, 0, 0.6)",
                   }}
-                />
-              </Box>
+                >
+                  {questionName}
+                </FormLabel>
+                <Typography
+                  variant="caption"
+                  style={{ display: "block", fontStyle: "italic" }}
+                >
+                  {description}
+                </Typography>
+                <Box width="100%" ref={questionRefs[questionId]}>
+                  <Slider
+                    ref={questionRefs[questionId]}
+                    value={values[index] || 0}
+                    min={0}
+                    step={1}
+                    max={10}
+                    scale={calculateValue}
+                    onChange={(event, newValue) =>
+                      handleChangeSlider(event, newValue, index)
+                    }
+                    valueLabelDisplay="off"
+                    aria-labelledby="non-linear-slider"
+                    marks={marks}
+                    style={{ color: sliderColor(index) }}
+                    sx={{
+                      "& .MuiSlider-track": {
+                        height: 10, // Cambia este valor para ajustar el tamaño del control deslizante
+                      },
+                      "& .MuiSlider-rail": {
+                        height: 10, // Cambia este valor para ajustar el tamaño del control deslizante
+                      },
+                    }}
+                  />
+                </Box>
               </>
             )}
             {isSelect(typeQuestion) && (
               <FormControl
                 fullWidth
                 error={unansweredQuestions.includes(index)}
-                ref={questionRefs[questionId]} 
+                ref={questionRefs[questionId]}
               >
                 <InputLabel id={`${questionId}-${typeQuestion}`}>
                   {questionName}
                 </InputLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: 'block', fontStyle: 'italic' }}
+                  style={{ display: "block", fontStyle: "italic" }}
                 >
                   {description}
                 </Typography>
@@ -951,44 +1036,66 @@ const SurveyForm = ({
                 </Select>
               </FormControl>
             )}
+            {isRelational(typeQuestion) && (
+              <Fragment>
+                <FormLabel
+                  style={{
+                    fontSize: "1.1",
+                    fontWeight: "bold",
+                    marginBottom: "1.1em",
+                    color: unansweredQuestions.includes(index)
+                      ? "red"
+                      : "rgba(0, 0, 0, 0.6)",
+                  }}
+                >
+                  {questionName}
+                </FormLabel>
+                <Typography
+                  variant="caption"
+                  style={{ display: "block", fontStyle: "italic" }}
+                >
+                  {description}
+                </Typography>
+                <Divider variant="middle" />
+                <RelationalQuestion
+                  options={options}
+                  selectOptions={selectOptions}
+                  handleRelationalChange={handleRelationalChange}
+                  indexQuestion={index}
+                  unansweredQuestions={unansweredQuestions}
+                />
+              </Fragment>
+            )}
           </FormControl>
         )
       )}
 
-        <MobileStepper
-          variant="text"
-          steps={totalOfSteps()}
-          position="static"
-          activeStep={activeStep}
-          sx={{
-            maxWidth: 400,
-            flexGrow: 1,
-            margin: '0 auto',
-          }}
-          nextButton={
-            <Button
-              size="small"
-              onClick={handleNext}
-            >
-              {nameStep[activeStep] !== 'Encuesta' &&
-              activeStep + 1 === totalOfSteps()
-                ? 'Finalizar'
-                : 'Siguiente'}
-              {<KeyboardArrowRight />}
-            </Button>
-          }
-          backButton={
-            <Button
-              size="small"
-              onClick={handleBack}
-              disabled={activeStep === 0}
-            >
-              {<KeyboardArrowLeft />}
-              Atrás
-            </Button>
-          }
-        />
-
+      <MobileStepper
+        variant="text"
+        steps={totalOfSteps()}
+        position="static"
+        activeStep={activeStep}
+        sx={{
+          maxWidth: 400,
+          flexGrow: 1,
+          margin: "0 auto",
+        }}
+        nextButton={
+          <Button size="small" onClick={handleNext}>
+            {nameStep[activeStep] !== "Encuesta" &&
+            activeStep + 1 === totalOfSteps()
+              ? "Finalizar"
+              : "Siguiente"}
+            {<KeyboardArrowRight />}
+          </Button>
+        }
+        backButton={
+          <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+            {<KeyboardArrowLeft />}
+            Atrás
+          </Button>
+        }
+      />
     </div>
   );
 };
