@@ -13,8 +13,9 @@ import TextareaAutosize from '@mui/material/TextareaAutosize';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
 
-import styles from './EditForm.module.css';
+import { RelationalQuestionsEdit } from '../Questions/RelationQuestion/RelationalQuestionEdit';
 
+import styles from './EditForm.module.css';
 
 /**
  * Edit form component for create survey page.
@@ -50,9 +51,11 @@ const EditForm = ({
   handleChangeOptions,
   conditionalQuestion,
   setChildQuestionNumber,
+  handleInformationRelationalOptions,
+  optionRelationalError,
+  customOptionError,
   ...props
 }) => {
-
   const [categoryId, setCategoryId] = useState('');
 
   /**
@@ -69,13 +72,13 @@ const EditForm = ({
       ...prev,
       [uniqueId]: selectedValue, // Asumiendo que deseas almacenar solo el valor seleccionado
     }));
-    if (question.conditionalQuestion){
+    if (question.conditionalQuestion) {
       setQuestion((prev) => {
         const newChildQuestionIds = [...prev.childQuestionIds]; // Asume que ya tienes este array en tu estado
-    
+
         // Asignar el ID de la pregunta hija en la posición correspondiente
         newChildQuestionIds[index] = questionNumber?.toString();
-    
+
         return {
           ...prev,
           childQuestionIds: newChildQuestionIds, // Actualiza solo el array de IDs de preguntas hijas
@@ -97,11 +100,11 @@ const EditForm = ({
         question.id !== currentQuestionId &&
         !selectedValues.includes(question.id) &&
         question.questionNumber > questionNumber
-        //&& !question.conditionalQuestion  // Solo incluye preguntas con un número mayor al actual
+      //&& !question.conditionalQuestion  // Solo incluye preguntas con un número mayor al actual
     );
-    
+
     // Definir el objeto "pregunta final"
-    const preguntaFinal =   {
+    const preguntaFinal = {
       id: 'cc12a501-cf65-4f2f-bd23-44c79e5c4a64',
       categoryId: 6,
       typeId: 1,
@@ -245,7 +248,10 @@ const EditForm = ({
                       key={key}
                       disablePortal
                       id={`autocomplete-${question.id}-${key}`}
-                      options={getFilteredOptions(`${question.id}-${key}`, question.questionNumber)}
+                      options={getFilteredOptions(
+                        `${question.id}-${key}`,
+                        question.questionNumber
+                      )}
                       getOptionLabel={(option) =>
                         `${option.questionNumber}. ${option.name}`
                       }
@@ -255,17 +261,25 @@ const EditForm = ({
                         const dataToSend = {
                           selectedValue: value,
                           questionNumber: value ? value.questionNumber : null,
-                          index:key,
+                          index: key,
                         };
                         handleSelect(`${question.id}-${key}`, dataToSend);
                       }}
                       renderInput={(params) => (
                         <TextField
-                        {...params}
-                        label="Preguntas"
-                        error={errorMessage.autocomplete && !props.selections[`${question.id}-${key}`]}
-                        helperText={(errorMessage.autocomplete && !props.selections[`${question.id}-${key}`]) ? helperText.autocomplete : ''}
-                      />
+                          {...params}
+                          label="Preguntas"
+                          error={
+                            errorMessage.autocomplete &&
+                            !props.selections[`${question.id}-${key}`]
+                          }
+                          helperText={
+                            errorMessage.autocomplete &&
+                            !props.selections[`${question.id}-${key}`]
+                              ? helperText.autocomplete
+                              : ''
+                          }
+                        />
                       )}
                     />
                   )}
@@ -349,6 +363,19 @@ const EditForm = ({
                 </div>
               </div>
               <sub>{starMessage}</sub>
+            </Fragment>
+          )}
+
+          {/* ratings */}
+          {question.type === 'Relacional' && (
+            <Fragment>
+              <RelationalQuestionsEdit
+                question={question}
+                handleInformationOptions={handleInformationOptions}
+                handleInformationRelationalOptions={handleInformationRelationalOptions}
+                optionRelationalError={optionRelationalError}
+                customOptionError={customOptionError}
+              />
             </Fragment>
           )}
         </div>

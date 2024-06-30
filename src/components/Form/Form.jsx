@@ -10,8 +10,9 @@ import Select from '@mui/material/Select';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 import TextField from '@mui/material/TextField';
 
-import styles from './Form.module.css';
+import { RelationalQuestions } from '../Questions/RelationQuestion/RelationalQuestion';
 
+import styles from './Form.module.css';
 export default function Form(props) {
   const [categoryId, setCategoryId] = useState('');
   const [open, setOpen] = useState(false);
@@ -373,19 +374,19 @@ export default function Form(props) {
                 </Button>
               ) : null}
               {props.information.customOptions.length >= 3 ? (
-              <Button
-                variant="text"
-                startIcon={<AddCircleOutlineIcon />}
-                onClick={() =>
-                  props.handleRemoveOption(
-                    props.information.customOptions.length - 1
-                  )
-                }
-                style={{ backgroundColor: '#F7F7F7', width: '255px' }}
-              >
-                Eliminar opción
-              </Button>
-            ) : null}
+                <Button
+                  variant="text"
+                  startIcon={<AddCircleOutlineIcon />}
+                  onClick={() =>
+                    props.handleRemoveOption(
+                      props.information.customOptions.length - 1
+                    )
+                  }
+                  style={{ backgroundColor: '#F7F7F7', width: '255px' }}
+                >
+                  Eliminar opción
+                </Button>
+              ) : null}
             </div>
           </div>
         );
@@ -692,7 +693,10 @@ export default function Form(props) {
             </div>
           </div>
         );
-
+      case 15:
+        return (
+          <RelationalQuestions {...props} />            
+        );
       default:
         return null;
     }
