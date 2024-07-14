@@ -290,6 +290,7 @@ export default function InfoAdmin() {
           direccion: formValues.address,
           IdTamanoCompania: formValues.sizeCompany,
           SectorId: formValues.sector,
+          dominio: formValues.dominio,
         });
         dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
         enqueueSnackbar('Compañía creada con éxito', {
@@ -646,7 +647,7 @@ export default function InfoAdmin() {
         },
         {
           label: 'Dominios',
-          name: 'dominio1',
+          name: 'dominio',
           type: 'options',
           isRequired: true,
           options: [{ id: 1, value: '', error: false }],

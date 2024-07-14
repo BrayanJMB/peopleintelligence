@@ -1,76 +1,126 @@
-import React, { useEffect,useState } from 'react';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, Grid, IconButton,TextField } from '@mui/material';
+import React, { useEffect, useState } from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Button, Grid, IconButton, TextField } from "@mui/material";
 
-export const DynamicInputs = ({ values, field, handleInputChange }) => {
-  const [inputs, setInputs] = useState(values);
-
-  useEffect(() => {
-    handleInputChange(field.name, inputs);
-  }, [inputs]);
-
-  const handleInputChange2 = (id, newValue) => {
-    setInputs((prevInputs) =>
-      prevInputs.map((input) =>
-        input.id === id ? { ...input, value: newValue, error: false } : input
-      )
-    );
-  };
-
+export const DynamicInputs = ({
+  setValues,
+  field,
+  handleInputChange,
+  values,
+  setCurrentCreate,
+}) => {
   const addInput = () => {
     let hasEmptyInput = false;
 
-    setInputs((prevInputs) => {
-      const updatedInputs = prevInputs.map((input) => {
-        if (input.value.trim() === '') {
-          hasEmptyInput = true;
-          return { ...input, error: true };
-        }
-        return input;
-      });
+    setCurrentCreate((prevState) => {
+      // Encuentra el índice del campo 'dominio'
+      const domainFieldIndex = prevState.fields.findIndex(
+        (field2) => field2.name === field.name
+      );
 
-      if (hasEmptyInput) {
-        return updatedInputs;
+      if (domainFieldIndex !== -1) {
+        // Crea una nueva copia del arreglo de campos
+        const updatedFields = [...prevState.fields];
+        // Actualiza el campo 'dominio' con las nuevas opciones
+        const updatedOptions = updatedFields[domainFieldIndex].options.map(
+          (data) => {
+            if (
+              !values[`${field.name}${data.id}`] || // Si el valor no está definido o es nulo
+              values[`${field.name}${data.id}`].trim() === ""
+            ) {
+              hasEmptyInput = true;
+              return { ...data, error: true };
+            }
+            return data;
+          }
+        );
+
+        // Si hay entradas vacías, actualiza los campos y retorna el nuevo estado
+        if (hasEmptyInput) {
+          updatedFields[domainFieldIndex] = {
+            ...updatedFields[domainFieldIndex],
+            options: updatedOptions,
+          };
+          return {
+            ...prevState,
+            fields: updatedFields,
+          };
+        }
+        // Si no hay entradas vacías, añade una nueva entrada
+        updatedFields[domainFieldIndex] = {
+          ...updatedFields[domainFieldIndex],
+          options: [
+            ...updatedOptions,
+            { id: updatedOptions.length + 1, value: "", error: false },
+          ],
+        };
+
+        return {
+          ...prevState,
+          fields: updatedFields,
+        };
       }
 
-      return [
-        ...updatedInputs,
-        { id: prevInputs.length + 1, value: '', error: false },
-      ];
+      return prevState;
     });
   };
 
   const removeInput = (id) => {
-    if (inputs.length === 1) {
-      return;
-    }
-    setInputs((prevInputs) =>
-      prevInputs
-        .filter((input) => input.id !== id)
-        .map((input, index) => ({ ...input, id: index + 1 }))
-    );
+    setCurrentCreate((prevState) => {
+      const updatedFields = prevState.fields.map((field) => {
+        if (field.name === field.name) {
+          const updatedOptions = field.options
+            ? field.options
+                .filter((option) => option.id !== id)
+                .map((option, index) => ({ ...option, id: index + 1 })) // Reasigna IDs
+            : [];
+  
+          return {
+            ...field,
+            options: updatedOptions,
+          };
+        }
+        return field;
+      });
+  
+      return {
+        ...prevState,
+        fields: updatedFields,
+      };
+    });
+  
+    // Suponiendo que tienes un estado llamado `setValues` para actualizar los valores del formulario
+    setValues((prevValues) => {
+      const newValues = { ...prevValues };
+      delete newValues[`${field.name}${id}`];  // Elimina el valor del input que ha sido removido
+      return newValues;
+    });
   };
-
+  
   return (
     <Grid container spacing={2}>
-      {inputs.map((input, index) => (
+      {field.options.map((input, index) => (
         <Grid item xs={6} key={input.id}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={11}>
               <TextField
                 fullWidth
-                id={field.name}
+                id={`${field.name}${input.id}`}
                 label={`Dominio ${input.id}`}
-                name={`${field.name}`}
+                name={`${field.name}${input.id}`}
                 type="text"
-                value={input.value}
+                value={values[`${field.name}${input.id}`] || ""}
                 required={field.isRequired}
-                onChange={(e) => handleInputChange2(input.id, e.target.value)}
-                error={input.error}
-                helperText={input.error ? 'Este campo es obligatorio' : ''}
+                onChange={(e) => handleInputChange(e)}
+                error={values[`${field.name}${input.id}Error`] || input.error}
+                helperText={
+                  values[`${field.name}${input.id}Error`] || input.error
+                    ? "Este campo es obligatorio"
+                    : ""
+                }
               />
             </Grid>
-            {inputs.length > 1 && (
+            {index > 0 && (
               <Grid item xs={1}>
                 <IconButton color="error" onClick={() => removeInput(input.id)}>
                   <DeleteIcon />
