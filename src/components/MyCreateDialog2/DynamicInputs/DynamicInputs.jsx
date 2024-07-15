@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Button, Grid, IconButton, TextField } from "@mui/material";
+import React, { useEffect, useState } from 'react';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Button, Grid, IconButton, TextField } from '@mui/material';
 
 export const DynamicInputs = ({
   setValues,
@@ -26,7 +26,7 @@ export const DynamicInputs = ({
           (data) => {
             if (
               !values[`${field.name}${data.id}`] || // Si el valor no está definido o es nulo
-              values[`${field.name}${data.id}`].trim() === ""
+              values[`${field.name}${data.id}`].trim() === ''
             ) {
               hasEmptyInput = true;
               return { ...data, error: true };
@@ -51,7 +51,7 @@ export const DynamicInputs = ({
           ...updatedFields[domainFieldIndex],
           options: [
             ...updatedOptions,
-            { id: updatedOptions.length + 1, value: "", error: false },
+            { id: updatedOptions.length + 1, value: '', error: false },
           ],
         };
 
@@ -109,14 +109,14 @@ export const DynamicInputs = ({
                 label={`Dominio ${input.id}`}
                 name={`${field.name}${input.id}`}
                 type="text"
-                value={values[`${field.name}${input.id}`] || ""}
+                value={values[`${field.name}${input.id}`] || ''}
                 required={field.isRequired}
                 onChange={(e) => handleInputChange(e)}
                 error={values[`${field.name}${input.id}Error`] || input.error}
                 helperText={
                   values[`${field.name}${input.id}Error`] || input.error
-                    ? "Este campo es obligatorio"
-                    : ""
+                    ? 'Este campo es obligatorio'
+                    : ''
                 }
               />
             </Grid>
