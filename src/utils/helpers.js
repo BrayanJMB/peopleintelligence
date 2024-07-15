@@ -170,7 +170,7 @@ export const validateForm = (fields, values, type) => {
       }else{
         field.options.forEach((fieldOptions) => {
           const { name, isRequired } = field;
-          const value = values[`${name}${fieldOptions.id}`] || '';
+          const value = values[`${name}${fieldOptions.id}`] || (fieldOptions.value ? fieldOptions.value : "");
           const { error, helperText } = validateField(name, value);
           if (
             isRequired &&

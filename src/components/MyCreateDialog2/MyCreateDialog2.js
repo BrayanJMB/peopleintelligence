@@ -147,7 +147,6 @@ const MyCreateDialog = ({
       if (field.type === "options") {
         let regex = new RegExp(`^${name}(\\d+)$`);
         let matchingValues = []; // Arreglo para recolectar los valores que coinciden
-        console.log("dsa")
         // Recorrer updatedValues para verificar coincidencias con la regex
         for (let key in updatedValues) {
           if (regex.test(key)) {
@@ -559,7 +558,7 @@ const MyCreateDialog = ({
                           setValues={setValues}
                           values={values}
                           field={currentCreate.fields.find(
-                            (field) => field.name === "dominio"
+                            (fields) => fields.name === field.name
                           )}
                           handleInputChange={handleInputChange}
                           setCurrentCreate={setCurrentCreate}
