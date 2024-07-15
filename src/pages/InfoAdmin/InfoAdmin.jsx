@@ -120,6 +120,7 @@ import { useContractType } from './OtrosCampos/contractTypeData';
 import { useDocumentType } from './OtrosCampos/documentTypeData';
 
 import styles from './InfoAdmin.module.css';
+import { getCompaniesByIdAPI } from '../../services/getCompanies.service';
 
 export default function InfoAdmin() {
   const [englishLevels, setNivelIngles] = useState([]);
@@ -148,6 +149,7 @@ export default function InfoAdmin() {
   const [currentCreate, setCurrentCreate] = useState(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [domains, setDomains] =  useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const admin = useSelector((state) => state.admin);
@@ -290,6 +292,7 @@ export default function InfoAdmin() {
           direccion: formValues.address,
           IdTamanoCompania: formValues.sizeCompany,
           SectorId: formValues.sector,
+          dominio: formValues.dominio,
         });
         dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
         enqueueSnackbar('Compañía creada con éxito', {
@@ -372,6 +375,7 @@ export default function InfoAdmin() {
           direccion: formValues.address,
           IdTamanoCompania: formValues.sizeCompany,
           SectorId: formValues.sector,
+          dominio: formValues.dominio
         });
 
         dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
@@ -586,6 +590,21 @@ export default function InfoAdmin() {
             label: sector.Sector,
           })),
         },
+        {
+          label: 'Dominio',
+          name: 'dominio',
+          type: 'options',
+          isRequired: true,
+          options: companyData.Dominio ? 
+          companyData.Dominio.split(",").map((item, index) => ({
+            id: index + 1,
+            value: item
+          })) : 
+          [{
+            id: 1,
+            value: "" 
+          }]
+        },
       ],
     });
     setOpenEditDialog(true);
@@ -646,7 +665,7 @@ export default function InfoAdmin() {
         },
         {
           label: 'Dominios',
-          name: 'dominio1',
+          name: 'dominio',
           type: 'options',
           isRequired: true,
           options: [{ id: 1, value: '', error: false }],
@@ -758,6 +777,7 @@ export default function InfoAdmin() {
       return acc;
     }, {});
 
+    const {data: domain} = await getCompaniesByIdAPI(currentCompany.id)
     const { data: sizeCompany } = await fetchSizeCompanyAPI();
     const sizeCompanyNames = sizeCompany.reduce((acc, sizeCompany) => {
       acc[sizeCompany.id] = sizeCompany.quantityOfEmployees;
@@ -770,11 +790,13 @@ export default function InfoAdmin() {
       nombreSector: sectorNames[company.SectorId],
       nombreTamañoCompañia: sizeCompanyNames[company.IdTamanoCompania],
       nombrePais: countryNames[company.IdPais],
+      domain: domains.Dominio
     }));
     setCompany(company);
   };
   // Fin company
 
+  
   //Roles Company
   const companyRolsColumns = [
     {
@@ -1776,6 +1798,13 @@ export default function InfoAdmin() {
   }, []);
 
   useEffect(() => {
+    if (!currentMultiCompanies) {
+      return;
+    }
+    dispatch(fetchCompanyMultiUser({ idUser: userInfo.user }));
+  }, []);
+
+  useEffect(() => {
     if (employecsv) {
       csvLink.current.link.click();
     }
@@ -2140,6 +2169,7 @@ export default function InfoAdmin() {
                         setFile={setFile}
                         logo={editLogo}
                         setLogo={setEditLogo}
+                        setCurrentEdit={setCurrentEdit}
                       />
                     )}
                   </Box>

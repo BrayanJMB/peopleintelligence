@@ -1,30 +1,30 @@
-import React, { useEffect,useRef, useState } from 'react';
-import { Grid } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import TextField from '@mui/material/TextField';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { esES } from '@mui/x-date-pickers/locales';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import dayjs from 'dayjs';
-import PropTypes from 'prop-types';
+import React, { useEffect, useRef, useState } from "react";
+import { Grid } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import TextField from "@mui/material/TextField";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { esES } from "@mui/x-date-pickers/locales";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs from "dayjs";
+import PropTypes from "prop-types";
 
-import defaultImage from '../../assets/default.png';
-import { validateField,validateForm } from '../../utils/helpers';
-
-import styles from '../MyCreateDialog2/MyCreateDialog2.module.css';
+import defaultImage from "../../assets/default.png";
+import { validateField, validateForm } from "../../utils/helpers";
+import { DynamicInputsEdit } from "./DynamicInputsEdit/DynamicInputsEdit";
+import styles from "../MyCreateDialog2/MyCreateDialog2.module.css";
 
 // form field types
 const FIELD_TYPES = {
-  TEXT: 'text',
+  TEXT: "text",
 };
 
 /**
@@ -33,17 +33,29 @@ const FIELD_TYPES = {
  * @returns {JSX.Element}
  * @constructor
  */
-const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setFile, logo, setLogo }) => {
-  const [image, setImage] = useState('');
+const MyEditDialog = ({
+  title,
+  fields,
+  open,
+  onClose,
+  onSubmit,
+  type,
+  file,
+  setFile,
+  logo,
+  setLogo,
+  setCurrentEdit,
+}) => {
+  console.log(fields);
+  const [image, setImage] = useState("");
   const [showDeleteIcon, setShowDeleteIcon] = useState(true);
   const [currentTab, setCurrentTab] = useState(0);
-  const [maxWidth, setMaxWidth] = useState('80%');
-  const maxDate = dayjs().subtract(18, 'years');
-
+  const [maxWidth, setMaxWidth] = useState("80%");
+  const maxDate = dayjs().subtract(18, "years");
   const createInitialValues = () => {
     const initialValues = {};
 
-    if (type === 'employee') {
+    if (type === "employee") {
       fields.forEach((sectionObj) =>
         Object.keys(sectionObj).forEach((section) =>
           sectionObj[section].forEach((field) => {
@@ -68,7 +80,6 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     const validationResult = validateField(name, value);
-
     let updatedValues = {
       ...values,
       [name]: value,
@@ -76,18 +87,18 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
       [`${name}HelperText`]: validationResult.helperText,
     };
 
-    if (name === 'dateBirth') {
-        const today = new Date();
-        const birthDate = new Date(value);
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        updatedValues = {
-          ...updatedValues,
-          ageEmployee: age,
-        };
+    if (name === "dateBirth") {
+      const today = new Date();
+      const birthDate = new Date(value);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      updatedValues = {
+        ...updatedValues,
+        ageEmployee: age,
+      };
     }
     setValues(updatedValues);
   };
@@ -105,7 +116,23 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = '';
+        updatedValues[name] = "";
+      }
+      if (field.type === "options") {
+        let regex = new RegExp(`^${name}(\\d+)$`);
+        let matchingValues = []; // Arreglo para recolectar los valores que coinciden
+        // Recorrer updatedValues para verificar coincidencias con la regex
+        for (let key in updatedValues) {
+          if (regex.test(key)) {
+            if (updatedValues[key] != null) {
+              // Solo añadir si no es null o undefined
+              matchingValues.push(updatedValues[key]);
+            }
+          }
+        }
+
+        // Usar join para unir todos los valores recolectados en una cadena separada por comas
+        updatedValues[name] = matchingValues.join(",");
       }
     }
 
@@ -125,7 +152,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = '';
+        updatedValues[name] = "";
       }
     }
 
@@ -145,7 +172,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
     for (let field of fields) {
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
-        updatedValues[name] = '';
+        updatedValues[name] = "";
       }
     }
 
@@ -163,63 +190,63 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
     setCurrentTab(currentTab - 1);
   };
 
-    //Logic for image
-    const fileInputRef = useRef();
+  //Logic for image
+  const fileInputRef = useRef();
 
-    const hiddenFileInput = {
-      display: 'none',
-    };
-  
-    const handleClick = () => {
-      fileInputRef.current.click();
-    };
-  
-    const handlePhoto = (e) => {
-      if (e.target.files && e.target.files[0]) {
-        if (e.target.files[0].size < 500000) {
-          setFile(e.target.files[0]); // Guarda el objeto File en lugar de la URL
-          setShowDeleteIcon(true);
-        } else {
-          alert('El tamaño de la imagen no puede ser mayor a 500kB');
-        }
-      }
-    };
-  
-    const handleDeleteImage = () => {
-      setFile(null);
-      setLogo(null);
-      setShowDeleteIcon(false);
-    };
-  
-    useEffect(() => {
-      if (file) {
-        setImage(file);
+  const hiddenFileInput = {
+    display: "none",
+  };
+
+  const handleClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handlePhoto = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      if (e.target.files[0].size < 500000) {
+        setFile(e.target.files[0]); // Guarda el objeto File en lugar de la URL
+        setShowDeleteIcon(true);
       } else {
-        setImage(defaultImage); // Ruta a la imagen por defecto
+        alert("El tamaño de la imagen no puede ser mayor a 500kB");
       }
-    }, [file]);
+    }
+  };
+
+  const handleDeleteImage = () => {
+    setFile(null);
+    setLogo(null);
+    setShowDeleteIcon(false);
+  };
+
+  useEffect(() => {
+    if (file) {
+      setImage(file);
+    } else {
+      setImage(defaultImage); // Ruta a la imagen por defecto
+    }
+  }, [file]);
 
   return (
     <div>
       <Dialog open={open} onClose={onClose} maxWidth={maxWidth}>
         <DialogTitle>{title}</DialogTitle>
-        <DialogContent sx={{ maxWidth: '80vw' }}>
+        <DialogContent sx={{ maxWidth: "80vw" }}>
           <Box
             sx={{
               marginTop: 1,
             }}
           >
-            {type === 'employee' && (
+            {type === "employee" && (
               <>
                 <Box
                   sx={{
                     borderBottom: 1,
-                    borderColor: 'divider',
+                    borderColor: "divider",
                   }}
                 >
-                  <Box sx={{ display: 'flex', justifyContent: 'between' }}>
+                  <Box sx={{ display: "flex", justifyContent: "between" }}>
                     <Tabs
-                      sx={{ width: '90%', justifyContent: 'center' }}
+                      sx={{ width: "90%", justifyContent: "center" }}
                       value={currentTab}
                       onChange={(event, newValue) =>
                         handleTabChange(event, newValue)
@@ -236,7 +263,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                     Object.keys(sectionObj).map((section, tabIndex) => {
                       return tabIndex === currentTab
                         ? sectionObj[section].map((field) => {
-                            if (field.type === 'text') {
+                            if (field.type === "text") {
                               return (
                                 <Grid
                                   item
@@ -261,7 +288,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                     required={field.isRequired}
                                     error={values[`${field.name}Error`]}
                                     helperText={
-                                      values[`${field.name}HelperText`] || ''
+                                      values[`${field.name}HelperText`] || ""
                                     }
                                     sx={{
                                       marginBottom: 2,
@@ -269,7 +296,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                   />
                                 </Grid>
                               );
-                            } else if (field.type === 'date') {
+                            } else if (field.type === "date") {
                               return (
                                 <Grid
                                   item
@@ -285,16 +312,22 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                     }
                                   >
                                     <DatePicker
-                                    maxDate={field.name === 'dateBirth' ? maxDate :undefined}
-                                    slotProps={{
-                                      textField: {
-                                        helperText: values[`${field.name}HelperText`] || '',
-                                        error:values[`${field.name}Error`],
-                                      },
-                                    }}
+                                      maxDate={
+                                        field.name === "dateBirth"
+                                          ? maxDate
+                                          : undefined
+                                      }
+                                      slotProps={{
+                                        textField: {
+                                          helperText:
+                                            values[`${field.name}HelperText`] ||
+                                            "",
+                                          error: values[`${field.name}Error`],
+                                        },
+                                      }}
                                       sx={{
                                         marginBottom: 2,
-                                        width: '100%',
+                                        width: "100%",
                                       }}
                                       id={field.name}
                                       label={field.label}
@@ -318,7 +351,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                           error={values[`${field.name}Error`]}
                                           helperText={
                                             values[`${field.name}HelperText`] ||
-                                            ''
+                                            ""
                                           }
                                           sx={{
                                             marginBottom: 2,
@@ -329,7 +362,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                   </LocalizationProvider>
                                 </Grid>
                               );
-                            } else if (field.type === 'select') {
+                            } else if (field.type === "select") {
                               return (
                                 <Grid
                                   item
@@ -355,7 +388,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                       handleInputChange({
                                         target: {
                                           name: field.name,
-                                          value: newValue ? newValue.value : '',
+                                          value: newValue ? newValue.value : "",
                                         },
                                       });
                                     }}
@@ -367,7 +400,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                         error={values[`${field.name}Error`]}
                                         helperText={
                                           values[`${field.name}HelperText`] ||
-                                          ''
+                                          ""
                                         }
                                       />
                                     )}
@@ -429,7 +462,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
               </>
             )}
 
-            {type === 'company' && (
+            {type === "company" && (
               <div className={styles.containerImage}>
                 <img
                   src={file ? URL.createObjectURL(file) : logo || image} // Muestra la URL del objeto File
@@ -456,7 +489,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
             <Grid container spacing={2}>
               {/* form fields */}
               {fields.map((field) => {
-                if (field.type === 'text') {
+                if (field.type === "text") {
                   return (
                     <Grid item xs={12} sm={6} key={field.name}>
                       <TextField
@@ -466,18 +499,18 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                         name={field.name}
                         onChange={handleInputChange}
                         type="text"
-                        value={values[field.name] || ''}
+                        value={values[field.name] || ""}
                         variant="outlined"
                         required={field.isRequired}
                         error={values[`${field.name}Error`]}
-                        helperText={values[`${field.name}HelperText`] || ''}
+                        helperText={values[`${field.name}HelperText`] || ""}
                         sx={{
                           marginBottom: 2,
                         }}
                       />
                     </Grid>
                   );
-                } else if (field.type === 'select') {
+                } else if (field.type === "select") {
                   return (
                     <Grid item xs={12} sm={6} key={`${field.name}`}>
                       <Autocomplete
@@ -497,7 +530,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                           handleInputChange({
                             target: {
                               name: field.name,
-                              value: newValue ? newValue.value : '',
+                              value: newValue ? newValue.value : "",
                             },
                           });
                         }}
@@ -507,9 +540,23 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                             label={field.label}
                             required={field.isRequired}
                             error={values[`${field.name}Error`]}
-                            helperText={values[`${field.name}HelperText`] || ''}
+                            helperText={values[`${field.name}HelperText`] || ""}
                           />
                         )}
+                      />
+                    </Grid>
+                  );
+                } else if (field.type === "options") {
+                  return (
+                    <Grid item xs={12} sm={12} key={`${field.name}`}>
+                      <DynamicInputsEdit
+                        setValues={setValues}
+                        values={values}
+                        field={fields.find(
+                          (fields) => fields.name === field.name
+                        )}
+                        handleInputChange={handleInputChange}
+                        setCurrentEdit={setCurrentEdit}
                       />
                     </Grid>
                   );
@@ -518,7 +565,7 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
             </Grid>
           </Box>
         </DialogContent>
-        {type !== 'employee' && (
+        {type !== "employee" && (
           <DialogActions>
             <Button onClick={onClose}>Cancelar</Button>
             <Button variant="contained" onClick={handleFormSubmit}>

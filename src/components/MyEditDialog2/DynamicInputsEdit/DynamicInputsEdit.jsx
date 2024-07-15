@@ -2,17 +2,17 @@ import React, { useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Button, Grid, IconButton, TextField } from "@mui/material";
 
-export const DynamicInputs = ({
+export const DynamicInputsEdit = ({
   setValues,
   field,
   handleInputChange,
   values,
-  setCurrentCreate,
+  setCurrentEdit,
 }) => {
   const addInput = () => {
     let hasEmptyInput = false;
 
-    setCurrentCreate((prevState) => {
+    setCurrentEdit((prevState) => {
       // Encuentra el índice del campo 'dominio'
       const domainFieldIndex = prevState.fields.findIndex(
         (field2) => field2.name === field.name
@@ -25,8 +25,9 @@ export const DynamicInputs = ({
         const updatedOptions = updatedFields[domainFieldIndex].options.map(
           (data) => {
             if (
-              !values[`${field.name}${data.id}`] || // Si el valor no está definido o es nulo
-              values[`${field.name}${data.id}`].trim() === ""
+              (!values[`${field.name}${data.id}`] || // Si el valor no está definido o es nulo
+                values[`${field.name}${data.id}`].trim() ||
+                data.value) === ""
             ) {
               hasEmptyInput = true;
               return { ...data, error: true };
@@ -65,38 +66,68 @@ export const DynamicInputs = ({
     });
   };
 
-  const removeInput = (id) => {
-    setCurrentCreate((prevState) => {
-      const updatedFields = prevState.fields.map((field) => {
-        if (field.name === field.name) {
-          const updatedOptions = field.options
-            ? field.options
-                .filter((option) => option.id !== id)
-                .map((option, index) => ({ ...option, id: index + 1 })) // Reasigna IDs
-            : [];
-  
-          return {
-            ...field,
-            options: updatedOptions,
-          };
-        }
-        return field;
+const removeInput = (id) => {
+  setCurrentEdit((prevState) => {
+    const updatedFields = prevState.fields.map((field) => {
+      const updatedOptions = field.options
+        ? field.options.filter((option) => option.id !== id)
+        : [];
+
+      // Reasignar IDs aquí para que los índices sean siempre consecutivos
+      updatedOptions.forEach((option, index) => {
+        option.id = index + 1;
       });
-  
+
       return {
-        ...prevState,
-        fields: updatedFields,
+        ...field,
+        options: updatedOptions,
       };
     });
-  
-    // Suponiendo que tienes un estado llamado `setValues` para actualizar los valores del formulario
-    setValues((prevValues) => {
-      const newValues = { ...prevValues };
-      delete newValues[`${field.name}${id}`];  // Elimina el valor del input que ha sido removido
-      return newValues;
+
+    return {
+      ...prevState,
+      fields: updatedFields,
+    };
+  });
+
+  // Actualizar el estado de los valores cuando se elimina un input
+  setValues((prevValues) => {
+    const newValues = { ...prevValues };
+
+    // Eliminar la clave del valor que corresponde al input eliminado
+    Object.keys(newValues).forEach((key) => {
+      // Verificar si la clave corresponde al campo y al ID que estamos eliminando
+      if (key.startsWith(field.name) && parseInt(key.substring(field.name.length)) === id) {
+        delete newValues[key]; // Eliminar el valor asociado al input eliminado
+      }
+
+      // Actualizar las claves de los valores restantes si es necesario
+      // Esto asume que el orden de los campos importa y que los IDs son secuenciales
+      if (key.startsWith(field.name) && parseInt(key.substring(field.name.length)) > id) {
+        const newKey = field.name + (parseInt(key.substring(field.name.length)) - 1);
+        newValues[newKey] = newValues[key];
+        delete newValues[key];
+      }
     });
-  };
-  
+
+    return newValues;
+  });
+};
+
+
+  useEffect(() => {
+    // Mapear todas las opciones en field.options para actualizar values
+    let updatedValues = { ...values };
+
+    // Asignar cada opción al estado basado en `fieldname + id`
+    field.options.forEach((option) => {
+      const key = `${field.name}${option.id}`; // Construye la clave como 'dominion1', 'dominion2', etc.
+      updatedValues[key] = option.value; // Asigna el valor de la opción a la clave
+    });
+
+    setValues(updatedValues); // Actualiza el estado con los nuevos valores
+  }, [setValues]);
+
   return (
     <Grid container spacing={2}>
       {field.options.map((input, index) => (
