@@ -129,7 +129,7 @@ export const handleDelete = async (
  */
 
 export const validateForm = (fields, values, type) => {
-  console.log(values)
+  console.log(values);
   const validationErrors = {};
   if (type === 'employee') {
     fields.forEach((sectionObj) =>
@@ -153,7 +153,7 @@ export const validateForm = (fields, values, type) => {
     );
   } else {
     fields.forEach((field) => {
-      if (field.type !== "options"){
+      if (field.type !== 'options'){
         const { name, isRequired } = field;
         const value = values[name] || '';
         const { error, helperText } = validateField(name, value);
@@ -170,7 +170,7 @@ export const validateForm = (fields, values, type) => {
       }else{
         field.options.forEach((fieldOptions) => {
           const { name, isRequired } = field;
-          const value = values[`${name}${fieldOptions.id}`] || (fieldOptions.value ? fieldOptions.value : "");
+          const value = values[`${name}${fieldOptions.id}`] || (fieldOptions.value ? fieldOptions.value : '');
           const { error, helperText } = validateField(name, value);
           if (
             isRequired &&
@@ -182,7 +182,7 @@ export const validateForm = (fields, values, type) => {
             validationErrors[`${name}${fieldOptions.id}Error`] = error;
             validationErrors[`${name}${fieldOptions.id}HelperText`] = helperText;
           }
-        })
+        });
         
       }
     });
