@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef,useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -12,6 +12,7 @@ import LinkIcon from '@mui/icons-material/Link';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ReplyIcon from '@mui/icons-material/Reply';
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Divider } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -24,11 +25,13 @@ import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Modal from '@mui/material/Modal';
 import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import { useSnackbar } from 'notistack';
+import QRCode from 'qrcode.react';
 
 import DemographicDataForm from '../../components/DemographicDataForm/DemographicDataForm';
 import MyCard from '../../components/MyCard/MyCard';
@@ -48,7 +51,6 @@ import NotFoundMessage from '../AnswerSurvey/components/NotFoundMessage/NotFound
 import SendInvitationDialog from './components/SendInvitationDialog/SendInvitationDialog';
 
 import styles from './SurveyDetailPage.module.css';
-
 
 // survey options
 const options = [
@@ -87,7 +89,10 @@ const SurveyDetailPage = () => {
   const [reminderSent, setReminderSent] = useState(false);
   const [showDemographicData, setShowDemographicData] = useState(false);
   const [alertType, setAlertType] = useState('');
-
+  const qrRef = useRef(null);
+  const [openModal, setOpenModal] = useState(false);
+  const handleOpen = () => setOpenModal(true);
+  const handleClose = () => setOpenModal(false);
   // flags, tags and counters.
   const [chips, setChips] = useState([
     {
@@ -136,10 +141,12 @@ const SurveyDetailPage = () => {
     if (option === 'Borrar') {
       handleDeleteSurvey(currentSurvey.response.surveyId);
     }
-    if (option === 'Editar'){
-      navigate(`/journey/edit-survey/${currentSurvey.response.surveyId}?isTemplate=False&isEdit=true`);
+    if (option === 'Editar') {
+      navigate(
+        `/journey/edit-survey/${currentSurvey.response.surveyId}?isTemplate=False&isEdit=true`
+      );
     }
-    if(option === 'Duplicar'){
+    if (option === 'Duplicar') {
       handleEditSurvey(currentSurvey.response.surveyId);
     }
     setAnchorEl(null);
@@ -151,7 +158,9 @@ const SurveyDetailPage = () => {
     }
 
     try {
-      const response = await client.post(`CloneJourney/${idSurvey}/${currentCompany.id}`);
+      const response = await client.post(
+        `CloneJourney/${idSurvey}/${currentCompany.id}`
+      );
       if (response.status === 200) {
         enqueueSnackbar('Encuesta clonada satisfactoriamente', {
           variant: 'success',
@@ -197,28 +206,47 @@ const SurveyDetailPage = () => {
 
   const handleClickDownload = async (event) => {
     event.preventDefault();
-  
+
     const companyId = userInfo.Company;
-  
+
     try {
-      const response = await client.get(`JourneyDownloadFile/${companyId}/${surveyId}`, {
-        responseType: 'blob',  // Indica que se espera un archivo binario (como un PDF, imagen, etc.)
-      });
-      const filename = response.headers['content-disposition'].split('filename=')[1].split(';')[0].replace(/"/g, '');
+      const response = await client.get(
+        `JourneyDownloadFile/${companyId}/${surveyId}`,
+        {
+          responseType: 'blob', // Indica que se espera un archivo binario (como un PDF, imagen, etc.)
+        }
+      );
+      const filename = response.headers['content-disposition']
+        .split('filename=')[1]
+        .split(';')[0]
+        .replace(/"/g, '');
       // Crear un enlace temporal para descargar el archivo
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', filename);  // Aquí puedes especificar el nombre del archivo
+      link.setAttribute('download', filename); // Aquí puedes especificar el nombre del archivo
       document.body.appendChild(link);
       link.click();
-  
+
       // Limpiar el enlace temporal después de la descarga
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error downloading the file:', error);
     }
+  };
+
+  const handleClickDownloadQR = () => {
+    const qrCodeURL = document
+      .getElementById('qrCodeCanvas')
+      .toDataURL('image/png')
+      .replace('image/png', 'image/octet-stream');
+    let aEl = document.createElement('a');
+    aEl.href = qrCodeURL;
+    aEl.download = 'QR_Code.png';
+    document.body.appendChild(aEl);
+    aEl.click();
+    document.body.removeChild(aEl);
   };
 
   /**
@@ -324,8 +352,8 @@ const SurveyDetailPage = () => {
       <div style={{ backgroundColor: 'white' }}>
         <div className={styles.SurveyDetailPage}>
           <div className={styles.SurveyDetailPage__content}>
-            {surveysStatus === 'loading' && (<MyLoader />)}
-            {surveysStatus === 'failed' && (<NotFoundMessage />)}
+            {surveysStatus === 'loading' && <MyLoader />}
+            {surveysStatus === 'failed' && <NotFoundMessage />}
             {currentSurvey !== null && surveysStatus === 'succeeded' && (
               <Box sx={{ flexGrow: 1 }}>
                 {/* header */}
@@ -426,13 +454,13 @@ const SurveyDetailPage = () => {
                         }
                       >
                         <Stack spacing={2} direction="row">
-                            <Button
-                              onClick={sendReminder}
-                              startIcon={<ScheduleSendIcon />}
-                              variant="text"
-                            >
-                              Enviar recordatorio
-                            </Button>
+                          <Button
+                            onClick={sendReminder}
+                            startIcon={<ScheduleSendIcon />}
+                            variant="text"
+                          >
+                            Enviar recordatorio
+                          </Button>
                           <Snackbar
                             open={reminderSent}
                             autoHideDuration={3000}
@@ -483,11 +511,49 @@ const SurveyDetailPage = () => {
                         <IconButton onClick={handleClickDownload}>
                           <DownloadIcon />
                         </IconButton>
+                        <Button
+                          onClick={handleOpen}
+                          startIcon={<VisibilityIcon />}
+                        >
+                          Ver Código QR
+                        </Button>
                       </div>
                     </div>
                   </MyCard>
                 </Grid>
-
+                {/* Modal */}
+                <Modal
+                  open={openModal}
+                  onClose={handleClose}
+                  aria-labelledby="modal-modal-title"
+                  aria-describedby="modal-modal-description"
+                >
+                  <Box className={styles.SurveyDetailPageQR}>
+                    <Typography
+                      id="modal-modal-title"
+                      variant="h6"
+                      component="h2"
+                    >
+                      Código QR
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                      Escanea el código para acceder al enlace.
+                    </Typography>
+                    <div ref={qrRef}>
+                      <QRCode
+                        id="qrCodeCanvas"
+                        value={currentSurvey.response.link}
+                        size={256}
+                        level={'H'}
+                        bgColor={'#ffffff'}
+                        fgColor={'#000000'}
+                      />
+                    </div>
+                    <IconButton onClick={handleClickDownloadQR} sx={{ mt: 2 }}>
+                      <p>Descargar código QR</p>
+                    </IconButton>
+                  </Box>
+                </Modal>
                 {/* questions */}
                 <Grid item xs={12}>
                   <MyCard>
@@ -502,46 +568,54 @@ const SurveyDetailPage = () => {
                           key={questionId}
                           className={styles.SurveyDetailPage__question}
                         >
-                          <div style={{display:'flex'}}>
-                          <Typography
-                            className={
-                              styles.SurveyDetailPage__question__number
-                            }
-                            variant="body1"
-                            style={{ fontWeight: 'bold' }}
-                            gutterBottom
-                          >
-                            R{questionNumber}.
-                          </Typography>
-                          <Box sx={{ width: 1 }}>
+                          <div style={{ display: 'flex' }}>
                             <Typography
+                              className={
+                                styles.SurveyDetailPage__question__number
+                              }
                               variant="body1"
-                              style={{ fontWeight: 'bold', wordBreak:'break-word' }}
+                              style={{ fontWeight: 'bold' }}
                               gutterBottom
                             >
-                              {questionName}
+                              R{questionNumber}.
                             </Typography>
-                            {/* answers */}
-                            <div className={styles.SurveyDetailPage__answers}>
-                              <Grid container spacing={2}>
-                                {options.map(({ numberOption, optionName }) => (
-                                  <Grid key={numberOption} sm={6} item>
-                                    <Typography variant="body2" gutterBottom>
-                                      <span
-                                        className={
-                                          styles.SurveyDetailPage__answers__answer
-                                        }
-                                      >
-                                        {numberOption}
-                                      </span>
-                                      {optionName}
-                                    </Typography>
-                                  </Grid>
-                                ))}
-                              </Grid>
-                            </div>
-                          </Box>
-                        </div>
+                            <Box sx={{ width: 1 }}>
+                              <Typography
+                                variant="body1"
+                                style={{
+                                  fontWeight: 'bold',
+                                  wordBreak: 'break-word',
+                                }}
+                                gutterBottom
+                              >
+                                {questionName}
+                              </Typography>
+                              {/* answers */}
+                              <div className={styles.SurveyDetailPage__answers}>
+                                <Grid container spacing={2}>
+                                  {options.map(
+                                    ({ numberOption, optionName }) => (
+                                      <Grid key={numberOption} sm={6} item>
+                                        <Typography
+                                          variant="body2"
+                                          gutterBottom
+                                        >
+                                          <span
+                                            className={
+                                              styles.SurveyDetailPage__answers__answer
+                                            }
+                                          >
+                                            {numberOption}
+                                          </span>
+                                          {optionName}
+                                        </Typography>
+                                      </Grid>
+                                    )
+                                  )}
+                                </Grid>
+                              </div>
+                            </Box>
+                          </div>
                         </div>
                       )
                     )}
