@@ -1,56 +1,56 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams, useSearchParams } from "react-router-dom";
-import { useLocation, useNavigate } from "react-router-dom";
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import Modal from "@mui/material/Modal";
-import DeleteIcon from "@mui/icons-material/Delete";
-import DownloadIcon from "@mui/icons-material/Download";
-import EditIcon from "@mui/icons-material/Edit";
-import EmailIcon from "@mui/icons-material/Email";
-import LinkIcon from "@mui/icons-material/Link";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import ReplyIcon from "@mui/icons-material/Reply";
-import ScheduleSendIcon from "@mui/icons-material/ScheduleSend";
-import { Divider } from "@mui/material";
-import Alert from "@mui/material/Alert";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Chip from "@mui/material/Chip";
-import { amber, blue, teal } from "@mui/material/colors";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormGroup from "@mui/material/FormGroup";
-import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import Snackbar from "@mui/material/Snackbar";
-import Stack from "@mui/material/Stack";
-import Switch from "@mui/material/Switch";
-import Typography from "@mui/material/Typography";
-import { useSnackbar } from "notistack";
+import React, { useEffect, useRef,useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DownloadIcon from '@mui/icons-material/Download';
+import EditIcon from '@mui/icons-material/Edit';
+import EmailIcon from '@mui/icons-material/Email';
+import LinkIcon from '@mui/icons-material/Link';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ReplyIcon from '@mui/icons-material/Reply';
+import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Divider } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+import { amber, blue, teal } from '@mui/material/colors';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Modal from '@mui/material/Modal';
+import Snackbar from '@mui/material/Snackbar';
+import Stack from '@mui/material/Stack';
+import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
+import { useSnackbar } from 'notistack';
+import QRCode from 'qrcode.react';
 
-import DemographicDataForm from "../../components/DemographicDataForm/DemographicDataForm";
-import MyCard from "../../components/MyCard/MyCard";
-import MyLoader from "../../components/MyLoader/MyLoader";
-import MyPageHeader from "../../components/MyPageHeader/MyPageHeader";
-import { currentCompanySelected } from "../../features/companies/companiesSlice";
+import DemographicDataForm from '../../components/DemographicDataForm/DemographicDataForm';
+import MyCard from '../../components/MyCard/MyCard';
+import MyLoader from '../../components/MyLoader/MyLoader';
+import MyPageHeader from '../../components/MyPageHeader/MyPageHeader';
+import { currentCompanySelected } from '../../features/companies/companiesSlice';
 import {
   fetchSurveyByIdAndCompanyId,
   selectCurrentSurvey,
   selectSurveysStatus,
-} from "../../features/surveys/surveysSlice";
-import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
-import Navbar from "../../Layout/Navbar/Navbar";
-import client, { API } from "../../utils/axiosInstance";
-import NotFoundMessage from "../AnswerSurvey/components/NotFoundMessage/NotFoundMessage";
+} from '../../features/surveys/surveysSlice';
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../Layout/Navbar/Navbar';
+import client, { API } from '../../utils/axiosInstance';
+import NotFoundMessage from '../AnswerSurvey/components/NotFoundMessage/NotFoundMessage';
 
-import SendInvitationDialog from "./components/SendInvitationDialog/SendInvitationDialog";
+import SendInvitationDialog from './components/SendInvitationDialog/SendInvitationDialog';
 
-import styles from "./SurveyDetailPage.module.css";
-import QRCode from "qrcode.react";
+import styles from './SurveyDetailPage.module.css';
 
 // survey options
 const options = [
@@ -64,7 +64,7 @@ const options = [
   },
   */
   {
-    option: "Borrar",
+    option: 'Borrar',
     icon: <DeleteIcon />,
   },
 ];
@@ -78,7 +78,7 @@ const options = [
 const SurveyDetailPage = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const { id: surveyId } = useParams();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
@@ -88,7 +88,7 @@ const SurveyDetailPage = () => {
   const [linkCopied, setLinkCopied] = useState(false);
   const [reminderSent, setReminderSent] = useState(false);
   const [showDemographicData, setShowDemographicData] = useState(false);
-  const [alertType, setAlertType] = useState("");
+  const [alertType, setAlertType] = useState('');
   const qrRef = useRef(null);
   const [openModal, setOpenModal] = useState(false);
   const handleOpen = () => setOpenModal(true);
@@ -97,14 +97,14 @@ const SurveyDetailPage = () => {
   const [chips, setChips] = useState([
     {
       id: 1,
-      text: "Encuesta anónima",
+      text: 'Encuesta anónima',
       backgroundColor: blue[200],
       color: blue[900],
       icon: <AdminPanelSettingsIcon style={{ color: blue[900] }} />,
     },
     {
       id: 2,
-      text: "Usuarios invitados",
+      text: 'Usuarios invitados',
       backgroundColor: amber[100],
       color: amber[800],
       icon: <EmailIcon style={{ color: amber[800] }} />,
@@ -112,18 +112,18 @@ const SurveyDetailPage = () => {
     },
     {
       id: 3,
-      text: "Respuestas",
-      backgroundColor: teal["A100"],
+      text: 'Respuestas',
+      backgroundColor: teal['A100'],
       color: teal[900],
       icon: <ReplyIcon style={{ color: teal[900] }} />,
       counter: 0,
     },
   ]);
   const [searchParams] = useSearchParams();
-  const isOpenSendMail = searchParams.get("sendMail") === "true";
+  const isOpenSendMail = searchParams.get('sendMail') === 'true';
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarMessage, setSnackbarMessage] = useState('');
   const navigate = useNavigate();
   /**
    * Handle click menu for open survey options.
@@ -138,15 +138,15 @@ const SurveyDetailPage = () => {
    * Handle close menu for close survey options.
    */
   const handleCloseMenu = (option) => {
-    if (option === "Borrar") {
+    if (option === 'Borrar') {
       handleDeleteSurvey(currentSurvey.response.surveyId);
     }
-    if (option === "Editar") {
+    if (option === 'Editar') {
       navigate(
         `/journey/edit-survey/${currentSurvey.response.surveyId}?isTemplate=False&isEdit=true`
       );
     }
-    if (option === "Duplicar") {
+    if (option === 'Duplicar') {
       handleEditSurvey(currentSurvey.response.surveyId);
     }
     setAnchorEl(null);
@@ -162,14 +162,14 @@ const SurveyDetailPage = () => {
         `CloneJourney/${idSurvey}/${currentCompany.id}`
       );
       if (response.status === 200) {
-        enqueueSnackbar("Encuesta clonada satisfactoriamente", {
-          variant: "success",
+        enqueueSnackbar('Encuesta clonada satisfactoriamente', {
+          variant: 'success',
           autoHideDuration: 2000,
         });
       }
     } catch (error) {
-      enqueueSnackbar("Error al clonar la encuesta", {
-        variant: "error",
+      enqueueSnackbar('Error al clonar la encuesta', {
+        variant: 'error',
         autoHideDuration: 2000,
       });
     }
@@ -183,18 +183,18 @@ const SurveyDetailPage = () => {
     try {
       const response = await client.delete(`deleteSurvey/${idSurvey}`);
       if (response.status === 200) {
-        setSnackbarMessage("Encuesta eliminada satifactoriamente");
+        setSnackbarMessage('Encuesta eliminada satifactoriamente');
         setOpenSnackbar(true);
-        setAlertType("success");
+        setAlertType('success');
 
         setTimeout(() => {
-          navigate("/journey");
+          navigate('/journey');
         }, 1000);
       }
     } catch (error) {
-      setSnackbarMessage("Hubo un error al momento de eliminar la encuesta");
+      setSnackbarMessage('Hubo un error al momento de eliminar la encuesta');
       setOpenSnackbar(true);
-      setAlertType("error");
+      setAlertType('error');
     }
   };
 
@@ -213,18 +213,18 @@ const SurveyDetailPage = () => {
       const response = await client.get(
         `JourneyDownloadFile/${companyId}/${surveyId}`,
         {
-          responseType: "blob", // Indica que se espera un archivo binario (como un PDF, imagen, etc.)
+          responseType: 'blob', // Indica que se espera un archivo binario (como un PDF, imagen, etc.)
         }
       );
-      const filename = response.headers["content-disposition"]
-        .split("filename=")[1]
-        .split(";")[0]
-        .replace(/"/g, "");
+      const filename = response.headers['content-disposition']
+        .split('filename=')[1]
+        .split(';')[0]
+        .replace(/"/g, '');
       // Crear un enlace temporal para descargar el archivo
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
-      link.setAttribute("download", filename); // Aquí puedes especificar el nombre del archivo
+      link.setAttribute('download', filename); // Aquí puedes especificar el nombre del archivo
       document.body.appendChild(link);
       link.click();
 
@@ -232,18 +232,18 @@ const SurveyDetailPage = () => {
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error downloading the file:", error);
+      console.error('Error downloading the file:', error);
     }
   };
 
   const handleClickDownloadQR = () => {
     const qrCodeURL = document
-      .getElementById("qrCodeCanvas")
-      .toDataURL("image/png")
-      .replace("image/png", "image/octet-stream");
-    let aEl = document.createElement("a");
+      .getElementById('qrCodeCanvas')
+      .toDataURL('image/png')
+      .replace('image/png', 'image/octet-stream');
+    let aEl = document.createElement('a');
     aEl.href = qrCodeURL;
-    aEl.download = "QR_Code.png";
+    aEl.download = 'QR_Code.png';
     document.body.appendChild(aEl);
     aEl.click();
     document.body.removeChild(aEl);
@@ -301,7 +301,7 @@ const SurveyDetailPage = () => {
      * @returns {Promise<void>}
      */
     const fetchCurrentSurvey = async () => {
-      if (surveysStatus === "loading") {
+      if (surveysStatus === 'loading') {
         return;
       }
 
@@ -325,9 +325,9 @@ const SurveyDetailPage = () => {
 
         // personal data
         if (currentSurvey.ispersonal) {
-          newChips[0].text = "Encuesta personalizada";
+          newChips[0].text = 'Encuesta personalizada';
         } else {
-          newChips[0].text = "Encuesta anónima";
+          newChips[0].text = 'Encuesta anónima';
         }
 
         return newChips;
@@ -336,7 +336,7 @@ const SurveyDetailPage = () => {
   }, [currentSurvey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Snackbar
         open={openSnackbar}
         autoHideDuration={3000} // Cierra el Snackbar automáticamente después de 6 segundos
@@ -349,12 +349,12 @@ const SurveyDetailPage = () => {
       <Navbar />
       <IconSidebar />
 
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: 'white' }}>
         <div className={styles.SurveyDetailPage}>
           <div className={styles.SurveyDetailPage__content}>
-            {surveysStatus === "loading" && <MyLoader />}
-            {surveysStatus === "failed" && <NotFoundMessage />}
-            {currentSurvey !== null && surveysStatus === "succeeded" && (
+            {surveysStatus === 'loading' && <MyLoader />}
+            {surveysStatus === 'failed' && <NotFoundMessage />}
+            {currentSurvey !== null && surveysStatus === 'succeeded' && (
               <Box sx={{ flexGrow: 1 }}>
                 {/* header */}
                 <Grid item xs={12}>
@@ -372,8 +372,8 @@ const SurveyDetailPage = () => {
                         <IconButton
                           aria-label="more"
                           id="long-button"
-                          aria-controls={open ? "long-menu" : undefined}
-                          aria-expanded={open ? "true" : undefined}
+                          aria-controls={open ? 'long-menu' : undefined}
+                          aria-expanded={open ? 'true' : undefined}
                           aria-haspopup="true"
                           onClick={handleClickMenu}
                         >
@@ -382,7 +382,7 @@ const SurveyDetailPage = () => {
                         <Menu
                           id="long-menu"
                           MenuListProps={{
-                            "aria-labelledby": "long-button",
+                            'aria-labelledby': 'long-button',
                           }}
                           anchorEl={anchorEl}
                           open={open}
@@ -390,7 +390,7 @@ const SurveyDetailPage = () => {
                           PaperProps={{
                             style: {
                               maxHeight: 48 * 4.5,
-                              width: "20ch",
+                              width: '20ch',
                             },
                           }}
                         >
@@ -426,7 +426,7 @@ const SurveyDetailPage = () => {
                               }}
                               icon={icon}
                               label={`${
-                                typeof counter !== "undefined" ? counter : ""
+                                typeof counter !== 'undefined' ? counter : ''
                               } ${text}`}
                             />
                           )
@@ -490,7 +490,7 @@ const SurveyDetailPage = () => {
                     {/* demographic data form */}
                     {showDemographicData === true && (
                       <Box mt={3}>
-                        <Divider sx={{ margin: "21px 0" }} />
+                        <Divider sx={{ margin: '21px 0' }} />
                         <DemographicDataForm surveyId={Number(surveyId)} />
                       </Box>
                     )}
@@ -544,9 +544,9 @@ const SurveyDetailPage = () => {
                         id="qrCodeCanvas"
                         value={currentSurvey.response.link}
                         size={256}
-                        level={"H"}
-                        bgColor={"#ffffff"}
-                        fgColor={"#000000"}
+                        level={'H'}
+                        bgColor={'#ffffff'}
+                        fgColor={'#000000'}
                       />
                     </div>
                     <IconButton onClick={handleClickDownloadQR} sx={{ mt: 2 }}>
@@ -568,13 +568,13 @@ const SurveyDetailPage = () => {
                           key={questionId}
                           className={styles.SurveyDetailPage__question}
                         >
-                          <div style={{ display: "flex" }}>
+                          <div style={{ display: 'flex' }}>
                             <Typography
                               className={
                                 styles.SurveyDetailPage__question__number
                               }
                               variant="body1"
-                              style={{ fontWeight: "bold" }}
+                              style={{ fontWeight: 'bold' }}
                               gutterBottom
                             >
                               R{questionNumber}.
@@ -583,8 +583,8 @@ const SurveyDetailPage = () => {
                               <Typography
                                 variant="body1"
                                 style={{
-                                  fontWeight: "bold",
-                                  wordBreak: "break-word",
+                                  fontWeight: 'bold',
+                                  wordBreak: 'break-word',
                                 }}
                                 gutterBottom
                               >
