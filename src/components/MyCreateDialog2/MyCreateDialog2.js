@@ -72,6 +72,7 @@ const MyCreateDialog = ({
 }) => {
   const [image, setImage] = useState('');
   const [showDeleteIcon, setShowDeleteIcon] = useState(false);
+
   const [currentTab, setCurrentTab] = useState(0);
   const [maxWidth, setMaxWidth] = useState('80%');
   const maxDate = dayjs().subtract(18, 'years');
@@ -143,6 +144,22 @@ const MyCreateDialog = ({
       if (!(name in values) && !isRequired) {
         updatedValues[name] = '';
       }
+      if (field.type === 'options') {
+        let regex = new RegExp(`^${name}(\\d+)$`);
+        let matchingValues = []; // Arreglo para recolectar los valores que coinciden
+        // Recorrer updatedValues para verificar coincidencias con la regex
+        for (let key in updatedValues) {
+          if (regex.test(key)) {
+            if (updatedValues[key] != null) {
+              // Solo añadir si no es null o undefined
+              matchingValues.push(updatedValues[key]);
+            }
+          }
+        }
+
+        // Usar join para unir todos los valores recolectados en una cadena separada por comas
+        updatedValues[name] = matchingValues.join(', ');
+      }
     }
     // Actualizar el objeto `values` con la copia actualizada
     setValues(updatedValues);
@@ -153,7 +170,6 @@ const MyCreateDialog = ({
       onSubmit(updatedValues);
     }
   };
-
 
   const handleTabChange = (event, newValue) => {
     // Agregar los campos que no tengan valor al objeto `values`
@@ -233,18 +249,6 @@ const MyCreateDialog = ({
       setImage(defaultImage); // Ruta a la imagen por defecto
     }
   }, [file]);
-
-  const handleDynamicInputChange = (name, value) => {
-    setCurrentCreate((prevState) => {
-      const fields = prevState.fields.map((field) => {
-        if (field.name === name) {
-          return { ...field, options: value };
-        }
-        return field;
-      });
-      return { ...prevState, fields };
-    });
-  };
 
   return (
     <div>
@@ -551,15 +555,13 @@ const MyCreateDialog = ({
                     return (
                       <Grid item xs={12} sm={12} key={`${field.name}`}>
                         <DynamicInputs
-                          values={
-                            currentCreate.fields.find(
-                              (field) => field.name === 'dominio1'
-                            ).options
-                          }
+                          setValues={setValues}
+                          values={values}
                           field={currentCreate.fields.find(
-                            (field) => field.name === 'dominio1'
+                            (fields) => fields.name === field.name
                           )}
-                          handleInputChange={handleDynamicInputChange}
+                          handleInputChange={handleInputChange}
+                          setCurrentCreate={setCurrentCreate}
                         />
                       </Grid>
                     );

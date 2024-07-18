@@ -1,4 +1,4 @@
-import React, { useEffect,useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Grid } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
@@ -18,7 +18,9 @@ import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 
 import defaultImage from '../../assets/default.png';
-import { validateField,validateForm } from '../../utils/helpers';
+import { validateField, validateForm } from '../../utils/helpers';
+
+import { DynamicInputsEdit } from './DynamicInputsEdit/DynamicInputsEdit';
 
 import styles from '../MyCreateDialog2/MyCreateDialog2.module.css';
 
@@ -33,13 +35,25 @@ const FIELD_TYPES = {
  * @returns {JSX.Element}
  * @constructor
  */
-const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setFile, logo, setLogo }) => {
+const MyEditDialog = ({
+  title,
+  fields,
+  open,
+  onClose,
+  onSubmit,
+  type,
+  file,
+  setFile,
+  logo,
+  setLogo,
+  setCurrentEdit,
+}) => {
+  console.log(fields);
   const [image, setImage] = useState('');
   const [showDeleteIcon, setShowDeleteIcon] = useState(true);
   const [currentTab, setCurrentTab] = useState(0);
   const [maxWidth, setMaxWidth] = useState('80%');
   const maxDate = dayjs().subtract(18, 'years');
-
   const createInitialValues = () => {
     const initialValues = {};
 
@@ -68,7 +82,6 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     const validationResult = validateField(name, value);
-
     let updatedValues = {
       ...values,
       [name]: value,
@@ -77,17 +90,17 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
     };
 
     if (name === 'dateBirth') {
-        const today = new Date();
-        const birthDate = new Date(value);
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        updatedValues = {
-          ...updatedValues,
-          ageEmployee: age,
-        };
+      const today = new Date();
+      const birthDate = new Date(value);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      updatedValues = {
+        ...updatedValues,
+        ageEmployee: age,
+      };
     }
     setValues(updatedValues);
   };
@@ -106,6 +119,22 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
       const { name, isRequired } = field;
       if (!(name in values) && !isRequired) {
         updatedValues[name] = '';
+      }
+      if (field.type === 'options') {
+        let regex = new RegExp(`^${name}(\\d+)$`);
+        let matchingValues = []; // Arreglo para recolectar los valores que coinciden
+        // Recorrer updatedValues para verificar coincidencias con la regex
+        for (let key in updatedValues) {
+          if (regex.test(key)) {
+            if (updatedValues[key] != null) {
+              // Solo añadir si no es null o undefined
+              matchingValues.push(updatedValues[key]);
+            }
+          }
+        }
+
+        // Usar join para unir todos los valores recolectados en una cadena separada por comas
+        updatedValues[name] = matchingValues.join(',');
       }
     }
 
@@ -163,41 +192,41 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
     setCurrentTab(currentTab - 1);
   };
 
-    //Logic for image
-    const fileInputRef = useRef();
+  //Logic for image
+  const fileInputRef = useRef();
 
-    const hiddenFileInput = {
-      display: 'none',
-    };
-  
-    const handleClick = () => {
-      fileInputRef.current.click();
-    };
-  
-    const handlePhoto = (e) => {
-      if (e.target.files && e.target.files[0]) {
-        if (e.target.files[0].size < 500000) {
-          setFile(e.target.files[0]); // Guarda el objeto File en lugar de la URL
-          setShowDeleteIcon(true);
-        } else {
-          alert('El tamaño de la imagen no puede ser mayor a 500kB');
-        }
-      }
-    };
-  
-    const handleDeleteImage = () => {
-      setFile(null);
-      setLogo(null);
-      setShowDeleteIcon(false);
-    };
-  
-    useEffect(() => {
-      if (file) {
-        setImage(file);
+  const hiddenFileInput = {
+    display: 'none',
+  };
+
+  const handleClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handlePhoto = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      if (e.target.files[0].size < 500000) {
+        setFile(e.target.files[0]); // Guarda el objeto File en lugar de la URL
+        setShowDeleteIcon(true);
       } else {
-        setImage(defaultImage); // Ruta a la imagen por defecto
+        alert('El tamaño de la imagen no puede ser mayor a 500kB');
       }
-    }, [file]);
+    }
+  };
+
+  const handleDeleteImage = () => {
+    setFile(null);
+    setLogo(null);
+    setShowDeleteIcon(false);
+  };
+
+  useEffect(() => {
+    if (file) {
+      setImage(file);
+    } else {
+      setImage(defaultImage); // Ruta a la imagen por defecto
+    }
+  }, [file]);
 
   return (
     <div>
@@ -285,13 +314,19 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                                     }
                                   >
                                     <DatePicker
-                                    maxDate={field.name === 'dateBirth' ? maxDate :undefined}
-                                    slotProps={{
-                                      textField: {
-                                        helperText: values[`${field.name}HelperText`] || '',
-                                        error:values[`${field.name}Error`],
-                                      },
-                                    }}
+                                      maxDate={
+                                        field.name === 'dateBirth'
+                                          ? maxDate
+                                          : undefined
+                                      }
+                                      slotProps={{
+                                        textField: {
+                                          helperText:
+                                            values[`${field.name}HelperText`] ||
+                                            '',
+                                          error: values[`${field.name}Error`],
+                                        },
+                                      }}
                                       sx={{
                                         marginBottom: 2,
                                         width: '100%',
@@ -510,6 +545,20 @@ const MyEditDialog = ({ title, fields, open, onClose, onSubmit, type, file, setF
                             helperText={values[`${field.name}HelperText`] || ''}
                           />
                         )}
+                      />
+                    </Grid>
+                  );
+                } else if (field.type === 'options') {
+                  return (
+                    <Grid item xs={12} sm={12} key={`${field.name}`}>
+                      <DynamicInputsEdit
+                        setValues={setValues}
+                        values={values}
+                        field={fields.find(
+                          (fields) => fields.name === field.name
+                        )}
+                        handleInputChange={handleInputChange}
+                        setCurrentEdit={setCurrentEdit}
                       />
                     </Grid>
                   );
