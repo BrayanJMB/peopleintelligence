@@ -11,7 +11,7 @@ import Modal from '@mui/material/Modal';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
-
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { DemographicContext } from '../../../pages/Conversation/Conversation';
 import Options from '../Discussion/Options/Options';
 import { storeSurveyImageQuestionSingle } from '../Discussion/services/service';
@@ -273,9 +273,12 @@ export const InputMessage = (props) => {
 
   return (
     <form onSubmit={handleSendMessage}>
+      <div style={{display:"flex", alignItems:"center"}}>
       <input type="hidden" ref={ownerInput} value={props.owner} />
       <input type="hidden" ref={ownerAvatarInput} value={props.ownerAvatar} />
-      <Button onClick={handleOpenModal}>Mas</Button>
+      <Button onClick={handleOpenModal}>
+      <AddCircleOutlineIcon />
+      </Button>
       <Modal
         open={isModalOpen}
         aria-labelledby="modal-modal-title"
@@ -348,6 +351,8 @@ export const InputMessage = (props) => {
       >
         <SendIcon />
       </div>
+      </div>
+      
     </form>
   );
 };

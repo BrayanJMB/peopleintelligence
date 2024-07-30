@@ -94,7 +94,6 @@ html, body {
 	border-top-right-radius: 8px;
 	background-color: #fff;
 	flex-direction: column-reverse;
-	overflow-y: scroll;
 	justify-content: flex-end;
 	height: 100%;
 }
