@@ -102,6 +102,15 @@ html, body {
 	overflow-y: scroll;
 	height: 100%;
 }
+
+.chatApp__scroll::-webkit-scrollbar {
+    display: none; /* Ocultar en Chrome, Safari y Opera */
+}
+
+.chatApp__scroll {
+    -ms-overflow-style: none;  /* Ocultar en Internet Explorer y Edge */
+    scrollbar-width: none;  /* Ocultar en Firefox */
+}
 .chatApp__convMessageItem {
 	padding: 1rem 0 0 0;
 	opacity: 0;
