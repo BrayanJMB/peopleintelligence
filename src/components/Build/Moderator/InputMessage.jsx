@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SendIcon from '@mui/icons-material/Send';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -11,7 +12,7 @@ import Modal from '@mui/material/Modal';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+
 import { DemographicContext } from '../../../pages/Conversation/Conversation';
 import Options from '../Discussion/Options/Options';
 import { storeSurveyImageQuestionSingle } from '../Discussion/services/service';
@@ -273,7 +274,7 @@ export const InputMessage = (props) => {
 
   return (
     <form onSubmit={handleSendMessage}>
-      <div style={{display:"flex", alignItems:"center"}}>
+      <div style={{display:'flex', alignItems:'center'}}>
       <input type="hidden" ref={ownerInput} value={props.owner} />
       <input type="hidden" ref={ownerAvatarInput} value={props.ownerAvatar} />
       <Button onClick={handleOpenModal}>

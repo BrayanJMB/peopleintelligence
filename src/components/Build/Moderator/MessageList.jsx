@@ -11,11 +11,11 @@ export const MessageList = ({
   demographics,
   nextQuestionTimer,
   answersOpinion,
-  indexCurrentQuestion
+  indexCurrentQuestion,
 }) => {
   return (
     <div className={styles.chatApp__convTimeline}>
-      <div className={styles. chatApp__scroll}>
+      <div className={styles.chatApp__scroll}>
       {messages
         .slice(0)
         .map((messageItem) => (
