@@ -14,9 +14,9 @@ export const MessageList = ({
 }) => {
   return (
     <div className={styles.chatApp__convTimeline}>
+      <div className={styles. chatApp__scroll}>
       {messages
         .slice(0)
-        .reverse()
         .map((messageItem) => (
           <MessageItem
             key={messageItem.id}
@@ -33,6 +33,8 @@ export const MessageList = ({
             answersOpinion={answersOpinion}
           />
         ))}
+      </div>
+      
     </div>
   );
 };
