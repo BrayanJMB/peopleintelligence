@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SendIcon from '@mui/icons-material/Send';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -273,9 +274,12 @@ export const InputMessage = (props) => {
 
   return (
     <form onSubmit={handleSendMessage}>
+      <div style={{display:'flex', alignItems:'center'}}>
       <input type="hidden" ref={ownerInput} value={props.owner} />
       <input type="hidden" ref={ownerAvatarInput} value={props.ownerAvatar} />
-      <Button onClick={handleOpenModal}>Mas</Button>
+      <Button onClick={handleOpenModal}>
+      <AddCircleOutlineIcon />
+      </Button>
       <Modal
         open={isModalOpen}
         aria-labelledby="modal-modal-title"
@@ -348,6 +352,8 @@ export const InputMessage = (props) => {
       >
         <SendIcon />
       </div>
+      </div>
+      
     </form>
   );
 };

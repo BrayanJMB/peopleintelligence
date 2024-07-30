@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import React from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Accordion from '@mui/material/Accordion';
@@ -8,66 +8,33 @@ import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 
+import { NameAndTimerQuestion } from './components/Questions/NameAndTimerQuestion';
 import CircularWithValueLabel from './CircularWithValueLabel';
 import {
   answerExperienceQuestionContext,
   answerOpinionQuestionContext,
   answerSingleQuestionContext,
   nextQuestionTimerContext,
-  opinionQuestionContext,
   singleQuestionContext,
 } from './Moderator';
 
 import styles from './ChatBox.module.css';
 
-export const Questions = ({
-  question,
-  nextQuestionTimer,
-  answersOpinion,
-  isAnswer,
-}) => {
+export const Questions = ({ question, isAnswer, indexCurrentQuestion }) => {
   const [allAnswers, setAllAnswers] = useState([]);
   const singleQuestion = useContext(singleQuestionContext);
   const answerSingleQuestion = useContext(answerSingleQuestionContext);
   const answerOpinionQuestion = useContext(answerOpinionQuestionContext);
-  const questionTimer = useContext(nextQuestionTimerContext);
+  const questionTimers = useContext(nextQuestionTimerContext);
   const answerExperienceQuestion = useContext(answerExperienceQuestionContext);
 
-  const isText = (item) => {
-    switch (item.toLowerCase()) {
-      case 'texto':
-        return true;
-      default:
-        return false;
-    }
-  };
-
-  const isOpinion = (item) => {
-    switch (item.toLowerCase()) {
-      case 'opinion':
-        return true;
-      default:
-        return false;
-    }
-  };
-
-  const isExperience = (item) => {
-    switch (item.toLowerCase()) {
-      case 'preguntacondicional':
-        return true;
-      default:
-        return false;
-    }
-  };
-
-  const isImage = (item) => {
-    switch (item.toLowerCase()) {
-      case 'imagen':
-        return true;
-      default:
-        return false;
-    }
-  };
+  const questionTimer = questionTimers[indexCurrentQuestion] || 0;
+  const isText = (item) => item.toLowerCase() === 'texto';
+  const isOpinion = (item) => item.toLowerCase() === 'opinion';
+  const isExperience = (item) => item.toLowerCase() === 'preguntacondicional';
+  const isImage = (item) => item.toLowerCase() === 'imagen';
+  const isVideo = (item) => item.toLowerCase() === 'video';
+  const isSelecionSimple = (item) => item.toLowerCase() === 'seleccionsimple';
 
   function limpiarTexto(texto) {
     let textoSinEspacios = texto.replace(/\s+/g, '');
@@ -77,22 +44,6 @@ export const Questions = ({
 
     return textoSinTildes;
   }
-  const isVideo = (item) => {
-    switch (item.toLowerCase()) {
-      case 'video':
-        return true;
-      default:
-        return false;
-    }
-  };
-  const isSelecionSimple = (item) => {
-    switch (item.toLowerCase()) {
-      case 'seleccionsimple':
-        return true;
-      default:
-        return false;
-    }
-  };
 
   function getColorForPercentage(percentage) {
     if (percentage <= 33) {
@@ -167,10 +118,11 @@ export const Questions = ({
         {isSelecionSimple(limpiarTexto(question.type)) && (
           <>
             {!isAnswer ? (
-              <>
-                <p>{question.name}</p>
-                <p>{questionTimer}</p>
-              </>
+              <NameAndTimerQuestion
+                question={question}
+                indexCurrentQuestion={indexCurrentQuestion}
+                questionTimer={questionTimer}
+              />
             ) : (
               <>
                 {singleQuestion &&
@@ -226,12 +178,13 @@ export const Questions = ({
         {isExperience(limpiarTexto(question.type)) && (
           <>
             {!isAnswer ? (
-              <>
-                <p>{question.name}</p>
-                <p>{questionTimer}</p>
-              </>
+              <NameAndTimerQuestion
+                question={question}
+                indexCurrentQuestion={indexCurrentQuestion}
+                questionTimer={questionTimer}
+              />
             ) : (
-              <Box>
+              <Box>   
                 {question.options.map((pregunta, index) => {
                   const answer = allAnswers.find(
                     (a) => a.numeroOpcion === index
@@ -257,10 +210,12 @@ export const Questions = ({
                             {`${
                               answerExperienceQuestion &&
                               answerExperienceQuestion
-                                ? ((answerExperienceQuestion.answer[index]
-                                    .contador *
-                                    100) /
-                                  answerExperienceQuestion.counter).toFixed(2)
+                                ? (
+                                    (answerExperienceQuestion.answer[index]
+                                      .contador *
+                                      100) /
+                                    answerExperienceQuestion.counter
+                                  ).toFixed(2)
                                 : 0
                             }%`}
                           </Typography>
@@ -289,10 +244,11 @@ export const Questions = ({
         {isOpinion(limpiarTexto(question && question.type)) && (
           <>
             {!isAnswer ? (
-              <>
-                <p>{question.name}</p>
-                <p>{questionTimer}</p>
-              </>
+              <NameAndTimerQuestion
+                question={question}
+                indexCurrentQuestion={indexCurrentQuestion}
+                questionTimer={questionTimer}
+              />
             ) : (
               <>
                 {answerOpinionQuestion.map((result) => (

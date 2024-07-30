@@ -23,6 +23,7 @@ export const ChatBox = (props) => {
         demographics={props.demographics}
         nextQuestionTimer={props.questionTimer}
         answersOpinion={props.answersOpinion}
+        indexCurrentQuestion={props.indexCurrentQuestion}
       />
       <div className={`${styles.chatApp__convSendMessage} ${styles.clearfix}`}>
         <InputMessage
