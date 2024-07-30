@@ -147,10 +147,11 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
     connection.invoke("StartTimer", timeInt).catch(function (err) {
       return console.error(err.toString());
     });
-    setQuestionTimer(timeLimit);
-    setTimeout(() => {
-      indexCurrentQuestion.current += 1;
-    }, timeInt * 1000);
+    setQuestionTimer((prevTimers) => ({
+      ...prevTimers,
+      [indexCurrentQuestion.current]: timeLimit,
+    }));
+
   };
 
   const SendQuestionByType = (type, question, index) => {
@@ -213,7 +214,6 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
         setMessages((prevMessages) => [...prevMessages, newMessageItem]);
         nextQuestionTimer(question.timeLimit, currentQuestion);
         setComplexQuestion(false);
-        //setNextQuestion(currentQuestion);
         break;
       case "preguntacondicional":
         connection.invoke("SendExperiencia", question).catch(function (err) {
@@ -337,13 +337,13 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
 
           // Actualiza la interfaz de usuario con el tiempo actual
           connection.on("UpdateTime", (time) => {
-            //setQuestionTimer(time);
             setQuestionTimer((prevTimers) => ({
               ...prevTimers,
               [indexCurrentQuestion.current]: time,
             }));
             if (time === 0) {
               setComplexQuestion(true);
+              console.log(indexCurrentQuestion.current)
               setNextQuestion(indexCurrentQuestion.current);
             }
           });

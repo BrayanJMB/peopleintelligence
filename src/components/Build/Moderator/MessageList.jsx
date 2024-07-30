@@ -11,6 +11,7 @@ export const MessageList = ({
   demographics,
   nextQuestionTimer,
   answersOpinion,
+  indexCurrentQuestion
 }) => {
   return (
     <div className={styles.chatApp__convTimeline}>
@@ -31,6 +32,7 @@ export const MessageList = ({
             question={messageItem.content && messageItem.content}
             nextQuestionTimer={nextQuestionTimer}
             answersOpinion={answersOpinion}
+            indexCurrentQuestion={indexCurrentQuestion}
           />
         ))}
       </div>
