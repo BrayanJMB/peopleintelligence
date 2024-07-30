@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import React from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Accordion from '@mui/material/Accordion';
@@ -14,7 +14,6 @@ import {
   answerOpinionQuestionContext,
   answerSingleQuestionContext,
   nextQuestionTimerContext,
-  opinionQuestionContext,
   singleQuestionContext,
 } from './Moderator';
 
@@ -22,8 +21,6 @@ import styles from './ChatBox.module.css';
 
 export const Questions = ({
   question,
-  nextQuestionTimer,
-  answersOpinion,
   isAnswer,
 }) => {
   const [allAnswers, setAllAnswers] = useState([]);
