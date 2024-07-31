@@ -1,11 +1,8 @@
 import { createContext, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import * as signalR from '@microsoft/signalr';
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
-import SendIcon from '@mui/icons-material/Send';
 import { Button, Card, CardContent, Grid, Paper } from '@mui/material';
 import { Divider, Typography } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
@@ -15,8 +12,8 @@ import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import axios from 'axios';
 
-import ConSidebar from '../../../Layout/ConSidebar/ConSidebar';
-
+import ComplexQuestionButton from './components/ComplexQuestionButton';
+import OptionsQuestion from './components/OptionsQuestion';
 import { ChatBox } from './ChatBox';
 import { ConnectDisconnectUser } from './ConnectDisconnectUser';
 import CountdownTimer from './CountdownTimer';
@@ -41,7 +38,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
   const [connectedUsers, setConnectedUsers] = useState(0);
   const connectedUsersRef = useRef(0);
   const [nextQuestion, setNextQuestion] = useState(0);
-  const [questionTimer, setQuestionTimer] = useState(null);
+  const [questionTimer, setQuestionTimer] = useState({});
   const [opinionQuestion, setOpinionQuestion] = useState(null);
   const [answersOpinion, setAnswersOpinion] = useState([]);
   const [singleQuestion, setSingleQuestion] = useState(null);
@@ -151,10 +148,11 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
     connection.invoke('StartTimer', timeInt).catch(function (err) {
       return console.error(err.toString());
     });
-    setQuestionTimer(timeLimit);
-    setTimeout(() => {
-      indexCurrentQuestion.current += 1;
-    }, timeInt * 1000);
+    setQuestionTimer((prevTimers) => ({
+      ...prevTimers,
+      [indexCurrentQuestion.current]: timeLimit,
+    }));
+
   };
 
   const SendQuestionByType = (type, question, index) => {
@@ -203,7 +201,6 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
             console.log('soy video');
             break;*/
       case 'seleccionsimple':
-
         connection.invoke('SendSingleOption', question).catch(function (err) {
           return console.error(err.toString());
         });
@@ -218,7 +215,6 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
         setMessages((prevMessages) => [...prevMessages, newMessageItem]);
         nextQuestionTimer(question.timeLimit, currentQuestion);
         setComplexQuestion(false);
-        //setNextQuestion(currentQuestion);
         break;
       case 'preguntacondicional':
         connection.invoke('SendExperiencia', question).catch(function (err) {
@@ -342,9 +338,13 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
 
           // Actualiza la interfaz de usuario con el tiempo actual
           connection.on('UpdateTime', (time) => {
-            setQuestionTimer(time);
+            setQuestionTimer((prevTimers) => ({
+              ...prevTimers,
+              [indexCurrentQuestion.current]: time,
+            }));
             if (time === 0) {
               setComplexQuestion(true);
+              console.log(indexCurrentQuestion.current);
               setNextQuestion(indexCurrentQuestion.current);
             }
           });
@@ -413,7 +413,6 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
 
   useEffect(() => {
     if (answerExperienceQuestion && hasRunExperience) {
-      
       let newMessageItemSender = {
         id: messages.length + 1,
         sender: 'Cliente',
@@ -434,7 +433,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
   useEffect(() => {
     fetchSurvey();
   }, [question]);
-  
+
   return (
     <Box
       sx={{
@@ -564,7 +563,10 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
                                       variant="subtitle2"
                                       color="textSecondary"
                                     >
-                                      Tipo Pregunta:<span style={{ marginLeft: '0.5rem' }}></span>
+                                      Tipo Pregunta:
+                                      <span
+                                        style={{ marginLeft: '0.5rem' }}
+                                      ></span>
                                     </Typography>
                                     <Typography
                                       variant="subtitle2"
@@ -604,50 +606,17 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
                                 )}
                               </div>
                               {nextQuestion === index && (
-                                <Button
-                                  onClick={() =>
-                                    SendQuestionByType(
-                                      option.type,
-                                      option,
-                                      index
-                                    )
-                                  }
-                                  style={{
-                                    marginLeft: '1rem',
-                                    backgroundColor: '#00B0F0',
-                                    color: 'white',
-                                  }}
-                                >
-                                  {complexQuestion && <SendIcon />}
-                                </Button>
+                                <ComplexQuestionButton
+                                  complexQuestion={complexQuestion}
+                                  option={option}
+                                  index={index}
+                                  SendQuestionByType={SendQuestionByType}
+                                />
                               )}
                             </div>
 
                             {option.options && option.options.length > 0 && (
-                              <Accordion
-                                style={{
-                                  boxShadow: 'none',
-                                  border: 'none',
-                                  marginTop: '1rem',
-                                }}
-                              >
-                                <AccordionSummary>
-                                  <Typography>Mostrar opciones</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                  <List>
-                                    {option.options.map((option, idx) => (
-                                      <Typography
-                                        key={idx}
-                                        variant="body2"
-                                        style={{ padding: '0.5rem 0' }}
-                                      >
-                                        {option.value}
-                                      </Typography>
-                                    ))}
-                                  </List>
-                                </AccordionDetails>
-                              </Accordion>
+                              <OptionsQuestion option={option} />
                             )}
                             <Divider style={{ marginTop: '1rem' }} />
                           </div>

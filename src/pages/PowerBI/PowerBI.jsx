@@ -85,7 +85,7 @@ export default function PowerBi() {
                 panes: {
                   filters: {
                     expanded: false,
-                    visible: true,
+                    visible: false,
                   },
                 },
               },

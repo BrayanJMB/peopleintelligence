@@ -94,8 +94,21 @@ html, body {
 	border-top-right-radius: 8px;
 	background-color: #fff;
 	flex-direction: column-reverse;
-	overflow-y: scroll;
 	justify-content: flex-end;
+	height: 100%;
+}
+.chatApp__scroll{
+	overflow-y: scroll;
+	height: 100%;
+}
+
+.chatApp__scroll::-webkit-scrollbar {
+    display: none; /* Ocultar en Chrome, Safari y Opera */
+}
+
+.chatApp__scroll {
+    -ms-overflow-style: none;  /* Ocultar en Internet Explorer y Edge */
+    scrollbar-width: none;  /* Ocultar en Firefox */
 }
 .chatApp__convMessageItem {
 	padding: 1rem 0 0 0;
