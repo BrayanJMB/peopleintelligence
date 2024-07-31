@@ -53,11 +53,21 @@ export const SurveyChat = ({ handleMove }) => {
           handleView: handleView,
           handleDelete: handleDeleteSurveyChat,
           handleEdit: handleEditSurveyChat,
+          handleCopyLink: handleCopyLinkSurvey,
           id: surveyChat.id,
         },
       },
     ]);
 
+    const handleCopyLinkSurvey = () => {
+      const surveyLink = 'https://chatapppeopleintelligence.azurewebsites.net/respondente'; // Reemplaza esto con el enlace real de la encuesta
+      navigator.clipboard.writeText(surveyLink).then(() => {
+        enqueueSnackbar('Link copiado al portapapeles', { variant: 'success' });
+      }).catch(err => {
+        enqueueSnackbar('Error al copiar el enlace', { variant: 'error' });
+        console.error('Error al copiar el enlace: ', err);
+      });
+    };
   const handleEditSurveyChat = (id) => {
     navigate(`/conversation/Build/update-survey-chat/${id}`);
   };

@@ -18,6 +18,7 @@ export const MessageItem = ({
   question,
   nextQuestionTimer,
   answersOpinion,
+  indexCurrentQuestion,
 }) => {
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   let messagePosition =
@@ -55,6 +56,7 @@ export const MessageItem = ({
               nextQuestionTimer={nextQuestionTimer}
               answersOpinion={answersOpinion}
               isAnswer={isAnswer}
+              indexCurrentQuestion={indexCurrentQuestion}
             />
           )}
         </>
