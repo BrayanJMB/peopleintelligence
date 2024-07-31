@@ -3,6 +3,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import LinkIcon from '@mui/icons-material/Link';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -331,7 +332,8 @@ const MyTable = ({ title, rows, columns }) => {
                                         <VisibilityIcon fontSize="inherit" />
                                       </IconButton>
                                     )}
-                                    {item.payload.handleDownload !== undefined && (
+                                    {item.payload.handleDownload !==
+                                      undefined && (
                                       <IconButton
                                         size="small"
                                         onClick={() =>
@@ -344,7 +346,8 @@ const MyTable = ({ title, rows, columns }) => {
                                         <DownloadIcon fontSize="inherit" />
                                       </IconButton>
                                     )}
-                                    {item.payload.handleRedirect !== undefined && (
+                                    {item.payload.handleRedirect !==
+                                      undefined && (
                                       <IconButton
                                         size="small"
                                         onClick={() =>
@@ -355,6 +358,17 @@ const MyTable = ({ title, rows, columns }) => {
                                         }
                                       >
                                         <GroupAddIcon fontSize="inherit" />
+                                      </IconButton>
+                                    )}
+                                    {item.payload.handleCopyLink !==
+                                      undefined && (
+                                      <IconButton
+                                        size="small"
+                                        onClick={() =>
+                                          item.payload.handleCopyLink()
+                                        }
+                                      >
+                                        <LinkIcon fontSize="inherit" />
                                       </IconButton>
                                     )}
                                   </Stack>
