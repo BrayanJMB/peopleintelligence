@@ -32,6 +32,7 @@ export default function AccordionDiscussion({
   isAccordionOpen,
   setIsAccordionOpen,
   demographicRefs,
+  questionRefs,
   accordionTitle,
 }) {
   const [item, setItem] = useState('');
@@ -103,7 +104,7 @@ export default function AccordionDiscussion({
     setItem(event.target.value);
     handleAddConversation(event.target.value);
   };
-
+  console.log(demographicRefs.current)
   return (
     <div style={{ width: '90%', margin: '0 auto' }}>
       <Accordion
@@ -136,7 +137,7 @@ export default function AccordionDiscussion({
                         handleRemoveConversation(index)
                       }
                       errors={errors}
-                      ref={demographicRefs.current[index]}
+                      questionRefs={questionRefs.current[index]}
                     />
                   </Grid>
                 ))}
@@ -189,7 +190,7 @@ export default function AccordionDiscussion({
                       remove={() => handleRemoveDemographic(index)}
                       isConversation={isConversation}
                       errors={errors}
-                      ref={demographicRefs.current[index]}
+                      demographicRefs={demographicRefs.current[index]}
                     />
                   </Grid>
                 ))}

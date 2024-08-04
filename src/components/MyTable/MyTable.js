@@ -1,29 +1,29 @@
-import React, { Fragment, useState } from 'react';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DownloadIcon from '@mui/icons-material/Download';
-import EditIcon from '@mui/icons-material/Edit';
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import LinkIcon from '@mui/icons-material/Link';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import { alpha } from '@mui/material/styles';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import { visuallyHidden } from '@mui/utils';
-import PropTypes from 'prop-types';
+import React, { Fragment, useState } from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DownloadIcon from "@mui/icons-material/Download";
+import EditIcon from "@mui/icons-material/Edit";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import LinkIcon from "@mui/icons-material/Link";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import { alpha } from "@mui/material/styles";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import { visuallyHidden } from "@mui/utils";
+import PropTypes from "prop-types";
 
-import MyConfirmation from '../MyConfirmation/MyConfirmation';
+import MyConfirmation from "../MyConfirmation/MyConfirmation";
 
 /**
  * Descending comparator.
@@ -57,7 +57,7 @@ function descendingComparator(a, b, orderBy) {
  * @returns {{(*, *): number, (*, *): number}}
  */
 function getComparator(order, orderBy) {
-  return order === 'desc'
+  return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -87,13 +87,13 @@ function EnhancedTableHead(props) {
           >
             <TableSortLabel
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  {order === "desc" ? "sorted descending" : "sorted ascending"}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -106,7 +106,7 @@ function EnhancedTableHead(props) {
 
 EnhancedTableHead.propTypes = {
   onRequestSort: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  order: PropTypes.oneOf(["asc", "desc"]).isRequired,
   orderBy: PropTypes.string.isRequired,
 };
 
@@ -129,7 +129,7 @@ function EnhancedTableToolbar(props) {
     >
       {numSelected > 0 ? (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           color="inherit"
           variant="subtitle1"
           component="div"
@@ -138,7 +138,7 @@ function EnhancedTableToolbar(props) {
         </Typography>
       ) : (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           variant="h6"
           id="tableTitle"
           component="div"
@@ -161,17 +161,19 @@ EnhancedTableToolbar.propTypes = {
  * @constructor
  */
 const MyTable = ({ title, rows, columns }) => {
-  const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('');
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("");
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [currentDialog, setCurrentDialog] = useState({});
+  const [currentRol, setCurrentRol] = useState({});
+
 
   const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
@@ -196,8 +198,9 @@ const MyTable = ({ title, rows, columns }) => {
   /**
    * Handle click delete.
    */
-  const handleClickDelete = ({ id }) => {
+  const handleClickDelete = ({ id, rolId }) => {
     setOpenDeleteDialog(true);
+    setCurrentRol(rolId)
     setCurrentDialog(id);
   };
 
@@ -208,17 +211,17 @@ const MyTable = ({ title, rows, columns }) => {
    * @param id
    * @param handleDelete
    */
-  const handleOnCloseDeleteDialog = (shouldDelete, { id, handleDelete }) => {
+  const handleOnCloseDeleteDialog = (shouldDelete, { id, handleDelete, rolId }) => {
     setOpenDeleteDialog(false);
 
     if (shouldDelete) {
-      handleDelete(id);
+      handleDelete(id, rolId);
     }
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
+    <Box sx={{ width: "100%" }}>
+      <Paper sx={{ width: "100%", mb: 2 }}>
         {/* title */}
         <Toolbar
           sx={{
@@ -232,7 +235,7 @@ const MyTable = ({ title, rows, columns }) => {
           }}
         >
           <Typography
-            sx={{ flex: '1 1 100%' }}
+            sx={{ flex: "1 1 100%" }}
             variant="h6"
             id="tableTitle"
             component="div"
@@ -269,7 +272,7 @@ const MyTable = ({ title, rows, columns }) => {
                       <TableRow hover tabIndex={-1} key={index}>
                         {row.map((item, itemIndex) => (
                           <Fragment key={itemIndex}>
-                            {item.column.includes('id') === true && (
+                            {item.column.includes("id") === true && (
                               <TableCell
                                 component="th"
                                 scope="row"
@@ -278,9 +281,9 @@ const MyTable = ({ title, rows, columns }) => {
                                 {item.value}
                               </TableCell>
                             )}
-                            {item.column.includes('id') === false && (
+                            {item.column.includes("id") === false && (
                               <TableCell align="left" padding="normal">
-                                {item.column.includes('options') === true && (
+                                {item.column.includes("options") === true && (
                                   <Stack direction="row" alignItems="center">
                                     {item.payload.handleDelete !==
                                       undefined && (
@@ -293,19 +296,23 @@ const MyTable = ({ title, rows, columns }) => {
                                         >
                                           <DeleteIcon fontSize="inherit" />
                                         </IconButton>
-                                        {currentDialog === item.payload.id && (
-                                          <MyConfirmation
-                                            onClose={(shouldDelete) =>
-                                              handleOnCloseDeleteDialog(
-                                                shouldDelete,
-                                                item.payload
-                                              )
-                                            }
-                                            title="Eliminar registro"
-                                            message="¿Está seguro que desea eliminar este registro?"
-                                            open={openDeleteDialog}
-                                          />
-                                        )}
+                                        {console.log(currentRol)}
+                                        {currentDialog === item.payload.id &&
+                                          (currentRol != null
+                                            ? currentRol === item.payload.rolId
+                                            : true) && (
+                                            <MyConfirmation
+                                              onClose={(shouldDelete) =>
+                                                handleOnCloseDeleteDialog(
+                                                  shouldDelete,
+                                                  item.payload
+                                                )
+                                              }
+                                              title="Eliminar registro"
+                                              message="¿Está seguro que desea eliminar este registro?"
+                                              open={openDeleteDialog}
+                                            />
+                                          )}
                                       </Fragment>
                                     )}
                                     {item.payload.handleEdit !== undefined && (
@@ -374,7 +381,7 @@ const MyTable = ({ title, rows, columns }) => {
                                   </Stack>
                                 )}
 
-                                {item.column.includes('options') === false &&
+                                {item.column.includes("options") === false &&
                                   item.value}
                               </TableCell>
                             )}
