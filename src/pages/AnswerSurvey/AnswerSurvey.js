@@ -30,7 +30,7 @@ import SuccessMessage from './components/SuccessMessage/SuccessMessage';
 import SurveyForm from './components/SurveyForm/SurveyForm';
 
 import styles from './AnswerSurvey.module.css';
-
+import NotExclusiviness from './components/NotExclusiviness/NotExclusiviness';
 /**
  * Answer survey page.
  *
@@ -361,7 +361,8 @@ const AnswerSurvey = () => {
             {surveyStatus === 'failed' && isAlreadyResponse && (
               <SuccessMessage isAlreadyResponse={isAlreadyResponse} />
             )}
-          {((surveyStatus === 'failed' && notFound) || exclusiviness) && <NotFoundMessage />}
+          {surveyStatus === 'failed' && notFound && <NotFoundMessage />}
+          { exclusiviness && <NotExclusiviness />}
             {(surveyStatus === 'succeeded' && currentSurvey !== null) && !exclusiviness && (
               <Fragment>
                 {/* company name */}

@@ -46,8 +46,10 @@ const SendInvitationDialog = ({
   const [emailSubject, setEmailSubject] = useState(defaultMessageSubject);
   const [message, setMessage] = useState(defaultMessage);
   const [emails, setEmails] = useState('');
+  const [documents, setDocuments] = useState('');
   const [isValidEmailSubject, setIsValidEmailSubject] = useState('');
   const [isValidEmails, setIsValidEmails] = useState('');
+  const [isValidDocuments, setIsValidDocuments] = useState('');
   const [isValidMessage, setIsValidMessage] = useState('');
   const [isValidEmailMask, setIsValidEmailMask] = useState('');
   const { enqueueSnackbar } = useSnackbar();
@@ -124,6 +126,29 @@ const SendInvitationDialog = ({
         return;
       }
       validateEmail(trimmedEmail);
+    });
+    setIsLoading(false);
+  };
+
+  const handleDocumentsChange = (event) => {
+    setDocuments(event.target.value);
+    setIsValidDocuments('');
+    // validate emails
+    const documentsArray = event.target.value.split(',');
+    let error = false;
+    documentsArray.forEach((document) => {
+      // if is empty don't validate
+      if (!document) {
+        return;
+      }
+      // trim and validate email
+      const trimmedDocument = document.trim();
+      // don't allow spaces
+      if (trimmedDocument.includes(' ')) {
+        setIsValidDocuments('Los número de documentos no deben contener espacios');
+        error = true;
+        return;
+      }
     });
     setIsLoading(false);
   };
@@ -275,6 +300,7 @@ const SendInvitationDialog = ({
   const sendInvitation = async () => {
     setIsLoading(true);
     setIsValidEmails('');
+    setIsValidDocuments('');
     setIsValidMessage('');
     setIsValidEmailSubject('');
     setCsvFile(null);
@@ -283,7 +309,7 @@ const SendInvitationDialog = ({
     // validate emails
     const emailsArray = emails.split(',');
     let error = false;
-    if (!csvFile && !emails) {
+    if ((!csvFile && !emails) && !documents) {
       setIsValidEmails('Debe colocar al menos 1 correo');
       error = true;
     } else {
@@ -304,6 +330,29 @@ const SendInvitationDialog = ({
         }
       });
     }
+    //validate documents 
+    const documentsArray = documents.split(',');
+    let errorDocuments = false;
+    if (!documents && !(!csvFile && !emails) ) {
+      setIsValidDocuments('Debe colocar al menos 1 número de documento');
+      errorDocuments = true;
+    } else {
+      documentsArray.forEach((document) => {
+        // if is empty don't validate
+        if (!document) {
+          return;
+        }
+        // trim and validate email
+        const trimmedEmail = documents.trim();
+
+        // don't allow spaces
+        if (trimmedEmail.includes(' ')) {
+          setIsValidDocuments('Los número de documentos no deben contener espacios');
+          errorDocuments = true;
+        }
+      });
+    }
+
     //validate email subject
     if (!emailSubject) {
       setIsValidEmailSubject('El asunto de correo es requerido');
@@ -352,6 +401,7 @@ const SendInvitationDialog = ({
       companyId,
       message,
       emails,
+      documents,
       emailMask,
       emailSubject,
       groups,
@@ -513,6 +563,25 @@ const SendInvitationDialog = ({
               name="csv_file"
             />
           </Box>
+
+          <TextField
+            id="documents"
+            label="Para:"
+            fullWidth
+            variant="outlined"
+            multiline
+            rows={6}
+            style={{
+              marginTop: '1.3em',
+            }}
+            helperText={getHelperText(
+              isValidDocuments,
+              'Coloque la lista de número de documentos ejemplo: 12345669,82931381....'
+            )}
+            value={documents}
+            error={isValidDocuments !== ''}
+            onChange={handleDocumentsChange}
+          />
 
           <TextField
             id="emailMask"
