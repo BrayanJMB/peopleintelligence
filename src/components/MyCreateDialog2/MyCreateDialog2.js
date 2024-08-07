@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Grid } from '@mui/material';
+import { Chip,Grid } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -74,7 +74,7 @@ const MyCreateDialog = ({
   const [showDeleteIcon, setShowDeleteIcon] = useState(false);
 
   const [currentTab, setCurrentTab] = useState(0);
-  const [maxWidth, setMaxWidth] = useState('80%');
+  const [selectedOptions, setSelectedOptions] = useState({});
   const maxDate = dayjs().subtract(18, 'years');
   const createInitialValues = () => {
     const initialValues = {};
@@ -129,6 +129,57 @@ const MyCreateDialog = ({
     }
   };
 
+  const handleSelectChange = (fieldName, newValue) => {
+    if (fieldName === 'userRol') {
+      if (newValue === null) {
+        return;
+      }
+      const newSelectedOptions = {
+        ...selectedOptions,
+        [fieldName]: newValue
+          ? [...(selectedOptions[fieldName] || []), newValue]
+          : [],
+      };
+      setSelectedOptions(newSelectedOptions);
+
+      // Simula un evento para reutilizar handleInputChange
+      const simulatedEvent = {
+        target: {
+          name: fieldName,
+          value: newValue ? newValue.value : '',
+        },
+      };
+
+      // Llama a handleInputChange con el evento simulado
+      handleInputChange(simulatedEvent);
+    } else {
+      // Para otros campos, simplemente reenvía el evento normal
+      handleInputChange({
+        target: {
+          name: fieldName,
+          value: newValue.value,
+        },
+      });
+    }
+  };
+
+  const handleDeleteChip = (fieldName, optionToRemove) => {
+    // Filtra la opción que se quiere eliminar
+    const newSelectedOptions = {
+      ...selectedOptions,
+      [fieldName]: selectedOptions[fieldName].filter(
+        (option) => option.value !== optionToRemove.value
+      ),
+    };
+    setSelectedOptions(newSelectedOptions);
+
+    // Opcional: actualizar el estado del valor si es necesario
+    setValues({
+      ...values,
+      [fieldName]: newSelectedOptions[fieldName].map((opt) => opt.value), // Asume que quieres almacenar solo los valores; ajusta según necesites
+    });
+  };
+
   /**
    * Handle form submit.
    *
@@ -157,6 +208,16 @@ const MyCreateDialog = ({
           }
         }
 
+        // Usar join para unir todos los valores recolectados en una cadena separada por comas
+        updatedValues[name] = matchingValues.join(', ');
+      }
+
+      if (name === 'userRol') {
+        let matchingValues = []; // Arreglo para recolectar los valores que coinciden
+        // Recorrer updatedValues para verificar coincidencias con la regex
+        selectedOptions.userRol.map((data)=>{
+          matchingValues.push(data.value);
+        });
         // Usar join para unir todos los valores recolectados en una cadena separada por comas
         updatedValues[name] = matchingValues.join(', ');
       }
@@ -252,7 +313,12 @@ const MyCreateDialog = ({
 
   return (
     <div>
-      <Dialog open={open} onClose={onClose} maxWidth={maxWidth}>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        maxWidth={fields.length === 1 ? 'xs' : 'lg'} // O cualquier otro tamaño que consideres adecuado
+        fullWidth
+      >
         <DialogTitle>{title}</DialogTitle>
         <form onSubmit={handleFormSubmit} noValidate>
           <DialogContent sx={{ maxWidth: '80vw' }}>
@@ -521,21 +587,25 @@ const MyCreateDialog = ({
                         <Autocomplete
                           fullWidth
                           id={field.name}
-                          options={field.options}
+                          options={
+                            field.name === 'userRol'
+                              ? field.options.filter(
+                                  (option) =>
+                                    !(
+                                      selectedOptions[field.name] || []
+                                    ).includes(option)
+                                )
+                              : field.options
+                          }
                           getOptionLabel={(option) => option.label}
                           value={
                             field.options.find(
                               (option) => option.value === values[field.name]
                             ) || null
                           }
-                          onChange={(event, newValue) => {
-                            handleInputChange({
-                              target: {
-                                name: field.name,
-                                value: newValue ? newValue.value : '',
-                              },
-                            });
-                          }}
+                          onChange={(event, newValue) =>
+                            handleSelectChange(field.name, newValue)
+                          }
                           renderInput={(params) => (
                             <TextField
                               fullWidth
@@ -549,6 +619,16 @@ const MyCreateDialog = ({
                             />
                           )}
                         />
+                        {selectedOptions[field.name]?.map((option, index) => (
+                          <Chip
+                            key={index}
+                            label={option.label}
+                            onDelete={() =>
+                              handleDeleteChip(field.name, option)
+                            }
+                            style={{ marginRight: 5 }}
+                          />
+                        ))}
                       </Grid>
                     );
                   } else if (field.type === 'options') {

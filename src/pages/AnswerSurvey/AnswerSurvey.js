@@ -20,7 +20,8 @@ import {
   fetchSurveyForAnswer,
   fetchSurveyForAnswerPersonal,
   selectCurrentSurveyForAnswer,
-  selectSurveysStatus, storeSurvey,
+  selectSurveysStatus,
+  storeSurvey,
 } from '../../features/surveys/surveysSlice';
 import client from '../../utils/axiosInstance';
 
@@ -52,9 +53,11 @@ const AnswerSurvey = () => {
   const [answers, setAnswers] = useState([{}, {}]);
   const [answerIdAPI, setAnswerIdAPI] = useState('');
   const [demographicUserData, setDemographicUserData] = useState(null);
-  const [isPersonal, setIsPersonal] =  useState(false);
+  const [isPersonal, setIsPersonal] = useState(false);
   const surveyStatus = useSelector((state) => selectSurveysStatus(state));
-  const currentSurvey = useSelector((state) => selectCurrentSurveyForAnswer(state));
+  const currentSurvey = useSelector((state) =>
+    selectCurrentSurveyForAnswer(state)
+  );
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(true);
   const [isAlreadyResponse, setIsAlreadyResponse] = useState(false);
@@ -87,40 +90,40 @@ const AnswerSurvey = () => {
     }*/
 
     try {
-      const response = await client.get(`getMailPersonalSurvey/${surveyId}/${companyId}/${email}`);
+      const response = await client.get(
+        `getMailPersonalSurvey/${surveyId}/${companyId}/${email}`
+      );
       const { data } = response;
-    
+
       setAnswerIdAPI(data.id);
       // if exists, set answers and skip demographic step
       if (data && data.demographics) {
         setDemographicUserData(data.demographics);
-    
+
         setSteps((prevSteps) => {
           const newSteps = [...prevSteps];
           newSteps.splice(0, 1);
-    
+
           return newSteps;
         });
       }
-      setEmailSubmitted(true); 
-    } catch(error) {
+      setEmailSubmitted(true);
+    } catch (error) {
       // Verificar si la excepción tiene una respuesta y un código de estado
-      if(error.response && error.response.status === 409) {
+      if (error.response && error.response.status === 409) {
         setSteps((prevSteps) => {
           const newSteps = [...prevSteps];
           newSteps.splice(0, 1);
-    
+
           return newSteps;
-      });
+        });
         setNotFound(false);
-        setEmailSubmitted(true); 
+        setEmailSubmitted(true);
         setIsAlreadyResponse(true);
       } else {
         console.error('Se produjo un error al hacer la solicitud', error);
       }
     }
-
-
   };
 
   /**
@@ -159,8 +162,10 @@ const AnswerSurvey = () => {
    * @returns {boolean}
    */
   const isSurveyStep = () => {
-      return ((steps.length === 3 && activeStep === 1) ||
-        (steps.length === 2 && activeStep === 0));
+    return (
+      (steps.length === 3 && activeStep === 1) ||
+      (steps.length === 2 && activeStep === 0)
+    );
   };
 
   /**
@@ -187,13 +192,16 @@ const AnswerSurvey = () => {
       // demographic step
       const payload = {
         surveyId: Number.parseInt(surveyId),
-        answerId: isPersonal ? (answerId || answerIdAPI) : null,
+        answerId: isPersonal ? answerId || answerIdAPI : null,
         demographics: answers.length > 1 ? answers[0] : [],
         answers: answers.length > 1 ? answers[1] : answers[0],
       };
 
       if (demographicUserData !== null) {
-        if (typeof demographicUserData === 'object' && !Array.isArray(demographicUserData)) {
+        if (
+          typeof demographicUserData === 'object' &&
+          !Array.isArray(demographicUserData)
+        ) {
           payload.demographics = [demographicUserData];
         } else if (Array.isArray(demographicUserData)) {
           payload.demographics = demographicUserData;
@@ -204,7 +212,7 @@ const AnswerSurvey = () => {
       localStorage.setItem('formValues', JSON.stringify([]));
     }
 
-    if ((activeStep + 1) === steps.length) {
+    if (activeStep + 1 === steps.length) {
       // close window
       window.close();
 
@@ -252,7 +260,7 @@ const AnswerSurvey = () => {
       const newAnswers = [...prevAnswers];
 
       newAnswers[step] = answers;
-      
+
       return newAnswers;
     });
 
@@ -260,7 +268,6 @@ const AnswerSurvey = () => {
       const newStepsCompleted = [...prevStepsCompleted];
 
       newStepsCompleted[step] = true;
-
 
       // find empty answers and set them to false
       answers.forEach(({ value, values }) => {
@@ -276,16 +283,17 @@ const AnswerSurvey = () => {
     });
   };
 
-
   /**
    * Check if is personal survey.
-   * 
+   *
    * @returns {Promise<any>}
    */
   const checkIfIsPersonal = async () => {
     setLoading(true);
 
-    const { data: isPersonal } = await client.get(`ValidateAnswerSurvey/${surveyId}/${companyId}`);
+    const { data: isPersonal } = await client.get(
+      `ValidateAnswerSurvey/${surveyId}/${companyId}`
+    );
     if (!isPersonal) {
       setEmailSubmitted(true);
     }
@@ -295,16 +303,17 @@ const AnswerSurvey = () => {
 
   // watch surveyId and companyId changes
   useEffect(() => {
-    if (answerId){
-      dispatch(fetchSurveyForAnswerPersonal({ surveyId, companyId, answerId }))
-      .then(result => {
-          if (result.error.message.includes('409')){
-            setIsAlreadyResponse(true); 
-            setNotFound(false);
+    if (answerId) {
+      dispatch(
+        fetchSurveyForAnswerPersonal({ surveyId, companyId, answerId })
+      ).then((result) => {
+        if (result.error.message.includes('409')) {
+          setIsAlreadyResponse(true);
+          setNotFound(false);
         }
       });
-    }else{
-      dispatch(fetchSurveyForAnswer({ surveyId, companyId}));
+    } else {
+      dispatch(fetchSurveyForAnswer({ surveyId, companyId }));
     }
   }, [surveyId, companyId, answerId]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -328,8 +337,7 @@ const AnswerSurvey = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div className={styles.AnswerSurvey}>
-      <div className={styles.AnswerSurvey__Background}>
-      </div>
+      <div className={styles.AnswerSurvey__Background}></div>
       <div className={styles.AnswerSurvey__Content}>
         <Card
           sx={{
@@ -338,52 +346,62 @@ const AnswerSurvey = () => {
           }}
         >
           <CardContent>
-            {(surveyStatus === 'loading' ) && (<MyLoader />)}
-            {(surveyStatus === 'failed' ) && isAlreadyResponse && (<SuccessMessage isAlreadyResponse={isAlreadyResponse}/>)}
-            {(surveyStatus === 'failed' && notFound ) && (<NotFoundMessage/> )}
+            {surveyStatus === 'loading' && <MyLoader />}
+            {surveyStatus === 'failed' && isAlreadyResponse && (
+              <SuccessMessage isAlreadyResponse={isAlreadyResponse} />
+            )}
+            {surveyStatus === 'failed' && notFound && <NotFoundMessage />}
             {surveyStatus === 'succeeded' && currentSurvey !== null && (
               <Fragment>
                 {/* company name */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems:'center' }}>
-                <Typography
-                  variant="body1"
-                  gutterBottom
-                  style={{ flex: '1 0 65%' }}
-                >
-                  {currentSurvey.response.surveyName}
-                </Typography>
-                <Typography
-                  variant="h5"
-                  gutterBottom
-                  style={{
-                    textAlign: 'right',
-                    flex: '1 0 35%', // Asegura que este elemento siempre toma el 50% del espacio
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                   }}
                 >
-                  {currentSurvey.logo !== null && currentSurvey.logo.length !== 0 && (
-                    <img
-                      src={currentSurvey.logo}
-                      
-                      alt="Logotipo de la empresa"
-                      style={{
-                        width: '1.5em',
-                        verticalAlign: 'middle',
-                      }}
-                    />
-                  )}
-                  {(currentSurvey.logo === null || currentSurvey.logo.length === 0) && (
-                    <PollIcon style={{
-                      verticalAlign: 'middle',
-                      marginRight: '0.8em',
-                    }} />
-                  )}
+                  <Typography
+                    variant="body1"
+                    gutterBottom
+                    style={{ flex: '1 0 65%' }}
+                  >
+                    {currentSurvey.response.surveyName}
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                    style={{
+                      textAlign: 'right',
+                      flex: '1 0 35%', // Asegura que este elemento siempre toma el 50% del espacio
+                    }}
+                  >
+                    {currentSurvey.logo !== null &&
+                      currentSurvey.logo.length !== 0 && (
+                        <img
+                          src={currentSurvey.logo}
+                          alt="Logotipo de la empresa"
+                          style={{
+                            width: '1.5em',
+                            verticalAlign: 'middle',
+                          }}
+                        />
+                      )}
+                    {(currentSurvey.logo === null ||
+                      currentSurvey.logo.length === 0) && (
+                      <PollIcon
+                        style={{
+                          verticalAlign: 'middle',
+                          marginRight: '0.8em',
+                        }}
+                      />
+                    )}
 
-                  <span style={{ verticalAlign: 'middle' }}>
-                {currentSurvey.empresa}
-              </span>
-                </Typography>
-                {/* survey name */}
-
+                    <span style={{ verticalAlign: 'middle' }}>
+                      {currentSurvey.empresa}
+                    </span>
+                  </Typography>
+                  {/* survey name */}
                 </Box>
                 <Divider
                   variant="middle"
@@ -441,11 +459,22 @@ const AnswerSurvey = () => {
                         Enviar
                       </Button>
                     </FormControl>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        fontStyle: 'italic',
+                        fontWeight: 'bold', // Negrilla
+                        color: '#6c6c6c', // Gris oscuro
+                        marginTop: 2, // Margen superior (ajusta según sea necesario)
+                      }}
+                    >
+                      {currentSurvey.response.message}
+                    </Typography>
                   </Box>
                 )}
 
                 {/* stepper */}
-                {(emailSubmitted === true || (answerId || !isPersonal)) &&  (
+                {(emailSubmitted === true || answerId || !isPersonal) && (
                   <Fragment>
                     <Stepper
                       style={{ marginTop: '2em' }}
@@ -475,24 +504,39 @@ const AnswerSurvey = () => {
                         {isDemographicStep() && (
                           <Fragment>
                             <SurveyForm
-                              questions={currentSurvey.demograficos.map(({ id, name, description, type, urlApi, options, urlParam }, index) => ({
-                                questionId: id,
-                                questionName: name,
-                                description: description,
-                                questionNumber: index + 1,
-                                typeQuestion: type,
-                                api: urlApi,
-                                urlParam,
-                                options: options.map(({ id, value }) => ({
-                                  numberOption: value,
-                                  optionName: value,
-                                })),
-                              }))}
+                              questions={currentSurvey.demograficos.map(
+                                (
+                                  {
+                                    id,
+                                    name,
+                                    description,
+                                    type,
+                                    urlApi,
+                                    options,
+                                    urlParam,
+                                  },
+                                  index
+                                ) => ({
+                                  questionId: id,
+                                  questionName: name,
+                                  description: description,
+                                  questionNumber: index + 1,
+                                  typeQuestion: type,
+                                  api: urlApi,
+                                  urlParam,
+                                  options: options.map(({ id, value }) => ({
+                                    numberOption: value,
+                                    optionName: value,
+                                  })),
+                                })
+                              )}
                               companyId={companyId}
                               nameStep={steps}
                               activeStepper={activeStep}
                               handleNextAnswer={handleNext}
-                              onAnswered={(answers) => handleAnswered(answers, activeStep)}
+                              onAnswered={(answers) =>
+                                handleAnswered(answers, activeStep)
+                              }
                             />
                           </Fragment>
                         )}
@@ -501,20 +545,28 @@ const AnswerSurvey = () => {
                         {isSurveyStep() && (
                           <SurveyForm
                             questions={currentSurvey.response.preguntas}
-                            descriptionSurvey={currentSurvey.response.descriptionSurvey}
+                            descriptionSurvey={
+                              currentSurvey.response.descriptionSurvey
+                            }
                             handleNextAnswer={handleNext}
                             nameStep={steps}
-                            onAnswered={(answers) => handleAnswered(answers, activeStep)}
+                            onAnswered={(answers) =>
+                              handleAnswered(answers, activeStep)
+                            }
                             activeStepper={activeStep}
                           />
                         )}
                         {/* success message */}
                         {isFinalStep() && (
-                          <SuccessMessage isAlreadyResponse={isAlreadyResponse}/>
+                          <SuccessMessage
+                            isAlreadyResponse={isAlreadyResponse}
+                          />
                         )}
                       </div>
 
-                      <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                      <Box
+                        sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}
+                      >
                         {/*activeStep !== 0 && activeStep +1 !== steps.length && (
                           <Button
                             color="inherit"
@@ -525,15 +577,22 @@ const AnswerSurvey = () => {
                             Atrás
                           </Button>
                         )*/}
-                          <Box sx={{ flex: '1 1 auto' }} />
-                          {isStepOptional(activeStep) && (
-                            <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-                              Saltar
-                            </Button>
-                          )}
+                        <Box sx={{ flex: '1 1 auto' }} />
+                        {isStepOptional(activeStep) && (
+                          <Button
+                            color="inherit"
+                            onClick={handleSkip}
+                            sx={{ mr: 1 }}
+                          >
+                            Saltar
+                          </Button>
+                        )}
                         <Button
                           onClick={handleNext}
-                          disabled={!stepsCompleted[activeStep] || surveyStatus === 'loading'}
+                          disabled={
+                            !stepsCompleted[activeStep] ||
+                            surveyStatus === 'loading'
+                          }
                         >
                           {activeStep === steps.length - 2 ? '' : ''}
                         </Button>

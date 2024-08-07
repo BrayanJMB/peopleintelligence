@@ -1,4 +1,11 @@
-import { createContext, createRef, useContext,useEffect, useRef, useState } from 'react';
+import {
+  createContext,
+  createRef,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import ClearIcon from '@mui/icons-material/Clear';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
@@ -14,7 +21,10 @@ import Modal from '@mui/material/Modal';
 import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 
-import { DemographicContext } from '../../../pages/Conversation/Conversation';
+import {
+  DemographicContext,
+  QuestionContext,
+} from '../../../pages/Conversation/Conversation';
 import { storeSurveyChatAPI } from '../../../services/ChatLive/storeSurveyChat.service';
 import {
   updateModeratorChatAPI,
@@ -46,8 +56,8 @@ export default function Discussion({
   isUpdate,
   currentCompany,
 }) {
-
   const demographicRefs = useContext(DemographicContext);
+  const questionRefs = useContext(QuestionContext);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('info');
@@ -69,6 +79,10 @@ export default function Discussion({
 
   const handleCloseAccordion = () => {
     setAccordionOpen(false);
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
   };
 
   const handleSubmit = async (event) => {
@@ -122,9 +136,16 @@ export default function Discussion({
         );
         response = await storeSurveyChatAPI(payload);
         if (surveyImage || avatarImage) {
-          urls = await storeAvatarAndSurveyImage(response.data.survey.id, surveyImage, avatarImage, currentCompany);
+          urls = await storeAvatarAndSurveyImage(
+            response.data.survey.id,
+            surveyImage,
+            avatarImage,
+            currentCompany
+          );
           payload.moderator.avatarUrl = urls ? urls.data.files[1].url : '';
-          payload.survey.imageUrl = urls ? urls.data.files[0].url : survey.imageUrl;
+          payload.survey.imageUrl = urls
+            ? urls.data.files[0].url
+            : survey.imageUrl;
         }
         const updateData = {
           id: payload.survey.id,
@@ -153,9 +174,16 @@ export default function Discussion({
       } else {
         // Manejar actualización
         if (surveyImage || avatarImage) {
-          urls = await storeAvatarAndSurveyImage(payload.survey.id, surveyImage, avatarImage, currentCompany);
+          urls = await storeAvatarAndSurveyImage(
+            payload.survey.id,
+            surveyImage,
+            avatarImage,
+            currentCompany
+          );
           payload.moderator.avatarUrl = urls ? urls.data.files[0].url : '';
-          payload.survey.imageUrl = urls ? urls.data.files[1].url : survey.imageUrl;
+          payload.survey.imageUrl = urls
+            ? urls.data.files[1].url
+            : survey.imageUrl;
         }
         response = await updateSurveyChatAPI(payload.survey);
         const updateData = {
@@ -193,7 +221,14 @@ export default function Discussion({
       demographics: [],
       questions: [],
     };
+    let errorMessages = [];
 
+    // Validar si el array de demográficos está vacío
+    if (demographics.length === 0) {
+      errorMessages.push(
+        'Para crear la encuesta debe haber al menos un demográfico.'
+      );
+    }
     demographics.forEach((demographic, demoIndex) => {
       let currentErrors = {};
 
@@ -216,11 +251,19 @@ export default function Discussion({
 
       allErrors.demographics[demoIndex] = currentErrors;
     });
+    if (questions.length === 0) {
+      errorMessages.push(
+        'Para crear la encuesta debe haber al menos una pregunta.'
+      );
+    }
     questions.forEach((question, questionIndex) => {
       let currentQuestionErrors = {};
 
       // Validar si el nombre de la pregunta está vacío
-      if (question.type.toLowerCase() !== 'imagen' && question.type !== 'video') {
+      if (
+        question.type.toLowerCase() !== 'imagen' &&
+        question.type !== 'video'
+      ) {
         if (!question.name.trim()) {
           currentQuestionErrors.name =
             'El nombre de la pregunta no puede estar vacío.';
@@ -285,17 +328,32 @@ export default function Discussion({
       (errorObj) => Object.keys(errorObj).length > 0
     );
     const hasErrors = hasErrorsInDemographics || hasErrorsInQuestions;
-
-    if (hasErrors) {
-      //setIsAccordionOpen(true);
-      const firstErrorIndex = allErrors.demographics.findIndex(
-        (errorObj) => Object.keys(errorObj).length > 0
-      );
-      demographicRefs.current[firstErrorIndex]?.current?.focus();
+    if (errorMessages.length > 0) {
+   
     }
 
+    if (hasErrors) {
+      if (hasErrorsInDemographics) {
+        setIsDemographicsAccordionOpen(true);
+        const firstErrorIndex = allErrors.demographics.findIndex(
+          (errorObj) => Object.keys(errorObj).length > 0
+        );
+        demographicRefs.current[firstErrorIndex].current.scrollIntoView({
+          behavior: 'smooth',
+        });
+      }
+      if (hasErrorsInQuestions) {
+        setIsConversationAccordionOpen(true);
+        const firstErrorIndex = allErrors.questions.findIndex(
+          (errorObj) => Object.keys(errorObj).length > 0
+        );
+        questionRefs.current[firstErrorIndex].current.scrollIntoView({
+          behavior: 'smooth',
+        });
+      }
+    }
     // Si no hay errores en ningún demográfico o pregunta, devuelve true. De lo contrario, devuelve false.
-    return !hasErrors;
+    return !hasErrors && !errorMessages.length;
   };
 
   useEffect(() => {
@@ -303,7 +361,6 @@ export default function Discussion({
     while (demographicRefs.current.length < demographics.length) {
       demographicRefs.current.push(createRef());
     }
-
     // Si hay menos demográficos que referencias, recortamos las referencias sobrantes
     demographicRefs.current = demographicRefs.current.slice(
       0,
@@ -311,9 +368,22 @@ export default function Discussion({
     );
   }, [demographics]);
 
+  useEffect(() => {
+    // Si hay más demográficos que referencias, agregamos las referencias faltantes
+    while (questionRefs.current.length < questions.length) {
+      questionRefs.current.push(createRef());
+    }
+    // Si hay menos demográficos que referencias, recortamos las referencias sobrantes
+    questionRefs.current = questionRefs.current.slice(0, questions.length);
+  }, [questions]);
+
   return (
     <div className={styles.discussion}>
-      <Snackbar open={openSnackbar} autoHideDuration={2000}>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+      >
         <Alert severity={snackbarSeverity} sx={{ width: '100%' }}>
           {snackbarMessage}
         </Alert>
@@ -449,6 +519,7 @@ export default function Discussion({
             isAccordionOpen={isDemographicsAccordionOpen}
             setIsAccordionOpen={setIsDemographicsAccordionOpen}
             demographicRefs={demographicRefs}
+            questionRefs={questionRefs}
             accordionTitle={'Datos Demográficos'}
           />
 
@@ -458,6 +529,7 @@ export default function Discussion({
             setQuestions={setQuestions}
             demographics={demographics}
             setDemographics={setDemographics}
+            questionRefs={questionRefs}
             demographicRefs={demographicRefs}
             errors={errors}
             setErrors={setErrors}

@@ -168,6 +168,8 @@ const MyTable = ({ title, rows, columns }) => {
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [currentDialog, setCurrentDialog] = useState({});
+  const [currentRol, setCurrentRol] = useState({});
+
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -196,8 +198,9 @@ const MyTable = ({ title, rows, columns }) => {
   /**
    * Handle click delete.
    */
-  const handleClickDelete = ({ id }) => {
+  const handleClickDelete = ({ id, rolId }) => {
     setOpenDeleteDialog(true);
+    setCurrentRol(rolId);
     setCurrentDialog(id);
   };
 
@@ -208,11 +211,11 @@ const MyTable = ({ title, rows, columns }) => {
    * @param id
    * @param handleDelete
    */
-  const handleOnCloseDeleteDialog = (shouldDelete, { id, handleDelete }) => {
+  const handleOnCloseDeleteDialog = (shouldDelete, { id, handleDelete, rolId }) => {
     setOpenDeleteDialog(false);
 
     if (shouldDelete) {
-      handleDelete(id);
+      handleDelete(id, rolId);
     }
   };
 
@@ -293,19 +296,23 @@ const MyTable = ({ title, rows, columns }) => {
                                         >
                                           <DeleteIcon fontSize="inherit" />
                                         </IconButton>
-                                        {currentDialog === item.payload.id && (
-                                          <MyConfirmation
-                                            onClose={(shouldDelete) =>
-                                              handleOnCloseDeleteDialog(
-                                                shouldDelete,
-                                                item.payload
-                                              )
-                                            }
-                                            title="Eliminar registro"
-                                            message="¿Está seguro que desea eliminar este registro?"
-                                            open={openDeleteDialog}
-                                          />
-                                        )}
+                                        {console.log(currentRol)}
+                                        {currentDialog === item.payload.id &&
+                                          (currentRol != null
+                                            ? currentRol === item.payload.rolId
+                                            : true) && (
+                                            <MyConfirmation
+                                              onClose={(shouldDelete) =>
+                                                handleOnCloseDeleteDialog(
+                                                  shouldDelete,
+                                                  item.payload
+                                                )
+                                              }
+                                              title="Eliminar registro"
+                                              message="¿Está seguro que desea eliminar este registro?"
+                                              open={openDeleteDialog}
+                                            />
+                                          )}
                                       </Fragment>
                                     )}
                                     {item.payload.handleEdit !== undefined && (

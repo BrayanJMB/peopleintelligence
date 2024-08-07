@@ -41,3 +41,12 @@ export const postUserRolsAPI = async (data) => axios.post('Roles/AddRoles/', dat
  */
 export const fetchAllUserRolsAPI = async (companyId) => axios.get(`Roles/GetAllRolesUser/${companyId}`);
 
+
+
+/**
+ * Delete Rol User.
+ *
+ * @returns {Promise<any>}
+ */
+export const deleteUserRolsAPI = async (userId, roleId) => axios.delete(`Roles/DeleteRolesUser/${userId}/${roleId}`);
+

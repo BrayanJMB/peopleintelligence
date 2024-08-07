@@ -1,4 +1,4 @@
-import { createContext, useEffect, useRef,useState } from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -13,9 +13,11 @@ import ConSidebar from '../../Layout/ConSidebar/ConSidebar';
 import IconSidebarNavBar from '../../Layout/IconSideBarNavBar/IconSideBarNavBar';
 
 export const DemographicContext = createContext();
+export const QuestionContext = createContext();
 export default function Conversation() {
   //Context
   const demographicRefs = useRef([]);
+  const questionRefs = useRef([]);
   const { type, id } = useParams();
   const [stage, setStage] = useState('basic');
   const navigate = useNavigate();
@@ -65,37 +67,39 @@ export default function Conversation() {
     switch (type) {
       case 'Build':
         return (
-          <DemographicContext.Provider value={demographicRefs}>
-            <Build
-              stage={stage}
-              handleMove={handleMove}
-              openSnackbar={openSnackbar}
-              setOpenSnackbar={setOpenSnackbar}
-              snackbarMessage={snackbarMessage}
-              setSnackbarMessage={setSnackbarMessage}
-              activeStep={activeStep}
-              setActiveStep={setActiveStep}
-              completed={completed}
-              setCompleted={setCompleted}
-              surveyImage={surveyImage}
-              setSurveyImage={setSurveyImage}
-              avatarImage={avatarImage}
-              setAvatarImage={setAvatarImage}
-              loading={loading}
-              setLoading={setLoading}
-              surveyChat={surveyChat}
-              setSurveyChat={setSurveyChat}
-              moderator={moderator}
-              setModerator={setModerator}
-              survey={survey}
-              setSurvey={setSurvey}
-              demographics={demographics}
-              setDemographics={setDemographics}
-              questions={questions}
-              setQuestions={setQuestions}
-              currentCompany={currentCompany}
-            />
-          </DemographicContext.Provider>
+          <QuestionContext.Provider value={questionRefs}>
+            <DemographicContext.Provider value={demographicRefs}>
+              <Build
+                stage={stage}
+                handleMove={handleMove}
+                openSnackbar={openSnackbar}
+                setOpenSnackbar={setOpenSnackbar}
+                snackbarMessage={snackbarMessage}
+                setSnackbarMessage={setSnackbarMessage}
+                activeStep={activeStep}
+                setActiveStep={setActiveStep}
+                completed={completed}
+                setCompleted={setCompleted}
+                surveyImage={surveyImage}
+                setSurveyImage={setSurveyImage}
+                avatarImage={avatarImage}
+                setAvatarImage={setAvatarImage}
+                loading={loading}
+                setLoading={setLoading}
+                surveyChat={surveyChat}
+                setSurveyChat={setSurveyChat}
+                moderator={moderator}
+                setModerator={setModerator}
+                survey={survey}
+                setSurvey={setSurvey}
+                demographics={demographics}
+                setDemographics={setDemographics}
+                questions={questions}
+                setQuestions={setQuestions}
+                currentCompany={currentCompany}
+              />
+            </DemographicContext.Provider>
+          </QuestionContext.Provider>
         );
       case 'Live':
         return <SurveyChat handleMove={handleMove} />;
