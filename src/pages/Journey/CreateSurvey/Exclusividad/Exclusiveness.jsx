@@ -13,7 +13,7 @@ export const Exclusiveness = ({exclusiviness, handleExclusiviness}) => {
           ¿Quieres esta encuesta sea exclusiva?
         </h3>
         <p className={styles.subtitle}>
-          Las encuestas exclusivas solo las podrá contestas las personas que hayan sido agregadas a ella
+        Solo las personas con su correo electrónico o número de identificación registrados en la plataforma podrán responder estas encuestas exclusivas.
         </p>
       </div>
       <div className={styles.bottom}>
