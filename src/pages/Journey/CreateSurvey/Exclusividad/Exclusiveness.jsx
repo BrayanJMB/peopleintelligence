@@ -10,10 +10,10 @@ export const Exclusiveness = ({exclusiviness, handleExclusiviness}) => {
     <div className={styles.intimidad}>
       <div className={styles.top}>
         <h3 className={styles.title}>
-          ¿Quieres esta encuesta sea exclusiva?
+          Encuestas de Acceso Restringido
         </h3>
         <p className={styles.subtitle}>
-        Solo las personas con su correo electrónico o número de identificación registrados en la plataforma podrán responder estas encuestas exclusivas.
+        Solo las personas con su correo electrónico o número de identificación registrados en la plataforma podrán responder.
         </p>
       </div>
       <div className={styles.bottom}>
@@ -28,7 +28,7 @@ export const Exclusiveness = ({exclusiviness, handleExclusiviness}) => {
             <FormControlLabel
               value={true}
               control={<Radio />}
-              label="Si. Hacer encuesta exclusiva"
+              label="Si. Hacer encuesta restringida"
             />
             <FormControlLabel
               value={false}
