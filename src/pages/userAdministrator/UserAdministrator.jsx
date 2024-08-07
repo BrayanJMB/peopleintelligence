@@ -256,12 +256,10 @@ export default function UserAdministrator() {
       try{
 
         await postUserRolsAPI(
-          [
             {
               userId: formValues.userRolChange,
               roleId: formValues.userRol,
             },
-          ]
          );
  
          enqueueSnackbar('Usuario creado con éxito', {
