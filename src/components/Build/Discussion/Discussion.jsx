@@ -5,40 +5,40 @@ import {
   useEffect,
   useRef,
   useState,
-} from "react";
-import ClearIcon from "@mui/icons-material/Clear";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ForumOutlinedIcon from "@mui/icons-material/ForumOutlined";
-import { List, ListItem, ListItemText } from "@mui/material";
-import Accordion from "@mui/material/Accordion";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import Alert from "@mui/material/Alert";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Modal from "@mui/material/Modal";
-import Snackbar from "@mui/material/Snackbar";
-import Typography from "@mui/material/Typography";
+} from 'react';
+import ClearIcon from '@mui/icons-material/Clear';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
+import { List, ListItem, ListItemText } from '@mui/material';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Modal from '@mui/material/Modal';
+import Snackbar from '@mui/material/Snackbar';
+import Typography from '@mui/material/Typography';
 
 import {
   DemographicContext,
   QuestionContext,
-} from "../../../pages/Conversation/Conversation";
-import { storeSurveyChatAPI } from "../../../services/ChatLive/storeSurveyChat.service";
+} from '../../../pages/Conversation/Conversation';
+import { storeSurveyChatAPI } from '../../../services/ChatLive/storeSurveyChat.service';
 import {
   updateModeratorChatAPI,
   updateSurveyChatAPI,
-} from "../../../services/ChatLive/updateSurveyChat.service";
+} from '../../../services/ChatLive/updateSurveyChat.service';
 
-import AccordionDiscussion from "./AccordionDicussion/AccordionDiscussion";
+import AccordionDiscussion from './AccordionDicussion/AccordionDiscussion';
 import {
   storeAvatarAndSurveyImage,
   storeSurveyImageQuestion,
   storeSurveyVideoQuestion,
-} from "./services/service";
+} from './services/service';
 
-import styles from "./Discussion.module.css";
+import styles from './Discussion.module.css';
 export const filesImageQuestionContext = createContext();
 //
 export default function Discussion({
@@ -59,8 +59,8 @@ export default function Discussion({
   const demographicRefs = useContext(DemographicContext);
   const questionRefs = useContext(QuestionContext);
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState("info");
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('info');
   const [open, setOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [accordionOpen, setAccordionOpen] = useState(false);
@@ -90,14 +90,14 @@ export default function Discussion({
       event.preventDefault();
       setIsDisabled(true);
       setOpenSnackbar(true);
-      setSnackbarMessage("Creando encuesta, por favor espere...");
-      setSnackbarSeverity("info");
+      setSnackbarMessage('Creando encuesta, por favor espere...');
+      setSnackbarSeverity('info');
       let urls = null;
       const filesImage =
-        questions?.filter((q) => q.type === "Imagen").map((q) => q.urlMedia) ??
+        questions?.filter((q) => q.type === 'Imagen').map((q) => q.urlMedia) ??
         [];
       const filesVideo =
-        questions?.filter((q) => q.type === "video").map((q) => q.urlMedia) ??
+        questions?.filter((q) => q.type === 'video').map((q) => q.urlMedia) ??
         [];
 
       const payload = {
@@ -109,7 +109,7 @@ export default function Discussion({
           questions: questions.map((q, index) => ({
             ...q,
             orderNumber: index + 1,
-            urlMedia: "",
+            urlMedia: '',
             options: q.options.map((option) => {
               const { ...rest } = option;
               return rest;
@@ -129,10 +129,10 @@ export default function Discussion({
       if (!isUpdate) {
         // Manejar creación
         const imageQuestions = payload.survey.questions.filter(
-          (question) => question.type === "Imagen"
+          (question) => question.type === 'Imagen'
         );
         const videoQuestions = payload.survey.questions.filter(
-          (video) => video.type === "video"
+          (video) => video.type === 'video'
         );
         response = await storeSurveyChatAPI(payload);
         if (surveyImage || avatarImage) {
@@ -142,7 +142,7 @@ export default function Discussion({
             avatarImage,
             currentCompany
           );
-          payload.moderator.avatarUrl = urls ? urls.data.files[1].url : "";
+          payload.moderator.avatarUrl = urls ? urls.data.files[1].url : '';
           payload.survey.imageUrl = urls
             ? urls.data.files[0].url
             : survey.imageUrl;
@@ -180,7 +180,7 @@ export default function Discussion({
             avatarImage,
             currentCompany
           );
-          payload.moderator.avatarUrl = urls ? urls.data.files[0].url : "";
+          payload.moderator.avatarUrl = urls ? urls.data.files[0].url : '';
           payload.survey.imageUrl = urls
             ? urls.data.files[1].url
             : survey.imageUrl;
@@ -201,17 +201,17 @@ export default function Discussion({
       // Manejar respuesta
       if (response.status === 200) {
         setSnackbarMessage(
-          `Chat Live ${!isUpdate ? "creado" : "actualizado"} satisfactoriamente`
+          `Chat Live ${!isUpdate ? 'creado' : 'actualizado'} satisfactoriamente`
         );
-        setSnackbarSeverity("success");
+        setSnackbarSeverity('success');
         setIsDisabled(false);
         setTimeout(() => {
-          handleMove("/conversation/Live", "basic");
+          handleMove('/conversation/Live', 'basic');
         }, 2000);
       } else {
         setIsDisabled(false);
-        setSnackbarMessage("Hubo un error al crear la encuesta de chat");
-        setSnackbarSeverity("error");
+        setSnackbarMessage('Hubo un error al crear la encuesta de chat');
+        setSnackbarSeverity('error');
       }
     }
   };
@@ -226,7 +226,7 @@ export default function Discussion({
     // Validar si el array de demográficos está vacío
     if (demographics.length === 0) {
       errorMessages.push(
-        "Para crear la encuesta debe haber al menos un demográfico."
+        'Para crear la encuesta debe haber al menos un demográfico.'
       );
     }
     demographics.forEach((demographic, demoIndex) => {
@@ -234,18 +234,18 @@ export default function Discussion({
 
       // Validar si el nombre del demográfico está vacío
       if (!demographic.name.trim()) {
-        currentErrors.name = "El nombre demográfico no puede estar vacío.";
+        currentErrors.name = 'El nombre demográfico no puede estar vacío.';
       } else {
         // Validar si hay al menos 2 opciones
         if (demographic.demographicDetails.length < 1) {
-          currentErrors.name = "Debe haber al menos 1 opcion.";
+          currentErrors.name = 'Debe haber al menos 1 opcion.';
         }
       }
 
       // Validar si las opciones están vacías
       demographic.demographicDetails.forEach((opcion, index) => {
         if (!opcion.value.trim()) {
-          currentErrors[`option${index}`] = "Esta opción no puede estar vacía.";
+          currentErrors[`option${index}`] = 'Esta opción no puede estar vacía.';
         }
       });
 
@@ -253,7 +253,7 @@ export default function Discussion({
     });
     if (questions.length === 0) {
       errorMessages.push(
-        "Para crear la encuesta debe haber al menos una pregunta."
+        'Para crear la encuesta debe haber al menos una pregunta.'
       );
     }
     questions.forEach((question, questionIndex) => {
@@ -261,36 +261,36 @@ export default function Discussion({
 
       // Validar si el nombre de la pregunta está vacío
       if (
-        question.type.toLowerCase() !== "imagen" &&
-        question.type !== "video"
+        question.type.toLowerCase() !== 'imagen' &&
+        question.type !== 'video'
       ) {
         if (!question.name.trim()) {
           currentQuestionErrors.name =
-            "El nombre de la pregunta no puede estar vacío.";
+            'El nombre de la pregunta no puede estar vacío.';
         } else {
           // Validar si hay al menos 2 opciones
           if (
             question.options.length < 2 &&
-            question.type.toLowerCase() !== "texto" &&
-            question.type !== "Opinión"
+            question.type.toLowerCase() !== 'texto' &&
+            question.type !== 'Opinión'
           ) {
-            currentQuestionErrors.name = "Debe haber al menos 2 opciones.";
+            currentQuestionErrors.name = 'Debe haber al menos 2 opciones.';
           }
         }
       } else {
         if (
-          typeof question.urlMedia === "string" &&
+          typeof question.urlMedia === 'string' &&
           !question.urlMedia.trim()
         ) {
           currentQuestionErrors.name =
-            "No puede ir vacío, debe subir un archivo";
+            'No puede ir vacío, debe subir un archivo';
         }
         // Verifica si question.urlMedia es un objeto File pero no tiene tamaño (lo que indicaría un archivo vacío)
         else if (
           question.urlMedia instanceof File &&
           question.urlMedia.size === 0
         ) {
-          currentQuestionErrors.name = "El archivo no puede estar vacío.";
+          currentQuestionErrors.name = 'El archivo no puede estar vacío.';
         }
       }
 
@@ -298,22 +298,22 @@ export default function Discussion({
 
       if (
         !question.timeLimit &&
-        question.type.toLowerCase() !== "texto" &&
-        question.type.toLowerCase() !== "imagen" &&
-        question.type !== "video"
+        question.type.toLowerCase() !== 'texto' &&
+        question.type.toLowerCase() !== 'imagen' &&
+        question.type !== 'video'
       ) {
-        currentQuestionErrors.timeLimit = "Debe seleccionar un tiempo";
+        currentQuestionErrors.timeLimit = 'Debe seleccionar un tiempo';
       }
 
       // Validar si las opciones están vacías
       question.options.forEach((option, index) => {
         if (option.value && !option.value.trim()) {
           currentQuestionErrors[`option${index}`] =
-            "Esta opción no puede estar vacía.";
+            'Esta opción no puede estar vacía.';
         }
         if (option.experienceQuestion && !option.experienceQuestion.trim()) {
           currentQuestionErrors[`experienceQuestion${index}`] =
-            "Esta opción no puede estar vacía.";
+            'Esta opción no puede estar vacía.';
         }
       });
 
@@ -339,7 +339,7 @@ export default function Discussion({
           (errorObj) => Object.keys(errorObj).length > 0
         );
         demographicRefs.current[firstErrorIndex].current.scrollIntoView({
-          behavior: "smooth",
+          behavior: 'smooth',
         });
       }
       if (hasErrorsInQuestions) {
@@ -348,7 +348,7 @@ export default function Discussion({
           (errorObj) => Object.keys(errorObj).length > 0
         );
         questionRefs.current[firstErrorIndex].current.scrollIntoView({
-          behavior: "smooth",
+          behavior: 'smooth',
         });
       }
     }
@@ -384,13 +384,13 @@ export default function Discussion({
         autoHideDuration={4000}
         onClose={handleCloseSnackbar}
       >
-        <Alert severity={snackbarSeverity} sx={{ width: "100%" }}>
+        <Alert severity={snackbarSeverity} sx={{ width: '100%' }}>
           {snackbarMessage}
         </Alert>
       </Snackbar>
       <Button
         onClick={() => {
-          handleMove("", "basic");
+          handleMove('', 'basic');
           handleBack();
         }}
       >
@@ -399,9 +399,9 @@ export default function Discussion({
       <div className={styles.content}>
         <div
           style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-around",
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
           }}
         >
           <p>{survey.title}</p>
@@ -409,14 +409,14 @@ export default function Discussion({
             <Button
               onClick={handleOpenModal}
               sx={{
-                color: "#00B0F0",
+                color: '#00B0F0',
               }}
             >
               Importar
             </Button>
             <Button
               sx={{
-                color: "#00B0F0",
+                color: '#00B0F0',
               }}
             >
               Compartir
@@ -425,10 +425,10 @@ export default function Discussion({
               onClick={(event) => handleSubmit(event)}
               disabled={isDisabled}
               sx={{
-                color: isDisabled ? "#9b9b9b" : "#00B0F0",
+                color: isDisabled ? '#9b9b9b' : '#00B0F0',
               }}
             >
-              {isUpdate ? "Editar" : "Publicar"}
+              {isUpdate ? 'Editar' : 'Publicar'}
             </Button>
           </div>
         </div>
@@ -437,9 +437,9 @@ export default function Discussion({
             <div>
               <span
                 style={{
-                  marginLeft: "2rem",
-                  fontWeight: "bold",
-                  fontSize: "1.2rem",
+                  marginLeft: '2rem',
+                  fontWeight: 'bold',
+                  fontSize: '1.2rem',
                 }}
               >
                 Guía de discusión
@@ -456,32 +456,32 @@ export default function Discussion({
           >
             <Box className={styles.modal}>
               <div className={styles.modaltop}>
-                <p style={{ fontWeight: "bold", marginTop: "0.8rem" }}>
+                <p style={{ fontWeight: 'bold', marginTop: '0.8rem' }}>
                   Acá puedes usar/importar una conversacion existente
                 </p>
                 <div>
                   <IconButton onClick={handleCloseModal}>
-                    <ClearIcon sx={{ fontSize: "40px" }} />
+                    <ClearIcon sx={{ fontSize: '40px' }} />
                   </IconButton>
                 </div>
               </div>
               <div className={styles.modalbuttom}>
                 {!accordionOpen ? (
                   <div className={styles.blocks} onClick={handleOpenAccordion}>
-                    <ForumOutlinedIcon sx={{ fontSize: "40px" }} />
-                    <p style={{ fontWeight: "bold", fontSize: "0.9rem" }}>
+                    <ForumOutlinedIcon sx={{ fontSize: '40px' }} />
+                    <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
                       Conversación existente
                     </p>
-                    <p style={{ color: "grey", fontSize: "0.8rem" }}>
+                    <p style={{ color: 'grey', fontSize: '0.8rem' }}>
                       Grab the discussion guide from another conversation
                     </p>
                   </div>
                 ) : (
                   <div
                     style={{
-                      maxWidth: "600px",
-                      maxHeight: "300px",
-                      overflowY: "auto",
+                      maxWidth: '600px',
+                      maxHeight: '300px',
+                      overflowY: 'auto',
                     }}
                   >
                     <Accordion expanded={true}>
@@ -520,7 +520,7 @@ export default function Discussion({
             setIsAccordionOpen={setIsDemographicsAccordionOpen}
             demographicRefs={demographicRefs}
             questionRefs={questionRefs}
-            accordionTitle={"Datos Demográficos"}
+            accordionTitle={'Datos Demográficos'}
           />
 
           <AccordionDiscussion
@@ -535,7 +535,7 @@ export default function Discussion({
             setErrors={setErrors}
             isAccordionOpen={isConversationAccordionOpen}
             setIsAccordionOpen={setIsConversationAccordionOpen}
-            accordionTitle={"Preguntas"}
+            accordionTitle={'Preguntas'}
           />
         </filesImageQuestionContext.Provider>
       </div>

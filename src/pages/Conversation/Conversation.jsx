@@ -1,16 +1,16 @@
-import { createContext, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import Box from "@mui/material/Box";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { v4 as uuidv4 } from "uuid";
+import { createContext, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { v4 as uuidv4 } from 'uuid';
 
-import Build from "../../components/Build/Build";
-import { Moderator } from "../../components/Build/Moderator/Moderator";
-import { SurveyChat } from "../../components/Build/SurveysChats/SurveyChat";
-import ConSidebar from "../../Layout/ConSidebar/ConSidebar";
-import IconSidebarNavBar from "../../Layout/IconSideBarNavBar/IconSideBarNavBar";
+import Build from '../../components/Build/Build';
+import { Moderator } from '../../components/Build/Moderator/Moderator';
+import { SurveyChat } from '../../components/Build/SurveysChats/SurveyChat';
+import ConSidebar from '../../Layout/ConSidebar/ConSidebar';
+import IconSidebarNavBar from '../../Layout/IconSideBarNavBar/IconSideBarNavBar';
 
 export const DemographicContext = createContext();
 export const QuestionContext = createContext();
@@ -19,11 +19,11 @@ export default function Conversation() {
   const demographicRefs = useRef([]);
   const questionRefs = useRef([]);
   const { type, id } = useParams();
-  const [stage, setStage] = useState("basic");
+  const [stage, setStage] = useState('basic');
   const navigate = useNavigate();
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarMessage, setSnackbarMessage] = useState('');
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [surveyImage, setSurveyImage] = useState(null);
@@ -32,18 +32,18 @@ export default function Conversation() {
   const [loading, setLoading] = useState(false);
   const [surveyChat, setSurveyChat] = useState([]);
   const [moderator, setModerator] = useState({
-    moderatorId: "",
-    name: "",
-    avatarUrl: "",
+    moderatorId: '',
+    name: '',
+    avatarUrl: '',
   });
 
   const [survey, setSurvey] = useState({
     id: uuidv4(),
-    title: "",
+    title: '',
     timeDemographics: 300,
     companyId: currentCompany?.id,
-    description: "",
-    imageUrl: "",
+    description: '',
+    imageUrl: '',
   });
 
   const [demographics, setDemographics] = useState([]);
@@ -51,10 +51,10 @@ export default function Conversation() {
   const theme = createTheme({
     palette: {
       blue: {
-        main: "#00b0f0",
+        main: '#00b0f0',
       },
       grey: {
-        main: "#808080",
+        main: '#808080',
       },
     },
   });
@@ -65,7 +65,7 @@ export default function Conversation() {
 
   const renderSwitch = () => {
     switch (type) {
-      case "Build":
+      case 'Build':
         return (
           <QuestionContext.Provider value={questionRefs}>
             <DemographicContext.Provider value={demographicRefs}>
@@ -101,9 +101,9 @@ export default function Conversation() {
             </DemographicContext.Provider>
           </QuestionContext.Provider>
         );
-      case "Live":
+      case 'Live':
         return <SurveyChat handleMove={handleMove} />;
-      case "moderator":
+      case 'moderator':
         return (
           <DemographicContext.Provider value={demographicRefs}>
             <Moderator
@@ -120,17 +120,17 @@ export default function Conversation() {
 
   useEffect(() => {
     if (
-      userInfo?.role.findIndex((p) => p === "Dinamyc") < 0 &&
-      userInfo?.role.findIndex((p) => p === "Administrador") < 0
+      userInfo?.role.findIndex((p) => p === 'Dinamyc') < 0 &&
+      userInfo?.role.findIndex((p) => p === 'Administrador') < 0
     ) {
-      alert("No tiene permiso para acceder a esta funcionalidad");
-      navigate("/dashboard");
+      alert('No tiene permiso para acceder a esta funcionalidad');
+      navigate('/dashboard');
     }
   }, []);
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: 'flex' }}>
         <IconSidebarNavBar>
           <ConSidebar handleMove={handleMove} type={type} />
           {renderSwitch(type)}

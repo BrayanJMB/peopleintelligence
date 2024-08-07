@@ -40,4 +40,4 @@ export const Exclusiveness = ({exclusiviness, handleExclusiviness}) => {
       </div>
     </div>
   );
-}
+};

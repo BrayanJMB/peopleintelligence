@@ -24,7 +24,7 @@ import Table from '../../components/Table';
 import { addItem, storeItems, updateItem } from '../../features/adminSlice';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
-import { fetchAllUserRolsAPI,fetchUserAPI, fetchUserGetRolsAPI, postUserAPI, postUserRolsAPI, deleteUserRolsAPI } from '../../services/fetchUser.service';
+import { deleteUserRolsAPI,fetchAllUserRolsAPI,fetchUserAPI, fetchUserGetRolsAPI, postUserAPI, postUserRolsAPI } from '../../services/fetchUser.service';
 import { getCompaniesAPI } from '../../services/getCompanies.service';
 import { getDepartmentsAPI } from '../../services/getDepartments.service';
 import { fetchDocumentTypeAPI } from '../../services/getDocumentType.service';
@@ -199,7 +199,7 @@ export default function UserAdministrator() {
         payload: {
           handleDelete: handleDeleteCompanyRols,
           id: user.userId,
-          rolId: user.rolId
+          rolId: user.rolId,
         },
       },
     ]);
@@ -207,8 +207,8 @@ export default function UserAdministrator() {
   
   const handleDeleteCompanyRols = async (id, rolId)=>{
     try{
-      await deleteUserRolsAPI(id, rolId)
-      await fetchAllUser()
+      await deleteUserRolsAPI(id, rolId);
+      await fetchAllUser();
       enqueueSnackbar(
         'Rol eliminado con éxito',
         {
@@ -225,7 +225,7 @@ export default function UserAdministrator() {
         },
       );
     }
-  }
+  };
   
 
 
