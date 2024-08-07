@@ -129,7 +129,7 @@ const AnswerSurvey = () => {
   
             return newSteps;
           });
-          console.log(surveyStatus)
+          console.log(surveyStatus);
           setExclusiviness(true);
       } else {
         console.error('Se produjo un error al hacer la solicitud', error);
@@ -361,7 +361,7 @@ const AnswerSurvey = () => {
             {surveyStatus === 'failed' && isAlreadyResponse && (
               <SuccessMessage isAlreadyResponse={isAlreadyResponse} />
             )}
-          {((surveyStatus === "failed" && notFound) || exclusiviness) && <NotFoundMessage />}
+          {((surveyStatus === 'failed' && notFound) || exclusiviness) && <NotFoundMessage />}
             {(surveyStatus === 'succeeded' && currentSurvey !== null) && !exclusiviness && (
               <Fragment>
                 {/* company name */}
