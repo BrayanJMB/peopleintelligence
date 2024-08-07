@@ -25,12 +25,12 @@ import {
 } from '../../features/surveys/surveysSlice';
 import client from '../../utils/axiosInstance';
 
+import NotExclusiviness from './components/NotExclusiviness/NotExclusiviness';
 import NotFoundMessage from './components/NotFoundMessage/NotFoundMessage';
 import SuccessMessage from './components/SuccessMessage/SuccessMessage';
 import SurveyForm from './components/SurveyForm/SurveyForm';
 
 import styles from './AnswerSurvey.module.css';
-import NotExclusiviness from './components/NotExclusiviness/NotExclusiviness';
 /**
  * Answer survey page.
  *

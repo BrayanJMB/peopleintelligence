@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 import WarningIcon from '@mui/icons-material/Warning';
-import { useTheme } from "@mui/material/styles";
-import Typography from "@mui/material/Typography";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import styles from "./NotFoundMessage.module.css";
+import styles from './NotFoundMessage.module.css';
 
 /**
  * SuccessMessage component for AnswerSurvey page.
@@ -15,10 +15,10 @@ import styles from "./NotFoundMessage.module.css";
 
 const NotExclusiviness = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   return (
     <div className={styles.ErrorMessage}>
-      <WarningIcon style={{ fontSize: 200, color: "orange" }} />
+      <WarningIcon style={{ fontSize: 200, color: 'orange' }} />
 
       <Typography variant="h5" gutterBottom style={{ fontStyle: 'italic' }}>
         Lo sentimos, pero no estás inscrito para acceder a
