@@ -55,6 +55,7 @@ const AnswerSurvey = () => {
   const [demographicUserData, setDemographicUserData] = useState(null);
   const [isPersonal, setIsPersonal] = useState(false);
   const surveyStatus = useSelector((state) => selectSurveysStatus(state));
+  const [exclusiviness, setExclusiviness] = useState(false);
   const currentSurvey = useSelector((state) =>
     selectCurrentSurveyForAnswer(state)
   );
@@ -120,6 +121,16 @@ const AnswerSurvey = () => {
         setNotFound(false);
         setEmailSubmitted(true);
         setIsAlreadyResponse(true);
+      }
+      else if (error.response && error.response.status === 404) {
+          setSteps((prevSteps) => {
+            const newSteps = [...prevSteps];
+            newSteps.splice(0, 1);
+  
+            return newSteps;
+          });
+          console.log(surveyStatus)
+          setExclusiviness(true);
       } else {
         console.error('Se produjo un error al hacer la solicitud', error);
       }
@@ -350,8 +361,8 @@ const AnswerSurvey = () => {
             {surveyStatus === 'failed' && isAlreadyResponse && (
               <SuccessMessage isAlreadyResponse={isAlreadyResponse} />
             )}
-            {surveyStatus === 'failed' && notFound && <NotFoundMessage />}
-            {surveyStatus === 'succeeded' && currentSurvey !== null && (
+          {((surveyStatus === "failed" && notFound) || exclusiviness) && <NotFoundMessage />}
+            {(surveyStatus === 'succeeded' && currentSurvey !== null) && !exclusiviness && (
               <Fragment>
                 {/* company name */}
                 <Box
