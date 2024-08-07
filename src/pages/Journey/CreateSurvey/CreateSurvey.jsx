@@ -698,7 +698,7 @@ export default function CreateSurvey() {
         return (
           <div style={{display:'flex', width:'100%'}}>
             <Intimidad anonyme={anonymous} handleAnonyme={handleanonyme} />
-            {/*<Exclusiveness exclusiviness={exclusiviness} handleExclusiviness={handleExclusiviness} />*/}
+            <Exclusiveness exclusiviness={exclusiviness} handleExclusiviness={handleExclusiviness} />
           </div>
         );
 
