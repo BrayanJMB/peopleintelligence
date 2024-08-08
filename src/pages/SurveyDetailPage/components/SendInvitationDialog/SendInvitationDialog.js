@@ -378,7 +378,7 @@ const SendInvitationDialog = ({
     }
 
     // if emails or message are invalid
-    if (error) {
+    if (error || errorDocuments) {
       setIsLoading(false);
 
       return;

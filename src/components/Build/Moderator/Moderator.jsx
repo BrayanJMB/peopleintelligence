@@ -152,7 +152,6 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
       ...prevTimers,
       [indexCurrentQuestion.current]: timeLimit,
     }));
-
   };
 
   const SendQuestionByType = (type, question, index) => {
@@ -197,9 +196,26 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
         indexCurrentQuestion.current = currentQuestion;
         setNextQuestion(currentQuestion);
         break;
-      /*case 'video':
-            console.log('soy video');
-            break;*/
+      case 'video':
+        connection
+        .invoke('SendVideo', question.urlMedia)
+        .then(() => {
+          let newMessageItem = {
+            id: messages.length + 1,
+            sender: 'Shun',
+            senderAvatar: moderatorAvatar.avatarUrl,
+            messageType: 'question',
+            content: question,
+          };
+          setMessages((prevMessages) => [...prevMessages, newMessageItem]);
+          indexCurrentQuestion.current = currentQuestion;
+        })
+        .catch(function (err) {
+          return console.error(err.toString());
+        });
+      indexCurrentQuestion.current = currentQuestion;
+      setNextQuestion(currentQuestion);
+      break;        
       case 'seleccionsimple':
         connection.invoke('SendSingleOption', question).catch(function (err) {
           return console.error(err.toString());
@@ -592,18 +608,33 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
                                 >
                                   {option.name}
                                 </Typography>
-                                {option.urlMedia && (
-                                  <img
-                                    src={option.urlMedia}
-                                    alt="imagenPregunta"
-                                    style={{
-                                      width: '100%',
-                                      height: 'auto',
-                                      marginTop: '1rem',
-                                      borderRadius: '8px',
-                                    }}
-                                  />
-                                )}
+                                {option.urlMedia &&
+                                  (option.type === 'video' ? (
+                                    <>
+                                    <video
+                                      src={option.urlMedia}
+                                      controls
+                                      style={{
+                                        width: '100px',
+                                        height: 'auto',
+                                        marginTop: '1rem',
+                                        borderRadius: '8px',
+                                      }}
+                                    
+                                    
+                                    /></>
+                                  ) : (
+                                    <img
+                                      src={option.urlMedia}
+                                      alt="imagenPregunta"
+                                      style={{
+                                        width: '100px',
+                                        height: 'auto',
+                                        marginTop: '1rem',
+                                        borderRadius: '8px',
+                                      }}
+                                    />
+                                  ))}
                               </div>
                               {nextQuestion === index && (
                                 <ComplexQuestionButton

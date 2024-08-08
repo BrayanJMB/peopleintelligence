@@ -97,7 +97,7 @@ export default function Discussion({
         questions?.filter((q) => q.type === 'Imagen').map((q) => q.urlMedia) ??
         [];
       const filesVideo =
-        questions?.filter((q) => q.type === 'video').map((q) => q.urlMedia) ??
+        questions?.filter((q) => q.type === 'Video').map((q) => q.urlMedia) ??
         [];
 
       const payload = {
@@ -132,8 +132,9 @@ export default function Discussion({
           (question) => question.type === 'Imagen'
         );
         const videoQuestions = payload.survey.questions.filter(
-          (video) => video.type === 'video'
+          (video) => video.type === 'Video'
         );
+        console.log(videoQuestions);
         response = await storeSurveyChatAPI(payload);
         if (surveyImage || avatarImage) {
           urls = await storeAvatarAndSurveyImage(
@@ -164,13 +165,13 @@ export default function Discussion({
             response.data.survey.id
           );
         }
-        /*if (videoQuestions.length > 0) {
+        if (videoQuestions.length > 0) {
           await storeSurveyVideoQuestion(
             filesVideo,
             videoQuestions,
             response.data.survey.id
           );
-        }*/
+        }
       } else {
         // Manejar actualización
         if (surveyImage || avatarImage) {
@@ -262,7 +263,7 @@ export default function Discussion({
       // Validar si el nombre de la pregunta está vacío
       if (
         question.type.toLowerCase() !== 'imagen' &&
-        question.type !== 'video'
+        question.type.toLowerCase()  !== 'video'
       ) {
         if (!question.name.trim()) {
           currentQuestionErrors.name =
@@ -300,7 +301,7 @@ export default function Discussion({
         !question.timeLimit &&
         question.type.toLowerCase() !== 'texto' &&
         question.type.toLowerCase() !== 'imagen' &&
-        question.type !== 'video'
+        question.type.toLowerCase() !== 'video'
       ) {
         currentQuestionErrors.timeLimit = 'Debe seleccionar un tiempo';
       }
