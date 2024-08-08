@@ -134,7 +134,7 @@ export default function Discussion({
         const videoQuestions = payload.survey.questions.filter(
           (video) => video.type === 'Video'
         );
-        console.log(videoQuestions)
+        console.log(videoQuestions);
         response = await storeSurveyChatAPI(payload);
         if (surveyImage || avatarImage) {
           urls = await storeAvatarAndSurveyImage(
