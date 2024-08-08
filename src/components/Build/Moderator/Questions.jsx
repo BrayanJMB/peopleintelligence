@@ -298,11 +298,10 @@ export const Questions = ({ question, isAnswer, indexCurrentQuestion }) => {
           />
         )}
         {isVideo(question.type) && (
-          <img
-            src={question.urlMedia}
-            alt="imagenPregunta"
-            style={{ width: '100%', height: 'auto' }}
-          />
+          <video
+          src={question.urlMedia}
+          controls
+          style={{ width: '100%', height: 'auto' }} />
         )}
       </div>
     </>
