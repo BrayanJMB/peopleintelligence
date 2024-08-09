@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useDispatch,useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import DesignServicesIcon from '@mui/icons-material/DesignServices';
@@ -40,6 +40,7 @@ import {
 import client from '../../../utils/axiosInstance';
 
 import Cuestionario from './Cuestionario/Cuestionario';
+import { Exclusiveness } from './Exclusividad/Exclusiveness.jsx';
 import Intimidad from './Intimidad/Intimidad.jsx';
 import Introduction from './Introduction/Introduction';
 
@@ -75,11 +76,7 @@ export default function CreateSurvey() {
     customOptions: Array(2).fill(''),
     opcionesInputs: Array(2).fill(''),
     stars: Array(3).fill(''),
-    rangeOptions:[
-      'Rango 0-6',
-      'Rango 7-8',
-      'Rango 9-10',
-    ],
+    rangeOptions: ['Rango 0-6', 'Rango 7-8', 'Rango 9-10'],
   });
 
   const [selections, setSelections] = useState({});
@@ -95,6 +92,7 @@ export default function CreateSurvey() {
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [question, setQuestion] = useState();
   const [anonymous, setAnonymous] = useState(true);
+  const [exclusiviness, setExclusiviness] = useState(true);
   const [checkForm, setCheckForm] = useState(false);
   const [newDemographics, setNewDemographics] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -132,26 +130,26 @@ export default function CreateSurvey() {
   const getDemographics = () => {
     const demographics = [];
     if (!data.demographics) return [];
-      data.demographics.forEach((demographic) => {
-        const index = newDemographics.findIndex(
-          (item) => item.name === demographic
-        );
+    data.demographics.forEach((demographic) => {
+      const index = newDemographics.findIndex(
+        (item) => item.name === demographic
+      );
 
-        if (index !== -1) {
-          demographics.push({
-            name: newDemographics[index].name,
-            options: newDemographics[index].options.map((option) => ({
-              value: option,
-              text: option,
-            })),
-          });
-        } else {
-          demographics.push({
-            name: demographic,
-            options: [],
-          });
-        }
-      });
+      if (index !== -1) {
+        demographics.push({
+          name: newDemographics[index].name,
+          options: newDemographics[index].options.map((option) => ({
+            value: option,
+            text: option,
+          })),
+        });
+      } else {
+        demographics.push({
+          name: demographic,
+          options: [],
+        });
+      }
+    });
     return demographics;
   };
 
@@ -169,13 +167,14 @@ export default function CreateSurvey() {
         emailSubject: data.emailSubject,
         emailMask: data.emailMask,
         isPersonal: !anonymous,
+        exclusive: exclusiviness,
         mapId: data.map.id,
         companyId: currentCompany.id,
       },
       questions: questions.map((question) => ({
         question: {
           nameQuestion: question.name,
-          description:question.description,
+          description: question.description,
           typeQuestionId: question.typeId,
           score: question.stars?.length,
           conditional: question.conditionalQuestion,
@@ -184,7 +183,7 @@ export default function CreateSurvey() {
           return {
             optionsName: option,
             numberOption: index + 1,
-            questionChildren: question.childQuestionIds?.[index] || '',  // Corrección aquí usando encadenamiento opcional
+            questionChildren: question.childQuestionIds?.[index] || '', // Corrección aquí usando encadenamiento opcional
           };
         }),
         selectOptions: question.selectOptions?.map((option, index) => {
@@ -211,43 +210,43 @@ export default function CreateSurvey() {
   /**
    * Edit survey.
    */
-    const editSurvey = async () => {
-      setLoading(true);
-      const newSurvey = {
-        survey: {
-          id: surveyId,
-          nameSurvey: data.title,
-          descriptionSurvey: data.description,
-          messageMail: data.mailingMessage,
-          emailSubject: data.emailSubject,
-          emailMask: data.emailMask,
-          isPersonal: !anonymous,
-          mapId: data.map.id,
-          companyId: currentCompany.id,
+  const editSurvey = async () => {
+    setLoading(true);
+    const newSurvey = {
+      survey: {
+        id: surveyId,
+        nameSurvey: data.title,
+        descriptionSurvey: data.description,
+        messageMail: data.mailingMessage,
+        emailSubject: data.emailSubject,
+        emailMask: data.emailMask,
+        isPersonal: !anonymous,
+        mapId: data.map.id,
+        companyId: currentCompany.id,
+      },
+      questions: questions.map((question) => ({
+        question: {
+          nameQuestion: question.name,
+          description: question.description,
+          typeQuestionId: question.typeId,
+          score: question.stars?.length,
         },
-        questions: questions.map((question) => ({
-          question: {
-            nameQuestion: question.name,
-            description:question.description,
-            typeQuestionId: question.typeId,
-            score: question.stars?.length,
-          },
-          options: question.customOptions?.map((option, index) => ({
-            optionsName: option,
-            numberOption: index + 1,
-          })),
-          categoryId: question.categoryId,
+        options: question.customOptions?.map((option, index) => ({
+          optionsName: option,
+          numberOption: index + 1,
         })),
-        demographics: getDemographics(),
-      };
-      
-      const { data: createdJourney } = await client.put('/editSurvey',newSurvey);
-      setLoading(false);
-      navigate(`/journey/survey/${createdJourney.id}/detail`);
-      enqueueSnackbar('Cuestionario editado con éxito', {
-        variant: 'success',
-      });
+        categoryId: question.categoryId,
+      })),
+      demographics: getDemographics(),
     };
+
+    const { data: createdJourney } = await client.put('/editSurvey', newSurvey);
+    setLoading(false);
+    navigate(`/journey/survey/${createdJourney.id}/detail`);
+    enqueueSnackbar('Cuestionario editado con éxito', {
+      variant: 'success',
+    });
+  };
 
   /**
    * Create survey template.
@@ -346,7 +345,7 @@ export default function CreateSurvey() {
           navigate('/journey/survey-template');
           enqueueSnackbar('Plantilla actualizada con éxito', {
             variant: 'success',
-            autoHideDuration:3000,
+            autoHideDuration: 3000,
           });
 
           return;
@@ -358,9 +357,9 @@ export default function CreateSurvey() {
         setActiveStep((val) => val + 1);
         break;
       case 2:
-        if (isEdit){
+        if (isEdit) {
           editSurvey();
-        }else{
+        } else {
           createSurvey();
         }
         break;
@@ -377,7 +376,7 @@ export default function CreateSurvey() {
       setActiveStep((val) => val - 1);
     }
   };
-  
+
   /**
    * Handle change for current question.
    *
@@ -413,7 +412,6 @@ export default function CreateSurvey() {
     setInformation({ ...information, customOptions: holder });
   };
 
-  
   const handleInformationRelationalOptions = (key) => (event) => {
     let holder = information.opcionesInputs.map((val, index) => {
       if (index === key) {
@@ -421,17 +419,16 @@ export default function CreateSurvey() {
       } else return val;
     });
     setInformation({ ...information, opcionesInputs: holder });
-};
+  };
 
-const handleInformationRelationalOptionsEdit = (key) => (event) => {
-
-  let holder = question.selectOptions.map((val, index) => {
-    if (index === key) {
-      return event.target.value;
-    } else return val;
-  });
-  setQuestion({ ...question, selectOptions: holder });
-};
+  const handleInformationRelationalOptionsEdit = (key) => (event) => {
+    let holder = question.selectOptions.map((val, index) => {
+      if (index === key) {
+        return event.target.value;
+      } else return val;
+    });
+    setQuestion({ ...question, selectOptions: holder });
+  };
 
   /**
    * Handle change for options.
@@ -494,7 +491,6 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
     setQuestion({ ...question, customOptions: holder });
   };
 
-
   const handleaddstars = () => {
     if (information.stars.length === 10) {
       setStarmsg('Elija un valor entre 3 y 10');
@@ -537,20 +533,23 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
   };
 
   const handleaddoption = (type) => {
-    if (type === 15){
+    if (type === 15) {
       let holder = [...information.customOptions];
       holder.push('');
       let holder2 = [...information.opcionesInputs];
       holder2.push('');
-      setInformation({ ...information, customOptions: holder, opcionesInputs: holder2 });
-    }else{
+      setInformation({
+        ...information,
+        customOptions: holder,
+        opcionesInputs: holder2,
+      });
+    } else {
       let holder = [...information.customOptions];
       holder.push('');
       setInformation({ ...information, customOptions: holder });
     }
-
   };
- 
+
   const handleRemoveOption = (index) => {
     let holder = [...information.customOptions];
     holder.splice(index, 1);
@@ -696,7 +695,13 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
           </Box>
         );
       case 2:
-        return <Intimidad anonyme={anonymous} handleAnonyme={handleanonyme} />;
+        return (
+          <div style={{display:'flex', width:'100%'}}>
+            <Intimidad anonyme={anonymous} handleAnonyme={handleanonyme} />
+            <Exclusiveness exclusiviness={exclusiviness} handleExclusiviness={handleExclusiviness} />
+          </div>
+        );
+
       default:
         return null;
     }
@@ -708,6 +713,9 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
   const handleCloseEditModal = () => setEdit(false);
   const handleanonyme = (event) => {
     setAnonymous(event.target.value === 'true');
+  };
+  const handleExclusiviness = (event) => {
+    setExclusiviness(event.target.value === 'true');
   };
 
   const reorder = (list, start, end) => {
@@ -728,10 +736,10 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
 
     const updatedQuestions = reorderedItems.map((item, index) => ({
       ...item,
-      questionNumber: index + 1,  // Actualizar el número de la pregunta
+      questionNumber: index + 1, // Actualizar el número de la pregunta
     }));
-  
-    setQuestions(updatedQuestions );
+
+    setQuestions(updatedQuestions);
   };
 
   const handleAutocomplete = (val) => {
@@ -755,7 +763,7 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
         });
 
         return;
-      }else if((information.name.length > 400)){
+      } else if (information.name.length > 400) {
         setErrorMessage({
           ...errorMessage,
           name: true,
@@ -766,8 +774,8 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
         });
         return;
       }
-  
-      if((information.description.length > 400)){
+
+      if (information.description.length > 400) {
         setErrorMessage({
           ...errorMessage,
           name: true,
@@ -776,11 +784,11 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
           ...helperText,
           name: 'El número máximo de carácteres de 400.',
         });
-  
       }
 
       if (
-        question.customOptions !== null && (question.typeId === 3 || question.typeId === 8) &&
+        question.customOptions !== null &&
+        (question.typeId === 3 || question.typeId === 8) &&
         question.customOptions.some((option) => option === '')
       ) {
         setCustomOptionError(
@@ -789,26 +797,29 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
         return;
       }
 
-      if (question.typeId === 8 && question.conditionalQuestion) { // Asumiendo que tipo 8 es el que usa Autocomplete
-        const autoCompleteErrors = question.customOptions.map((option, index) => {
+      if (question.typeId === 8 && question.conditionalQuestion) {
+        // Asumiendo que tipo 8 es el que usa Autocomplete
+        const autoCompleteErrors = question.customOptions.map(
+          (option, index) => {
             const selection = selections[`${question.id}-${index}`];
             return !selection; // Retorna true si la selección es nula o indefinida
-        });
-    
+          }
+        );
+
         // Verifica si algún Autocomplete está vacío
-        if (autoCompleteErrors.some(error => error)) {
-            setErrorMessage({
-                ...errorMessage,
-                autocomplete: true,
-            });
-            setHelperText({
-                ...helperText,
-                autocomplete: 'Debe seleccionar una pregunta para cada opción.',
-            });
-            return; // Detiene la ejecución si hay errores
+        if (autoCompleteErrors.some((error) => error)) {
+          setErrorMessage({
+            ...errorMessage,
+            autocomplete: true,
+          });
+          setHelperText({
+            ...helperText,
+            autocomplete: 'Debe seleccionar una pregunta para cada opción.',
+          });
+          return; // Detiene la ejecución si hay errores
         }
-    }
-      
+      }
+
       setErrorMessage({});
       setHelperText({});
       setCustomOptionError([]);
@@ -829,7 +840,7 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
       });
 
       return;
-    }else if((information.name.length > 400)){
+    } else if (information.name.length > 400) {
       setErrorMessage({
         ...errorMessage,
         name: true,
@@ -841,7 +852,7 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
       return;
     }
 
-    if((information.description.length > 400)){
+    if (information.description.length > 400) {
       setErrorMessage({
         ...errorMessage,
         name: true,
@@ -850,10 +861,10 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
         ...helperText,
         name: 'El número máximo de carácteres de 400.',
       });
-
     }
     if (
-      !information.customOptions.every((elemento) => elemento !== '') && (type.id === 3 || type.id === 8 || type.id === 15)
+      !information.customOptions.every((elemento) => elemento !== '') &&
+      (type.id === 3 || type.id === 8 || type.id === 15)
     ) {
       let checkCustomOptions = information.customOptions.map(
         (elemento) => elemento === ''
@@ -863,7 +874,8 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
     }
 
     if (
-      !information.opcionesInputs.every((elemento) => elemento !== '') && (type.id === 15)
+      !information.opcionesInputs.every((elemento) => elemento !== '') &&
+      type.id === 15
     ) {
       let relationalOptions = information.opcionesInputs.map(
         (elemento) => elemento === ''
@@ -912,7 +924,7 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
         description: information.description,
         customOptions: information.customOptions,
         conditionalQuestion: conditionalQuestion,
-        childQuestionIds:[],
+        childQuestionIds: [],
       });
     } else if (type.id === 5) {
       handleAddQuestion({
@@ -921,14 +933,12 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
         description: information.description,
         stars: information.stars,
       });
-      
-    }else if (type.id === 10) {
+    } else if (type.id === 10) {
       handleAddQuestion({
         type: 'E-NPS',
         name: information.name,
         description: information.description,
       });
-      
     } else if (type.id === 14) {
       handleAddQuestion({
         type: 'Sentimental',
@@ -942,7 +952,7 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
         name: information.name,
         description: information.description,
         customOptions: information.customOptions,
-        selectOptions : information.opcionesInputs,
+        selectOptions: information.opcionesInputs,
       });
     }
 
@@ -998,7 +1008,6 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
     setQuestions((previousQuestions) => [...previousQuestions, newQuestion]);
   };
 
-  
   /**
    * Handle delete question.
    *
@@ -1020,21 +1029,18 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
    * @returns {string}
    */
   const getHeaderTitle = () => {
-
     if (isTemplate && isMap && !isEdit) {
       return 'Crear encuesta de mapa';
-    }
-    else if (isTemplate && isMap && isEdit) {
+    } else if (isTemplate && isMap && isEdit) {
       return 'Editar encuesta de mapa';
-    }else if (isTemplate) {
+    } else if (isTemplate) {
       return 'Crear plantilla';
     }
     if (isEdit) {
       return 'Editar encuesta';
-    }else{
+    } else {
       return 'Crear encuesta';
     }
-
   };
 
   /**
@@ -1043,8 +1049,7 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
    * @returns {Promise<void>}
    */
   const fetchCategories = async () => {
-    if(!currentCompany)
-      return;
+    if (!currentCompany) return;
     const { data } = await fetchCategoriesByCompanyAPI(currentCompany.id);
 
     setCategories(data);
@@ -1061,91 +1066,88 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
     setQuestionTypes(data);
   };
 
-
-    /**
+  /**
    * Fetch survey and fill form data.
    *
    * @param {number} templateId
    */
-    const fetchSurvey = async (templateId) => {
-      if(!currentCompany){
-        return;
-      }
-      const {data:survey} = await client.get(`ShowQuestion/${surveyId}/${currentCompany.id}`);
-      let dataCopy = {
-        ...data,
+  const fetchSurvey = async (templateId) => {
+    if (!currentCompany) {
+      return;
+    }
+    const { data: survey } = await client.get(
+      `ShowQuestion/${surveyId}/${currentCompany.id}`
+    );
+    let dataCopy = {
+      ...data,
+    };
+
+    // fill journey map
+    if (survey.response) {
+      dataCopy = {
+        ...dataCopy,
+        map: survey.response.map,
       };
+    }
+    // fill name
+    if (survey.response?.surveyName) {
+      dataCopy = {
+        ...dataCopy,
+        title: survey.response.surveyName,
+      };
+    }
+    // fill description
+    if (survey.response?.description) {
+      dataCopy = {
+        ...dataCopy,
+        description: survey.response.description,
+      };
+    }
+    if (survey.response?.emailMAsk) {
+      dataCopy = {
+        ...dataCopy,
+        emailMask: survey.response.emailMAsk,
+      };
+    }
+    if (survey.response?.emailSubject) {
+      dataCopy = {
+        ...dataCopy,
+        emailSubject: survey.response.emailSubject,
+      };
+    }
+    if (survey.response?.emailMessage) {
+      dataCopy = {
+        ...dataCopy,
+        mailingMessage: survey.response.emailMessage,
+      };
+    }
+    setData(dataCopy);
 
-      // fill journey map
-      if (survey.response) {
-        dataCopy = {
-          ...dataCopy,
-          map: survey.response.map,
-        };
-      }
-      // fill name
-      if (survey.response?.surveyName) {
-        dataCopy = {
-          ...dataCopy,
-          title: survey.response.surveyName,
-        };
-      }
-      // fill description
-      if (survey.response?.description) {
-        dataCopy = {
-          ...dataCopy,
-          description: survey.response.description,
-        };
-      }
-      if (survey.response?.emailMAsk) {
-        dataCopy = {
-          ...dataCopy,
-          emailMask: survey.response.emailMAsk,
-        };
-      }
-      if (survey.response?.emailSubject) {
-        dataCopy = {
-          ...dataCopy,
-          emailSubject: survey.response.emailSubject,
-        };
-      }
-      if (survey.response?.emailMessage) {
-        dataCopy = {
-          ...dataCopy,
-          mailingMessage: survey.response.emailMessage,
-        };
-      }
-      setData(dataCopy);
+    let questionsCopy = [...questions];
 
-
-      let questionsCopy = [...questions];
-
-      // fill questions
-      survey.response.preguntas.map((question) =>
-        questionsCopy.push({
-          id: uuid.v4(),
-          questionId: question.questionId,
-          typeId: question.typeQuestionId,
-          categoryId: question.categoryId,
-          type: question.typeQuestion,
-          name: question.questionName,
-          description: question.description,
-          customOptions: question.options.map(
-            (option) => option.optionName
-          ),
-          //options: question.options.map((option) => option.templateOptionsName),
-          options: question.options.map((option) => option.optionName),
-          questionOptions: question.options,
-          stars: question.score,
-        })
-      );
-      setQuestions(questionsCopy);
-      /*
+    // fill questions
+    survey.response.preguntas.map((question) =>
+      questionsCopy.push({
+        id: uuid.v4(),
+        questionId: question.questionId,
+        typeId: question.typeQuestionId,
+        categoryId: question.categoryId,
+        type: question.typeQuestion,
+        name: question.questionName,
+        description: question.description,
+        customOptions: question.options.map((option) => option.optionName),
+        //options: question.options.map((option) => option.templateOptionsName),
+        options: question.options.map((option) => option.optionName),
+        questionOptions: question.options,
+        stars: question.score,
+      })
+    );
+    setQuestions(questionsCopy);
+    /*
       setTemplateDemographics(
         template.templateDemographics.map((demographic) => demographic.name)
       );*/
-
-    };
+  };
 
   /**
    * Fetch template and fill form data.
@@ -1160,7 +1162,6 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
     let dataCopy = {
       ...data,
     };
-
 
     // fill journey map
     if (template.template?.journeyMap) {
@@ -1293,7 +1294,9 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
                   errorMessage={errorMessage}
                   helperText={helperText}
                   handleinformationoptions={handleinformationoptions}
-                  handleInformationRelationalOptions={handleInformationRelationalOptions}
+                  handleInformationRelationalOptions={
+                    handleInformationRelationalOptions
+                  }
                   handleChangeOptions={handleChangeOptions}
                   handleaddoption={handleaddoption}
                   handleRemoveOption={handleRemoveOption}
@@ -1313,14 +1316,14 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
             </div>
           </Box>
         </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseModal} variant="outlined">
-              Cancelar
-            </Button>
-            <Button onClick={handleAgregar} variant="contained">
-              Agregar
-            </Button>
-          </DialogActions>
+        <DialogActions>
+          <Button onClick={handleCloseModal} variant="outlined">
+            Cancelar
+          </Button>
+          <Button onClick={handleAgregar} variant="contained">
+            Agregar
+          </Button>
+        </DialogActions>
       </Dialog>
       <Dialog maxWidth="lg" onClose={handleCloseEditModal} open={edit}>
         <DialogTitle>Editar pregunta</DialogTitle>
@@ -1351,7 +1354,9 @@ const handleInformationRelationalOptionsEdit = (key) => (event) => {
                     selections={selections}
                     setSelections={setSelections}
                     setChildQuestionNumber={setChildQuestionNumber}
-                    handleInformationRelationalOptions={handleInformationRelationalOptionsEdit}
+                    handleInformationRelationalOptions={
+                      handleInformationRelationalOptionsEdit
+                    }
                     optionRelationalError={optionRelationalError}
                   />
                 )}

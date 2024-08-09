@@ -24,7 +24,7 @@ import Table from '../../components/Table';
 import { addItem, storeItems, updateItem } from '../../features/adminSlice';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
-import { fetchAllUserRolsAPI,fetchUserAPI, fetchUserGetRolsAPI, postUserAPI, postUserRolsAPI } from '../../services/fetchUser.service';
+import { deleteUserRolsAPI,fetchAllUserRolsAPI,fetchUserAPI, fetchUserGetRolsAPI, postUserAPI, postUserRolsAPI } from '../../services/fetchUser.service';
 import { getCompaniesAPI } from '../../services/getCompanies.service';
 import { getDepartmentsAPI } from '../../services/getDepartments.service';
 import { fetchDocumentTypeAPI } from '../../services/getDocumentType.service';
@@ -78,6 +78,7 @@ export default function UserAdministrator() {
   const fetchAllUser = async () =>{
     const { data } = await fetchAllUserRolsAPI(currentCompany.id);
     setAllUsers(data);
+
   };
 
   //User
@@ -180,27 +181,52 @@ export default function UserAdministrator() {
     });
     setOpenCreateDialog(true);
   };
+  
 
-  const mapAllUsers = (user) =>
-  user.map((user) => [
-    {
-      column: 'name',
-      value: user.email,
-    },
-    {
-      column: 'name',
-      value: user.nameRol,
-    },
-    {
-      column: 'options',
-      value: '',
-      payload: {
-        //handleDelete: handleDeleteCompanyRols,
-        //handleEdit: handleEditCompanyRols,
-        id: user.id,
+  const mapAllUsers = (users) => {
+    return users.map((user) => [
+      {
+        column: 'name',
+        value: user.email,
       },
-    },
-  ]);
+      {
+        column: 'name',
+        value: user.nameRol,
+      },
+      {
+        column: 'options',
+        value: '',
+        payload: {
+          handleDelete: handleDeleteCompanyRols,
+          id: user.userId,
+          rolId: user.rolId,
+        },
+      },
+    ]);
+  };
+  
+  const handleDeleteCompanyRols = async (id, rolId)=>{
+    try{
+      await deleteUserRolsAPI(id, rolId);
+      await fetchAllUser();
+      enqueueSnackbar(
+        'Rol eliminado con éxito',
+        {
+          variant: 'success',
+          autoHideDuration:3000,
+        },
+      );
+    }catch(Exception){
+      enqueueSnackbar(
+        'Hubo un error al eliminar el rol',
+        {
+          variant: 'error',
+          autoHideDuration:3000,
+        },
+      );
+    }
+  };
+  
 
 
   const handleSubmittedCreateDialog = async (formValues) => {
@@ -230,12 +256,10 @@ export default function UserAdministrator() {
       try{
 
         await postUserRolsAPI(
-          [
             {
               userId: formValues.userRolChange,
               roleId: formValues.userRol,
             },
-          ]
          );
  
          enqueueSnackbar('Usuario creado con éxito', {
