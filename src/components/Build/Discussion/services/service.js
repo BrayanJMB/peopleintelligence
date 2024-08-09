@@ -57,13 +57,13 @@ export const storeSurveyImageQuestion = async (filesImage, questions, surveyId) 
 export const storeSurveyVideoQuestion = async (filesVideo, questions, surveyId, currentCompany) => {
     const promises = questions.map(async (question, index) => {
       const formData = new FormData();
-      formData.append('questionImage', filesVideo[index]);
+      formData.append('videoFile', filesVideo[index]);
       formData.append('questionNumber', question.orderNumber);
       formData.append('surveyId', surveyId);
-      formData.append('companyId', currentCompany?.id);
+      //formData.append('companyId', currentCompany?.id);
       try {
         const response = await axios.post(
-          'https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadImagesQuestion',
+          'https://chatapppeopleintelligence.azurewebsites.net/api/CustomCahtApi/UploadVideo',
           formData,
           {
             headers: {

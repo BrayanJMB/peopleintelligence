@@ -37,7 +37,10 @@ function Options({
   setQuestion,
   handleRemoveConversation,
   errors,
+  demographicRefs,
+  questionRefs,
 }) {
+  console.log(demographicRefs);
   const [files, setFiles] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -200,7 +203,6 @@ function Options({
     }
   };
   const isExperience = (item) => {
-    
     switch (limpiarTexto(item.toLowerCase())) {
       case 'preguntacondicional':
         return true;
@@ -467,6 +469,7 @@ function Options({
               marginBottom: '20px',
               maxHeight: '300px',
             }}
+            ref={demographicRefs}
           >
             <CardContent>
               <div
@@ -585,6 +588,7 @@ function Options({
                 padding: '20px',
                 marginBottom: '20px',
               }}
+              ref={questionRefs}
             >
               <CardContent>
                 <div
@@ -618,7 +622,7 @@ function Options({
             </Card>
           )}
           {isOpinion(item) && (
-            <Card>
+            <Card ref={questionRefs}>
               <CardContent>
                 <div
                   style={{
@@ -683,7 +687,7 @@ function Options({
             </Card>
           )}
           {isExperience(item) && (
-            <Card>
+            <Card ref={questionRefs}>
               <CardContent>
                 <div
                   style={{
@@ -795,7 +799,11 @@ function Options({
                             }
                             style={{ marginRight: '10px' }}
                           />
-                          <p style={{ marginTop: '10px', marginBottom:'10px' }}>Por favor ingresa la pregunta para esta opción</p>
+                          <p
+                            style={{ marginTop: '10px', marginBottom: '10px' }}
+                          >
+                            Por favor ingresa la pregunta para esta opción
+                          </p>
                           <TextField
                             size="small"
                             label={`Pregunta Opción ${index + 1}`}
@@ -834,7 +842,7 @@ function Options({
             </Card>
           )}
           {isSelecionSimple(item) && (
-            <Card>
+            <Card ref={questionRefs}>
               <CardContent>
                 <div
                   style={{
@@ -956,7 +964,7 @@ function Options({
             </Card>
           )}
           {isImage(item) && (
-            <Card>
+            <Card ref={questionRefs}>
               <CardContent>
                 <div
                   style={{
@@ -1026,7 +1034,7 @@ function Options({
             </Card>
           )}
           {isVideo(item) && (
-            <Card>
+            <Card ref={questionRefs}>
               <CardContent>
                 <div
                   style={{
