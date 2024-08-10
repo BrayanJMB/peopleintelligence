@@ -27,7 +27,7 @@ export const Questions = ({ question, isAnswer, indexCurrentQuestion }) => {
   const answerOpinionQuestion = useContext(answerOpinionQuestionContext);
   const questionTimers = useContext(nextQuestionTimerContext);
   const answerExperienceQuestion = useContext(answerExperienceQuestionContext);
-
+  
   const questionTimer = questionTimers[indexCurrentQuestion] || 0;
   const isText = (item) => item.toLowerCase() === 'texto';
   const isOpinion = (item) => item.toLowerCase() === 'opinion';
@@ -125,8 +125,8 @@ export const Questions = ({ question, isAnswer, indexCurrentQuestion }) => {
               />
             ) : (
               <>
-                {singleQuestion &&
-                  singleQuestion.options.map((option, index) => (
+                {question &&
+                  question.options.map((option, index) => (
                     <>
                       <div
                         style={{
@@ -150,19 +150,19 @@ export const Questions = ({ question, isAnswer, indexCurrentQuestion }) => {
                           <p>
                             <CircularWithValueLabel
                               data={
-                                answerSingleQuestion && answerSingleQuestion
-                                  ? (answerSingleQuestion.answer[index]
+                                question.answerSingleQuestion && question.answerSingleQuestion
+                                  ? (question.answerSingleQuestion.answer[index]
                                       .contador *
                                       100) /
-                                    answerSingleQuestion.counter
+                                      question.answerSingleQuestion.counter
                                   : 0
                               }
                               color={getColorForPercentage(
-                                answerSingleQuestion
-                                  ? (answerSingleQuestion.answer[index]
+                                question.answerSingleQuestion
+                                  ? (question.answerSingleQuestion.answer[index]
                                       .contador *
                                       100) /
-                                      answerSingleQuestion.counter
+                                      question.answerSingleQuestion.counter
                                   : 0
                               )}
                             />
@@ -208,13 +208,13 @@ export const Questions = ({ question, isAnswer, indexCurrentQuestion }) => {
                           <Typography>{`${pregunta.value}`}</Typography>
                           <Typography variant="body2" color="text.primary">
                             {`${
-                              answerExperienceQuestion &&
-                              answerExperienceQuestion
+                              question.answerExperienceQuestion &&
+                              question.answerExperienceQuestion
                                 ? (
-                                    (answerExperienceQuestion.answer[index]
+                                    (question.answerExperienceQuestion.answer[index]
                                       .contador *
                                       100) /
-                                    answerExperienceQuestion.counter
+                                      question.answerExperienceQuestion.counter
                                   ).toFixed(2)
                                 : 0
                             }%`}
@@ -251,7 +251,7 @@ export const Questions = ({ question, isAnswer, indexCurrentQuestion }) => {
               />
             ) : (
               <>
-                {answerOpinionQuestion.map((result) => (
+                {question.answersOpinion.map((result) => (
                   <div
                     key={result.idres}
                     style={{
