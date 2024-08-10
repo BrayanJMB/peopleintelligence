@@ -29,7 +29,7 @@ export const Questions = ({ question, isAnswer, indexCurrentQuestion }) => {
   const answerExperienceQuestion = useContext(answerExperienceQuestionContext);
   
   const questionTimer = questionTimers[indexCurrentQuestion] || 0;
-  const isText = (item='texto') => item.toLowerCase() === 'texto';
+  const isText = (item) => item.toLowerCase() === 'texto';
   const isOpinion = (item) => item.toLowerCase() === 'opinion';
   const isExperience = (item) => item.toLowerCase() === 'preguntacondicional';
   const isImage = (item) => item.toLowerCase() === 'imagen';
