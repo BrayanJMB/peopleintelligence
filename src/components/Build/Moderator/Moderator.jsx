@@ -46,6 +46,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
   const [experienceQuestion, setExperienceQuestion] = useState(null);
   const [answerExperienceQuestion, setAnswerExperienceQuestion] =
     useState(null);
+  const [hasInvoked, setHasInvoked] = useState(false);
   const indexCurrentQuestion = useRef(null);
   const [complexQuestion, setComplexQuestion] = useState(true);
   const [messages, setMessages] = useState([]);
@@ -281,6 +282,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
       connection
         .start()
         .then(() => {
+          if (hasInvoked){
           connection
             .invoke(
               'ChargeDemographics', //Carga de Demográficos apeans carga el chat, si existen.
@@ -291,7 +293,8 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
             .catch(function (err) {
               return console.error(err.toString());
             });
-
+          }
+          setHasInvoked(false)
           connection.on('clientConnected', (count) => {
             connectedUsersRef.current = count;
             setConnectedUsers(count);
@@ -443,13 +446,8 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
   }, [answerExperienceQuestion]);
 
   useEffect(() => {
-    initializeConnectionAndFetchData();
-  }, []);
-
-  useEffect(() => {
     fetchSurvey();
   }, [question]);
-
   return (
     <Box
       sx={{
