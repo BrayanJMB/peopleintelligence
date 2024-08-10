@@ -22,6 +22,9 @@ import styles from './ChatBox.module.css';
 
 export const Questions = ({ question, isAnswer, indexCurrentQuestion }) => {
   const [allAnswers, setAllAnswers] = useState([]);
+  const singleQuestion = useContext(singleQuestionContext);
+  const answerSingleQuestion = useContext(answerSingleQuestionContext);
+  const answerOpinionQuestion = useContext(answerOpinionQuestionContext);
   const questionTimers = useContext(nextQuestionTimerContext);
   const answerExperienceQuestion = useContext(answerExperienceQuestionContext);
   
@@ -159,7 +162,7 @@ export const Questions = ({ question, isAnswer, indexCurrentQuestion }) => {
                                   ? (question.answerSingleQuestion.answer[index]
                                       .contador *
                                       100) /
-                                      answerSingleQuestion.counter
+                                      question.answerSingleQuestion.counter
                                   : 0
                               )}
                             />
