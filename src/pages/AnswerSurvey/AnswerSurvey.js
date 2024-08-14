@@ -121,16 +121,15 @@ const AnswerSurvey = () => {
         setNotFound(false);
         setEmailSubmitted(true);
         setIsAlreadyResponse(true);
-      }
-      else if (error.response && error.response.status === 404) {
-          setSteps((prevSteps) => {
-            const newSteps = [...prevSteps];
-            newSteps.splice(0, 1);
-  
-            return newSteps;
-          });
-          console.log(surveyStatus);
-          setExclusiviness(true);
+      } else if (error.response && error.response.status === 404) {
+        setSteps((prevSteps) => {
+          const newSteps = [...prevSteps];
+          newSteps.splice(0, 1);
+
+          return newSteps;
+        });
+        console.log(surveyStatus);
+        setExclusiviness(true);
       } else {
         console.error('Se produjo un error al hacer la solicitud', error);
       }
@@ -361,225 +360,231 @@ const AnswerSurvey = () => {
             {surveyStatus === 'failed' && isAlreadyResponse && (
               <SuccessMessage isAlreadyResponse={isAlreadyResponse} />
             )}
-          {surveyStatus === 'failed' && notFound && <NotFoundMessage />}
-          { exclusiviness && <NotExclusiviness />}
-            {(surveyStatus === 'succeeded' && currentSurvey !== null) && !exclusiviness && (
-              <Fragment>
-                {/* company name */}
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Typography
-                    variant="body1"
-                    gutterBottom
-                    style={{ flex: '1 0 65%' }}
-                  >
-                    {currentSurvey.response.surveyName}
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    gutterBottom
-                    style={{
-                      textAlign: 'right',
-                      flex: '1 0 35%', // Asegura que este elemento siempre toma el 50% del espacio
-                    }}
-                  >
-                    {currentSurvey.logo !== null &&
-                      currentSurvey.logo.length !== 0 && (
-                        <img
-                          src={currentSurvey.logo}
-                          alt="Logotipo de la empresa"
-                          style={{
-                            width: '1.5em',
-                            verticalAlign: 'middle',
-                          }}
-                        />
-                      )}
-                    {(currentSurvey.logo === null ||
-                      currentSurvey.logo.length === 0) && (
-                      <PollIcon
-                        style={{
-                          verticalAlign: 'middle',
-                          marginRight: '0.8em',
-                        }}
-                      />
-                    )}
-
-                    <span style={{ verticalAlign: 'middle' }}>
-                      {currentSurvey.empresa}
-                    </span>
-                  </Typography>
-                  {/* survey name */}
-                </Box>
-                <Divider
-                  variant="middle"
-                  style={{
-                    margin: '1.3em 0',
-                  }}
-                />
-
-                {/* email */}
-                {emailSubmitted === false && !answerId && (
+            {surveyStatus === 'failed' && notFound && <NotFoundMessage />}
+            {exclusiviness && <NotExclusiviness />}
+            {surveyStatus === 'succeeded' &&
+              currentSurvey !== null &&
+              !exclusiviness && (
+                <Fragment>
+                  {/* company name */}
                   <Box
                     sx={{
                       display: 'flex',
+                      justifyContent: 'space-between',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      margin: '3em 0',
-                      flexDirection: 'column',
                     }}
                   >
-                    <FormControl
+                    <Typography
+                      variant="body1"
+                      gutterBottom
+                      style={{ flex: '1 0 65%' }}
+                    >
+                      {currentSurvey.response.surveyName}
+                    </Typography>
+                    <Typography
+                      variant="h5"
+                      gutterBottom
                       style={{
-                        width: '300px',
+                        textAlign: 'right',
+                        flex: '1 0 35%', // Asegura que este elemento siempre toma el 50% del espacio
                       }}
                     >
-                      <FormLabel
-                        id="email"
-                        sx={{
-                          textAlign: 'center',
-                          marginBottom: '1.3em',
-                          fontSize: '1.4em',
-                          fontWeight: 'bold',
-                        }}
-                        error={emailError}
-                      >
-                        Ingrese su correo electrónico o cédula para continuar
-                      </FormLabel>
-                      <TextField
-                        id="email"
-                        label="Correo electrónico o cédula"
-                        variant="outlined"
-                        type="email"
-                        onChange={handleEmailChange}
-                        error={emailError}
-                      />
-                    </FormControl>
-                    <FormControl>
-                      <Button
-                        variant="contained"
-                        onClick={handleEmailSubmit}
+                      {currentSurvey.logo !== null &&
+                        currentSurvey.logo.length !== 0 && (
+                          <img
+                            src={currentSurvey.logo}
+                            alt="Logotipo de la empresa"
+                            style={{
+                              width: '1.5em',
+                              verticalAlign: 'middle',
+                            }}
+                          />
+                        )}
+                      {(currentSurvey.logo === null ||
+                        currentSurvey.logo.length === 0) && (
+                        <PollIcon
+                          style={{
+                            verticalAlign: 'middle',
+                            marginRight: '0.8em',
+                          }}
+                        />
+                      )}
+
+                      <span style={{ verticalAlign: 'middle' }}>
+                        {currentSurvey.empresa}
+                      </span>
+                    </Typography>
+                    {/* survey name */}
+                  </Box>
+                  <Divider
+                    variant="middle"
+                    style={{
+                      margin: '1.3em 0',
+                    }}
+                  />
+
+                  {/* email */}
+                  {emailSubmitted === false && !answerId && (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        margin: '3em 0',
+                        flexDirection: 'column',
+                      }}
+                    >
+                      <FormControl
                         style={{
-                          marginTop: '1em',
                           width: '300px',
                         }}
                       >
-                        Enviar
-                      </Button>
-                    </FormControl>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        fontStyle: 'italic',
-                        fontWeight: 'bold', // Negrilla
-                        color: '#6c6c6c', // Gris oscuro
-                        marginTop: 2, // Margen superior (ajusta según sea necesario)
-                      }}
-                    >
-                      {currentSurvey.response.message}
-                    </Typography>
-                  </Box>
-                )}
+                        <FormLabel
+                          id="email"
+                          sx={{
+                            textAlign: 'center',
+                            marginBottom: '1.3em',
+                            fontSize: '1.4em',
+                            fontWeight: 'bold',
+                          }}
+                          error={emailError}
+                        >
+                          {companyId === '59'
+                            ? 'Ingrese su documento de identificación sin puntos guiones, espacios o caracteres especiales para continuar'
+                            : 'Ingrese su correo electrónico o cédula para continuar'}
+                        </FormLabel>
+                        <TextField
+                          id="email"
+                          label={companyId === '59' ? ('Documento identificación'):('Correo electrónico o cédula')}
+                          variant="outlined"
+                          type="email"
+                          onChange={handleEmailChange}
+                          error={emailError}
+                        />
+                      </FormControl>
+                      <FormControl>
+                        <Button
+                          variant="contained"
+                          onClick={handleEmailSubmit}
+                          style={{
+                            marginTop: '1em',
+                            width: '300px',
+                          }}
+                        >
+                          Enviar
+                        </Button>
+                      </FormControl>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontStyle: 'italic',
+                          fontWeight: 'bold', // Negrilla
+                          color: '#6c6c6c', // Gris oscuro
+                          marginTop: 2, // Margen superior (ajusta según sea necesario)
+                        }}
+                      >
+                        {currentSurvey.response.message}
+                      </Typography>
+                    </Box>
+                  )}
 
-                {/* stepper */}
-                {(emailSubmitted === true || answerId || !isPersonal) && (
-                  <Fragment>
-                    <Stepper
-                      style={{ marginTop: '2em' }}
-                      activeStep={activeStep}
-                    >
-                      {steps.map((label, index) => {
-                        const stepProps = {};
-                        const labelProps = {};
-                        if (isStepOptional(index)) {
-                          labelProps.optional = (
-                            <Typography variant="caption">Optional</Typography>
+                  {/* stepper */}
+                  {(emailSubmitted === true || answerId || !isPersonal) && (
+                    <Fragment>
+                      <Stepper
+                        style={{ marginTop: '2em' }}
+                        activeStep={activeStep}
+                      >
+                        {steps.map((label, index) => {
+                          const stepProps = {};
+                          const labelProps = {};
+                          if (isStepOptional(index)) {
+                            labelProps.optional = (
+                              <Typography variant="caption">
+                                Optional
+                              </Typography>
+                            );
+                          }
+                          if (isStepSkipped(index)) {
+                            stepProps.completed = false;
+                          }
+                          return (
+                            <Step key={label} {...stepProps}>
+                              <StepLabel {...labelProps}>{label}</StepLabel>
+                            </Step>
                           );
-                        }
-                        if (isStepSkipped(index)) {
-                          stepProps.completed = false;
-                        }
-                        return (
-                          <Step key={label} {...stepProps}>
-                            <StepLabel {...labelProps}>{label}</StepLabel>
-                          </Step>
-                        );
-                      })}
-                    </Stepper>
-                    <React.Fragment>
-                      <div style={{ padding: '1em' }}>
-                        {/* first step */}
-                        {isDemographicStep() && (
-                          <Fragment>
-                            <SurveyForm
-                              questions={currentSurvey.demograficos.map(
-                                (
-                                  {
-                                    id,
-                                    name,
-                                    description,
-                                    type,
-                                    urlApi,
-                                    options,
+                        })}
+                      </Stepper>
+                      <React.Fragment>
+                        <div style={{ padding: '1em' }}>
+                          {/* first step */}
+                          {isDemographicStep() && (
+                            <Fragment>
+                              <SurveyForm
+                                questions={currentSurvey.demograficos.map(
+                                  (
+                                    {
+                                      id,
+                                      name,
+                                      description,
+                                      type,
+                                      urlApi,
+                                      options,
+                                      urlParam,
+                                    },
+                                    index
+                                  ) => ({
+                                    questionId: id,
+                                    questionName: name,
+                                    description: description,
+                                    questionNumber: index + 1,
+                                    typeQuestion: type,
+                                    api: urlApi,
                                     urlParam,
-                                  },
-                                  index
-                                ) => ({
-                                  questionId: id,
-                                  questionName: name,
-                                  description: description,
-                                  questionNumber: index + 1,
-                                  typeQuestion: type,
-                                  api: urlApi,
-                                  urlParam,
-                                  options: options.map(({ id, value }) => ({
-                                    numberOption: value,
-                                    optionName: value,
-                                  })),
-                                })
-                              )}
-                              companyId={companyId}
-                              nameStep={steps}
-                              activeStepper={activeStep}
+                                    options: options.map(({ id, value }) => ({
+                                      numberOption: value,
+                                      optionName: value,
+                                    })),
+                                  })
+                                )}
+                                companyId={companyId}
+                                nameStep={steps}
+                                activeStepper={activeStep}
+                                handleNextAnswer={handleNext}
+                                onAnswered={(answers) =>
+                                  handleAnswered(answers, activeStep)
+                                }
+                              />
+                            </Fragment>
+                          )}
+
+                          {/* survey form */}
+                          {isSurveyStep() && (
+                            <SurveyForm
+                              questions={currentSurvey.response.preguntas}
+                              descriptionSurvey={
+                                currentSurvey.response.descriptionSurvey
+                              }
                               handleNextAnswer={handleNext}
+                              nameStep={steps}
                               onAnswered={(answers) =>
                                 handleAnswered(answers, activeStep)
                               }
+                              activeStepper={activeStep}
                             />
-                          </Fragment>
-                        )}
+                          )}
+                          {/* success message */}
+                          {isFinalStep() && (
+                            <SuccessMessage
+                              isAlreadyResponse={isAlreadyResponse}
+                            />
+                          )}
+                        </div>
 
-                        {/* survey form */}
-                        {isSurveyStep() && (
-                          <SurveyForm
-                            questions={currentSurvey.response.preguntas}
-                            descriptionSurvey={
-                              currentSurvey.response.descriptionSurvey
-                            }
-                            handleNextAnswer={handleNext}
-                            nameStep={steps}
-                            onAnswered={(answers) =>
-                              handleAnswered(answers, activeStep)
-                            }
-                            activeStepper={activeStep}
-                          />
-                        )}
-                        {/* success message */}
-                        {isFinalStep() && (
-                          <SuccessMessage
-                            isAlreadyResponse={isAlreadyResponse}
-                          />
-                        )}
-                      </div>
-
-                      <Box
-                        sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}
-                      >
-                        {/*activeStep !== 0 && activeStep +1 !== steps.length && (
+                        <Box
+                          sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}
+                        >
+                          {/*activeStep !== 0 && activeStep +1 !== steps.length && (
                           <Button
                             color="inherit"
                             disabled={activeStep === 0 || activeStep + 1 === steps.length}
@@ -589,31 +594,31 @@ const AnswerSurvey = () => {
                             Atrás
                           </Button>
                         )*/}
-                        <Box sx={{ flex: '1 1 auto' }} />
-                        {isStepOptional(activeStep) && (
+                          <Box sx={{ flex: '1 1 auto' }} />
+                          {isStepOptional(activeStep) && (
+                            <Button
+                              color="inherit"
+                              onClick={handleSkip}
+                              sx={{ mr: 1 }}
+                            >
+                              Saltar
+                            </Button>
+                          )}
                           <Button
-                            color="inherit"
-                            onClick={handleSkip}
-                            sx={{ mr: 1 }}
+                            onClick={handleNext}
+                            disabled={
+                              !stepsCompleted[activeStep] ||
+                              surveyStatus === 'loading'
+                            }
                           >
-                            Saltar
+                            {activeStep === steps.length - 2 ? '' : ''}
                           </Button>
-                        )}
-                        <Button
-                          onClick={handleNext}
-                          disabled={
-                            !stepsCompleted[activeStep] ||
-                            surveyStatus === 'loading'
-                          }
-                        >
-                          {activeStep === steps.length - 2 ? '' : ''}
-                        </Button>
-                      </Box>
-                    </React.Fragment>
-                  </Fragment>
-                )}
-              </Fragment>
-            )}
+                        </Box>
+                      </React.Fragment>
+                    </Fragment>
+                  )}
+                </Fragment>
+              )}
           </CardContent>
         </Card>
       </div>

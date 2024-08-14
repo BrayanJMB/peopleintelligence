@@ -46,6 +46,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
   const [experienceQuestion, setExperienceQuestion] = useState(null);
   const [answerExperienceQuestion, setAnswerExperienceQuestion] =
     useState(null);
+  const [hasInvoked, setHasInvoked] = useState(false);
   const indexCurrentQuestion = useRef(null);
   const [complexQuestion, setComplexQuestion] = useState(true);
   const [messages, setMessages] = useState([]);
@@ -273,10 +274,6 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
   };
 
   useEffect(() => {
-    initializeConnectionAndFetchData();
-  }, []);
-
-  useEffect(() => {
     if (connection && survey) {
       connection
         .start()
@@ -291,7 +288,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
             .catch(function (err) {
               return console.error(err.toString());
             });
-
+            
           connection.on('clientConnected', (count) => {
             connectedUsersRef.current = count;
             setConnectedUsers(count);
@@ -396,49 +393,132 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
   }, [moderatorAvatar]);
 
   useEffect(() => {
-    // Verificar que singleQuestion tiene datos para proceder
-    if (answerSingleQuestion && hasRunSingleSelect) {
-      let newMessageItemSender = {
-        id: messages.length + 1,
-        sender: 'Cliente',
-        senderAvatar: 'https://i.pravatar.cc/150?img=32',
-        messageType: 'question',
-        content: singleQuestion,
-        isAnswer: true,
-      };
-      setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
-      setHasRunSingleSelect(false);
+    if (answerSingleQuestion) {
+      const existingMessageIndex = messages.findIndex(
+        (message) =>
+          message.messageType === 'question' &&
+          message.content.orderNumber === singleQuestion.orderNumber
+      );
+  
+      if (existingMessageIndex === -1) {
+        // Si no existe un mensaje relacionado, crea uno nuevo
+        let newMessageItemSender = {
+          id: messages.length + 1,
+          sender: 'Cliente',
+          senderAvatar: 'https://i.pravatar.cc/150?img=32',
+          messageType: 'question',
+          content: {
+            ...singleQuestion,
+            answerSingleQuestion,
+          },
+          isAnswer: true,
+        };
+  
+        setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
+      } else {
+        // Si ya existe un mensaje relacionado, actualiza el existente
+        setMessages((prevMessages) =>
+          prevMessages.map((message, index) =>
+            index === existingMessageIndex
+              ? {
+                  ...message,
+                  content: {
+                    ...message.content,
+                    answerSingleQuestion,
+                  },
+                  isAnswer: true,
+                }
+              : message
+          )
+        );
+      }
     }
   }, [answerSingleQuestion]);
-
+  
+  
   useEffect(() => {
-    // Verificar que singleQuestion tiene datos para proceder
-    if (answersOpinion.length > 0 && hasRunOpinion) {
-      let newMessageItemSender = {
-        id: messages.length + 1,
-        sender: 'Cliente',
-        senderAvatar: 'https://i.pravatar.cc/150?img=32',
-        messageType: 'question',
-        content: opinionQuestion,
-        isAnswer: true,
-      };
-      setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
-      setHasRunOpinion(false);
+    if (answersOpinion.length > 0) {
+      const existingMessageIndex = messages.findIndex(
+        (message) =>
+          message.messageType === 'question' &&
+          message.content.orderNumber === opinionQuestion.orderNumber
+      );
+  
+      if (existingMessageIndex === -1) {
+        // Si no existe un mensaje relacionado, crea uno nuevo
+        let newMessageItemSender = {
+          id: messages.length + 1,
+          sender: 'Cliente',
+          senderAvatar: 'https://i.pravatar.cc/150?img=32',
+          messageType: 'question',
+          content: {
+            ...opinionQuestion,
+            answersOpinion,
+          },
+          isAnswer: true,
+        };
+  
+        setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
+      } else {
+        // Si ya existe un mensaje relacionado, actualiza el existente
+        setMessages((prevMessages) =>
+          prevMessages.map((message, index) =>
+            index === existingMessageIndex
+              ? {
+                  ...message,
+                  content: {
+                    ...message.content,
+                    answersOpinion,
+                  },
+                  isAnswer: true,
+                }
+              : message
+          )
+        );
+      }
     }
   }, [answersOpinion]);
 
   useEffect(() => {
-    if (answerExperienceQuestion && hasRunExperience) {
-      let newMessageItemSender = {
-        id: messages.length + 1,
-        sender: 'Cliente',
-        senderAvatar: 'https://i.pravatar.cc/150?img=32',
-        messageType: 'question',
-        content: experienceQuestion,
-        isAnswer: true,
-      };
-      setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
-      setHasRunExperience(false);
+    if (answerExperienceQuestion) {
+      const existingMessageIndex = messages.findIndex(
+        (message) =>
+          message.messageType === 'question' &&
+          message.content.orderNumber === experienceQuestion.orderNumber
+      );
+  
+      if (existingMessageIndex === -1) {
+        // Si no existe un mensaje relacionado, crea uno nuevo
+        let newMessageItemSender = {
+          id: messages.length + 1,
+          sender: 'Cliente',
+          senderAvatar: 'https://i.pravatar.cc/150?img=32',
+          messageType: 'question',
+          content: {
+            ...experienceQuestion,
+            answerExperienceQuestion,
+          },
+          isAnswer: true,
+        };
+  
+        setMessages((prevMessages) => [...prevMessages, newMessageItemSender]);
+      } else {
+        // Si ya existe un mensaje relacionado, actualiza el existente
+        setMessages((prevMessages) =>
+          prevMessages.map((message, index) =>
+            index === existingMessageIndex
+              ? {
+                  ...message,
+                  content: {
+                    ...message.content,
+                    answerExperienceQuestion,
+                  },
+                  isAnswer: true,
+                }
+              : message
+          )
+        );
+      }
     }
   }, [answerExperienceQuestion]);
 
@@ -449,7 +529,6 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
   useEffect(() => {
     fetchSurvey();
   }, [question]);
-
   return (
     <Box
       sx={{
