@@ -1,16 +1,19 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import PropTypes from "prop-types";
-import Switch from "@mui/material/Switch";
-import MyCard from "../MyCard/MyCard";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import styles from "./MyPageHeader.module.css";
-import { patchVisilibitySurvey } from "./services";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import IconButton from '@mui/material/IconButton';
+import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
 import { useSnackbar } from 'notistack';
+import PropTypes from 'prop-types';
+
+import MyCard from '../MyCard/MyCard';
+
+import { patchVisilibitySurvey } from './services';
+
+import styles from './MyPageHeader.module.css';
 /**
  * Page header component.
  *

@@ -1,4 +1,4 @@
-import { Box, Typography, Divider, Grid } from "@mui/material";
+import { Box, Divider, Grid,Typography } from '@mui/material';
 
 export const HeaderCMI = ({title}) => {
   return (
@@ -6,19 +6,19 @@ export const HeaderCMI = ({title}) => {
       container
       spacing={2}
       sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
       <Grid
         item
         xs={8}
         sx={{
-          display: "flex",
-          flexDirection:"column",
-          alignItems: "center",
-          justifyContent: "center",
+          display: 'flex',
+          flexDirection:'column',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
         <Typography variant="h6" color="orange" fontWeight="bold">
@@ -26,10 +26,10 @@ export const HeaderCMI = ({title}) => {
         </Typography>
         <Divider
           sx={{
-            width: "100%",
-            marginTop: "8px",
-            backgroundColor: "orange",
-            height: "8px",
+            width: '100%',
+            marginTop: '8px',
+            backgroundColor: 'orange',
+            height: '8px',
           }}
         />
         {title && (

@@ -1,34 +1,34 @@
-import React from "react";
+import React from 'react';
 import {
-  BarChart,
   Bar,
-  XAxis,
-  YAxis,
+  BarChart,
   CartesianGrid,
-  Tooltip,
+  LabelList,
   Legend,
   ResponsiveContainer,
-  LabelList,
-} from "recharts";
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
 const data = [
   {
-    name: "Mi líder me da el empoderamiento suficiente",
+    name: 'Mi líder me da el empoderamiento suficiente',
     Total: 5.0,
     CMI: 4.47,
   },
   {
-    name: "Mi líder me comunica los objetivos",
+    name: 'Mi líder me comunica los objetivos',
     Total: 4.25,
     CMI: 4.37,
   },
   {
-    name: "Mi líder fomenta espacios de confianza",
+    name: 'Mi líder fomenta espacios de confianza',
     Total: 5.0,
     CMI: 4.39,
   },
   {
-    name: "Mi líder es ejemplo e impulsa la vivencia de SOMOS CMI",
+    name: 'Mi líder es ejemplo e impulsa la vivencia de SOMOS CMI',
     Total: 4.75,
     CMI: 4.55,
   },

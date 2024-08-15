@@ -1,15 +1,16 @@
-import { Box, Typography, List, ListItem, ListItemText  } from "@mui/material";
-import { FooterCMI } from "./FooterCMI";
-import { HeaderCMI } from "./HeaderCMI";
-import logo from "./img/logo.jpg";
-import { Chart } from "./charts/Chart";
+import { Box, List, ListItem, ListItemText,Typography  } from '@mui/material';
+
+import { Chart } from './charts/Chart';
+import logo from './img/logo.jpg';
+import { FooterCMI } from './FooterCMI';
+import { HeaderCMI } from './HeaderCMI';
 export const CMI = () => {
   return (
-    <div style={{ width: "800px", backgroundColor: "white" }}>
+    <div style={{ width: '800px', backgroundColor: 'white' }}>
       <div>
         <HeaderCMI />
         <Typography
-          style={{ fontFamily: "Segoe UI", fontSize: "16px" }} // Especifica la fuente aquí
+          style={{ fontFamily: 'Segoe UI', fontSize: '16px' }} // Especifica la fuente aquí
         >
           Como organización reconocemos que nuestros líderes son una pieza
           fundamental de SOMOS CMI y es por esta razón que hemos preparado para
@@ -27,16 +28,16 @@ export const CMI = () => {
         <Typography
           variant="h6"
           style={{
-            fontFamily: "Segoe UI",
-            fontSize: "16px",
-            fontWeight: "bold",
+            fontFamily: 'Segoe UI',
+            fontSize: '16px',
+            fontWeight: 'bold',
           }}
         >
           Qué puedes esperar de este reporte:
         </Typography>
         <Typography
           variant="body1"
-          style={{ fontFamily: "Segoe UI", fontSize: "16px", marginTop: "8px" }}
+          style={{ fontFamily: 'Segoe UI', fontSize: '16px', marginTop: '8px' }}
         >
           LNPS: el cual servirá para entender la visión general de tu liderazgo,
           por parte de tu equipo
@@ -48,17 +49,17 @@ export const CMI = () => {
         <Typography
           variant="h6"
           style={{
-            fontFamily: "Segoe UI",
-            fontSize: "16px",
-            fontWeight: "bold",
-            marginTop: "16px",
+            fontFamily: 'Segoe UI',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            marginTop: '16px',
           }}
         >
           Qué esperamos que hagas con este reporte:
         </Typography>
         <Typography
           variant="body1"
-          style={{ fontFamily: "Segoe UI", fontSize: "16px", marginTop: "8px" }}
+          style={{ fontFamily: 'Segoe UI', fontSize: '16px', marginTop: '8px' }}
         >
           El propósito de este reporte es dar a los líderes retroalimentación, a
           fin de construir planes de desarrollo que les permita seguir su
@@ -66,7 +67,7 @@ export const CMI = () => {
           valoración Líder CMI son los siguientes:
         </Typography>
 
-        <List dense style={{ paddingLeft: "16px", marginTop: "8px" }}>
+        <List dense style={{ paddingLeft: '16px', marginTop: '8px' }}>
           <ListItem>
             <ListItemText primary="• Lee de manera completa el reporte. Esto contribuirá a elevar la consciencia con respecto a tu liderazgo." />
           </ListItem>
@@ -84,9 +85,9 @@ export const CMI = () => {
         <Typography
           variant="body1"
           style={{
-            fontFamily: "Segoe UI",
-            fontSize: "16px",
-            marginTop: "16px",
+            fontFamily: 'Segoe UI',
+            fontSize: '16px',
+            marginTop: '16px',
           }}
         >
           El ánimo de esta medición y reporte es el de seguir formando líderes
@@ -96,20 +97,20 @@ export const CMI = () => {
         </Typography>
         <Box component="img" src={logo} alt="CMI Logo" />
         <FooterCMI />
-        <div style={{ pageBreakBefore: "always" }}> </div>
+        <div style={{ pageBreakBefore: 'always' }}> </div>
       </div>
 
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          minHeight: "100vh",
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh',
         }}
       >
-        <HeaderCMI title={"Aldo Enrique Vallejo"} />
+        <HeaderCMI title={'Aldo Enrique Vallejo'} />
         <div
           style={{
-            flex: "1 0 auto", // Esto asegura que este contenedor tome el espacio disponible
+            flex: '1 0 auto', // Esto asegura que este contenedor tome el espacio disponible
           }}
         >
           <Chart />
@@ -119,17 +120,17 @@ export const CMI = () => {
             flexShrink: 0, // Esto asegura que el footer no se encoja
           }}
         />
-        <div style={{ pageBreakBefore: "always" }}></div>
+        <div style={{ pageBreakBefore: 'always' }}></div>
       </div>
       <div>
         <HeaderCMI />
         <FooterCMI />
-        <div style={{ pageBreakBefore: "always" }}> </div>
+        <div style={{ pageBreakBefore: 'always' }}> </div>
       </div>
       <div>
         <HeaderCMI />
         <FooterCMI />
-        <div style={{ pageBreakBefore: "always" }}> </div>
+        <div style={{ pageBreakBefore: 'always' }}> </div>
       </div>
       <div>
         <HeaderCMI />
