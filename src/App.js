@@ -7,6 +7,7 @@ import { SnackbarProvider } from 'notistack';
 import { Moderator } from './components/Build/Moderator/Moderator';
 import AnswerSurvey from './pages/AnswerSurvey/AnswerSurvey';
 import Bancolombia from './pages/Bancolombia/Bancolombia';
+import { CMI } from './pages/CMI/CMI';
 import Conversation from './pages/Conversation/Conversation';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Error from './pages/Error/Error';

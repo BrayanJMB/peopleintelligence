@@ -1,4 +1,4 @@
-import React, { useEffect, useRef,useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -358,7 +358,11 @@ const SurveyDetailPage = () => {
               <Box sx={{ flexGrow: 1 }}>
                 {/* header */}
                 <Grid item xs={12}>
-                  <MyPageHeader title={currentSurvey.response.surveyName} />
+                  <MyPageHeader
+                    surveyId={surveyId}
+                    title={currentSurvey.response.surveyName}
+                    surveyVisibility={currentSurvey.response.visibleSurvey}
+                  />
                 </Grid>
                 {/* survey options */}
                 <Grid item xs={12}>
