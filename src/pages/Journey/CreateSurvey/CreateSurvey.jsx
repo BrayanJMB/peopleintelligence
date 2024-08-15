@@ -110,6 +110,7 @@ export default function CreateSurvey() {
   const steps = [
     'Introducción',
     'Cuestionario',
+    'survey',
     ...(!isTemplate ? ['Privacidad'] : []),
   ];
   const { surveyId } = useParams();
@@ -694,7 +695,13 @@ export default function CreateSurvey() {
             />
           </Box>
         );
-      case 2:
+        case 2:
+          return (
+            <Box width="100%">
+              <p>dsada</p>
+            </Box>
+          );
+      case 3:
         return (
           <div style={{display:'flex', width:'100%'}}>
             <Intimidad anonyme={anonymous} handleAnonyme={handleanonyme} />

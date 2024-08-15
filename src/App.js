@@ -30,6 +30,7 @@ import UserAdministrator from './pages/userAdministrator/UserAdministrator';
 import { store } from './redux/store';
 import IdleTimer from './utils/IdleTimer';
 import PrivateRoutes from './utils/PrivateRoutes';
+import { CMI } from './pages/CMI/CMI';
 
 // custom theme
 const theme = createTheme({
