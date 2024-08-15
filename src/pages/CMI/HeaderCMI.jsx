@@ -32,6 +32,7 @@ export const HeaderCMI = ({title}) => {
             height: '8px',
           }}
         />
+        
         {title && (
         <Typography variant="h6" color="orange" fontWeight="bold">
             {title}
