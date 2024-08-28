@@ -113,7 +113,7 @@ const Introduction = ({ checkForm, onUpdated, previousData, isUpdate, mapsLoaded
     setIsValid(true);
     // check null for map
     if (map === null) {
-      setIsValidMap('Este campo es requerido');
+      setIsValidMap('Este campo es requerido'); 
       setIsValid(false);
     }
 
