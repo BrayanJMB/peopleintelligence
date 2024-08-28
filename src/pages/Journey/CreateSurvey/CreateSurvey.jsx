@@ -333,6 +333,7 @@ export default function CreateSurvey() {
    * Handle next step.
    */
   const handleNextStep = async () => {
+    console.log(activeStep)
     switch (activeStep) {
       case 0:
         setCheckForm(true);
@@ -366,6 +367,9 @@ export default function CreateSurvey() {
         setActiveStep((val) => val + 1);
         break;
       case 2:
+        setActiveStep((val) => val + 1);
+        break;
+      case 3:
         if (isEdit) {
           editSurvey();
         } else {
@@ -1433,7 +1437,7 @@ export default function CreateSurvey() {
                       loading === true
                     }
                   >
-                    {activeStep === 2 || (activeStep === 1 && isTemplate)
+                    {activeStep === 3 || (activeStep === 1 && isTemplate)
                       ? "Finalizar"
                       : "Continuar"}
                   </Button>
