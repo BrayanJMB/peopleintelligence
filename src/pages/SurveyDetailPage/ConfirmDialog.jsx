@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import CircularProgress from "@mui/material/CircularProgress";
-import Button from "@mui/material/Button";
+import React, { useEffect, useState } from 'react';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 export const ConfirmDialog = ({ open, onClose, onConfirm, idSurvey }) => {
   const [confirming, setConfirming] = useState(false);
@@ -40,7 +40,7 @@ export const ConfirmDialog = ({ open, onClose, onConfirm, idSurvey }) => {
 
   return (
     <Dialog open={open} onClose={handleCancel}>
-      <DialogTitle>{"Confirmar Acción"}</DialogTitle>
+      <DialogTitle>{'Confirmar Acción'}</DialogTitle>
       <DialogContent>
         <DialogContentText>
           Al ejecutar esta acción se borrarán todas las respuestas de la
@@ -53,11 +53,11 @@ export const ConfirmDialog = ({ open, onClose, onConfirm, idSurvey }) => {
         {confirming && (
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginTop: "20px",
-              flexDirection:"column"
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: '20px',
+              flexDirection:'column',
             }}
           >
             <CircularProgress />
