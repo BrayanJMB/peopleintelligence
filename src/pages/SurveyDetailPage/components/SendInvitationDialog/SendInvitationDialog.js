@@ -37,6 +37,7 @@ const SendInvitationDialog = ({
   mailMask,
   mailSubject,
   emailMessage,
+  visibility
 }) => {
   const [open, setOpen] = useState(false);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
@@ -511,6 +512,7 @@ const SendInvitationDialog = ({
         startIcon={<SendIcon />}
         variant="outlined"
         onClick={handleClickOpen}
+        disabled={!visibility}
       >
         Enviar invitación
       </Button>
