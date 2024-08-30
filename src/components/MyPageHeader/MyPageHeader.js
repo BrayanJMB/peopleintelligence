@@ -40,19 +40,26 @@ const MyPageHeader = ({ surveyId, title, Icon, surveyVisibility }) => {
     setVisibility(event.target.checked);
     try {
       const isSurveyEnabled = event.target.checked;
-      
+
       // Llamar a la función para cambiar la visibilidad de la encuesta
       await patchVisilibitySurvey(surveyId, isSurveyEnabled);
-  
+
       // Mostrar un mensaje según el estado de la encuesta
       if (isSurveyEnabled) {
-        enqueueSnackbar('Encuesta habilitada exitosamente', { variant: 'success' });
+        enqueueSnackbar('Encuesta habilitada exitosamente', {
+          variant: 'success',
+        });
       } else {
-        enqueueSnackbar('Encuesta deshabilitada exitosamente', { variant: 'success' });
+        enqueueSnackbar('Encuesta deshabilitada exitosamente', {
+          variant: 'success',
+        });
       }
     } catch (error) {
       // Manejar el error y mostrar un mensaje de error
-      enqueueSnackbar('Ocurrió un error al cambiar la visibilidad de la encuesta', { variant: 'error' });
+      enqueueSnackbar(
+        'Ocurrió un error al cambiar la visibilidad de la encuesta',
+        { variant: 'error' }
+      );
     }
   };
 
@@ -72,17 +79,19 @@ const MyPageHeader = ({ surveyId, title, Icon, surveyVisibility }) => {
 
           {title}
         </Typography>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={visibility}
-                onChange={handleSurveyVisibilityChange}
-              />
-            }
-            label="Habilitar/Deshabilitar encuesta"
-          />
-        </FormGroup>
+        {surveyVisibility && (
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={visibility}
+                  onChange={handleSurveyVisibilityChange}
+                />
+              }
+              label="Habilitar/Deshabilitar encuesta"
+            />
+          </FormGroup>
+        )}
       </div>
     </MyCard>
   );

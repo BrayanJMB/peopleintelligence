@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
 import EmailIcon from '@mui/icons-material/Email';
@@ -49,9 +50,9 @@ import client, { API } from '../../utils/axiosInstance';
 import NotFoundMessage from '../AnswerSurvey/components/NotFoundMessage/NotFoundMessage';
 
 import SendInvitationDialog from './components/SendInvitationDialog/SendInvitationDialog';
+import { ConfirmDialog } from './ConfirmDialog';
 
 import styles from './SurveyDetailPage.module.css';
-
 // survey options
 const options = [
   /*{
@@ -89,6 +90,7 @@ const SurveyDetailPage = () => {
   const [reminderSent, setReminderSent] = useState(false);
   const [showDemographicData, setShowDemographicData] = useState(false);
   const [alertType, setAlertType] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
   const qrRef = useRef(null);
   const [openModal, setOpenModal] = useState(false);
   const handleOpen = () => setOpenModal(true);
@@ -291,6 +293,40 @@ const SurveyDetailPage = () => {
    */
   const handleChangeShowDemographicData = (event) => {
     setShowDemographicData(event.target.checked);
+  };
+
+  /**
+   * Dialog for Delete anwser survey
+   *
+   *
+   *
+   * **/
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const handleConfirmAction = async (idSurvey) => {
+    try {
+      const response = await client.delete(`DeleteAnswers/${idSurvey}`);
+      if (response.status === 200) {
+        enqueueSnackbar('Repuestas eliminadas satisfactoriamente', {
+          variant: 'success',
+          autoHideDuration: 2000,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      enqueueSnackbar('Error al eliminar respuestas encuesta', {
+        variant: 'error',
+        autoHideDuration: 2000,
+      });
+    }
+    // Aquí haces la acción deseada, como un consumo de API
+    setOpenDialog(false);
   };
 
   // component did mount
@@ -521,6 +557,23 @@ const SurveyDetailPage = () => {
                         >
                           Ver Código QR
                         </Button>
+                        {userInfo?.role.findIndex(
+                          (p) => p === 'Administrador'
+                        ) > 0 && (
+                          <Button
+                            onClick={handleOpenDialog}
+                            startIcon={<DeleteOutlineIcon />}
+                          >
+                            Borrar respuestas
+                          </Button>
+                        )}
+
+                        <ConfirmDialog
+                          open={openDialog}
+                          onClose={handleCloseDialog}
+                          onConfirm={handleConfirmAction}
+                          idSurvey={surveyId}
+                        />
                       </div>
                     </div>
                   </MyCard>
