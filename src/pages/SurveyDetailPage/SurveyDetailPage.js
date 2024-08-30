@@ -95,9 +95,7 @@ const SurveyDetailPage = () => {
   const [openModal, setOpenModal] = useState(false);
   const handleOpen = () => setOpenModal(true);
   const handleClose = () => setOpenModal(false);
-  const [visibility, setVisibility] = useState(
-    currentSurvey && currentSurvey.response.visibleSurvey
-  );
+  const [visibility, setVisibility] = useState(null);
   // flags, tags and counters.
   const [chips, setChips] = useState([
     {
@@ -349,7 +347,7 @@ const SurveyDetailPage = () => {
     };
 
     fetchCurrentSurvey();
-  }, [dispatch, surveyId, visibility]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dispatch, surveyId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // watch currentSurvey state
   useEffect(() => {
@@ -370,6 +368,7 @@ const SurveyDetailPage = () => {
 
         return newChips;
       });
+      setVisibility(currentSurvey.response.visibleSurvey);
     }
   }, [currentSurvey]); // eslint-disable-line react-hooks/exhaustive-deps
 
