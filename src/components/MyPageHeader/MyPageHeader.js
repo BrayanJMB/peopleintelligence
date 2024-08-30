@@ -20,9 +20,8 @@ import styles from './MyPageHeader.module.css';
  * @returns {JSX.Element}
  * @constructor
  */
-const MyPageHeader = ({ surveyId, title, Icon, surveyVisibility }) => {
+const MyPageHeader = ({ surveyId, title, Icon, visibility, setVisibility }) => {
   const { enqueueSnackbar } = useSnackbar();
-  const [visibility, setVisibility] = useState(surveyVisibility);
   const navigate = useNavigate();
 
   /**
@@ -79,7 +78,7 @@ const MyPageHeader = ({ surveyId, title, Icon, surveyVisibility }) => {
 
           {title}
         </Typography>
-        {surveyVisibility && (
+        {(surveyId || visibility) && (
           <FormGroup>
             <FormControlLabel
               control={
