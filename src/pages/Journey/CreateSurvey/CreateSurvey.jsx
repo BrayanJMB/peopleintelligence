@@ -43,6 +43,7 @@ import Cuestionario from './Cuestionario/Cuestionario';
 import { Exclusiveness } from './Exclusividad/Exclusiveness.jsx';
 import Intimidad from './Intimidad/Intimidad.jsx';
 import Introduction from './Introduction/Introduction';
+import { MessagesSurvey } from './MessagesSurvey/MessagesSurvey.jsx';
 
 import styles from './CreateSurvey.module.css';
 
@@ -98,6 +99,11 @@ export default function CreateSurvey() {
   const [loading, setLoading] = useState(false);
   const [templateDemographics, setTemplateDemographics] = useState([]);
   const [mapsLoaded, setMapsLoaded] = useState(false);
+  const [surveyMessages, setSurveyMessages] = useState({
+    welcomeMessage: 'Ingrese su correo electrónico o cédula para continuar',
+    inputMessage: 'Correo electrónico o cédula',
+    confidentialityMessage: 'Tus respuestas serán completamente confidenciales y no podrán ser vinculadas a tu identidad.',
+  });
   const { enqueueSnackbar } = useSnackbar();
   const isMap = searchParams.get('isMap') === 'true';
   const isEdit = searchParams.get('isEdit') === 'true';
@@ -110,7 +116,7 @@ export default function CreateSurvey() {
   const steps = [
     'Introducción',
     'Cuestionario',
-    'survey',
+    'Configuración',
     ...(!isTemplate ? ['Privacidad'] : []),
   ];
   const { surveyId } = useParams();
@@ -171,6 +177,9 @@ export default function CreateSurvey() {
         exclusive: exclusiviness,
         mapId: data.map.id,
         companyId: currentCompany.id,
+        wellcomeMessage: surveyMessages.welcomeMessage,
+        inputMessage: surveyMessages.inputMessage,
+        confindencialityMessage: surveyMessages.confidentialityMessage,
       },
       questions: questions.map((question) => ({
         question: {
@@ -325,6 +334,7 @@ export default function CreateSurvey() {
    * Handle next step.
    */
   const handleNextStep = async () => {
+    console.log(activeStep);
     switch (activeStep) {
       case 0:
         setCheckForm(true);
@@ -358,6 +368,9 @@ export default function CreateSurvey() {
         setActiveStep((val) => val + 1);
         break;
       case 2:
+        setActiveStep((val) => val + 1);
+        break;
+      case 3:
         if (isEdit) {
           editSurvey();
         } else {
@@ -695,17 +708,23 @@ export default function CreateSurvey() {
             />
           </Box>
         );
-        case 2:
-          return (
-            <Box width="100%">
-              <p>dsada</p>
-            </Box>
-          );
+      case 2:
+        return (
+          <Box width="100%">
+            <MessagesSurvey
+              surveyMessages={surveyMessages}
+              setSurveyMessages={setSurveyMessages}
+            />
+          </Box>
+        );
       case 3:
         return (
-          <div style={{display:'flex', width:'100%'}}>
+          <div style={{ display: 'flex', width: '100%' }}>
             <Intimidad anonyme={anonymous} handleAnonyme={handleanonyme} />
-            <Exclusiveness exclusiviness={exclusiviness} handleExclusiviness={handleExclusiviness} />
+            <Exclusiveness
+              exclusiviness={exclusiviness}
+              handleExclusiviness={handleExclusiviness}
+            />
           </div>
         );
 
@@ -1419,7 +1438,7 @@ export default function CreateSurvey() {
                       loading === true
                     }
                   >
-                    {activeStep === 2 || (activeStep === 1 && isTemplate)
+                    {activeStep === 3 || (activeStep === 1 && isTemplate)
                       ? 'Finalizar'
                       : 'Continuar'}
                   </Button>
