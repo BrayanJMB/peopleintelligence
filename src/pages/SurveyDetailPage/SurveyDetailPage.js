@@ -95,6 +95,9 @@ const SurveyDetailPage = () => {
   const [openModal, setOpenModal] = useState(false);
   const handleOpen = () => setOpenModal(true);
   const handleClose = () => setOpenModal(false);
+  const [visibility, setVisibility] = useState(
+    currentSurvey && currentSurvey.response.visibleSurvey
+  );
   // flags, tags and counters.
   const [chips, setChips] = useState([
     {
@@ -319,7 +322,6 @@ const SurveyDetailPage = () => {
         });
       }
     } catch (error) {
-      console.log(error);
       enqueueSnackbar('Error al eliminar respuestas encuesta', {
         variant: 'error',
         autoHideDuration: 2000,
@@ -347,7 +349,7 @@ const SurveyDetailPage = () => {
     };
 
     fetchCurrentSurvey();
-  }, [dispatch, surveyId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dispatch, surveyId, visibility]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // watch currentSurvey state
   useEffect(() => {
@@ -397,7 +399,8 @@ const SurveyDetailPage = () => {
                   <MyPageHeader
                     surveyId={surveyId}
                     title={currentSurvey.response.surveyName}
-                    surveyVisibility={currentSurvey.response.visibleSurvey}
+                    visibility={visibility}
+                    setVisibility={setVisibility}
                   />
                 </Grid>
                 {/* survey options */}
@@ -498,6 +501,7 @@ const SurveyDetailPage = () => {
                             onClick={sendReminder}
                             startIcon={<ScheduleSendIcon />}
                             variant="text"
+                            disabled={!visibility}
                           >
                             Enviar recordatorio
                           </Button>
@@ -522,6 +526,7 @@ const SurveyDetailPage = () => {
                             mailMask={currentSurvey.response.emailMAsk}
                             mailSubject={currentSurvey.response.emailSubject}
                             emailMessage={currentSurvey.response.emailMessage}
+                            visibility={visibility}
                           />
                         </Stack>
                       </div>
@@ -544,7 +549,10 @@ const SurveyDetailPage = () => {
                         Resumen de respuesta
                       </Typography>
                       <div className={styles.SurveyDetailPage__resume__share}>
-                        <IconButton onClick={handleClickCopyUrl}>
+                        <IconButton
+                          onClick={handleClickCopyUrl}
+                          disabled={!visibility}
+                        >
                           <LinkIcon />
                         </IconButton>
 
@@ -554,6 +562,7 @@ const SurveyDetailPage = () => {
                         <Button
                           onClick={handleOpen}
                           startIcon={<VisibilityIcon />}
+                          disabled={!visibility}
                         >
                           Ver Código QR
                         </Button>
