@@ -37,7 +37,7 @@ const SendInvitationDialog = ({
   mailMask,
   mailSubject,
   emailMessage,
-  visibility
+  visibility,
 }) => {
   const [open, setOpen] = useState(false);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
