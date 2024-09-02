@@ -953,7 +953,7 @@ export default function CreateSurvey() {
         name: information.name,
         description: information.description,
       });
-    } else if (type.id === 2 || type.id === 18) {
+    } else if (type.id === 2 || type.id === 16) {
       handleAddQuestion({
         type: 'Escala Likert',
         name: information.name,
