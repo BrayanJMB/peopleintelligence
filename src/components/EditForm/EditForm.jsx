@@ -171,7 +171,7 @@ const EditForm = ({
           </div>
 
           {/* likert scale */}
-          {(question.typeId === 2 || question.typeId === 18) && (
+          {(question.typeId === 2 || question.typeId === 16) && (
             <div className={styles.options}>
               {question.options.map((val, key) => (
                 <div className={styles.option} key={key}>
