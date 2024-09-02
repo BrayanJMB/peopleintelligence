@@ -94,7 +94,7 @@ export default function Form(props) {
           </div>
         );
       case 2:
-      case 18:
+      case 16:
         return (
           <div className={styles.top}>
             <div className={styles.question}>
