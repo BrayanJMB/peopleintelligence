@@ -172,6 +172,7 @@ const SurveyForm = ({
     switch (typeQuestion.toLowerCase()) {
       case 'selección':
       case 'escala likert':
+        case 'escala likert -eng':
         return true;
       default:
         return false;

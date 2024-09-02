@@ -14,6 +14,8 @@ import { RelationalQuestions } from '../Questions/RelationQuestion/RelationalQue
 
 import styles from './Form.module.css';
 export default function Form(props) {
+  console.log(props.type);
+  console.log(props);
   const [categoryId, setCategoryId] = useState('');
   const [open, setOpen] = useState(false);
 
@@ -92,6 +94,7 @@ export default function Form(props) {
           </div>
         );
       case 2:
+      case 18:
         return (
           <div className={styles.top}>
             <div className={styles.question}>
@@ -694,9 +697,7 @@ export default function Form(props) {
           </div>
         );
       case 15:
-        return (
-          <RelationalQuestions {...props} />            
-        );
+        return <RelationalQuestions {...props} />;
       default:
         return null;
     }
