@@ -67,13 +67,7 @@ export default function CreateSurvey() {
   const [information, setInformation] = useState({
     name: '',
     description: '',
-    options: [
-      'Totalmente de Acuerdo',
-      'De Acuerdo',
-      'Ni de Acuerdo  Ni en Desacuerdo',
-      'En Desacuerdo',
-      'Totalmente en Desacuerdo',
-    ],
+    options: [],
     customOptions: Array(2).fill(''),
     opcionesInputs: Array(2).fill(''),
     stars: Array(3).fill(''),
@@ -102,7 +96,8 @@ export default function CreateSurvey() {
   const [surveyMessages, setSurveyMessages] = useState({
     welcomeMessage: 'Ingrese su correo electrónico o cédula para continuar',
     inputMessage: 'Correo electrónico o cédula',
-    confidentialityMessage: 'Tus respuestas serán completamente confidenciales y no podrán ser vinculadas a tu identidad.',
+    confidentialityMessage:
+      'Tus respuestas serán completamente confidenciales y no podrán ser vinculadas a tu identidad.',
   });
   const { enqueueSnackbar } = useSnackbar();
   const isMap = searchParams.get('isMap') === 'true';
@@ -584,6 +579,7 @@ export default function CreateSurvey() {
    * @param index
    */
   const handleEdit = (index) => {
+    console.log(questions);
     setTarget(index);
     setQuestion(questions[index]);
     setEdit(true);
@@ -770,8 +766,36 @@ export default function CreateSurvey() {
 
   const handleAutocomplete = (val) => {
     setType(val);
+    setInformation((prevInfo) => {
+      let updatedOptions = prevInfo.options;
+      updatedOptions = getOptions(val.id); // Llama a tu función getOptions para obtener las nuevas opciones
+      return {
+        ...prevInfo,
+        options: updatedOptions, // Actualiza las options si es necesario
+      };
+    });
   };
 
+  function getOptions(lang) {
+    if (lang === 2) {
+      // Verifica el valor del idioma
+      return [
+        'Totalmente de Acuerdo',
+        'De Acuerdo',
+        'Ni de Acuerdo Ni en Desacuerdo',
+        'En Desacuerdo',
+        'Totalmente en Desacuerdo',
+      ];
+    } else {
+      return [
+        'Strongly Agree',
+        'Agree',
+        'Neither Agree nor Disagree',
+        'Disagree',
+        'Strongly Disagree',
+      ];
+    }
+  }
   const handleAgregar = () => {
     setCategoryError('');
     setErrorMessage({});
@@ -929,7 +953,7 @@ export default function CreateSurvey() {
         name: information.name,
         description: information.description,
       });
-    } else if (type.id === 2) {
+    } else if (type.id === 2 || type.id === 18) {
       handleAddQuestion({
         type: 'Escala Likert',
         name: information.name,
@@ -985,13 +1009,7 @@ export default function CreateSurvey() {
     setInformation({
       name: '',
       description: '',
-      options: [
-        'Totalmente de Acuerdo',
-        'De Acuerdo',
-        'Ni de Acuerdo  Ni en Desacuerdo',
-        'En Desacuerdo',
-        'Totalmente en Desacuerdo',
-      ],
+      options: [],
       customOptions: Array(2).fill(''),
       opcionesInputs: Array(2).fill(''),
       stars: Array(3).fill(''),
