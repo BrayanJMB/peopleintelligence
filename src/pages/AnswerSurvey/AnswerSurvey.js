@@ -346,7 +346,7 @@ const AnswerSurvey = () => {
     checkIfIsPersonal();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <div className={styles.AnswerSurvey}>
+    <div className={styles.AnswerSurvey} translate='no'>
       <div className={styles.AnswerSurvey__Background}></div>
       <div className={styles.AnswerSurvey__Content}>
         <Card
