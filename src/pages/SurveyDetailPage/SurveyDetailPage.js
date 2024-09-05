@@ -373,7 +373,7 @@ const SurveyDetailPage = () => {
   }, [currentSurvey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex' }} translate='no'>
       <Snackbar
         open={openSnackbar}
         autoHideDuration={3000} // Cierra el Snackbar automáticamente después de 6 segundos
@@ -620,7 +620,7 @@ const SurveyDetailPage = () => {
                   </Box>
                 </Modal>
                 {/* questions */}
-                <Grid item xs={12}>
+                <Grid item xs={12} >
                   <MyCard>
                     {currentSurvey.response.preguntas.map(
                       ({
