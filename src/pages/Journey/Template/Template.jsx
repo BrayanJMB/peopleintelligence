@@ -1,27 +1,28 @@
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { Button } from "@mui/material";
-import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
-import Grid from "@mui/material/Grid";
-import TablePagination from "@mui/material/TablePagination";
-import Typography from "@mui/material/Typography";
-import { useSnackbar } from "notistack";
-import { Tabs, Tab } from "@mui/material";
-import MyPageHeader from "../../../components/MyPageHeader/MyPageHeader";
-import useNavigateSearch from "../../../hooks/useNavigateSearch";
-import IconSidebar from "../../../Layout/IconSidebar/IconSidebar";
-import Navbar from "../../../Layout/Navbar/Navbar";
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { Button } from '@mui/material';
+import { Tab,Tabs } from '@mui/material';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import TablePagination from '@mui/material/TablePagination';
+import Typography from '@mui/material/Typography';
+import { useSnackbar } from 'notistack';
+
+import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
+import useNavigateSearch from '../../../hooks/useNavigateSearch';
+import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../../Layout/Navbar/Navbar';
 import {
   fetchTemplatesAPI,
   fetchTemplatesByCompanyAPI,
-} from "../../../services/templates.service";
-import { isAdmin, isAdminJourney, isJourney } from "../../../utils/helpers";
+} from '../../../services/templates.service';
+import { isAdmin, isAdminJourney, isJourney } from '../../../utils/helpers';
 
-import styles from "./Template.module.css";
+import styles from './Template.module.css';
 
 /**
  * Survey index page.
@@ -32,7 +33,7 @@ import styles from "./Template.module.css";
 const Template = () => {
   const navigate = useNavigate();
   const navigateSearch = useNavigateSearch();
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const [templates, setTemplates] = useState([]);
   const [templatesByCompany, setTemplatesByCompany] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
@@ -80,7 +81,7 @@ const Template = () => {
       ...(templateId && { templateId }),
     };
 
-    navigateSearch("/journey/create-survey", querySearch);
+    navigateSearch('/journey/create-survey', querySearch);
   };
 
   /**
@@ -105,10 +106,10 @@ const Template = () => {
   // component did mount
   useEffect(() => {
     if (!isAdmin(userInfo) && !isJourney(userInfo)) {
-      enqueueSnackbar("No tiene permiso para acceder a esta funcionalidad", {
-        variant: "error",
+      enqueueSnackbar('No tiene permiso para acceder a esta funcionalidad', {
+        variant: 'error',
       });
-      navigate("/dashboard");
+      navigate('/dashboard');
 
       return;
     }
@@ -118,10 +119,10 @@ const Template = () => {
   }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Navbar />
       <IconSidebar />
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: 'white' }}>
         <div className={styles.content}>
           <div className={styles.survey_template}>
             <div className={styles.heading}>
@@ -159,7 +160,7 @@ const Template = () => {
                 O usa una plantilla
               </Typography>
 
-              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs
                   value={value}
                   onChange={handleChange}
