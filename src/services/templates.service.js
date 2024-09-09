@@ -8,6 +8,13 @@ import axios from '../utils/axiosInstance';
 export const fetchTemplatesAPI = async () => axios.get('GetTemplates/');
 
 /**
+ * Fetch templates by company from API.
+ * 
+ * @returns {Promise<any>}
+ */
+export const fetchTemplatesByCompanyAPI = async (companyId) => axios.get(`GetTemplates/${companyId}`);
+
+/**
  * Delete template from API.
  * 
  * @param {number} id The template id.

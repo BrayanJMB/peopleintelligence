@@ -48,7 +48,10 @@ import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
 import Navbar from "../../Layout/Navbar/Navbar";
 import client, { API } from "../../utils/axiosInstance";
 import NotFoundMessage from "../AnswerSurvey/components/NotFoundMessage/NotFoundMessage";
-import { templateFromSurveyAllCompanies } from "./services/services";
+import {
+  templateFromSurveyAllCompanies,
+  templateFromSurveyByCompany,
+} from "./services/services";
 import SendInvitationDialog from "./components/SendInvitationDialog/SendInvitationDialog";
 import { ConfirmDialog } from "./ConfirmDialog";
 import PublicIcon from "@mui/icons-material/Public";
@@ -104,6 +107,7 @@ const SurveyDetailPage = () => {
   const handleOpen = () => setOpenModal(true);
   const handleClose = () => setOpenModal(false);
   const [visibility, setVisibility] = useState(null);
+  const [ visibilitySelectCompanies, setVisibilityCompanies] = useState(false);
   // flags, tags and counters.
   const [chips, setChips] = useState([
     {
@@ -166,6 +170,15 @@ const SurveyDetailPage = () => {
         currentCompany.id
       );
     }
+    if (option === "Generar plantilla (empresa)") {
+      setVisibilityCompanies(true);
+      /*
+      handleTemplateFromSurveyByCompany(
+        currentSurvey.response.surveyId,
+        currentCompany.id,
+        currentCompany.id
+      );*/
+    }
     setAnchorEl(null);
   };
 
@@ -202,6 +215,40 @@ const SurveyDetailPage = () => {
       );
       const response = await templateFromSurveyAllCompanies(
         surveyId,
+        currentCompany
+      );
+      if (response.status === 200) {
+        enqueueSnackbar(
+          "Plantilla creada para todas las empresas correctamente.",
+          {
+            variant: "success",
+          }
+        );
+      }
+    } catch (error) {
+      enqueueSnackbar(
+        "Hubo un error al crear la plantilla para todas las empresas",
+        {
+          variant: "error",
+        }
+      );
+    }
+  };
+
+  const handleTemplateFromSurveyByCompany = async (
+    surveyId,
+    currentCompany
+  ) => {
+    try {
+      enqueueSnackbar(
+        "Creando plantilla para todas las empresas por favor espere.",
+        {
+          variant: "info",
+        }
+      );
+      const response = await templateFromSurveyByCompany(
+        surveyId,
+        currentCompany,
         currentCompany
       );
       if (response.status === 200) {
@@ -456,10 +503,13 @@ const SurveyDetailPage = () => {
                         {currentSurvey.response.surveyName}
                       </Typography>
                       <div className={styles.SurveyDetailPage__options__button}>
-                        <SelectSurveyDuplicateTemplate
-                          surveyId={surveyId}
-                          currentCompany={currentCompany}
-                        />
+                        {(isAdmin && visibilitySelectCompanies) && (
+                          <SelectSurveyDuplicateTemplate
+                            surveyId={surveyId}
+                            currentCompany={currentCompany}
+                          />
+                        )}
+
                         <IconButton
                           aria-label="more"
                           id="long-button"

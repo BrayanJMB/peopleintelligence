@@ -1,23 +1,27 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { Button } from '@mui/material';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
-import Grid from '@mui/material/Grid';
-import TablePagination from '@mui/material/TablePagination';
-import Typography from '@mui/material/Typography';
-import { useSnackbar } from 'notistack';
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import { Button } from "@mui/material";
+import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
+import Grid from "@mui/material/Grid";
+import TablePagination from "@mui/material/TablePagination";
+import Typography from "@mui/material/Typography";
+import { useSnackbar } from "notistack";
+import { Tabs, Tab } from "@mui/material";
+import MyPageHeader from "../../../components/MyPageHeader/MyPageHeader";
+import useNavigateSearch from "../../../hooks/useNavigateSearch";
+import IconSidebar from "../../../Layout/IconSidebar/IconSidebar";
+import Navbar from "../../../Layout/Navbar/Navbar";
+import {
+  fetchTemplatesAPI,
+  fetchTemplatesByCompanyAPI,
+} from "../../../services/templates.service";
+import { isAdmin, isAdminJourney, isJourney } from "../../../utils/helpers";
 
-import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
-import useNavigateSearch from '../../../hooks/useNavigateSearch';
-import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
-import Navbar from '../../../Layout/Navbar/Navbar';
-import { fetchTemplatesAPI } from '../../../services/templates.service';
-import { isAdmin, isAdminJourney, isJourney } from '../../../utils/helpers';
-
-import styles from './Template.module.css';
+import styles from "./Template.module.css";
 
 /**
  * Survey index page.
@@ -28,18 +32,24 @@ import styles from './Template.module.css';
 const Template = () => {
   const navigate = useNavigate();
   const navigateSearch = useNavigateSearch();
-  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [templates, setTemplates] = useState([]);
+  const [templatesByCompany, setTemplatesByCompany] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(0);
   const [perPage, setPerPage] = useState(9);
-
+  const [value, setValue] = useState(0);
+  const currentCompany = useSelector((state) => state.companies.currentCompany);
+  console.log(currentCompany);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
   /**
    * Handle change page.
-   * 
-   * @param {object} event 
-   * @param {number} newPage 
+   *
+   * @param {object} event
+   * @param {number} newPage
    */
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -47,8 +57,8 @@ const Template = () => {
 
   /**
    * Handle change rows per page.
-   * 
-   * @param {object} event 
+   *Stack
+   * @param {object} event
    */
   const handleChangeRowsPerPage = (event) => {
     setPerPage(parseInt(event.target.value, 10));
@@ -70,7 +80,7 @@ const Template = () => {
       ...(templateId && { templateId }),
     };
 
-    navigateSearch('/journey/create-survey', querySearch);
+    navigateSearch("/journey/create-survey", querySearch);
   };
 
   /**
@@ -84,54 +94,47 @@ const Template = () => {
     setPage(0);
   };
 
+  const fetchTemplatesByCompany = async (currentCompany) => {
+    const { data } = await fetchTemplatesByCompanyAPI(currentCompany);
+
+    setTemplatesByCompany(data);
+    setTotal(data.length);
+    setPage(0);
+  };
+
   // component did mount
   useEffect(() => {
     if (!isAdmin(userInfo) && !isJourney(userInfo)) {
-      enqueueSnackbar('No tiene permiso para acceder a esta funcionalidad', {
-        variant: 'error',
+      enqueueSnackbar("No tiene permiso para acceder a esta funcionalidad", {
+        variant: "error",
       });
-      navigate('/dashboard');
+      navigate("/dashboard");
 
       return;
     }
 
     fetchTemplates();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    fetchTemplatesByCompany(1);
+  }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <Navbar />
       <IconSidebar />
-      <div style={{ backgroundColor: 'white' }}>
+      <div style={{ backgroundColor: "white" }}>
         <div className={styles.content}>
           <div className={styles.survey_template}>
-
-            <div
-              className={styles.heading}
-            >
-              <MyPageHeader
-                title="Plantilla de encuesta"
-              />
+            <div className={styles.heading}>
+              <MyPageHeader title="Plantilla de encuesta" />
             </div>
 
-            <div
-              className={styles.templates}
-            >
-              <Typography
-                variant="h6"
-                gutterBottom
-              >
+            <div className={styles.templates}>
+              <Typography variant="h6" gutterBottom>
                 Empezar desde el principio
               </Typography>
-              <Grid
-                container
-                spacing={2}
-              >
+              <Grid container spacing={2}>
                 {/* create survey */}
-                <Grid
-                  item 
-                  xs={4}
-                >
+                <Grid item xs={4}>
                   <div
                     className={styles.template}
                     onClick={() => handleCreateSurvey()}
@@ -150,48 +153,85 @@ const Template = () => {
                 </Grid>
               </Grid>
 
-              <Divider
-                sx={{ my: 3 }}
-              />
+              <Divider sx={{ my: 3 }} />
 
-              <Typography
-                variant="h6"
-                gutterBottom
-              >
+              <Typography variant="h6" gutterBottom>
                 O usa una plantilla
               </Typography>
-              <Grid
-                container
-                spacing={2}
-              >
-                {templates.slice((page + 1 - 1) * perPage, (page + 1) * perPage).map((template, key) => (
-                  <Grid
-                    item 
-                    key={key}
-                    xs={4}
-                  >
-                    <div
-                      className={styles.template}
-                    >
-                      <div className={styles.title}>
-                          {template.nameSurvey}
-                      </div>
-                      <div className={styles.description}>
-                        {template.descriptionSurvey}
-                      </div>
-                      <div className={styles.bottom}>
-                        <Button
-                          variant="text"
-                          onClick={() => handleCreateSurvey(false, template.id)}
-                        >
-                          <p>Usa esta plantilla</p>
-                          <KeyboardArrowRightIcon />
-                        </Button>
-                      </div>
-                    </div>
+
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <Tabs
+                  value={value}
+                  onChange={handleChange}
+                  aria-label="basic tabs example"
+                >
+                  <Tab label="Plantillas generales" />
+                  <Tab label="Plantillas por empresa" />
+                </Tabs>
+              </Box>
+              <Box>
+                {value === 0 && (
+                  <Grid container spacing={2}>
+                    {templates
+                      .slice((page + 1 - 1) * perPage, (page + 1) * perPage)
+                      .map((template, key) => (
+                        <Grid item key={key} xs={4}>
+                          <div className={styles.template}>
+                            <div className={styles.title}>
+                              {template.nameSurvey}
+                            </div>
+                            <div className={styles.description}>
+                              {template.descriptionSurvey}
+                            </div>
+                            <div className={styles.bottom}>
+                              <Button
+                                variant="text"
+                                onClick={() =>
+                                  handleCreateSurvey(false, template.id)
+                                }
+                              >
+                                <p>Usa esta plantilla</p>
+                                <KeyboardArrowRightIcon />
+                              </Button>
+                            </div>
+                          </div>
+                        </Grid>
+                      ))}
                   </Grid>
-                ))}
-              </Grid>
+                )}
+              </Box>
+
+              <Box>
+                {value === 1 && (
+                  <Grid container spacing={2}>
+                    {templatesByCompany
+                      .slice((page + 1 - 1) * perPage, (page + 1) * perPage)
+                      .map((template, key) => (
+                        <Grid item key={key} xs={4}>
+                          <div className={styles.template}>
+                            <div className={styles.title}>
+                              {template.nameSurvey}
+                            </div>
+                            <div className={styles.description}>
+                              {template.descriptionSurvey}
+                            </div>
+                            <div className={styles.bottom}>
+                              <Button
+                                variant="text"
+                                onClick={() =>
+                                  handleCreateSurvey(false, template.id)
+                                }
+                              >
+                                <p>Usa esta plantilla</p>
+                                <KeyboardArrowRightIcon />
+                              </Button>
+                            </div>
+                          </div>
+                        </Grid>
+                      ))}
+                  </Grid>
+                )}
+              </Box>
 
               <Box>
                 <TablePagination
