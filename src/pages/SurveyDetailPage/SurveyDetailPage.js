@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import BusinessIcon from '@mui/icons-material/Business';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -11,6 +12,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import EmailIcon from '@mui/icons-material/Email';
 import LinkIcon from '@mui/icons-material/Link';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import PublicIcon from '@mui/icons-material/Public';
 import ReplyIcon from '@mui/icons-material/Reply';
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -50,7 +52,12 @@ import client, { API } from '../../utils/axiosInstance';
 import NotFoundMessage from '../AnswerSurvey/components/NotFoundMessage/NotFoundMessage';
 
 import SendInvitationDialog from './components/SendInvitationDialog/SendInvitationDialog';
+import {
+  templateFromSurveyAllCompanies,
+  templateFromSurveyByCompany,
+} from './services/services';
 import { ConfirmDialog } from './ConfirmDialog';
+import { SelectSurveyDuplicateTemplate } from './SelectSurveyDuplicateTemplate';
 
 import styles from './SurveyDetailPage.module.css';
 // survey options
@@ -58,12 +65,19 @@ const options = [
   /*{
     option: 'Editar',
     icon: <EditIcon />,
-  },/*
+  },  */
   {
     option: 'Duplicar',
     icon: <ContentCopyIcon />,
   },
-  */
+  {
+    option: 'Generar plantilla (todos)',
+    icon: <PublicIcon />,
+  },
+  {
+    option: 'Generar plantilla (empresa)',
+    icon: <BusinessIcon />,
+  },
   {
     option: 'Borrar',
     icon: <DeleteIcon />,
@@ -97,6 +111,7 @@ const SurveyDetailPage = () => {
   const handleOpen = () => setOpenModal(true);
   const handleClose = () => setOpenModal(false);
   const [visibility, setVisibility] = useState(null);
+  const [ visibilitySelectCompanies, setVisibilityCompanies] = useState(false);
   // flags, tags and counters.
   const [chips, setChips] = useState([
     {
@@ -151,12 +166,27 @@ const SurveyDetailPage = () => {
       );
     }
     if (option === 'Duplicar') {
-      handleEditSurvey(currentSurvey.response.surveyId);
+      handleDuplicateSurvey(currentSurvey.response.surveyId);
+    }
+    if (option === 'Generar plantilla (todos)') {
+      handleTemplateFromSurveyAll(
+        currentSurvey.response.surveyId,
+        currentCompany.id
+      );
+    }
+    if (option === 'Generar plantilla (empresa)') {
+      setVisibilityCompanies(true);
+      /*
+      handleTemplateFromSurveyByCompany(
+        currentSurvey.response.surveyId,
+        currentCompany.id,
+        currentCompany.id
+      );*/
     }
     setAnchorEl(null);
   };
 
-  const handleEditSurvey = async (idSurvey) => {
+  const handleDuplicateSurvey = async (idSurvey) => {
     if (!currentSurvey) {
       return;
     }
@@ -166,16 +196,80 @@ const SurveyDetailPage = () => {
         `CloneJourney/${idSurvey}/${currentCompany.id}`
       );
       if (response.status === 200) {
-        enqueueSnackbar('Encuesta clonada satisfactoriamente', {
+        enqueueSnackbar('Encuesta duplicada satisfactoriamente', {
           variant: 'success',
           autoHideDuration: 2000,
         });
       }
     } catch (error) {
-      enqueueSnackbar('Error al clonar la encuesta', {
+      enqueueSnackbar('Error al duplicar la encuesta', {
         variant: 'error',
         autoHideDuration: 2000,
       });
+    }
+  };
+
+  const handleTemplateFromSurveyAll = async (surveyId, currentCompany) => {
+    try {
+      enqueueSnackbar(
+        'Creando plantilla para todas las empresas por favor espere.',
+        {
+          variant: 'info',
+        }
+      );
+      const response = await templateFromSurveyAllCompanies(
+        surveyId,
+        currentCompany
+      );
+      if (response.status === 200) {
+        enqueueSnackbar(
+          'Plantilla creada para todas las empresas correctamente.',
+          {
+            variant: 'success',
+          }
+        );
+      }
+    } catch (error) {
+      enqueueSnackbar(
+        'Hubo un error al crear la plantilla para todas las empresas',
+        {
+          variant: 'error',
+        }
+      );
+    }
+  };
+
+  const handleTemplateFromSurveyByCompany = async (
+    surveyId,
+    currentCompany
+  ) => {
+    try {
+      enqueueSnackbar(
+        'Creando plantilla para todas las empresas por favor espere.',
+        {
+          variant: 'info',
+        }
+      );
+      const response = await templateFromSurveyByCompany(
+        surveyId,
+        currentCompany,
+        currentCompany
+      );
+      if (response.status === 200) {
+        enqueueSnackbar(
+          'Plantilla creada para todas las empresas correctamente.',
+          {
+            variant: 'success',
+          }
+        );
+      }
+    } catch (error) {
+      enqueueSnackbar(
+        'Hubo un error al crear la plantilla para todas las empresas',
+        {
+          variant: 'error',
+        }
+      );
     }
   };
 
@@ -363,6 +457,7 @@ const SurveyDetailPage = () => {
     fetchCurrentSurvey();
   }, [dispatch, surveyId]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const isAdmin = userInfo?.role.findIndex((p) => p === 'Administrador') > 0;
   // watch currentSurvey state
   useEffect(() => {
     if (currentSurvey !== null) {
@@ -425,6 +520,13 @@ const SurveyDetailPage = () => {
                         {currentSurvey.response.surveyName}
                       </Typography>
                       <div className={styles.SurveyDetailPage__options__button}>
+                        {(isAdmin && visibilitySelectCompanies) && (
+                          <SelectSurveyDuplicateTemplate
+                            surveyId={surveyId}
+                            currentCompany={currentCompany}
+                          />
+                        )}
+
                         <IconButton
                           aria-label="more"
                           id="long-button"
@@ -443,22 +545,27 @@ const SurveyDetailPage = () => {
                           anchorEl={anchorEl}
                           open={open}
                           onClose={handleCloseMenu}
-                          PaperProps={{
-                            style: {
-                              maxHeight: 48 * 4.5,
-                              width: '20ch',
-                            },
-                          }}
                         >
-                          {options.map(({ option, icon }) => (
-                            <MenuItem
-                              key={option}
-                              onClick={() => handleCloseMenu(option)}
-                            >
-                              {icon}
-                              {option}
-                            </MenuItem>
-                          ))}
+                          {options
+                            .filter(({ option }) => {
+                              // Mostrar todas las opciones solo si el usuario es administrador
+                              if (
+                                !isAdmin &&
+                                option === 'Generar plantilla (todos)'
+                              ) {
+                                return false; // Oculta estas opciones si no es administrador
+                              }
+                              return true;
+                            })
+                            .map(({ option, icon }) => (
+                              <MenuItem
+                                key={option}
+                                onClick={() => handleCloseMenu(option)}
+                              >
+                                {icon}
+                                {option}
+                              </MenuItem>
+                            ))}
                         </Menu>
                       </div>
                     </div>
