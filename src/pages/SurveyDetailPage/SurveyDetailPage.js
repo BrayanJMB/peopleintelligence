@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -91,6 +91,7 @@ const SurveyDetailPage = () => {
   const [showDemographicData, setShowDemographicData] = useState(false);
   const [alertType, setAlertType] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
+  const [openDialogs, setOpenDialogs] = useState({});
   const qrRef = useRef(null);
   const [openModal, setOpenModal] = useState(false);
   const handleOpen = () => setOpenModal(true);
@@ -277,14 +278,13 @@ const SurveyDetailPage = () => {
    *
    * @param event
    */
-  const sendReminder = async (event) => {
-    event.preventDefault();
-
+  const sendReminder = async (idSurvey, dialogPosition) => {
+    handleCloseDialog(dialogPosition);
     const companyId = userInfo.Company;
     const url = `${API}SendReminder/${surveyId}/${companyId}`;
 
     await client.get(url);
-    await setReminderSent(true);
+    setReminderSent(true);
   };
 
   /**
@@ -302,16 +302,32 @@ const SurveyDetailPage = () => {
    *
    *
    * **/
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
+  const handleOpenDialog = (id, ...args) => {
+    setOpenDialogs((prevDialogs) => ({
+      ...prevDialogs,
+      [id]: {
+        isOpen: true,
+        message: args[0],
+        consume: args[1],
+        needConfirm: args[2],
+      },
+    }));
   };
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
+  const handleCloseDialog = (id) => {
+    setOpenDialogs((prevDialogs) => ({
+      ...prevDialogs,
+      [id]: {
+        ...prevDialogs[id], // Mantén las otras propiedades como `message` o `loading`
+        isOpen: false, // Solo actualiza el estado `isOpen` a `false` para cerrar el diálogo
+      },
+    }));
   };
 
-  const handleConfirmAction = async (idSurvey) => {
+  const handleConfirmAction = async (idSurvey, dialogPosition) => {
     try {
+      // Aquí haces la acción deseada, como un consumo de API
+      handleCloseDialog(dialogPosition);
       const response = await client.delete(`DeleteAnswers/${idSurvey}`);
       if (response.status === 200) {
         enqueueSnackbar('Repuestas eliminadas satisfactoriamente', {
@@ -325,8 +341,6 @@ const SurveyDetailPage = () => {
         autoHideDuration: 2000,
       });
     }
-    // Aquí haces la acción deseada, como un consumo de API
-    setOpenDialog(false);
   };
 
   // component did mount
@@ -371,9 +385,9 @@ const SurveyDetailPage = () => {
       setVisibility(currentSurvey.response.visibleSurvey);
     }
   }, [currentSurvey]); // eslint-disable-line react-hooks/exhaustive-deps
-
+  const generateSurveyId = () => Math.floor(Math.random() * 3) + 1; // Simula un ID dinámico entre 1 y 3
   return (
-    <Box sx={{ display: 'flex' }} translate='no'>
+    <Box sx={{ display: 'flex' }} translate="no">
       <Snackbar
         open={openSnackbar}
         autoHideDuration={3000} // Cierra el Snackbar automáticamente después de 6 segundos
@@ -497,7 +511,14 @@ const SurveyDetailPage = () => {
                       >
                         <Stack spacing={2} direction="row">
                           <Button
-                            onClick={sendReminder}
+                            onClick={() =>
+                              handleOpenDialog(
+                                generateSurveyId(),
+                                'Al ejecutar esta acción se enviaran los recordasadsfstorios',
+                                sendReminder,
+                                false
+                              )
+                            }
                             startIcon={<ScheduleSendIcon />}
                             variant="text"
                             disabled={!visibility}
@@ -569,19 +590,19 @@ const SurveyDetailPage = () => {
                           (p) => p === 'Administrador'
                         ) > 0 && (
                           <Button
-                            onClick={handleOpenDialog}
+                            onClick={() =>
+                              handleOpenDialog(
+                                generateSurveyId(),
+                                'Al ejecutar esta acción se borrarán todas las respuestas de \n la encuesta.',
+                                handleConfirmAction,
+                                true
+                              )
+                            }
                             startIcon={<DeleteOutlineIcon />}
                           >
                             Borrar respuestas
                           </Button>
                         )}
-
-                        <ConfirmDialog
-                          open={openDialog}
-                          onClose={handleCloseDialog}
-                          onConfirm={handleConfirmAction}
-                          idSurvey={surveyId}
-                        />
                       </div>
                     </div>
                   </MyCard>
@@ -620,7 +641,7 @@ const SurveyDetailPage = () => {
                   </Box>
                 </Modal>
                 {/* questions */}
-                <Grid item xs={12} >
+                <Grid item xs={12}>
                   <MyCard>
                     {currentSurvey.response.preguntas.map(
                       ({
@@ -691,6 +712,19 @@ const SurveyDetailPage = () => {
           </div>
         </div>
       </div>
+      {/*Dialogs */}
+      {Object.keys(openDialogs).map((idDialog) => (
+        <ConfirmDialog
+          key={idDialog}
+          open={openDialogs[idDialog]?.isOpen} // Verifica si el diálogo para el id está abierto
+          onClose={() => handleCloseDialog(idDialog)}
+          onConfirm={openDialogs[idDialog]?.consume}
+          idSurvey={surveyId}
+          message={openDialogs[idDialog]?.message} // Mensaje personalizado para cada id
+          skipConfirmation={openDialogs[idDialog]?.needConfirm}
+          dialogPosition={idDialog}
+        />
+      ))}
     </Box>
   );
 };
