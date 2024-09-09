@@ -1,13 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import React, { useEffect, useState } from "react";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
-export const ConfirmDialog = ({ open, onClose, onConfirm, idSurvey }) => {
+export const ConfirmDialog = ({
+  open,
+  onClose,
+  onConfirm,
+  idSurvey,
+  skipConfirmation,
+  message,
+  dialogPosition,
+}) => {
   const [confirming, setConfirming] = useState(false);
   const [timer, setTimer] = useState(5); // Temporizador de 5 segundos
 
@@ -27,7 +35,7 @@ export const ConfirmDialog = ({ open, onClose, onConfirm, idSurvey }) => {
   };
 
   const handleConfirm = () => {
-    onConfirm(idSurvey);
+    onConfirm(idSurvey, dialogPosition);
     setConfirming(false);
     setTimer(5); // Restablece el temporizador a 5 segundos
   };
@@ -40,24 +48,21 @@ export const ConfirmDialog = ({ open, onClose, onConfirm, idSurvey }) => {
 
   return (
     <Dialog open={open} onClose={handleCancel}>
-      <DialogTitle>{'Confirmar Acción'}</DialogTitle>
+      <DialogTitle>{"Confirmar Acción"}</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          Al ejecutar esta acción se borrarán todas las respuestas de la
-          encuesta.
-        </DialogContentText>
+        <DialogContentText>{message}</DialogContentText>
         <DialogContentText>
           ¿Estás seguro de que deseas ejecutar esta acción?
         </DialogContentText>
 
-        {confirming && (
+        {confirming && skipConfirmation && (
           <div
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: '20px',
-              flexDirection:'column',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: "20px",
+              flexDirection: "column",
             }}
           >
             <CircularProgress />
@@ -66,7 +71,7 @@ export const ConfirmDialog = ({ open, onClose, onConfirm, idSurvey }) => {
         )}
       </DialogContent>
       <DialogActions>
-        {confirming ? (
+        {confirming && skipConfirmation ? (
           <Button onClick={handleCancel} color="primary">
             Cancelar confirmación
           </Button>
