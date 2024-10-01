@@ -777,22 +777,22 @@ export default function CreateSurvey() {
   };
 
   function getOptions(lang) {
-    if (lang === 2) {
+    if (lang === 16) {
       // Verifica el valor del idioma
-      return [
-        'Totalmente de Acuerdo',
-        'De Acuerdo',
-        'Ni de Acuerdo Ni en Desacuerdo',
-        'En Desacuerdo',
-        'Totalmente en Desacuerdo',
-      ];
-    } else {
       return [
         'Strongly Agree',
         'Agree',
         'Neither Agree nor Disagree',
         'Disagree',
         'Strongly Disagree',
+      ];
+    } else {
+      return [
+        'Totalmente de Acuerdo',
+        'De Acuerdo',
+        'Ni de Acuerdo Ni en Desacuerdo',
+        'En Desacuerdo',
+        'Totalmente en Desacuerdo',
       ];
     }
   }
