@@ -1,4 +1,4 @@
-import { useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -10,18 +10,28 @@ import client from '../../utils/axiosInstance';
 
 import { templateFromSurveyByCompany } from './services/services';
 
-export const SelectSurveyDuplicateTemplate = ({ surveyId, currentCompany }) => {
+export const SelectSurveyDuplicateTemplate = ({
+  surveyId,
+  currentCompanyId,
+  handleOpenDialog,
+  generateSurveyId,
+}) => {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  const [age, setAge] = useState('');
+  const [company, setCompany] = useState('');
   const [options, setOptions] = useState([]);
-  const { enqueueSnackbar, closeSnackbar  } = useSnackbar();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const handleChange = (event) => {
-    setAge(event.target.value);
-    handleTemplateByCompany(surveyId, event.target.value);
+    setCompany(event.target.value);
+    const datos = event.target.value.split('-');
+    handleOpenDialog(
+      generateSurveyId(),
+      `Al ejecutar esta acción creará una plantilla para la empresa ${datos[1]}`,
+      () => handleTemplateByCompany(surveyId, event.target.value),
+      false
+    );
   };
 
   const handleTemplateByCompany = async (surveyId, currentCompany) => {
-    console.log(currentCompany);
     const datos = currentCompany.split('-');
     const key = enqueueSnackbar(
       `Generando plantilla para la empresa ${datos[1]}...`,
@@ -33,11 +43,11 @@ export const SelectSurveyDuplicateTemplate = ({ surveyId, currentCompany }) => {
     try {
       const response = await templateFromSurveyByCompany(
         surveyId,
-        datos[0],
+        currentCompanyId.id,
         datos[0]
       );
       if (response.status === 200) {
-        closeSnackbar(key); 
+        closeSnackbar(key);
         enqueueSnackbar(
           `Plantilla generada correctamente para la empresa ${datos[1]}.`,
           {
@@ -48,7 +58,6 @@ export const SelectSurveyDuplicateTemplate = ({ surveyId, currentCompany }) => {
     } catch (error) {
       closeSnackbar(key);
       enqueueSnackbar(
-        
         `Error al generar la plantilla para la empresa ${datos[1]}.`,
         {
           variant: 'error',
@@ -63,7 +72,6 @@ export const SelectSurveyDuplicateTemplate = ({ surveyId, currentCompany }) => {
       const { data } = await client.get(
         `companias/MultiCompani/${userInfo.user}`
       );
-      // Suponiendo que data es un array de objetos [{id: 1, label: 'Opción 1'}, {id: 2, label: 'Opción 2'}, ...]
       setOptions(data); // Guarda los datos en el estado
     };
 
@@ -79,8 +87,8 @@ export const SelectSurveyDuplicateTemplate = ({ surveyId, currentCompany }) => {
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={age}
-          label="Age"
+          value={company}
+          label="companies"
           onChange={handleChange}
         >
           {options.map((option) => (

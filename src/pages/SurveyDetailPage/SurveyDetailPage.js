@@ -111,7 +111,7 @@ const SurveyDetailPage = () => {
   const handleOpen = () => setOpenModal(true);
   const handleClose = () => setOpenModal(false);
   const [visibility, setVisibility] = useState(null);
-  const [ visibilitySelectCompanies, setVisibilityCompanies] = useState(false);
+  const [visibilitySelectCompanies, setVisibilityCompanies] = useState(false);
   // flags, tags and counters.
   const [chips, setChips] = useState([
     {
@@ -158,7 +158,12 @@ const SurveyDetailPage = () => {
    */
   const handleCloseMenu = (option) => {
     if (option === 'Borrar') {
-      handleDeleteSurvey(currentSurvey.response.surveyId);
+      handleOpenDialog(
+        generateSurveyId(),
+        'El ejecutar esta opción se eliminará la encuesta',
+        () => handleDeleteSurvey(currentSurvey.response.surveyId),
+        false
+      );
     }
     if (option === 'Editar') {
       navigate(
@@ -166,12 +171,23 @@ const SurveyDetailPage = () => {
       );
     }
     if (option === 'Duplicar') {
-      handleDuplicateSurvey(currentSurvey.response.surveyId);
+      handleOpenDialog(
+        generateSurveyId(),
+        'El ejecutar esta opción se duplicará la encuesta',
+        () => handleDuplicateSurvey(currentSurvey.response.surveyId),
+        false
+      );
     }
     if (option === 'Generar plantilla (todos)') {
-      handleTemplateFromSurveyAll(
-        currentSurvey.response.surveyId,
-        currentCompany.id
+      handleOpenDialog(
+        generateSurveyId(),
+        'El ejecutar esta opción se generará una plantilla para todas las empresas',
+        () =>
+          handleTemplateFromSurveyAll(
+            currentSurvey.response.surveyId,
+            currentCompany.id
+          ),
+        false
       );
     }
     if (option === 'Generar plantilla (empresa)') {
@@ -520,10 +536,12 @@ const SurveyDetailPage = () => {
                         {currentSurvey.response.surveyName}
                       </Typography>
                       <div className={styles.SurveyDetailPage__options__button}>
-                        {(isAdmin && visibilitySelectCompanies) && (
+                        {isAdmin && visibilitySelectCompanies && (
                           <SelectSurveyDuplicateTemplate
                             surveyId={surveyId}
-                            currentCompany={currentCompany}
+                            currentCompanyId={currentCompany}
+                            handleOpenDialog={handleOpenDialog}
+                            generateSurveyId={generateSurveyId}
                           />
                         )}
 
@@ -621,7 +639,7 @@ const SurveyDetailPage = () => {
                             onClick={() =>
                               handleOpenDialog(
                                 generateSurveyId(),
-                                'Al ejecutar esta acción se enviaran los recordasadsfstorios',
+                                'Al ejecutar esta acción se enviaran los recordatorios',
                                 sendReminder,
                                 false
                               )

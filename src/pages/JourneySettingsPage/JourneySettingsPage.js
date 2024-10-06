@@ -37,6 +37,7 @@ import {
 import {
   deleteTemplateAPI,
   fetchTemplatesAPI,
+  fetchTemplatesByCompanyAPI,
 } from '../../services/templates.service';
 import axios from '../../utils/axiosInstance';
 import { isAdmin, isJourney } from '../../utils/helpers';
@@ -211,10 +212,21 @@ const JourneySettingsPage = () => {
   const fetchTemplates = async () => {
     setLoading(true);
 
-    const { data } = await fetchTemplatesAPI();
+    //const { data } = await fetchTemplatesAPI();
 
-    setTemplates(data);
+    //setTemplates(data);
   };
+
+  
+  const fetchTemplatesByCompany = async (currentCompany) => {
+    setLoading(true);
+    const { data } = await fetchTemplatesByCompanyAPI(currentCompany);
+    console.log('okay');
+    console.log(data);
+    setTemplates(data);
+
+  };
+
 
   /**
    * Fetch map surveys.
@@ -840,6 +852,7 @@ const JourneySettingsPage = () => {
     fetchJourneyMap();
     fetchMapSurveys();
     fetchTemplates();
+    fetchTemplatesByCompany(currentCompany.id);
     updateCurrentTab();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -852,6 +865,7 @@ const JourneySettingsPage = () => {
     fetchJourneyMap();
     fetchMapSurveys();
     fetchTemplates();
+    fetchTemplatesByCompany(currentCompany.id);
     updateCurrentTab();
   }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
   // watch tab query param
