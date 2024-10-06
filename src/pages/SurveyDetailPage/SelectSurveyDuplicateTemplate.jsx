@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import { useSnackbar } from "notistack";
-import client from "../../utils/axiosInstance";
-import { templateFromSurveyByCompany } from "./services/services";
+import { useEffect, useState } from 'react';
+import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import { useSnackbar } from 'notistack';
+
+import client from '../../utils/axiosInstance';
+
+import { templateFromSurveyByCompany } from './services/services';
 
 export const SelectSurveyDuplicateTemplate = ({
   surveyId,
@@ -14,13 +16,13 @@ export const SelectSurveyDuplicateTemplate = ({
   handleOpenDialog,
   generateSurveyId,
 }) => {
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const [company, setCompany] = useState("");
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  const [company, setCompany] = useState('');
   const [options, setOptions] = useState([]);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const handleChange = (event) => {
     setCompany(event.target.value);
-    const datos = event.target.value.split("-");
+    const datos = event.target.value.split('-');
     handleOpenDialog(
       generateSurveyId(),
       `Al ejecutar esta acción creará una plantilla para la empresa ${datos[1]}`,
@@ -30,11 +32,11 @@ export const SelectSurveyDuplicateTemplate = ({
   };
 
   const handleTemplateByCompany = async (surveyId, currentCompany) => {
-    const datos = currentCompany.split("-");
+    const datos = currentCompany.split('-');
     const key = enqueueSnackbar(
       `Generando plantilla para la empresa ${datos[1]}...`,
       {
-        variant: "info",
+        variant: 'info',
         autoHideDuration: null, // Evita que se cierre automáticamente
       }
     );
@@ -49,7 +51,7 @@ export const SelectSurveyDuplicateTemplate = ({
         enqueueSnackbar(
           `Plantilla generada correctamente para la empresa ${datos[1]}.`,
           {
-            variant: "success",
+            variant: 'success',
           }
         );
       }
@@ -58,7 +60,7 @@ export const SelectSurveyDuplicateTemplate = ({
       enqueueSnackbar(
         `Error al generar la plantilla para la empresa ${datos[1]}.`,
         {
-          variant: "error",
+          variant: 'error',
         }
       );
     }

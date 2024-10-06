@@ -221,8 +221,8 @@ const JourneySettingsPage = () => {
   const fetchTemplatesByCompany = async (currentCompany) => {
     setLoading(true);
     const { data } = await fetchTemplatesByCompanyAPI(currentCompany);
-    console.log("okay")
-    console.log(data)
+    console.log('okay');
+    console.log(data);
     setTemplates(data);
 
   };
@@ -852,7 +852,7 @@ const JourneySettingsPage = () => {
     fetchJourneyMap();
     fetchMapSurveys();
     fetchTemplates();
-    fetchTemplatesByCompany(currentCompany.id)
+    fetchTemplatesByCompany(currentCompany.id);
     updateCurrentTab();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -865,7 +865,7 @@ const JourneySettingsPage = () => {
     fetchJourneyMap();
     fetchMapSurveys();
     fetchTemplates();
-    fetchTemplatesByCompany(currentCompany.id)
+    fetchTemplatesByCompany(currentCompany.id);
     updateCurrentTab();
   }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
   // watch tab query param

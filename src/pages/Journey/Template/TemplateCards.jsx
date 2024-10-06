@@ -1,6 +1,7 @@
-import { Grid, Button } from "@mui/material";
-import styles from './Template.module.css';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { Button,Grid } from '@mui/material';
+
+import styles from './Template.module.css';
 export const TemplateCards = ({handleCreateSurvey, templates, page, perPage}) => {
   return (
     <Grid container spacing={2}>
