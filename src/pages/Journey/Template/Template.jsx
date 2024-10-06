@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { Button } from '@mui/material';
-import { Tab,Tabs } from '@mui/material';
+import { Tab, Tabs } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
@@ -21,6 +21,8 @@ import {
   fetchTemplatesByCompanyAPI,
 } from '../../../services/templates.service';
 import { isAdmin, isAdminJourney, isJourney } from '../../../utils/helpers';
+
+import { TemplateCards } from './TemplateCards';
 
 import styles from './Template.module.css';
 
@@ -39,10 +41,10 @@ const Template = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(0);
+  const [totalByCompany, setTotalByCompany] = useState(0);
   const [perPage, setPerPage] = useState(9);
   const [value, setValue] = useState(0);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
-  console.log(currentCompany);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -99,7 +101,8 @@ const Template = () => {
     const { data } = await fetchTemplatesByCompanyAPI(currentCompany);
 
     setTemplatesByCompany(data);
-    setTotal(data.length);
+    //setTotal(data.length);
+    setTotalByCompany(data.length);
     setPage(0);
   };
 
@@ -115,7 +118,7 @@ const Template = () => {
     }
 
     fetchTemplates();
-    fetchTemplatesByCompany(1);
+    fetchTemplatesByCompany(currentCompany && currentCompany.id);
   }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -159,93 +162,99 @@ const Template = () => {
               <Typography variant="h6" gutterBottom>
                 O usa una plantilla
               </Typography>
-
-              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs
-                  value={value}
-                  onChange={handleChange}
-                  aria-label="basic tabs example"
-                >
-                  <Tab label="Plantillas generales" />
-                  <Tab label="Plantillas por empresa" />
-                </Tabs>
-              </Box>
-              <Box>
-                {value === 0 && (
-                  <Grid container spacing={2}>
-                    {templates
-                      .slice((page + 1 - 1) * perPage, (page + 1) * perPage)
-                      .map((template, key) => (
-                        <Grid item key={key} xs={4}>
-                          <div className={styles.template}>
-                            <div className={styles.title}>
-                              {template.nameSurvey}
-                            </div>
-                            <div className={styles.description}>
-                              {template.descriptionSurvey}
-                            </div>
-                            <div className={styles.bottom}>
-                              <Button
-                                variant="text"
-                                onClick={() =>
-                                  handleCreateSurvey(false, template.id)
-                                }
-                              >
-                                <p>Usa esta plantilla</p>
-                                <KeyboardArrowRightIcon />
-                              </Button>
-                            </div>
-                          </div>
+              {isAdmin(userInfo) ? (
+                <>
+                  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs
+                      value={value}
+                      onChange={handleChange}
+                      aria-label="basic tabs example"
+                    >
+                      <Tab label="Plantillas generales" />
+                      <Tab label="Plantillas por empresa" />
+                    </Tabs>
+                  </Box>
+                  <Box>
+                    {value === 0 && (
+                      <>
+                        <Grid container spacing={2}>
+                          <TemplateCards
+                            handleCreateSurvey={handleCreateSurvey}
+                            templates={templates}
+                            page={page}
+                            perPage={perPage}
+                          />
                         </Grid>
-                      ))}
-                  </Grid>
-                )}
-              </Box>
 
-              <Box>
-                {value === 1 && (
-                  <Grid container spacing={2}>
-                    {templatesByCompany
-                      .slice((page + 1 - 1) * perPage, (page + 1) * perPage)
-                      .map((template, key) => (
-                        <Grid item key={key} xs={4}>
-                          <div className={styles.template}>
-                            <div className={styles.title}>
-                              {template.nameSurvey}
-                            </div>
-                            <div className={styles.description}>
-                              {template.descriptionSurvey}
-                            </div>
-                            <div className={styles.bottom}>
-                              <Button
-                                variant="text"
-                                onClick={() =>
-                                  handleCreateSurvey(false, template.id)
-                                }
-                              >
-                                <p>Usa esta plantilla</p>
-                                <KeyboardArrowRightIcon />
-                              </Button>
-                            </div>
-                          </div>
+                        <Box>
+                          <TablePagination
+                            component="div"
+                            count={total}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            rowsPerPage={perPage}
+                            rowsPerPageOptions={[9, 18, 27]}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            labelRowsPerPage="Filas por página"
+                          />
+                        </Box>
+                      </>
+                    )}
+                  </Box>
+
+                  <Box>
+                    {value === 1 && (
+                      <>
+                        <Grid container spacing={2}>
+                          <TemplateCards
+                            handleCreateSurvey={handleCreateSurvey}
+                            templates={templatesByCompany}
+                            page={page}
+                            perPage={perPage}
+                          />
                         </Grid>
-                      ))}
-                  </Grid>
-                )}
-              </Box>
 
-              <Box>
-                <TablePagination
-                  component="div"
-                  count={total}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  rowsPerPage={perPage}
-                  rowsPerPageOptions={[9, 18, 27]}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                  labelRowsPerPage="Filas por página"
-                />
-              </Box>
+                        <Box>
+                          <TablePagination
+                            component="div"
+                            count={totalByCompany}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            rowsPerPage={perPage}
+                            rowsPerPageOptions={[9, 18, 27]}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            labelRowsPerPage="Filas por página"
+                          />
+                        </Box>
+                      </>
+                    )}
+                  </Box>
+                </>
+              ) : (
+                <>
+                  <Grid container spacing={2}>
+                    <TemplateCards
+                      handleCreateSurvey={handleCreateSurvey}
+                      templates={templatesByCompany}
+                      page={page}
+                      perPage={perPage}
+                    />
+                  </Grid>
+
+                  <Box>
+                    <TablePagination
+                      component="div"
+                      count={totalByCompany}
+                      page={page}
+                      onPageChange={handleChangePage}
+                      rowsPerPage={perPage}
+                      rowsPerPageOptions={[9, 18, 27]}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
+                      labelRowsPerPage="Filas por página"
+                    />
+                  </Box>
+                </>
+              )}
             </div>
           </div>
         </div>
