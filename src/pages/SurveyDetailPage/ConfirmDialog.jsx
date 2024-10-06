@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import React, { useEffect, useState } from "react";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 export const ConfirmDialog = ({
   open,
@@ -17,13 +17,13 @@ export const ConfirmDialog = ({
   dialogPosition,
 }) => {
   const [confirming, setConfirming] = useState(false);
-  const [timer, setTimer] = useState(5); // Temporizador de 5 segundos
-
+  const [timer, setTimer] = useState(skipConfirmation ? 5: 0 ); // Temporizador de 5 segundos
+  const [isSubmitting, setIsSubmitting] = useState(false); // Estado para controlar si se está procesando
   useEffect(() => {
     let timeout;
     if (confirming && timer > 0) {
       timeout = setTimeout(() => setTimer(timer - 1), 1000); // Decrementa el temporizador cada segundo
-    } else if (timer === 0) {
+    } else if (confirming && timer === 0) {
       handleConfirm();
     }
 
@@ -32,23 +32,26 @@ export const ConfirmDialog = ({
 
   const handleStartConfirming = () => {
     setConfirming(true);
+    setIsSubmitting(true);
   };
 
-  const handleConfirm = () => {
-    onConfirm(idSurvey, dialogPosition);
+  const handleConfirm = async () => {
+    await onConfirm(idSurvey, dialogPosition);
     setConfirming(false);
-    setTimer(5); // Restablece el temporizador a 5 segundos
+    setTimer(skipConfirmation ? 5: 0 ); // Restablece el temporizador a 5 segundos
+    setIsSubmitting(false);
+    onClose();
   };
 
   const handleCancel = () => {
     setConfirming(false);
-    setTimer(5); // Restablece el temporizador a 5 segundos
+    setTimer(skipConfirmation ? 5: 0 ); // Restablece el temporizador a 5 segundos
     onClose();
   };
 
   return (
     <Dialog open={open} onClose={handleCancel}>
-      <DialogTitle>{'Confirmar Acción'}</DialogTitle>
+      <DialogTitle>{"Confirmar Acción"}</DialogTitle>
       <DialogContent>
         <DialogContentText>{message}</DialogContentText>
         <DialogContentText>
@@ -58,11 +61,11 @@ export const ConfirmDialog = ({
         {confirming && skipConfirmation && (
           <div
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: '20px',
-              flexDirection: 'column',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: "20px",
+              flexDirection: "column",
             }}
           >
             <CircularProgress />
@@ -77,10 +80,19 @@ export const ConfirmDialog = ({
           </Button>
         ) : (
           <>
-            <Button onClick={handleCancel} color="primary">
+            <Button
+              onClick={handleCancel}
+              color="primary"
+              disabled={isSubmitting}
+            >
               Cancelar
             </Button>
-            <Button onClick={handleStartConfirming} color="primary" autoFocus>
+            <Button
+              onClick={handleStartConfirming}
+              color="primary"
+              autoFocus
+              disabled={isSubmitting}
+            >
               Confirmar
             </Button>
           </>
