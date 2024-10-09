@@ -15,6 +15,7 @@
 }
 .SurveyDetailPage__options__button {
     margin-left: auto;
+    display: flex;
 }
 .SurveyDetailPage__sendInvitation {
     margin-top: 0.8em;

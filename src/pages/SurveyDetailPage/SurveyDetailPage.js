@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import BusinessIcon from '@mui/icons-material/Business';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -11,6 +12,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import EmailIcon from '@mui/icons-material/Email';
 import LinkIcon from '@mui/icons-material/Link';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import PublicIcon from '@mui/icons-material/Public';
 import ReplyIcon from '@mui/icons-material/Reply';
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -50,7 +52,12 @@ import client, { API } from '../../utils/axiosInstance';
 import NotFoundMessage from '../AnswerSurvey/components/NotFoundMessage/NotFoundMessage';
 
 import SendInvitationDialog from './components/SendInvitationDialog/SendInvitationDialog';
+import {
+  templateFromSurveyAllCompanies,
+  templateFromSurveyByCompany,
+} from './services/services';
 import { ConfirmDialog } from './ConfirmDialog';
+import { SelectSurveyDuplicateTemplate } from './SelectSurveyDuplicateTemplate';
 
 import styles from './SurveyDetailPage.module.css';
 // survey options
@@ -58,12 +65,19 @@ const options = [
   /*{
     option: 'Editar',
     icon: <EditIcon />,
-  },/*
+  },  */
   {
     option: 'Duplicar',
     icon: <ContentCopyIcon />,
   },
-  */
+  {
+    option: 'Generar plantilla (todos)',
+    icon: <PublicIcon />,
+  },
+  {
+    option: 'Generar plantilla (empresa)',
+    icon: <BusinessIcon />,
+  },
   {
     option: 'Borrar',
     icon: <DeleteIcon />,
@@ -91,11 +105,13 @@ const SurveyDetailPage = () => {
   const [showDemographicData, setShowDemographicData] = useState(false);
   const [alertType, setAlertType] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
+  const [openDialogs, setOpenDialogs] = useState({});
   const qrRef = useRef(null);
   const [openModal, setOpenModal] = useState(false);
   const handleOpen = () => setOpenModal(true);
   const handleClose = () => setOpenModal(false);
   const [visibility, setVisibility] = useState(null);
+  const [visibilitySelectCompanies, setVisibilityCompanies] = useState(false);
   // flags, tags and counters.
   const [chips, setChips] = useState([
     {
@@ -142,7 +158,12 @@ const SurveyDetailPage = () => {
    */
   const handleCloseMenu = (option) => {
     if (option === 'Borrar') {
-      handleDeleteSurvey(currentSurvey.response.surveyId);
+      handleOpenDialog(
+        generateSurveyId(),
+        'El ejecutar esta opción se eliminará la encuesta',
+        () => handleDeleteSurvey(currentSurvey.response.surveyId),
+        false
+      );
     }
     if (option === 'Editar') {
       navigate(
@@ -150,12 +171,38 @@ const SurveyDetailPage = () => {
       );
     }
     if (option === 'Duplicar') {
-      handleEditSurvey(currentSurvey.response.surveyId);
+      handleOpenDialog(
+        generateSurveyId(),
+        'El ejecutar esta opción se duplicará la encuesta',
+        () => handleDuplicateSurvey(currentSurvey.response.surveyId),
+        false
+      );
+    }
+    if (option === 'Generar plantilla (todos)') {
+      handleOpenDialog(
+        generateSurveyId(),
+        'El ejecutar esta opción se generará una plantilla para todas las empresas',
+        () =>
+          handleTemplateFromSurveyAll(
+            currentSurvey.response.surveyId,
+            currentCompany.id
+          ),
+        false
+      );
+    }
+    if (option === 'Generar plantilla (empresa)') {
+      setVisibilityCompanies(true);
+      /*
+      handleTemplateFromSurveyByCompany(
+        currentSurvey.response.surveyId,
+        currentCompany.id,
+        currentCompany.id
+      );*/
     }
     setAnchorEl(null);
   };
 
-  const handleEditSurvey = async (idSurvey) => {
+  const handleDuplicateSurvey = async (idSurvey) => {
     if (!currentSurvey) {
       return;
     }
@@ -165,16 +212,80 @@ const SurveyDetailPage = () => {
         `CloneJourney/${idSurvey}/${currentCompany.id}`
       );
       if (response.status === 200) {
-        enqueueSnackbar('Encuesta clonada satisfactoriamente', {
+        enqueueSnackbar('Encuesta duplicada satisfactoriamente', {
           variant: 'success',
           autoHideDuration: 2000,
         });
       }
     } catch (error) {
-      enqueueSnackbar('Error al clonar la encuesta', {
+      enqueueSnackbar('Error al duplicar la encuesta', {
         variant: 'error',
         autoHideDuration: 2000,
       });
+    }
+  };
+
+  const handleTemplateFromSurveyAll = async (surveyId, currentCompany) => {
+    try {
+      enqueueSnackbar(
+        'Creando plantilla para todas las empresas por favor espere.',
+        {
+          variant: 'info',
+        }
+      );
+      const response = await templateFromSurveyAllCompanies(
+        surveyId,
+        currentCompany
+      );
+      if (response.status === 200) {
+        enqueueSnackbar(
+          'Plantilla creada para todas las empresas correctamente.',
+          {
+            variant: 'success',
+          }
+        );
+      }
+    } catch (error) {
+      enqueueSnackbar(
+        'Hubo un error al crear la plantilla para todas las empresas',
+        {
+          variant: 'error',
+        }
+      );
+    }
+  };
+
+  const handleTemplateFromSurveyByCompany = async (
+    surveyId,
+    currentCompany
+  ) => {
+    try {
+      enqueueSnackbar(
+        'Creando plantilla para todas las empresas por favor espere.',
+        {
+          variant: 'info',
+        }
+      );
+      const response = await templateFromSurveyByCompany(
+        surveyId,
+        currentCompany,
+        currentCompany
+      );
+      if (response.status === 200) {
+        enqueueSnackbar(
+          'Plantilla creada para todas las empresas correctamente.',
+          {
+            variant: 'success',
+          }
+        );
+      }
+    } catch (error) {
+      enqueueSnackbar(
+        'Hubo un error al crear la plantilla para todas las empresas',
+        {
+          variant: 'error',
+        }
+      );
     }
   };
 
@@ -277,14 +388,13 @@ const SurveyDetailPage = () => {
    *
    * @param event
    */
-  const sendReminder = async (event) => {
-    event.preventDefault();
-
+  const sendReminder = async (idSurvey, dialogPosition) => {
+    handleCloseDialog(dialogPosition);
     const companyId = userInfo.Company;
     const url = `${API}SendReminder/${surveyId}/${companyId}`;
 
     await client.get(url);
-    await setReminderSent(true);
+    setReminderSent(true);
   };
 
   /**
@@ -302,16 +412,32 @@ const SurveyDetailPage = () => {
    *
    *
    * **/
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
+  const handleOpenDialog = (id, ...args) => {
+    setOpenDialogs((prevDialogs) => ({
+      ...prevDialogs,
+      [id]: {
+        isOpen: true,
+        message: args[0],
+        consume: args[1],
+        needConfirm: args[2],
+      },
+    }));
   };
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
+  const handleCloseDialog = (id) => {
+    setOpenDialogs((prevDialogs) => ({
+      ...prevDialogs,
+      [id]: {
+        ...prevDialogs[id], // Mantén las otras propiedades como `message` o `loading`
+        isOpen: false, // Solo actualiza el estado `isOpen` a `false` para cerrar el diálogo
+      },
+    }));
   };
 
-  const handleConfirmAction = async (idSurvey) => {
+  const handleConfirmAction = async (idSurvey, dialogPosition) => {
     try {
+      // Aquí haces la acción deseada, como un consumo de API
+      handleCloseDialog(dialogPosition);
       const response = await client.delete(`DeleteAnswers/${idSurvey}`);
       if (response.status === 200) {
         enqueueSnackbar('Repuestas eliminadas satisfactoriamente', {
@@ -325,8 +451,6 @@ const SurveyDetailPage = () => {
         autoHideDuration: 2000,
       });
     }
-    // Aquí haces la acción deseada, como un consumo de API
-    setOpenDialog(false);
   };
 
   // component did mount
@@ -349,6 +473,7 @@ const SurveyDetailPage = () => {
     fetchCurrentSurvey();
   }, [dispatch, surveyId]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const isAdmin = userInfo?.role.findIndex((p) => p === 'Administrador') > 0;
   // watch currentSurvey state
   useEffect(() => {
     if (currentSurvey !== null) {
@@ -371,9 +496,9 @@ const SurveyDetailPage = () => {
       setVisibility(currentSurvey.response.visibleSurvey);
     }
   }, [currentSurvey]); // eslint-disable-line react-hooks/exhaustive-deps
-
+  const generateSurveyId = () => Math.floor(Math.random() * 3) + 1; // Simula un ID dinámico entre 1 y 3
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex' }} translate="no">
       <Snackbar
         open={openSnackbar}
         autoHideDuration={3000} // Cierra el Snackbar automáticamente después de 6 segundos
@@ -411,6 +536,15 @@ const SurveyDetailPage = () => {
                         {currentSurvey.response.surveyName}
                       </Typography>
                       <div className={styles.SurveyDetailPage__options__button}>
+                        {isAdmin && visibilitySelectCompanies && (
+                          <SelectSurveyDuplicateTemplate
+                            surveyId={surveyId}
+                            currentCompanyId={currentCompany}
+                            handleOpenDialog={handleOpenDialog}
+                            generateSurveyId={generateSurveyId}
+                          />
+                        )}
+
                         <IconButton
                           aria-label="more"
                           id="long-button"
@@ -429,22 +563,27 @@ const SurveyDetailPage = () => {
                           anchorEl={anchorEl}
                           open={open}
                           onClose={handleCloseMenu}
-                          PaperProps={{
-                            style: {
-                              maxHeight: 48 * 4.5,
-                              width: '20ch',
-                            },
-                          }}
                         >
-                          {options.map(({ option, icon }) => (
-                            <MenuItem
-                              key={option}
-                              onClick={() => handleCloseMenu(option)}
-                            >
-                              {icon}
-                              {option}
-                            </MenuItem>
-                          ))}
+                          {options
+                            .filter(({ option }) => {
+                              // Mostrar todas las opciones solo si el usuario es administrador
+                              if (
+                                !isAdmin &&
+                                option === 'Generar plantilla (todos)'
+                              ) {
+                                return false; // Oculta estas opciones si no es administrador
+                              }
+                              return true;
+                            })
+                            .map(({ option, icon }) => (
+                              <MenuItem
+                                key={option}
+                                onClick={() => handleCloseMenu(option)}
+                              >
+                                {icon}
+                                {option}
+                              </MenuItem>
+                            ))}
                         </Menu>
                       </div>
                     </div>
@@ -497,7 +636,14 @@ const SurveyDetailPage = () => {
                       >
                         <Stack spacing={2} direction="row">
                           <Button
-                            onClick={sendReminder}
+                            onClick={() =>
+                              handleOpenDialog(
+                                generateSurveyId(),
+                                'Al ejecutar esta acción se enviaran los recordatorios',
+                                sendReminder,
+                                false
+                              )
+                            }
                             startIcon={<ScheduleSendIcon />}
                             variant="text"
                             disabled={!visibility}
@@ -569,19 +715,19 @@ const SurveyDetailPage = () => {
                           (p) => p === 'Administrador'
                         ) > 0 && (
                           <Button
-                            onClick={handleOpenDialog}
+                            onClick={() =>
+                              handleOpenDialog(
+                                generateSurveyId(),
+                                'Al ejecutar esta acción se borrarán todas las respuestas de \n la encuesta.',
+                                handleConfirmAction,
+                                true
+                              )
+                            }
                             startIcon={<DeleteOutlineIcon />}
                           >
                             Borrar respuestas
                           </Button>
                         )}
-
-                        <ConfirmDialog
-                          open={openDialog}
-                          onClose={handleCloseDialog}
-                          onConfirm={handleConfirmAction}
-                          idSurvey={surveyId}
-                        />
                       </div>
                     </div>
                   </MyCard>
@@ -691,6 +837,19 @@ const SurveyDetailPage = () => {
           </div>
         </div>
       </div>
+      {/*Dialogs */}
+      {Object.keys(openDialogs).map((idDialog) => (
+        <ConfirmDialog
+          key={idDialog}
+          open={openDialogs[idDialog]?.isOpen} // Verifica si el diálogo para el id está abierto
+          onClose={() => handleCloseDialog(idDialog)}
+          onConfirm={openDialogs[idDialog]?.consume}
+          idSurvey={surveyId}
+          message={openDialogs[idDialog]?.message} // Mensaje personalizado para cada id
+          skipConfirmation={openDialogs[idDialog]?.needConfirm}
+          dialogPosition={idDialog}
+        />
+      ))}
     </Box>
   );
 };
