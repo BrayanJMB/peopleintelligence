@@ -44,6 +44,7 @@ import { Exclusiveness } from './Exclusividad/Exclusiveness.jsx';
 import Intimidad from './Intimidad/Intimidad.jsx';
 import Introduction from './Introduction/Introduction';
 import { MessagesSurvey } from './MessagesSurvey/MessagesSurvey.jsx';
+import { MultiAnswerSurvey } from './MultiAnswerSurvey/MultiAnswerSurvey.jsx';
 
 import styles from './CreateSurvey.module.css';
 
@@ -88,6 +89,8 @@ export default function CreateSurvey() {
   const [question, setQuestion] = useState();
   const [anonymous, setAnonymous] = useState(true);
   const [exclusiviness, setExclusiviness] = useState(true);
+  const [dayConcurrency, setDayConcurrency] = useState(1);
+  const [isAMultiAnswerSurvey, setIsAMultiAnswerSurvey] = useState(false);
   const [checkForm, setCheckForm] = useState(false);
   const [newDemographics, setNewDemographics] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -99,6 +102,7 @@ export default function CreateSurvey() {
     confidentialityMessage:
       'Tus respuestas serán completamente confidenciales y no podrán ser vinculadas a tu identidad.',
   });
+  const [errorDayConcurrency, setErrorDayConcurrency] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const isMap = searchParams.get('isMap') === 'true';
   const isEdit = searchParams.get('isEdit') === 'true';
@@ -113,6 +117,7 @@ export default function CreateSurvey() {
     'Cuestionario',
     'Configuración',
     ...(!isTemplate ? ['Privacidad'] : []),
+    'Concurrencia',
   ];
   const { surveyId } = useParams();
   /**
@@ -160,7 +165,7 @@ export default function CreateSurvey() {
    */
   const createSurvey = async () => {
     setLoading(true);
-
+    if (errorDayConcurrency || dayConcurrency === '') return;
     const newSurvey = {
       survey: {
         nameSurvey: data.title,
@@ -175,6 +180,8 @@ export default function CreateSurvey() {
         wellcomeMessage: surveyMessages.welcomeMessage,
         inputMessage: surveyMessages.inputMessage,
         confindencialityMessage: surveyMessages.confidentialityMessage,
+        duplicateResponses: isAMultiAnswerSurvey,
+        daysConcurrency: dayConcurrency,
       },
       questions: questions.map((question) => ({
         question: {
@@ -329,7 +336,6 @@ export default function CreateSurvey() {
    * Handle next step.
    */
   const handleNextStep = async () => {
-    console.log(activeStep);
     switch (activeStep) {
       case 0:
         setCheckForm(true);
@@ -366,6 +372,10 @@ export default function CreateSurvey() {
         setActiveStep((val) => val + 1);
         break;
       case 3:
+        setActiveStep((val) => val + 1);
+
+        break;
+      case 4:
         if (isEdit) {
           editSurvey();
         } else {
@@ -671,6 +681,17 @@ export default function CreateSurvey() {
     setNewDemographics(demographics);
   };
 
+  const handleChangeDayConcurrency = (event) => {
+    const inputValue = event.target.value;
+    // Permitir solo números
+    if (/^[1-9]\d*$/.test(inputValue) || inputValue === '') {
+      setDayConcurrency(inputValue);
+      setErrorDayConcurrency(false);
+    } else {
+      setErrorDayConcurrency(true);
+    }
+  };
+
   const renderSwitch = (activeStep) => {
     switch (activeStep) {
       case 0:
@@ -724,6 +745,37 @@ export default function CreateSurvey() {
           </div>
         );
 
+      case 4:
+        return (
+          <div
+            style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
+          >
+            <MultiAnswerSurvey
+              isAMultiAnswerSurvey={isAMultiAnswerSurvey}
+              handleMultiAnswerSurvey={handleMultiAnswerSurvey}
+            />
+
+            {isAMultiAnswerSurvey && (
+              <>
+                <p>
+                  Ingrese cada cuántos días se va repetir la encuesta para los
+                  usuarios:
+                </p>
+
+                <TextField
+                  label="Días"
+                  value={dayConcurrency}
+                  onChange={handleChangeDayConcurrency}
+                  type="text"
+                  inputProps={{ inputMode: 'numeric', pattern: '^[1-9]\\d*$' }} // Solo permite números positivos (sin 0 como valor único)
+                  error={errorDayConcurrency} // Activa el estilo de error en el campo
+                  helperText={errorDayConcurrency ? 'El valor no puede ser 0 ni estar vacío' : ''} // Mensaje de error condicional
+                />
+              </>
+            )}
+          </div>
+        );
+
       default:
         return null;
     }
@@ -733,11 +785,16 @@ export default function CreateSurvey() {
     setEdit(false);
   };
   const handleCloseEditModal = () => setEdit(false);
+
   const handleanonyme = (event) => {
     setAnonymous(event.target.value === 'true');
   };
   const handleExclusiviness = (event) => {
     setExclusiviness(event.target.value === 'true');
+  };
+
+  const handleMultiAnswerSurvey = (event) => {
+    setIsAMultiAnswerSurvey(event.target.value === 'true');
   };
 
   const reorder = (list, start, end) => {
@@ -1456,7 +1513,7 @@ export default function CreateSurvey() {
                       loading === true
                     }
                   >
-                    {activeStep === 3 || (activeStep === 1 && isTemplate)
+                    {activeStep === 4 || (activeStep === 1 && isTemplate)
                       ? 'Finalizar'
                       : 'Continuar'}
                   </Button>
