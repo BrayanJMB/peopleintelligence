@@ -1,8 +1,9 @@
-import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import styles from "./MultiAnswerSurvey.module.css";
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+
+import styles from './MultiAnswerSurvey.module.css';
 
 export const MultiAnswerSurvey = (props) => {
   return (
