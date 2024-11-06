@@ -1,0 +1,26 @@
+.intimidad {
+  display: flex;
+  flex-basis: 100%;
+  flex-direction: column;
+}
+.top {
+  flex-basis: 100%;
+}
+.title {
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0.15px;
+  font-weight: 500;
+}
+.subtitle {
+  font-size: 14px;
+  letter-spacing: 0.25px;
+  line-height: 20px;
+  font-style: normal;
+  font-weight: 300;
+}
+.bottom {
+  flex-basis: 100%;
+  display: flex;
+  margin-top: 0.5em;
+}
