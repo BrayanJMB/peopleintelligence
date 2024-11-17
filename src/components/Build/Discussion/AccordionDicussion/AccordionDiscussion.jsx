@@ -105,7 +105,6 @@ export default function AccordionDiscussion({
     setItem(event.target.value);
     handleAddConversation(event.target.value);
   };
-  console.log(demographicRefs.current);
   return (
     <div style={{ width: '90%', margin: '0 auto' }}>
       <Accordion

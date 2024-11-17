@@ -41,6 +41,7 @@ import client from '../../../utils/axiosInstance';
 
 import Cuestionario from './Cuestionario/Cuestionario';
 import { Exclusiveness } from './Exclusividad/Exclusiveness.jsx';
+import { WhatsAppForSurvey } from './HasWhatsApp/WhatsAppForSurvey.jsx';
 import Intimidad from './Intimidad/Intimidad.jsx';
 import Introduction from './Introduction/Introduction';
 import { MessagesSurvey } from './MessagesSurvey/MessagesSurvey.jsx';
@@ -89,6 +90,7 @@ export default function CreateSurvey() {
   const [question, setQuestion] = useState();
   const [anonymous, setAnonymous] = useState(true);
   const [exclusiviness, setExclusiviness] = useState(true);
+  const [hasWhatsApp, setHasWhatsApp] = useState(true);
   const [dayConcurrency, setDayConcurrency] = useState(1);
   const [isAMultiAnswerSurvey, setIsAMultiAnswerSurvey] = useState(false);
   const [checkForm, setCheckForm] = useState(false);
@@ -114,6 +116,7 @@ export default function CreateSurvey() {
     searchParams.get('templateId') || location.pathname.split('/')[3];
   const steps = [
     'Introducción',
+    'WhatsApp',
     'Cuestionario',
     'Configuración',
     ...(!isTemplate ? ['Privacidad'] : []),
@@ -182,6 +185,7 @@ export default function CreateSurvey() {
         confindencialityMessage: surveyMessages.confidentialityMessage,
         duplicateResponses: isAMultiAnswerSurvey,
         daysConcurrency: dayConcurrency,
+        hasWhatsApp: hasWhatsApp,
       },
       questions: questions.map((question) => ({
         question: {
@@ -332,6 +336,37 @@ export default function CreateSurvey() {
     setLoading(false);
   };
 
+  const validateLengthQuestion = (questions) =>{
+    if (questions.length === 0){
+      enqueueSnackbar('La encuesta debe tener al menos una pregunta.', {
+        variant: 'error',
+        autoHideDuration: 3000,
+      });
+      return true;
+    }
+  };
+
+  const validateCategoryForQuestions = (questions) =>{
+    const invalidQuestions = questions
+    .map((question, index) => ({
+      ...question,
+      originalIndex: index + 1, // Guardar índice original (1 basado)
+    }))
+    .filter((question) => question.categoryId === null || question.categoryId === undefined);
+    if (invalidQuestions.length > 0) {
+      invalidQuestions.forEach((question, index) => {
+        enqueueSnackbar(
+          `La pregunta # ${question.originalIndex} no tiene categoría, por favor asignar una categoría`,
+          {
+            variant: 'error',
+            autoHideDuration: 3000,
+          }
+        );
+      });
+      return true;
+    }
+  };
+
   /**
    * Handle next step.
    */
@@ -369,13 +404,18 @@ export default function CreateSurvey() {
         setActiveStep((val) => val + 1);
         break;
       case 2:
+        if(validateLengthQuestion(questions) || validateCategoryForQuestions(questions)){
+          return;
+        }
         setActiveStep((val) => val + 1);
         break;
       case 3:
         setActiveStep((val) => val + 1);
-
         break;
       case 4:
+        setActiveStep((val) => val + 1);
+        break;
+      case 5:
         if (isEdit) {
           editSurvey();
         } else {
@@ -589,7 +629,6 @@ export default function CreateSurvey() {
    * @param index
    */
   const handleEdit = (index) => {
-    console.log(questions);
     setTarget(index);
     setQuestion(questions[index]);
     setEdit(true);
@@ -708,6 +747,15 @@ export default function CreateSurvey() {
       case 1:
         return (
           <Box width="100%">
+            <WhatsAppForSurvey
+              hasWhatsApp={hasWhatsApp}
+              handleHasWhatsApp={handleHasWhatsApp}
+            />
+          </Box>
+        );
+      case 2:
+        return (
+          <Box width="100%">
             <DemographicDataForm
               onChange={handleCheckedDemographic}
               onChangeNewDemographics={handleNewDemographicChange}
@@ -725,7 +773,7 @@ export default function CreateSurvey() {
             />
           </Box>
         );
-      case 2:
+      case 3:
         return (
           <Box width="100%">
             <MessagesSurvey
@@ -734,7 +782,7 @@ export default function CreateSurvey() {
             />
           </Box>
         );
-      case 3:
+      case 4:
         return (
           <div style={{ display: 'flex', width: '100%' }}>
             <Intimidad anonyme={anonymous} handleAnonyme={handleanonyme} />
@@ -745,7 +793,7 @@ export default function CreateSurvey() {
           </div>
         );
 
-      case 4:
+      case 5:
         return (
           <div
             style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
@@ -769,7 +817,11 @@ export default function CreateSurvey() {
                   type="text"
                   inputProps={{ inputMode: 'numeric', pattern: '^[1-9]\\d*$' }} // Solo permite números positivos (sin 0 como valor único)
                   error={errorDayConcurrency} // Activa el estilo de error en el campo
-                  helperText={errorDayConcurrency ? 'El valor no puede ser 0 ni estar vacío' : ''} // Mensaje de error condicional
+                  helperText={
+                    errorDayConcurrency
+                      ? 'El valor no puede ser 0 ni estar vacío'
+                      : ''
+                  } // Mensaje de error condicional
                 />
               </>
             )}
@@ -791,6 +843,9 @@ export default function CreateSurvey() {
   };
   const handleExclusiviness = (event) => {
     setExclusiviness(event.target.value === 'true');
+  };
+  const handleHasWhatsApp = (event) => {
+    setHasWhatsApp(event.target.value === 'true');
   };
 
   const handleMultiAnswerSurvey = (event) => {
@@ -1509,11 +1564,12 @@ export default function CreateSurvey() {
                     variant="contained"
                     onClick={handleNextStep}
                     disabled={
-                      (activeStep !== 0 && questions.length === 0) ||
-                      loading === true
+                      ((activeStep !== 0 && questions.length === 0) ||
+                        loading === true) &&
+                      errorDayConcurrency
                     }
                   >
-                    {activeStep === 4 || (activeStep === 1 && isTemplate)
+                    {activeStep === 5 || (activeStep === 1 && isTemplate)
                       ? 'Finalizar'
                       : 'Continuar'}
                   </Button>

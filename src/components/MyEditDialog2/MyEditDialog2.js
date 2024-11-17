@@ -48,7 +48,6 @@ const MyEditDialog = ({
   setLogo,
   setCurrentEdit,
 }) => {
-  console.log(fields);
   const [image, setImage] = useState('');
   const [showDeleteIcon, setShowDeleteIcon] = useState(true);
   const [currentTab, setCurrentTab] = useState(0);

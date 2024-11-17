@@ -52,6 +52,7 @@ import client, { API } from '../../utils/axiosInstance';
 import NotFoundMessage from '../AnswerSurvey/components/NotFoundMessage/NotFoundMessage';
 
 import SendInvitationDialog from './components/SendInvitationDialog/SendInvitationDialog';
+import { SendInvitationDialogWhatsapp } from './components/SendInvitationWhatsapp/SendInvitationDialogWhatsapp';
 import {
   templateFromSurveyAllCompanies,
   templateFromSurveyByCompany,
@@ -375,6 +376,19 @@ const SurveyDetailPage = () => {
     setLinkCopied(true);
   };
 
+
+    /**
+   * Copy survey url.
+   *
+   * @param event
+   */
+    const handleClickCopyUrlWhatsApp = (event) => {
+      event.preventDefault();
+  
+      navigator.clipboard.writeText(`https://wa.me/573007038902?text=Hola quisiera responder la encuesta ${currentSurvey.response.surveyName}`);
+      setLinkCopied(true);
+    };
+
   /**
    * Handle close snackbar.
    */
@@ -672,6 +686,18 @@ const SurveyDetailPage = () => {
                             mailSubject={currentSurvey.response.emailSubject}
                             emailMessage={currentSurvey.response.emailMessage}
                             visibility={visibility}
+                          />
+
+                          {/* send invitation  Whatsapp*/}
+                          <SendInvitationDialogWhatsapp
+                            isPersonal={currentSurvey.ispersonal}
+                            copyUrl={handleClickCopyUrlWhatsApp}
+                            isOpen={isOpenSendMail}
+                            mailMask={currentSurvey.response.emailMAsk}
+                            mailSubject={currentSurvey.response.emailSubject}
+                            emailMessage={currentSurvey.response.emailMessage}
+                            visibility={visibility}
+                            hasWhatsApp={currentSurvey.response.hasWhatsApp}
                           />
                         </Stack>
                       </div>

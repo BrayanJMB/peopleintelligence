@@ -129,7 +129,6 @@ export const handleDelete = async (
  */
 
 export const validateForm = (fields, values, type) => {
-  console.log(values);
   const validationErrors = {};
   if (type === 'employee') {
     fields.forEach((sectionObj) =>
