@@ -22,7 +22,7 @@ import { ButtonSendInvitation } from '../ButtonSendInvitation/ButtonSendInvitati
 const defaultMessageMask = 'Hola, acá puedes colocar la máscara del correo.';
 const defaultMessageSubject = 'Hola, puede colocar el asunto del correo.';
 const defaultMessage = 'Hola, te invito a participar en la encuesta: @enlace';
-ButtonSendInvitation;
+
 export const SendInvitationDialogWhatsapp = ({
   isPersonal,
   copyUrl,
