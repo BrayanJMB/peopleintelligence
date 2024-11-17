@@ -357,7 +357,6 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
             }));
             if (time === 0) {
               setComplexQuestion(true);
-              console.log(indexCurrentQuestion.current);
               setNextQuestion(indexCurrentQuestion.current);
             }
           });
