@@ -128,7 +128,6 @@ const AnswerSurvey = () => {
 
           return newSteps;
         });
-        console.log(surveyStatus);
         setExclusiviness(true);
       } else {
         console.error('Se produjo un error al hacer la solicitud', error);

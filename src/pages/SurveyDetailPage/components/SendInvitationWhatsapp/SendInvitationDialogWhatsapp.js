@@ -5,6 +5,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import LinkIcon from '@mui/icons-material/Link';
 import SendIcon from '@mui/icons-material/Send';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -18,20 +19,11 @@ import PropTypes from 'prop-types';
 
 import client from '../../../../utils/axiosInstance';
 import { ButtonSendInvitation } from '../ButtonSendInvitation/ButtonSendInvitation';
-
-import styles from './SendInvitationDialog.module.css';
-
 const defaultMessageMask = 'Hola, acá puedes colocar la máscara del correo.';
 const defaultMessageSubject = 'Hola, puede colocar el asunto del correo.';
 const defaultMessage = 'Hola, te invito a participar en la encuesta: @enlace';
-
-/**
- * Send invitation dialog component.
- *
- * @returns {JSX.Element}
- * @constructor
- */
-const SendInvitationDialog = ({
+ButtonSendInvitation;
+export const SendInvitationDialogWhatsapp = ({
   isPersonal,
   copyUrl,
   isOpen,
@@ -39,7 +31,9 @@ const SendInvitationDialog = ({
   mailSubject,
   emailMessage,
   visibility,
+  hasWhatsApp,
 }) => {
+
   const [open, setOpen] = useState(false);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const { id: surveyId } = useParams();
@@ -97,18 +91,20 @@ const SendInvitationDialog = ({
     return true;
   };
 
-  function validateEmailsStructure(emails) {
-    const regex =
-      /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4},)*([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})$/;
-    return regex.test(emails);
-  }
+  const validatePhoneNumberChange  = (phoneNumber) =>{
+    if (!phoneNumber || !phoneNumber.match(/^\+(\d{1,3})\s?\d{7,14}$/)) {
+        setIsValidEmails('Por favor ingrese un correo válido');
+        return;
+      }
+      return true;
+  };
 
   /**
    * Handle emails change.
    *
    * @param event
    */
-  const handleEmailsChange = (event) => {
+  const handlePhoneNumberChange  = (event) => {
     setEmails(event.target.value);
     setIsValidEmails('');
     // validate emails
@@ -123,39 +119,15 @@ const SendInvitationDialog = ({
       const trimmedEmail = email.trim();
       // don't allow spaces
       if (trimmedEmail.includes(' ')) {
-        setIsValidEmails('Los correos no debe contener espacios');
+        setIsValidEmails('Los número de celular no debe contener espacios');
         error = true;
         return;
       }
-      validateEmail(trimmedEmail);
+      validatePhoneNumber(trimmedEmail);
     });
     setIsLoading(false);
   };
 
-  const handleDocumentsChange = (event) => {
-    setDocuments(event.target.value);
-    setIsValidDocuments('');
-    // validate emails
-    const documentsArray = event.target.value.split(',');
-    let error = false;
-    documentsArray.forEach((document) => {
-      // if is empty don't validate
-      if (!document) {
-        return;
-      }
-      // trim and validate email
-      const trimmedDocument = document.trim();
-      // don't allow spaces
-      if (trimmedDocument.includes(' ')) {
-        setIsValidDocuments(
-          'Los número de documentos no deben contener espacios'
-        );
-        error = true;
-        return;
-      }
-    });
-    setIsLoading(false);
-  };
 
   /**
    * Handle message change.
@@ -268,33 +240,6 @@ const SendInvitationDialog = ({
     setGroups(groupsCopy);
   };
 
-  /**
-   * Fetch api options by param.
-   *
-   *
-   * @param paramName
-   * @param paramId
-   * @returns {Promise<void>}
-   */
-  const fetchApiOptionsByParam = async (paramName, paramId) => {
-    const groupsCopy = [...groups];
-
-    for (let i = 0; i < groupsCopy.length; i++) {
-      const regex = new RegExp(`{${paramName}}`, 'g');
-
-      if (groupsCopy[i].url && groupsCopy[i].url.match(regex)) {
-        const url = groupsCopy[i].url.replace(regex, paramId);
-        const { data } = await client.get(url);
-
-        groupsCopy[i].options = data.map((item) => ({
-          value: item.value ?? item.ciudad,
-          id: item.id,
-        }));
-
-        setGroups(groupsCopy);
-      }
-    }
-  };
 
   /**
    * Send invitation.
@@ -488,13 +433,13 @@ const SendInvitationDialog = ({
 
   // watch email message
   /*
-  useEffect(() => {
-    if (!message) {
-      return;
-    }
-    setMessage(emailMessage);
-
-  }, [emailMessage]);*/
+    useEffect(() => {
+      if (!message) {
+        return;
+      }
+      setMessage(emailMessage);
+  
+    }, [emailMessage]);*/
 
   useEffect(() => {
     if (emailMask) {
@@ -512,17 +457,17 @@ const SendInvitationDialog = ({
   useEffect(() => {
     fetchGroups();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
+  console.log(hasWhatsApp);
   return (
-    <div className={styles.SendInvitationDialog}>
+    <div >
       <ButtonSendInvitation
-        sendIcon={<SendIcon />}
+        sendIcon={<WhatsAppIcon />}
         handleClickOpen={handleClickOpen}
         visibility={visibility}
+        hasWhatsApp={!hasWhatsApp}
       />
-
       <Dialog open={open} maxWidth="md" onClose={handleClose}>
-        <DialogTitle>Enviar invitación</DialogTitle>
+        <DialogTitle>Enviar invitación WhatsApp</DialogTitle>
         <DialogContent>
           <TextField
             id="emails"
@@ -536,11 +481,11 @@ const SendInvitationDialog = ({
             }}
             helperText={getHelperText(
               isValidEmails,
-              'Coloque los correos de esta forma: correo1@example.com, correo2@example.com, correo3@example.com ...'
+              'Coloque los número de celular de esta forma: +57 300 12345678, +1 12346789, +57 300 4447777..'
             )}
             value={emails}
             error={isValidEmails !== ''}
-            onChange={handleEmailsChange}
+            onChange={handlePhoneNumberChange}
           />
           <Box>
             <Button
@@ -549,7 +494,7 @@ const SendInvitationDialog = ({
               startIcon={csvFileName ? '' : <FileUploadIcon />}
               disabled={isLoading}
             >
-              {csvFileName ? csvFileName : 'Carga Csv con correo'}
+              {csvFileName ? csvFileName : 'Carga Csv con número de celular'}
             </Button>
             {csvFileName && (
               <Link
@@ -570,25 +515,6 @@ const SendInvitationDialog = ({
               name="csv_file"
             />
           </Box>
-
-          <TextField
-            id="documents"
-            label="Para:"
-            fullWidth
-            variant="outlined"
-            multiline
-            rows={6}
-            style={{
-              marginTop: '1.3em',
-            }}
-            helperText={getHelperText(
-              isValidDocuments,
-              'Coloque la lista de número de documentos ejemplo: 12345669,82931381....'
-            )}
-            value={documents}
-            error={isValidDocuments !== ''}
-            onChange={handleDocumentsChange}
-          />
 
           <TextField
             id="emailMask"
@@ -634,7 +560,7 @@ const SendInvitationDialog = ({
             }}
             helperText={getHelperText(
               isValidMessage,
-              'Cada usuario recibirá un mensaje personalizado y @enlace será reemplazado por el enlace de la encuesta.'
+              'Cada usuario recibirá un mensaje personalizado y @enlace será reemplazado por el enlace de redirección a whatsapp.'
             )}
             value={message}
             error={isValidMessage !== ''}
@@ -674,17 +600,3 @@ const SendInvitationDialog = ({
     </div>
   );
 };
-
-SendInvitationDialog.propTypes = {
-  isPersonal: PropTypes.bool.isRequired,
-  copyUrl: PropTypes.func.isRequired,
-  isOpen: PropTypes.bool,
-  emailMessage: PropTypes.string,
-};
-
-SendInvitationDialog.defaultProps = {
-  isOpen: null,
-  emailMessage: '',
-};
-
-export default SendInvitationDialog;

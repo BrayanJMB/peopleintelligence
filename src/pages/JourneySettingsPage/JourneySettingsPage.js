@@ -221,8 +221,6 @@ const JourneySettingsPage = () => {
   const fetchTemplatesByCompany = async (currentCompany) => {
     setLoading(true);
     const { data } = await fetchTemplatesByCompanyAPI(currentCompany);
-    console.log('okay');
-    console.log(data);
     setTemplates(data);
 
   };
