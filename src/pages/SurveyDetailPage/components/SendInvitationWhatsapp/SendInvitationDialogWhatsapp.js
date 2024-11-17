@@ -123,7 +123,7 @@ export const SendInvitationDialogWhatsapp = ({
         error = true;
         return;
       }
-      validatePhoneNumber(trimmedEmail);
+      //validatePhoneNumber(trimmedEmail);
     });
     setIsLoading(false);
   };
