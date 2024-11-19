@@ -15,7 +15,7 @@ import styles from './NotFoundMessage.module.css';
 
 
 
-const NotFoundMessage = () => {
+const NotFoundMessage = ({infoMessage}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   return(
@@ -32,7 +32,7 @@ const NotFoundMessage = () => {
       variant={isMobile ? 'h5' : 'h2'}
       gutterBottom
     >
-      Lo sentimos esta encuesta no esta disponible :{'('}
+      {infoMessage}
     </Typography>
   </div>
 );};
