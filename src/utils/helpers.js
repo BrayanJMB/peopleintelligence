@@ -1,6 +1,6 @@
-const ADMIN_ROLE = 'Administrador';
-const ADMINISTRATION_ROLE = 'Admin';
-const JOURNEY_ROLE = 'Journey';
+const ADMIN_ROLE = "Administrador";
+const ADMINISTRATION_ROLE = "Admin";
+const JOURNEY_ROLE = "Journey";
 
 /**
  * Returns true if the user is an admin.
@@ -23,7 +23,6 @@ export const isAdminJourney = (user) => {
 
   return user.role.some((role) => role === ADMINISTRATION_ROLE);
 };
-
 
 /**
  * Returns true if the user is a journey.
@@ -73,21 +72,21 @@ export const createForm = async (
         for (const value of Object.values(config.formValues)) {
           formData[value] = formValues[value];
         }
-        const {data} = await config.storeAPI({
+        const { data } = await config.storeAPI({
           idCompany: currentCompany.id,
           ...formData,
         });
         if (config.setNewState) {
-          config.setNewState((prevState)=>{
+          config.setNewState((prevState) => {
             return [...prevState, data];
           });
         }
         enqueueSnackbar(config.successMsg, {
-          variant: 'success',
+          variant: "success",
         });
       } catch (e) {
         enqueueSnackbar(config.errorMsg, {
-          variant: 'error',
+          variant: "error",
         });
       }
     }
@@ -112,13 +111,13 @@ export const handleDelete = async (
   try {
     await deleteAPI(id, currentCompany.id);
     enqueueSnackbar(`${message} eliminado con éxito`, {
-      variant: 'success',
+      variant: "success",
       autoHideDuration: 3000,
     });
     setState((data) => data.filter((data) => data.id !== id));
   } catch (e) {
     enqueueSnackbar(`Hubo un error al eliminar ${message}`, {
-      variant: 'error',
+      variant: "error",
       autoHideDuration: 3000,
     });
   }
@@ -130,19 +129,19 @@ export const handleDelete = async (
 
 export const validateForm = (fields, values, type) => {
   const validationErrors = {};
-  if (type === 'employee') {
+  if (type === "employee") {
     fields.forEach((sectionObj) =>
       Object.keys(sectionObj).forEach((section) =>
         sectionObj[section].forEach((field) => {
           const { name, isRequired } = field;
-          const value = values[name] || '';
+          const value = values[name] || "";
           const { error, helperText } = validateField(name, value);
           if (
             isRequired &&
-            (!value || (typeof value === 'string' && value.trim() === ''))
+            (!value || (typeof value === "string" && value.trim() === ""))
           ) {
             validationErrors[`${name}Error`] = true;
-            validationErrors[`${name}HelperText`] = 'Este campo es obligatorio';
+            validationErrors[`${name}HelperText`] = "Este campo es obligatorio";
           } else if (error) {
             validationErrors[`${name}Error`] = error;
             validationErrors[`${name}HelperText`] = helperText;
@@ -152,37 +151,40 @@ export const validateForm = (fields, values, type) => {
     );
   } else {
     fields.forEach((field) => {
-      if (field.type !== 'options'){
+      if (field.type !== "options") {
         const { name, isRequired } = field;
-        const value = values[name] || '';
+        const value = values[name] || "";
         const { error, helperText } = validateField(name, value);
         if (
           isRequired &&
-          (!value || (typeof value === 'string' && value.trim() === ''))
+          (!value || (typeof value === "string" && value.trim() === ""))
         ) {
           validationErrors[`${name}Error`] = true;
-          validationErrors[`${name}HelperText`] = 'Este campo es obligatorio';
+          validationErrors[`${name}HelperText`] = "Este campo es obligatorio";
         } else if (error) {
           validationErrors[`${name}Error`] = error;
           validationErrors[`${name}HelperText`] = helperText;
         }
-      }else{
+      } else {
         field.options.forEach((fieldOptions) => {
           const { name, isRequired } = field;
-          const value = values[`${name}${fieldOptions.id}`] || (fieldOptions.value ? fieldOptions.value : '');
+          const value =
+            values[`${name}${fieldOptions.id}`] ||
+            (fieldOptions.value ? fieldOptions.value : "");
           const { error, helperText } = validateField(name, value);
           if (
             isRequired &&
-            (!value || (typeof value === 'string' && value.trim() === ''))
+            (!value || (typeof value === "string" && value.trim() === ""))
           ) {
             validationErrors[`${name}${fieldOptions.id}Error`] = true;
-            validationErrors[`${name}${fieldOptions.id}HelperText`] = 'Este campo es obligatorio';
+            validationErrors[`${name}${fieldOptions.id}HelperText`] =
+              "Este campo es obligatorio";
           } else if (error) {
             validationErrors[`${name}${fieldOptions.id}Error`] = error;
-            validationErrors[`${name}${fieldOptions.id}HelperText`] = helperText;
+            validationErrors[`${name}${fieldOptions.id}HelperText`] =
+              helperText;
           }
         });
-        
       }
     });
   }
@@ -205,43 +207,44 @@ const validateAge = (age) => {
 };
 
 const validatePhoneNumber = (phoneNumber) => {
-  const regex =
-    /^(\(\+?\d{2,3}\)[\|\s|\-|\.]?(([\d][\|\s|\-|\.]?){6})(([\d][\s|\-|\.]?){2})?|(\+?[\d][\s|\-|\.]?){8}(([\d][\s|\-|\.]?){2}(([\d][\s|\-|\.]?){2})?)?)$/;
+  const regex = /^\+?\d{8,18}$/; // Solo números, opcionalmente empieza con "+"
   return regex.test(phoneNumber);
 };
 
 export const validateField = (name, value) => {
-  const validationResult = { error: false, helperText: '' };
-  if (value === '') {
+  const validationResult = { error: false, helperText: "" };
+  if (value === "") {
     return validationResult;
   }
 
-  if (name === 'email') {
+  if (name === "email") {
     validationResult.error = !validateEmail(value);
     validationResult.helperText = validationResult.error
-      ? 'Ingrese un correo válido'
-      : '';
-  } else if (name === 'documentNumber') {
+      ? "Ingrese un correo válido"
+      : "";
+  } else if (name === "documentNumber") {
     validationResult.error = !validateDocumentNumber(value);
     validationResult.helperText = validationResult.error
       ? isNaN(value)
-        ? 'El tipo documento debe ser un número'
-        : 'Por favor ingrese un número documento válido'
-      : '';
-  } else if (name.includes('age')) {
+        ? "El tipo documento debe ser un número"
+        : "Por favor ingrese un número documento válido"
+      : "";
+  } else if (name.includes("age")) {
     validationResult.error = !validateAge(value);
     validationResult.helperText = validationResult.error
       ? isNaN(value)
-        ? 'La edad debe ser un número'
-        : 'La edad debe ser un número entre 0 y 99'
-      : '';
-  } else if (name === 'phoneNumber') {
+        ? "La edad debe ser un número"
+        : "La edad debe ser un número entre 0 y 99"
+      : "";
+  } else if (name === "phoneNumber") {
     validationResult.error = !validatePhoneNumber(value);
     validationResult.helperText = validationResult.error
       ? isNaN(value)
-        ? 'El celular debe ser un número'
-        : 'Por favor ingrese un número de celular válido'
-      : '';
+        ? "El celular debe ser un número"
+        : value.length >= 18
+        ? "El número de celular no puede exceder 18 caracteres"
+        : "Por favor ingrese un número de celular válido"
+      : "";
   }
   return validationResult;
 };
