@@ -376,18 +376,19 @@ const SurveyDetailPage = () => {
     setLinkCopied(true);
   };
 
-
-    /**
+  /**
    * Copy survey url.
    *
    * @param event
    */
-    const handleClickCopyUrlWhatsApp = (event) => {
-      event.preventDefault();
-  
-      navigator.clipboard.writeText(`https://wa.me/573007038902?text=Hola quisiera responder la encuesta ${currentSurvey.response.surveyName}`);
-      setLinkCopied(true);
-    };
+  const handleClickCopyUrlWhatsApp = (event) => {
+    event.preventDefault();
+
+    navigator.clipboard.writeText(
+      `https://wa.me/573007038902?text=Hola quisiera responder la encuesta ${currentSurvey.response.surveyName}`
+    );
+    setLinkCopied(true);
+  };
 
   /**
    * Handle close snackbar.
@@ -467,6 +468,9 @@ const SurveyDetailPage = () => {
     }
   };
 
+  const handleNavigateJourney = () => {
+    navigate('/journey');
+  };
   // component did mount
   useEffect(() => {
     /**
@@ -485,7 +489,7 @@ const SurveyDetailPage = () => {
     };
 
     fetchCurrentSurvey();
-  }, [dispatch, surveyId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dispatch, surveyId, currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isAdmin = userInfo?.role.findIndex((p) => p === 'Administrador') > 0;
   // watch currentSurvey state
@@ -529,7 +533,18 @@ const SurveyDetailPage = () => {
         <div className={styles.SurveyDetailPage}>
           <div className={styles.SurveyDetailPage__content}>
             {surveysStatus === 'loading' && <MyLoader />}
-            {surveysStatus === 'failed' && <NotFoundMessage />}
+            {surveysStatus === 'failed' && (
+              <div style={{display:'flex', flexDirection:'column'}}>
+                <NotFoundMessage
+                  infoMessage={
+                    'Esta encuesta no esta disponible para esta compañía :('
+                  }
+                />
+                <Button onClick={handleNavigateJourney}>
+                  Volver a journey
+                </Button>
+              </div>
+            )}
             {currentSurvey !== null && surveysStatus === 'succeeded' && (
               <Box sx={{ flexGrow: 1 }}>
                 {/* header */}
