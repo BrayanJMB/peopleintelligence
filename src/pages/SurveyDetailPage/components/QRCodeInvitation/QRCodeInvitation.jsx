@@ -1,7 +1,8 @@
-import { useState, useRef } from "react";
-import { Modal, Box, Typography, IconButton } from "@mui/material";
-import QRCode from "qrcode.react";
-import styles from "../../SurveyDetailPage.module.css";
+import { useRef,useState } from 'react';
+import { Box, IconButton,Modal, Typography } from '@mui/material';
+import QRCode from 'qrcode.react';
+
+import styles from '../../SurveyDetailPage.module.css';
 
 export const QRCodeInvitation = ({openModal, setOpenModal, linkSurvey }) => {
   const qrRef = useRef(null);
@@ -10,12 +11,12 @@ export const QRCodeInvitation = ({openModal, setOpenModal, linkSurvey }) => {
   };
   const handleClickDownloadQR = () => {
     const qrCodeURL = document
-      .getElementById("qrCodeCanvas")
-      .toDataURL("image/png")
-      .replace("image/png", "image/octet-stream");
-    let aEl = document.createElement("a");
+      .getElementById('qrCodeCanvas')
+      .toDataURL('image/png')
+      .replace('image/png', 'image/octet-stream');
+    let aEl = document.createElement('a');
     aEl.href = qrCodeURL;
-    aEl.download = "QR_Code.png";
+    aEl.download = 'QR_Code.png';
     document.body.appendChild(aEl);
     aEl.click();
     document.body.removeChild(aEl);
@@ -40,9 +41,9 @@ export const QRCodeInvitation = ({openModal, setOpenModal, linkSurvey }) => {
             id="qrCodeCanvas"
             value={linkSurvey}
             size={256}
-            level={"H"}
-            bgColor={"#ffffff"}
-            fgColor={"#000000"}
+            level={'H'}
+            bgColor={'#ffffff'}
+            fgColor={'#000000'}
           />
         </div>
         <IconButton onClick={handleClickDownloadQR} sx={{ mt: 2 }}>
