@@ -359,7 +359,7 @@ const AnswerSurvey = () => {
             {surveyStatus === 'failed' && isAlreadyResponse && (
               <SuccessMessage isAlreadyResponse={isAlreadyResponse} />
             )}
-            {surveyStatus === 'failed' && notFound && <NotFoundMessage />}
+            {surveyStatus === 'failed' && notFound && <NotFoundMessage infoMessage={'Lo sentimos esta encuesta no esta disponible :('}/>}
             {exclusiviness && <NotExclusiviness />}
             {surveyStatus === 'succeeded' &&
               currentSurvey !== null &&
