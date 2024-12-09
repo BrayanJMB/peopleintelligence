@@ -21,7 +21,7 @@ import {
   postUserRolsAPI,
 } from '../../services/fetchUser.service';
 import { fetchDocumentTypeAPI } from '../../services/getDocumentType.service';
-
+import FileUpload from './FileUpload';
 import { allUsersColumns } from './columsForUserTable/userColumns';
 import ModalRol from './ModalRol';
 
@@ -42,7 +42,6 @@ export default function UserAdministrator() {
     setCurrentCreate(null);
     setOpenCreateDialog(false);
   };
-
   const fetchDocumentType = async () => {
     const { data } = await fetchDocumentTypeAPI();
     setDocumentsTypes(data);
@@ -296,6 +295,7 @@ export default function UserAdministrator() {
                         mb: 2,
                       }}
                     >
+                      < FileUpload/>
                       <Button
                         variant="outlined"
                         startIcon={<AddIcon />}
@@ -303,6 +303,7 @@ export default function UserAdministrator() {
                       >
                         Crear Usuario
                       </Button>
+                      
                     </Stack>
                     <MyTable
                       title={'Rol Usuarios'}
