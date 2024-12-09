@@ -1,26 +1,33 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
-import IconButton from '@mui/material/IconButton';
-import Switch from '@mui/material/Switch';
-import Typography from '@mui/material/Typography';
-import { useSnackbar } from 'notistack';
-import PropTypes from 'prop-types';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
+import IconButton from "@mui/material/IconButton";
+import Switch from "@mui/material/Switch";
+import Typography from "@mui/material/Typography";
+import { useSnackbar } from "notistack";
+import PropTypes from "prop-types";
 
-import MyCard from '../MyCard/MyCard';
+import MyCard from "../MyCard/MyCard";
 
-import { patchVisilibitySurvey } from './services';
+import { patchVisilibitySurvey } from "./services";
 
-import styles from './MyPageHeader.module.css';
+import styles from "./MyPageHeader.module.css";
 /**
  * Page header component.
  *
  * @returns {JSX.Element}
  * @constructor
  */
-const MyPageHeader = ({ surveyId, title, Icon, visibility, setVisibility }) => {
+const MyPageHeader = ({
+  surveyId,
+  title,
+  Icon,
+  visibility,
+  setVisibility,
+  needBack,
+}) => {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -45,19 +52,19 @@ const MyPageHeader = ({ surveyId, title, Icon, visibility, setVisibility }) => {
 
       // Mostrar un mensaje según el estado de la encuesta
       if (isSurveyEnabled) {
-        enqueueSnackbar('Encuesta habilitada exitosamente', {
-          variant: 'success',
+        enqueueSnackbar("Encuesta habilitada exitosamente", {
+          variant: "success",
         });
       } else {
-        enqueueSnackbar('Encuesta deshabilitada exitosamente', {
-          variant: 'success',
+        enqueueSnackbar("Encuesta deshabilitada exitosamente", {
+          variant: "success",
         });
       }
     } catch (error) {
       // Manejar el error y mostrar un mensaje de error
       enqueueSnackbar(
-        'Ocurrió un error al cambiar la visibilidad de la encuesta',
-        { variant: 'error' }
+        "Ocurrió un error al cambiar la visibilidad de la encuesta",
+        { variant: "error" }
       );
     }
   };
@@ -66,11 +73,13 @@ const MyPageHeader = ({ surveyId, title, Icon, visibility, setVisibility }) => {
     <MyCard>
       <div className={styles.MyPageHeader}>
         {/* back button */}
-        <div className={styles.MyPageHeader__backIcon}>
-          <IconButton onClick={handleClickBackPage} aria-label="Atrás">
-            <ArrowBackIcon />
-          </IconButton>
-        </div>
+        {needBack !== false && (
+          <div className={styles.MyPageHeader__backIcon}>
+            <IconButton onClick={handleClickBackPage} aria-label="Atrás">
+              <ArrowBackIcon />
+            </IconButton>
+          </div>
+        )}
 
         {/* title */}
         <Typography variant="h4" className={styles.MyPageHeader__title}>
