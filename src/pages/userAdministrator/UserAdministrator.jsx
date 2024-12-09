@@ -21,8 +21,9 @@ import {
   postUserRolsAPI,
 } from '../../services/fetchUser.service';
 import { fetchDocumentTypeAPI } from '../../services/getDocumentType.service';
-import FileUpload from './FileUpload';
+
 import { allUsersColumns } from './columsForUserTable/userColumns';
+import FileUpload from './FileUpload';
 import ModalRol from './ModalRol';
 
 import styles from './UserAdministrator.module.css';
