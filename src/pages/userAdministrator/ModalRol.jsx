@@ -1,43 +1,43 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { Add as AddIcon,Delete as DeleteIcon } from '@mui/icons-material';
 import {
-  Modal,
   Box,
-  Typography,
   Button,
+  Divider,
   IconButton,
   List,
   ListItem,
-  ListItemText,
   ListItemSecondaryAction,
-  Divider,
+  ListItemText,
+  Modal,
   Paper,
-} from "@mui/material";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogActions from "@mui/material/DialogActions";
-import { Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
-import { styled } from "@mui/material/styles";
+  Typography,
+} from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { styled } from '@mui/material/styles';
 const StyledModal = styled(Modal)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 }));
 
 const ModalContent = styled(Paper)(({ theme }) => ({
-  position: "relative",
+  position: 'relative',
   width: 800,
-  maxWidth: "90%",
-  maxHeight: "90vh",
-  overflow: "auto",
+  maxWidth: '90%',
+  maxHeight: '90vh',
+  overflow: 'auto',
   padding: theme.spacing(4),
   borderRadius: theme.shape.borderRadius,
 }));
 
 const RolesList = styled(List)(({ theme }) => ({
   maxHeight: 200,
-  overflow: "auto",
+  overflow: 'auto',
   marginBottom: theme.spacing(2),
 }));
 
@@ -63,8 +63,8 @@ export default function ModalRol({
   const handleConfirmDelete = async () => {
     setOpenDialog(false);
     const { id, rolId } = deleteData;
-    handleDeleteCompanyRols(id, rolId)
-  }
+    handleDeleteCompanyRols(id, rolId);
+  };
   return (
     <>
       <StyledModal
@@ -99,7 +99,7 @@ export default function ModalRol({
                             handleOpenDialog(rol.userId, rol.id, rol.name)
                         }
                       >
-                        <DeleteIcon sx={{ color: "red" }} />
+                        <DeleteIcon sx={{ color: 'red' }} />
                       </IconButton>
                     </ListItemSecondaryAction>
                   </ListItem>
