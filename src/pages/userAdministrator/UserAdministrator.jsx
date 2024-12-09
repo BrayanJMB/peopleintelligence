@@ -1,84 +1,66 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { CSVLink } from 'react-csv';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import {useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import AddIcon from '@mui/icons-material/Add';
-import ClearIcon from '@mui/icons-material/Clear';
 import { Stack } from '@mui/material';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import Modal from '@mui/material/Modal';
+import { Box,Button } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import * as uuid from 'uuid';
 
-import Building from '../../assets/Building.svg';
 import MyCard from '../../components/MyCard/MyCard';
 import MyCreateDialog2 from '../../components/MyCreateDialog2/MyCreateDialog2';
-import MyEditDialog2 from '../../components/MyEditDialog2/MyEditDialog2';
+import MyPageHeader from '../../components/MyPageHeader/MyPageHeader';
 import MyTable from '../../components/MyTable/MyTable';
-import NewRoleUserAdministrator from '../../components/NewRolUserAdministrator/NewRoleUserAdministrator';
-import Notification from '../../components/Notification';
-import Table from '../../components/Table';
-import { addItem, storeItems, updateItem } from '../../features/adminSlice';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
-import { deleteUserRolsAPI,fetchAllUserRolsAPI,fetchUserAPI, fetchUserGetRolsAPI, postUserAPI, postUserRolsAPI } from '../../services/fetchUser.service';
-import { getCompaniesAPI } from '../../services/getCompanies.service';
-import { getDepartmentsAPI } from '../../services/getDepartments.service';
-import { fetchDocumentTypeAPI } from '../../services/getDocumentType.service';
-import { getEmployeesAPI } from '../../services/getEmployees.service';
 import {
-  getOfficesAPI,
-  postOfficeAPI,
-} from '../../services/getOffices.service';
-import { postCompanyAPI } from '../../services/postCompany.service';
-import axios from '../../utils/axiosInstance';
+  deleteUserRolsAPI,
+  fetchAllUserRolsAPI,
+  fetchRolesByUserAPI,
+  fetchUserAPI,
+  fetchUserGetRolsAPI,
+  postUserAPI,
+  postUserRolsAPI,
+} from '../../services/fetchUser.service';
+import { fetchDocumentTypeAPI } from '../../services/getDocumentType.service';
 
-import stylesJ from '../../pages/JourneySettingsPage/JourneySettingsPage.module.css';
-import styles from '../InfoAdmin/InfoAdmin.module.css';
+import { allUsersColumns } from './columsForUserTable/userColumns';
+import ModalRol from './ModalRol';
 
+import styles from './UserAdministrator.module.css';
 export default function UserAdministrator() {
   const { enqueueSnackbar } = useSnackbar();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const admin = useSelector((state) => state.admin);
-  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  const { type } = useParams();
   const currentCompany = useSelector((state) => state.companies.currentCompany);
-  const [currentEdit, setCurrentEdit] = useState(null);
   const [currentCreate, setCurrentCreate] = useState(null);
-  const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [DocumentsTypes, setDocumentsTypes] = useState([]);
   const [users, setUsers] = useState([]);
   const [missingRolsByUser, setMissingRolsByUser] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
-  const [rolesFieldIndex, setRolesFieldIndex] = useState(null);
-
-
-
+  const [rolesByUser, setRolesByUser] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRolId, setSelectedRolId] = useState(null); // Estado para almacenar el rol seleccionado
   const handleCloseCreateDialog = () => {
     setCurrentCreate(null);
     setOpenCreateDialog(false);
   };
-
 
   const fetchDocumentType = async () => {
     const { data } = await fetchDocumentTypeAPI();
     setDocumentsTypes(data);
   };
 
-  const fetchUserByCompany = async () =>{
-    const { data } = await  fetchUserAPI(currentCompany.id);
+  const fetchUserByCompany = async () => {
+    const { data } = await fetchUserAPI(currentCompany.id);
     setUsers(data);
   };
 
-  const fetchAllUser = async () =>{
+  const fetchAllUser = async () => {
     const { data } = await fetchAllUserRolsAPI(currentCompany.id);
     setAllUsers(data);
+  };
 
+  const fetchRoleByUser = async (id, rolId) => {
+    const { data } = await fetchRolesByUserAPI(id, rolId);
+    setRolesByUser(data);
   };
 
   //User
@@ -132,27 +114,10 @@ export default function UserAdministrator() {
     setOpenCreateDialog(true);
   };
 
-  //rol Usuario
-  const allUsersColumns = [
-    {
-      id: 'emailUserAdministrator',
-      label: 'Correo Usuario',
-      numeric: true,
-    },
-    {
-      id: 'name',
-      label: 'Rol Usuario',
-      numeric: false,
-    },
-    {
-      id: 'ActionUsuario',
-      label: 'Aciones',
-      numeric: false,
-    },
-  ];
 
 
-  const handleCreateRolUserAdministrator = () => {
+  const handleCreateRolUserAdministrator = async () => {
+    const response = await fetchUserGetRolsAPI(selectedRolId);     
     setCurrentCreate({
       type: 'userRol',
       title: 'Crear Rol Usuario',
@@ -166,13 +131,20 @@ export default function UserAdministrator() {
             value: user.userId,
             label: user.email,
           })),
+          defaultValue: users.find((user) => user.userId === selectedRolId)
+            ? {
+                value: selectedRolId,
+                label: users.find((user) => user.userId === selectedRolId)
+                  .email,
+              }
+            : null, // Si no encuentra el usuario, el valor será null
         },
         {
           label: 'Roles',
           name: 'userRol',
           type: 'select',
           isRequired: true,
-          options:  missingRolsByUser.map((user) => ({
+          options: response.data.map((user) => ({
             value: user.id,
             label: user.name,
           })),
@@ -181,58 +153,75 @@ export default function UserAdministrator() {
     });
     setOpenCreateDialog(true);
   };
-  
 
   const mapAllUsers = (users) => {
-    return users.map((user) => [
+    // Agrupar por `userId` para combinar los roles
+    const groupedUsers = users.reduce((acc, user) => {
+      if (!acc[user.userId]) {
+        acc[user.userId] = {
+          email: user.email,
+          roles: new Set(), // Usamos un Set para evitar roles duplicados
+          userId: user.userId,
+          rolId: user.rolId,
+        };
+      }
+      acc[user.userId].roles.add(user.nameRol); // Agregar el rol al Set
+      return acc;
+    }, {});
+
+    // Mapear los usuarios agrupados al formato deseado
+    return Object.values(groupedUsers).map((group) => [
       {
         column: 'name',
-        value: user.email,
+        value: group.email,
       },
       {
-        column: 'name',
-        value: user.nameRol,
+        column: 'roles',
+        value: Array.from(group.roles).join(', '), // Convertir roles en cadena separada por comas
       },
       {
         column: 'options',
         value: '',
         payload: {
-          handleDelete: handleDeleteCompanyRols,
-          id: user.userId,
-          rolId: user.rolId,
+          handleEdit: handleEditCompanyRols,
+          id: group.userId,
+          rolId: group.rolId,
         },
       },
     ]);
   };
-  
-  const handleDeleteCompanyRols = async (id, rolId)=>{
-    try{
+
+  const handleEditCompanyRols = async (id) => {
+    setIsModalOpen(true);
+    fetchRoleByUser(id, currentCompany.id);
+    setSelectedRolId(id);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false); // Cierra el modal
+  };
+
+  const handleDeleteCompanyRols = async (id, rolId) => {
+    try {
       await deleteUserRolsAPI(id, rolId);
       await fetchAllUser();
-      enqueueSnackbar(
-        'Rol eliminado con éxito',
-        {
-          variant: 'success',
-          autoHideDuration:3000,
-        },
-      );
-    }catch(Exception){
-      enqueueSnackbar(
-        'Hubo un error al eliminar el rol',
-        {
-          variant: 'error',
-          autoHideDuration:3000,
-        },
-      );
+      fetchRoleByUser(id, currentCompany.id);
+      enqueueSnackbar('Rol eliminado con éxito', {
+        variant: 'success',
+        autoHideDuration: 3000,
+      });
+    } catch (Exception) {
+      enqueueSnackbar('Hubo un error al eliminar el rol', {
+        variant: 'error',
+        autoHideDuration: 3000,
+      });
     }
   };
-  
-
 
   const handleSubmittedCreateDialog = async (formValues) => {
     if (currentCreate.type === 'user') {
-      try{
-       await postUserAPI({
+      try {
+        await postUserAPI({
           idCompany: currentCompany.id,
           IdTipoDocumento: formValues.documentType,
           numeroDocumento: formValues.documentNumber,
@@ -252,62 +241,29 @@ export default function UserAdministrator() {
       }
     }
 
-    if (currentCreate.type === 'userRolChange') {
-      try{
-
-        await postUserRolsAPI(
-            {
-              userId: formValues.userRolChange,
-              roleId: formValues.userRol,
-            },
-         );
- 
-         enqueueSnackbar('Usuario creado con éxito', {
-           variant: 'success',
-         });
-       } catch (e) {
-
-         enqueueSnackbar('Hubo un error al crear el usuario', {
-           variant: 'error',
-         });
-       }
+    if (currentCreate.type === 'userRol') {
+      try {
+        await postUserRolsAPI({
+          userId: formValues.userRolChange,
+          roleId: formValues.userRol,
+        });
+        await fetchAllUser();
+        fetchRoleByUser(formValues.userRolChange, currentCompany.id);
+        enqueueSnackbar('Rol agregado con éxito', {
+          variant: 'success',
+        });
+      } catch (e) {
+        enqueueSnackbar('Hubo un error al agregar el rol', {
+          variant: 'error',
+        });
+      }
     }
     setCurrentCreate(null);
     setOpenCreateDialog(false);
   };
 
   useEffect(() => {
-    setCurrentCreate({
-      type: 'userRolChange',
-      title: 'Crear Rol Usuario',
-      fields: [
-        {
-          label: 'Usuario',
-          name: 'userRolChange',
-          type: 'select',
-          isRequired: true,
-          options: users.map((user) => ({
-            value: user.userId,
-            label: user.email,
-          })),
-        },
-        {
-          label: 'Roles',
-          name: 'userRol',
-          type: 'select',
-          isRequired: true,
-          options:  missingRolsByUser.map((user) => ({
-            value: user.id,
-            label: user.name,
-          })),
-        },
-      ],
-    });
-  }, [missingRolsByUser]);
-
-  
-  useEffect(() => {
-    if (!currentCompany){
+    if (!currentCompany) {
       return;
     }
     fetchDocumentType();
@@ -320,22 +276,12 @@ export default function UserAdministrator() {
       <Navbar />
       <IconSidebar />
       <div style={{ backgroundColor: 'white' }}>
-        <div className={styles.content}>
-          <div className={styles.crud}>
-            <div className={styles.top}>
-              <div className={styles.type}>
-                <Box
-                  component="img"
-                  alt="Your logo."
-                  src={Building}
-                  className={styles.icontype}
-                />
-                <h1>Administrador de Usuario</h1>
-              </div>
-            </div>
+        <div className={styles.UserAdministratorPage}>
+          <div className={styles.UserAdministratorPage__content}>
+            <MyPageHeader title="Administrar usuarios" needBack={false} />
             <div className={styles.buttom}>
-              <div className={stylesJ.JourneySettingsPage}>
-                <div className={stylesJ.JourneySettingsPage__content}>
+              <div>
+                <div>
                   <MyCard
                     sx={{
                       display: 'flex',
@@ -350,14 +296,6 @@ export default function UserAdministrator() {
                         mb: 2,
                       }}
                     >
-                      <Button
-                        variant="outlined"
-                        startIcon={<AddIcon />}
-                        onClick={handleCreateRolUserAdministrator}
-                      >
-                        Crear Rol Usuario
-                      </Button>
-
                       <Button
                         variant="outlined"
                         startIcon={<AddIcon />}
@@ -387,17 +325,15 @@ export default function UserAdministrator() {
                 setUserRol={setMissingRolsByUser}
               />
             )}
-             {/* edit 
-            {currentEdit !== null && (
-              <MyEditDialog2
-                onClose={handleCloseEditDialog}
-                onSubmit={handleSubmittedEditDialog}
-                title={currentEdit.title}
-                open={openEditDialog}
-                fields={currentEdit.fields}
-                type={currentEdit.type}
-              />
-            )}*/}
+            <ModalRol
+              isModalOpen={isModalOpen}
+              closeModal={closeModal}
+              rolesByUser={rolesByUser}
+              handleDeleteCompanyRols={handleDeleteCompanyRols}
+              handleCreateRolUserAdministrator={
+                handleCreateRolUserAdministrator
+              }
+            />
           </div>
         </div>
       </div>

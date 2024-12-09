@@ -20,7 +20,14 @@ import styles from './MyPageHeader.module.css';
  * @returns {JSX.Element}
  * @constructor
  */
-const MyPageHeader = ({ surveyId, title, Icon, visibility, setVisibility }) => {
+const MyPageHeader = ({
+  surveyId,
+  title,
+  Icon,
+  visibility,
+  setVisibility,
+  needBack,
+}) => {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -66,11 +73,13 @@ const MyPageHeader = ({ surveyId, title, Icon, visibility, setVisibility }) => {
     <MyCard>
       <div className={styles.MyPageHeader}>
         {/* back button */}
-        <div className={styles.MyPageHeader__backIcon}>
-          <IconButton onClick={handleClickBackPage} aria-label="Atrás">
-            <ArrowBackIcon />
-          </IconButton>
-        </div>
+        {needBack !== false && (
+          <div className={styles.MyPageHeader__backIcon}>
+            <IconButton onClick={handleClickBackPage} aria-label="Atrás">
+              <ArrowBackIcon />
+            </IconButton>
+          </div>
+        )}
 
         {/* title */}
         <Typography variant="h4" className={styles.MyPageHeader__title}>

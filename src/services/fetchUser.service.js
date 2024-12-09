@@ -10,6 +10,15 @@ export const fetchUserAPI = async (idCompany) => axios.get(`Roles/GetUsersCompan
 
 
 /**
+ * Fetch Contract Type.
+ *
+ * @returns {Promise<any>}
+ */
+export const fetchRolesByUserAPI = async (idUser,idCompany) => axios.get(`Roles/GetRolesByUser/${idUser}/${idCompany}`);
+
+
+
+/**
  * Post Contract Type.
  *
  * @returns {Promise<any>}
