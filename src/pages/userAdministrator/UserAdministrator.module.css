@@ -1,47 +1,11 @@
-.content {
+.UserAdministratorPage {
   width: 89.5vw;
   height: 92vh;
   margin-top: 4rem;
+  border-top-left-radius: 50px;
+  background-color: rgb(224, 219, 219);
+  overflow-y: scroll;
 }
-.crud {
-  display: flex;
-  flex-direction: column;
-}
-.buttom {
-  height: 70vh;
-  padding: 0 1em;
-  margin: 3em 2em;
-}
-.modal {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  height: 60vh;
-  transform: translate(-50%, -50%);
-  width: 65vw;
-  background-color: white;
-  box-shadow: 24px;
-  padding: 1rem;
-}
-.modaltop {
-  display: flex;
-  justify-content: space-between;
-}
-.modalbuttom {
-  display: block;
-}
-.top {
-  display: flex;
-  justify-content: space-between;
-  padding: 1em 2em;
-}
-
-.type {
-  display: flex;
-  align-items: center;
-}
-.new {
-  display: flex;
-  align-items: center;
-  margin-right: 2rem;
+.UserAdministratorPage__content {
+  margin: 2em 4em;
 }
