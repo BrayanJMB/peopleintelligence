@@ -76,5 +76,5 @@ export const getCompaniesUserAPI = async (userId) => axios.get(`users/${userId}/
 export const deleteCompaniesUserAPI = async (companyId,userId) => axios.delete(`users/${userId}/companies/${companyId}`);
 
 
-export const postCompaniesUserAPI = async (data) => axios.post(`users/company-assignments`,data);
+export const postCompaniesUserAPI = async (data) => axios.post('users/company-assignments',data);
 

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import React, { useEffect,useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -13,31 +14,30 @@ import {
   Modal,
   Paper,
   Typography,
-} from "@mui/material";
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 
-import { styled } from "@mui/material/styles";
-import { ConfirmDialog } from "../SurveyDetailPage/ConfirmDialog";
-import { useSelector } from "react-redux";
+import { ConfirmDialog } from '../SurveyDetailPage/ConfirmDialog';
 
 const StyledModal = styled(Modal)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 }));
 
 const ModalContent = styled(Paper)(({ theme }) => ({
-  position: "relative",
+  position: 'relative',
   width: 800,
-  maxWidth: "90%",
-  maxHeight: "90vh",
-  overflow: "auto",
+  maxWidth: '90%',
+  maxHeight: '90vh',
+  overflow: 'auto',
   padding: theme.spacing(4),
   borderRadius: theme.shape.borderRadius,
 }));
 
 const RolesList = styled(List)(({ theme }) => ({
   maxHeight: 200,
-  overflow: "auto",
+  overflow: 'auto',
   marginBottom: theme.spacing(2),
 }));
 
@@ -52,7 +52,7 @@ export default function ModalRol({
   userCompanies,
 }) {
   const [openDialogs, setOpenDialogs] = useState({});
-  const [multiCompanyRol, setMultiCompanyRol] = useState("");
+  const [multiCompanyRol, setMultiCompanyRol] = useState('');
   const handleOpenDialog = async (id, ...args) => {
     //setDeleteData({ id, rolId, rolName });
     setOpenDialogs((prevDialogs) => ({
@@ -86,7 +86,7 @@ export default function ModalRol({
   const checkRoles = () => {
     if (rolesByUser.length <= 0) return;
     const roleExistsInRoles = rolesByUser.roles.some(
-      (role) => role.name === "MultiCompania"
+      (role) => role.name === 'MultiCompania'
     );
     if (roleExistsInRoles) {
       setMultiCompanyRol(true);
@@ -146,7 +146,7 @@ export default function ModalRol({
                               )
                             }
                           >
-                            <DeleteIcon sx={{ color: "red" }} />
+                            <DeleteIcon sx={{ color: 'red' }} />
                           </IconButton>
                         </ListItemSecondaryAction>
                       </ListItem>
@@ -226,7 +226,7 @@ export default function ModalRol({
                               )
                             }
                           >
-                            <DeleteIcon sx={{ color: "red" }} />
+                            <DeleteIcon sx={{ color: 'red' }} />
                           </IconButton>
                         </ListItemSecondaryAction>
                       </ListItem>

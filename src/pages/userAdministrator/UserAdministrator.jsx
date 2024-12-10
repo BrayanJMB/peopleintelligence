@@ -1,35 +1,36 @@
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import AddIcon from "@mui/icons-material/Add";
-import { Stack } from "@mui/material";
-import { Box, Button } from "@mui/material";
-import { useSnackbar } from "notistack";
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import AddIcon from '@mui/icons-material/Add';
+import { Stack } from '@mui/material';
+import { Box, Button } from '@mui/material';
+import { useSnackbar } from 'notistack';
 
-import MyCard from "../../components/MyCard/MyCard";
-import MyCreateDialog2 from "../../components/MyCreateDialog2/MyCreateDialog2";
-import MyPageHeader from "../../components/MyPageHeader/MyPageHeader";
-import MyTable from "../../components/MyTable/MyTable";
-import IconSidebar from "../../Layout/IconSidebar/IconSidebar";
-import Navbar from "../../Layout/Navbar/Navbar";
+import MyCard from '../../components/MyCard/MyCard';
+import MyCreateDialog2 from '../../components/MyCreateDialog2/MyCreateDialog2';
+import MyPageHeader from '../../components/MyPageHeader/MyPageHeader';
+import MyTable from '../../components/MyTable/MyTable';
+import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
+import Navbar from '../../Layout/Navbar/Navbar';
 import {
+  deleteCompaniesUserAPI,
   deleteUserRolsAPI,
   fetchAllUserRolsAPI,
   fetchRolesByUserAPI,
   fetchUserAPI,
   fetchUserGetRolsAPI,
+  getCompaniesUserAPI,
+  postCompaniesUserAPI,
   postUserAPI,
   postUserRolsAPI,
-  getCompaniesUserAPI,
-  deleteCompaniesUserAPI,
-  postCompaniesUserAPI,
-} from "../../services/fetchUser.service";
-import { fetchDocumentTypeAPI } from "../../services/getDocumentType.service";
+} from '../../services/fetchUser.service';
+import { fetchDocumentTypeAPI } from '../../services/getDocumentType.service';
+import client from '../../utils/axiosInstance';
 
-import { allUsersColumns } from "./columsForUserTable/userColumns";
-import FileUpload from "./FileUpload";
-import ModalRol from "./ModalRol";
-import client from "../../utils/axiosInstance";
-import styles from "./UserAdministrator.module.css";
+import { allUsersColumns } from './columsForUserTable/userColumns';
+import FileUpload from './FileUpload';
+import ModalRol from './ModalRol';
+
+import styles from './UserAdministrator.module.css';
 export default function UserAdministrator() {
   const { enqueueSnackbar } = useSnackbar();
   const currentCompany = useSelector((state) => state.companies.currentCompany);
@@ -42,7 +43,7 @@ export default function UserAdministrator() {
   const [rolesByUser, setRolesByUser] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRolId, setSelectedRolId] = useState(null); // Estado para almacenar el rol seleccionado
-  const [userCompanies, setUserCompanies] = useState("");
+  const [userCompanies, setUserCompanies] = useState('');
 
   const handleCloseCreateDialog = () => {
     setCurrentCreate(null);
@@ -71,13 +72,13 @@ export default function UserAdministrator() {
   //User
   const handleCreateUser = async () => {
     setCurrentCreate({
-      type: "user",
-      title: "Crear Usuario",
+      type: 'user',
+      title: 'Crear Usuario',
       fields: [
         {
-          label: "Tipo Documento",
-          name: "documentType",
-          type: "select",
+          label: 'Tipo Documento',
+          name: 'documentType',
+          type: 'select',
           isRequired: true,
           options: DocumentsTypes.map((company) => ({
             value: company.documentTypeId,
@@ -85,33 +86,33 @@ export default function UserAdministrator() {
           })),
         },
         {
-          label: "Número Documento",
-          name: "documentNumber",
-          type: "text",
+          label: 'Número Documento',
+          name: 'documentNumber',
+          type: 'text',
           isRequired: true,
         },
         {
-          label: "Nombre Completo",
-          name: "name",
-          type: "text",
+          label: 'Nombre Completo',
+          name: 'name',
+          type: 'text',
           isRequired: true,
         },
         {
-          label: "Cargo",
-          name: "rol",
-          type: "text",
+          label: 'Cargo',
+          name: 'rol',
+          type: 'text',
           isRequired: true,
         },
         {
-          label: "Correo Electrónico",
-          name: "email",
-          type: "text",
+          label: 'Correo Electrónico',
+          name: 'email',
+          type: 'text',
           isRequired: true,
         },
         {
-          label: "Celular",
-          name: "phoneNumber",
-          type: "text",
+          label: 'Celular',
+          name: 'phoneNumber',
+          type: 'text',
           isRequired: true,
         },
       ],
@@ -122,13 +123,13 @@ export default function UserAdministrator() {
   const handleCreateRolUserAdministrator = async () => {
     const response = await fetchUserGetRolsAPI(selectedRolId);
     setCurrentCreate({
-      type: "userRol",
-      title: "Crear Rol Usuario",
+      type: 'userRol',
+      title: 'Crear Rol Usuario',
       fields: [
         {
-          label: "Usuario",
-          name: "userRolChange",
-          type: "select",
+          label: 'Usuario',
+          name: 'userRolChange',
+          type: 'select',
           isRequired: true,
           options: users.map((user) => ({
             value: user.userId,
@@ -143,9 +144,9 @@ export default function UserAdministrator() {
             : null, // Si no encuentra el usuario, el valor será null
         },
         {
-          label: "Roles",
-          name: "userRol",
-          type: "select",
+          label: 'Roles',
+          name: 'userRol',
+          type: 'select',
           isRequired: true,
           options: response.data.map((user) => ({
             value: user.id,
@@ -160,13 +161,13 @@ export default function UserAdministrator() {
   const handleAssignCompanyUser = async () => {
     const response = await getCompaniesUserAPI(selectedRolId);
     setCurrentCreate({
-      type: "userCompany",
-      title: "Asignar compañía usuario",
+      type: 'userCompany',
+      title: 'Asignar compañía usuario',
       fields: [
         {
-          label: "Usuario",
-          name: "userRolChange",
-          type: "select",
+          label: 'Usuario',
+          name: 'userRolChange',
+          type: 'select',
           isRequired: true,
           options: users.map((user) => ({
             value: user.userId,
@@ -181,10 +182,10 @@ export default function UserAdministrator() {
             : null, // Si no encuentra el usuario, el valor será null
         },
         {
-          label: "Compañía",
-          name: "companies",
+          label: 'Compañía',
+          name: 'companies',
           
-          type: "select",
+          type: 'select',
           isRequired: true,
           options: response.data.map((user) => ({
             value: user.id,
@@ -214,16 +215,16 @@ export default function UserAdministrator() {
     // Mapear los usuarios agrupados al formato deseado
     return Object.values(groupedUsers).map((group) => [
       {
-        column: "name",
+        column: 'name',
         value: group.email,
       },
       {
-        column: "roles",
-        value: Array.from(group.roles).join(", "), // Convertir roles en cadena separada por comas
+        column: 'roles',
+        value: Array.from(group.roles).join(', '), // Convertir roles en cadena separada por comas
       },
       {
-        column: "options",
-        value: "",
+        column: 'options',
+        value: '',
         payload: {
           handleEdit: handleEditCompanyRols,
           id: group.userId,
@@ -250,13 +251,13 @@ export default function UserAdministrator() {
       await deleteUserRolsAPI(id, rolId);
       await fetchAllUser();
       fetchRoleByUser(id, currentCompany.id);
-      enqueueSnackbar("Rol eliminado con éxito", {
-        variant: "success",
+      enqueueSnackbar('Rol eliminado con éxito', {
+        variant: 'success',
         autoHideDuration: 3000,
       });
     } catch (Exception) {
-      enqueueSnackbar("Hubo un error al eliminar el rol", {
-        variant: "error",
+      enqueueSnackbar('Hubo un error al eliminar el rol', {
+        variant: 'error',
         autoHideDuration: 3000,
       });
     }
@@ -266,21 +267,21 @@ export default function UserAdministrator() {
     try {
       await deleteCompaniesUserAPI(companyId, selectedRolId);
       await getCompaniesUserAPI(selectedRolId);
-      enqueueSnackbar("La compañía ha sido desasignada con éxito", {
-        variant: "success",
+      enqueueSnackbar('La compañía ha sido desasignada con éxito', {
+        variant: 'success',
         autoHideDuration: 3000,
       });
     } catch (Exception) {
-      enqueueSnackbar("Hubo un error al desasignar la compañia", {
-        variant: "error",
+      enqueueSnackbar('Hubo un error al desasignar la compañia', {
+        variant: 'error',
         autoHideDuration: 3000,
       });
     }
   };
 
   const handleSubmittedCreateDialog = async (formValues) => {
-    console.log(currentCreate.type)
-    if (currentCreate.type === "user") {
+    console.log(currentCreate.type);
+    if (currentCreate.type === 'user') {
       try {
         await postUserAPI({
           idCompany: currentCompany.id,
@@ -292,17 +293,17 @@ export default function UserAdministrator() {
           phoneNumber: formValues.phoneNumber,
         });
 
-        enqueueSnackbar("Usuario creado con éxito", {
-          variant: "success",
+        enqueueSnackbar('Usuario creado con éxito', {
+          variant: 'success',
         });
       } catch (e) {
-        enqueueSnackbar("Hubo un error al crear el usuario", {
-          variant: "error",
+        enqueueSnackbar('Hubo un error al crear el usuario', {
+          variant: 'error',
         });
       }
     }
 
-    if (currentCreate.type === "userRol") {
+    if (currentCreate.type === 'userRol') {
       try {
         await postUserRolsAPI({
           userId: formValues.userRolChange,
@@ -310,18 +311,18 @@ export default function UserAdministrator() {
         });
         await fetchAllUser();
         fetchRoleByUser(formValues.userRolChange, currentCompany.id);
-        enqueueSnackbar("Rol agregado con éxito", {
-          variant: "success",
+        enqueueSnackbar('Rol agregado con éxito', {
+          variant: 'success',
         });
       } catch (e) {
-        enqueueSnackbar("Hubo un error al agregar el rol", {
-          variant: "error",
+        enqueueSnackbar('Hubo un error al agregar el rol', {
+          variant: 'error',
         });
       }
     }
 
-    if (currentCreate.type === "userCompany") {
-      console.log(formValues)
+    if (currentCreate.type === 'userCompany') {
+      console.log(formValues);
       try {
         await postCompaniesUserAPI({
           userId: formValues.userRolChange,
@@ -329,13 +330,13 @@ export default function UserAdministrator() {
         });
         await fetchAllUser();
         fetchRoleByUser(formValues.userRolChange, currentCompany.id);
-        enqueueSnackbar("Compañia agregada con éxito", {
-          variant: "success",
+        enqueueSnackbar('Compañia agregada con éxito', {
+          variant: 'success',
         });
       } catch (e) {
-        console.log("Error al agregar la compañía:", e);
-        enqueueSnackbar("Hubo un error al agregar la compañia", {
-          variant: "error",
+        console.log('Error al agregar la compañía:', e);
+        enqueueSnackbar('Hubo un error al agregar la compañia', {
+          variant: 'error',
         });
       }
     }
@@ -353,10 +354,10 @@ export default function UserAdministrator() {
   }, [currentCompany]);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex' }}>
       <Navbar />
       <IconSidebar />
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: 'white' }}>
         <div className={styles.UserAdministratorPage}>
           <div className={styles.UserAdministratorPage__content}>
             <MyPageHeader title="Administrar usuarios" needBack={false} />
@@ -365,9 +366,9 @@ export default function UserAdministrator() {
                 <div>
                   <MyCard
                     sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
                     }}
                   >
                     <Stack
@@ -387,7 +388,7 @@ export default function UserAdministrator() {
                       </Button>
                     </Stack>
                     <MyTable
-                      title={"Rol Usuarios"}
+                      title={'Rol Usuarios'}
                       columns={allUsersColumns}
                       rows={mapAllUsers(allUsers)}
                     />
