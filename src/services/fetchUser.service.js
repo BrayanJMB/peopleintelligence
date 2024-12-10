@@ -59,3 +59,22 @@ export const fetchAllUserRolsAPI = async (companyId) => axios.get(`Roles/GetAllR
  */
 export const deleteUserRolsAPI = async (userId, roleId) => axios.delete(`Roles/DeleteRolesUser/${userId}/${roleId}`);
 
+
+/**
+ * GetCompanies User.
+ *
+ * @returns {Promise<any>}
+ */
+export const getCompaniesUserAPI = async (userId) => axios.get(`users/${userId}/unsubscribedCompanies`);
+
+
+/**
+ * DeleteCompanies User.
+ *
+ * @returns {Promise<any>}
+ */
+export const deleteCompaniesUserAPI = async (companyId,userId) => axios.delete(`users/${userId}/companies/${companyId}`);
+
+
+export const postCompaniesUserAPI = async (data) => axios.post('users/company-assignments',data);
+

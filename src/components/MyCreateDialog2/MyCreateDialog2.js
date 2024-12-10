@@ -319,7 +319,7 @@ const MyCreateDialog = ({
         setValues((prevValues) => ({
           ...prevValues,
           userRolChange: fixedValue.value,
-          userRolChangeError: '',
+          userRolChangeError: false,
           userRolChangeHelperText: '', 
         }));
       }
@@ -616,6 +616,7 @@ const MyCreateDialog = ({
                                 )
                               : field.options
                           }
+                          isOptionEqualToValue={(option, value) => option.value === value.value}
                           getOptionLabel={(option) => option.label}
                           value={
                             field.name === 'userRolChange'

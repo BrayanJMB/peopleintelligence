@@ -12,26 +12,24 @@ import MyTable from '../../components/MyTable/MyTable';
 import IconSidebar from '../../Layout/IconSidebar/IconSidebar';
 import Navbar from '../../Layout/Navbar/Navbar';
 import {
-  deleteCompaniesUserAPI,
   deleteUserRolsAPI,
   fetchAllUserRolsAPI,
   fetchRolesByUserAPI,
   fetchUserAPI,
   fetchUserGetRolsAPI,
-  getCompaniesUserAPI,
-  postCompaniesUserAPI,
   postUserAPI,
   postUserRolsAPI,
 } from '../../services/fetchUser.service';
 import { fetchDocumentTypeAPI } from '../../services/getDocumentType.service';
 import client from '../../utils/axiosInstance';
 
-import { allUsersColumns } from './columsForUserTable/userColumns';
+import { allUsersWihtoutCompanyColumns } from './columsForUserTable/userColumns';
 import FileUpload from './FileUpload';
 import ModalRol from './ModalRol';
 
 import styles from './UserAdministrator.module.css';
-export default function UserAdministrator() {
+
+export const AssignUserCompany = () => {
   const { enqueueSnackbar } = useSnackbar();
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [currentCreate, setCurrentCreate] = useState(null);
@@ -158,45 +156,6 @@ export default function UserAdministrator() {
     setOpenCreateDialog(true);
   };
 
-  const handleAssignCompanyUser = async () => {
-    const response = await getCompaniesUserAPI(selectedRolId);
-    setCurrentCreate({
-      type: 'userCompany',
-      title: 'Asignar compañía usuario',
-      fields: [
-        {
-          label: 'Usuario',
-          name: 'userRolChange',
-          type: 'select',
-          isRequired: true,
-          options: users.map((user) => ({
-            value: user.userId,
-            label: user.email,
-          })),
-          defaultValue: users.find((user) => user.userId === selectedRolId)
-            ? {
-                value: selectedRolId,
-                label: users.find((user) => user.userId === selectedRolId)
-                  .email,
-              }
-            : null, // Si no encuentra el usuario, el valor será null
-        },
-        {
-          label: 'Compañía',
-          name: 'companies',
-          
-          type: 'select',
-          isRequired: true,
-          options: response.data.map((user) => ({
-            value: user.id,
-            label: user.businessName,
-          })),
-        },
-      ],
-    });
-    setOpenCreateDialog(true);
-  };
-
   const mapAllUsers = (users) => {
     // Agrupar por `userId` para combinar los roles
     const groupedUsers = users.reduce((acc, user) => {
@@ -217,10 +176,6 @@ export default function UserAdministrator() {
       {
         column: 'name',
         value: group.email,
-      },
-      {
-        column: 'roles',
-        value: Array.from(group.roles).join(', '), // Convertir roles en cadena separada por comas
       },
       {
         column: 'options',
@@ -263,24 +218,7 @@ export default function UserAdministrator() {
     }
   };
 
-  const handleDeleteCompanyUser = async (companyId) => {
-    try {
-      await deleteCompaniesUserAPI(companyId, selectedRolId);
-      await getCompaniesUserAPI(selectedRolId);
-      enqueueSnackbar('La compañía ha sido desasignada con éxito', {
-        variant: 'success',
-        autoHideDuration: 3000,
-      });
-    } catch (Exception) {
-      enqueueSnackbar('Hubo un error al desasignar la compañia', {
-        variant: 'error',
-        autoHideDuration: 3000,
-      });
-    }
-  };
-
   const handleSubmittedCreateDialog = async (formValues) => {
-    console.log(currentCreate.type);
     if (currentCreate.type === 'user') {
       try {
         await postUserAPI({
@@ -320,26 +258,6 @@ export default function UserAdministrator() {
         });
       }
     }
-
-    if (currentCreate.type === 'userCompany') {
-      console.log(formValues);
-      try {
-        await postCompaniesUserAPI({
-          userId: formValues.userRolChange,
-          companyId: formValues.companies,
-        });
-        await fetchAllUser();
-        fetchRoleByUser(formValues.userRolChange, currentCompany.id);
-        enqueueSnackbar('Compañia agregada con éxito', {
-          variant: 'success',
-        });
-      } catch (e) {
-        console.log('Error al agregar la compañía:', e);
-        enqueueSnackbar('Hubo un error al agregar la compañia', {
-          variant: 'error',
-        });
-      }
-    }
     setCurrentCreate(null);
     setOpenCreateDialog(false);
   };
@@ -360,7 +278,7 @@ export default function UserAdministrator() {
       <div style={{ backgroundColor: 'white' }}>
         <div className={styles.UserAdministratorPage}>
           <div className={styles.UserAdministratorPage__content}>
-            <MyPageHeader title="Administrar usuarios" needBack={false} />
+            <MyPageHeader title="Asignar usuarios a compañias" needBack={false} />
             <div className={styles.buttom}>
               <div>
                 <div>
@@ -371,25 +289,9 @@ export default function UserAdministrator() {
                       justifyContent: 'center',
                     }}
                   >
-                    <Stack
-                      spacing={2}
-                      direction="row-reverse"
-                      sx={{
-                        mb: 2,
-                      }}
-                    >
-                      <FileUpload />
-                      <Button
-                        variant="outlined"
-                        startIcon={<AddIcon />}
-                        onClick={handleCreateUser}
-                      >
-                        Crear Usuario
-                      </Button>
-                    </Stack>
                     <MyTable
-                      title={'Rol Usuarios'}
-                      columns={allUsersColumns}
+                      title={'Usuarios sin compañia'}
+                      columns={allUsersWihtoutCompanyColumns}
                       rows={mapAllUsers(allUsers)}
                     />
                   </MyCard>
@@ -416,8 +318,6 @@ export default function UserAdministrator() {
               handleCreateRolUserAdministrator={
                 handleCreateRolUserAdministrator
               }
-              handleDeleteCompanyUser={handleDeleteCompanyUser}
-              handleAssignCompanyUser={handleAssignCompanyUser}
               userCompanies={userCompanies}
             />
           </div>
@@ -425,4 +325,4 @@ export default function UserAdministrator() {
       </div>
     </Box>
   );
-}
+};
