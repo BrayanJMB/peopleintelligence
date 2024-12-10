@@ -16,8 +16,8 @@ import {
 } from "@mui/material";
 
 import { styled } from "@mui/material/styles";
-import client from "../../utils/axiosInstance";
 import { ConfirmDialog } from "../SurveyDetailPage/ConfirmDialog";
+import { useSelector } from "react-redux";
 
 const StyledModal = styled(Modal)(({ theme }) => ({
   display: "flex",
@@ -47,6 +47,8 @@ export default function ModalRol({
   rolesByUser,
   handleDeleteCompanyRols,
   handleCreateRolUserAdministrator,
+  handleDeleteCompanyUser,
+  handleAssignCompanyUser,
   userCompanies,
 }) {
   const [openDialogs, setOpenDialogs] = useState({});
@@ -77,8 +79,8 @@ export default function ModalRol({
     handleDeleteCompanyRols(id, rolId);
   };
 
-  const handleConfirmDeleteCompany = async (id, rolId) => {
-    alert("elimina compañía");
+  const handleConfirmDeleteCompany = async (companyId) => {
+    handleDeleteCompanyUser(companyId);
   };
 
   const checkRoles = () => {
@@ -218,7 +220,6 @@ export default function ModalRol({
                                 `Al ejecutar esta acción eliminará la compañía "${rol.nombreCompañia}"`,
                                 () =>
                                   handleConfirmDeleteCompany(
-                                    rol.userId,
                                     rol.id
                                   ),
                                 false
@@ -245,7 +246,7 @@ export default function ModalRol({
                     variant="contained"
                     color="primary"
                     startIcon={<AddIcon />}
-                    onClick={handleCreateRolUserAdministrator}
+                    onClick={handleAssignCompanyUser}
                   >
                     Asignar compañia
                   </Button>
