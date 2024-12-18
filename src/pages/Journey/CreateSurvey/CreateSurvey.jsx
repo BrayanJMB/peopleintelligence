@@ -76,7 +76,7 @@ export default function CreateSurvey() {
     rangeOptions: ['Rango 0-6', 'Rango 7-8', 'Rango 9-10'],
   });
 
-  const [selections, setSelections] = useState({});
+  const [selections, setSelections] = useState([]);
   const dispatch = useDispatch();
 
   const [childQuestionNumber, setChildQuestionNumber] = useState([]);
@@ -614,6 +614,13 @@ export default function CreateSurvey() {
     holder.splice(index, 1);
     setInformation({ ...information, customOptions: holder });
   };
+
+  const handleRemoveOptionTemplate = (index) => {
+    let holder = [...question.customOptions];
+    holder.splice(index, 1);
+    setQuestion({ ...question, customOptions: holder });
+  };
+
   const handleeditaddoption = () => {
     let holder = [...question.customOptions];
     holder.push('');
@@ -1228,6 +1235,7 @@ export default function CreateSurvey() {
    * @param {number} templateId
    */
   const fetchSurvey = async (templateId) => {
+    console.log("entro aca")
     if (!currentCompany) {
       return;
     }
@@ -1282,6 +1290,7 @@ export default function CreateSurvey() {
     let questionsCopy = [...questions];
 
     // fill questions
+    console.log( survey.response)
     survey.response.preguntas.map((question) =>
       questionsCopy.push({
         id: uuid.v4(),
@@ -1347,20 +1356,25 @@ export default function CreateSurvey() {
       };
     }
     setData(dataCopy);
+    console.log( template.templatesQuestions)
     let questionsCopy = [...questions];
-
     // fill questions
     template.templatesQuestions.map((question) =>
       questionsCopy.push({
         id: uuid.v4(),
         questionId: question.question.id,
+        questionNumber: question.question.numberQuestion,
         typeId: question.question.typeQuestionId,
         categoryId: question.categoryId,
         type: question.typeQuestionId,
         name: question.question.nameQuestion,
         description: question.question.description,
+        conditionalQuestion:question.question.conditionalQuestion,
         customOptions: question.options.map(
           (option) => option.templateOptionsName
+        ),
+        childQuestionIds: question.options.map(
+          (option) => option.id
         ),
         options: question.options.map((option) => option.templateOptionsName),
         questionOptions: question.options,
@@ -1497,6 +1511,7 @@ export default function CreateSurvey() {
                     helperText={helperText}
                     handleInformationOptions={handleeditoption}
                     handleAddOption={handleeditaddoption}
+                    handleRemoveOption={handleRemoveOptionTemplate}
                     handleAddStars={handleeditstars}
                     handleDeleteStars={handleeditdeletestars}
                     starMessage={starmsg}
