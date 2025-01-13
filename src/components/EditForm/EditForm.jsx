@@ -14,7 +14,9 @@ import TextField from "@mui/material/TextField";
 import PropTypes from "prop-types";
 import { RelationalQuestionsEdit } from "../Questions/RelationQuestion/RelationalQuestionEdit";
 import styles from "./EditForm.module.css";
-
+// Abandonamos encuestas traducidas
+// Javascript <--> Typescript
+// Whatsapp
 /**
  * Edit form component for create survey page.
  *
@@ -55,8 +57,23 @@ const EditForm = ({
   customOptionError,
   ...props
 }) => {
+  console.log(question);
+  console.log(questions);
   const [categoryId, setCategoryId] = useState("");
-  const [optionFilteredSelect, setOptionFilteredSelect] = useState(null);
+  const [optionFilteredSelect, setOptionFilteredSelect] = useState([
+    {
+      id: "cc12a501-cf65-4f2f-bd23-44c79e5c4a64",
+      categoryId: 6,
+      typeId: 1,
+      questionId: null,
+      questionOptions: [],
+      questionNumber: 0,
+      type: "Texto corto",
+      name: "Fin de la encuesta",
+      description: "321321",
+      customOptions: undefined,
+    },
+  ]);
   /**
    * Handle category id change.
    *
@@ -69,10 +86,12 @@ const EditForm = ({
 
   const handleSelect = (uniqueId, { selectedValue, questionNumber, index }) => {
     props.setSelections((prev) => {
-      const updatedArray = [...prev];
-      updatedArray[uniqueId] = selectedValue; // Sobrescribe el índice específico
-      return updatedArray;
+      const updatedSelections = [...prev];
+      updatedSelections[uniqueId] = selectedValue; // Actualiza el índice correspondiente
+      return updatedSelections;
     });
+    getFilteredOptions(`${uniqueId}`, questionNumber);
+
     if (question.conditionalQuestion) {
       setQuestion((prev) => {
         const newChildQuestionIds = [...prev.childQuestionIds]; // Asume que ya tienes este array en tu estado
@@ -94,42 +113,34 @@ const EditForm = ({
       .map((value) => value?.id)
       .filter((id) => id && id !== props.selections[uniqueId]?.id);
 
-    const filteredQuestions = questions.filter(
+    const filteredOptions = questions.filter(
       (question) =>
         question.id !== currentQuestionId &&
-        question.questionNumber > questionNumber
-      //&& !question.conditionalQuestion  // Solo incluye preguntas con un número mayor al actual
+        question.questionNumber >= questionNumber
     );
-    // Definir el objeto "pregunta final"
-    const preguntaFinal = {
-      id: "cc12a501-cf65-4f2f-bd23-44c79e5c4a64",
-      categoryId: 6,
-      typeId: 1,
-      questionId: null,
-      questionOptions: [],
-      questionNumber: 0,
-      type: "Texto corto",
-      name: "Fin de la encuesta",
-      description: "321321",
-      customOptions: undefined,
-    };
-    // Añadir el objeto "pregunta final" al array filtrado
-    filteredQuestions.push(preguntaFinal);
-    return filteredQuestions;
+    console.log(filteredOptions)
+    setOptionFilteredSelect((prev) => [
+      ...prev,
+      ...filteredOptions.filter(
+        (option) => !prev.some((existing) => existing.id === option.id) // Evitar duplicados en prev
+      ),
+    ]);
   };
 
   useEffect(() => {
-    const filteredQuestions = getFilteredOptions(
-      `${question.id}`,
-      question.questionNumber
-    );
-    props.setSelections(filteredQuestions);
+    getFilteredOptions(`${question.id}`, question.questionNumber);
   }, []);
 
   useEffect(() => {
-    console.log(props.selections)
-  }, [props.selections]);
+    // Actualiza `props.setSelections` cada vez que `optionFilteredSelect` cambie
+    props.setSelections(optionFilteredSelect);
+  }, [optionFilteredSelect]); // Depende del cambio en `optionFilteredSelect`
 
+  useEffect(() => {
+    console.log(props.selections);
+    console.log(optionFilteredSelect);
+  }, [props.selections]);
+  console.log(question.questionOptions)
   return (
     <Fragment>
       <div className={styles.form}>
@@ -261,6 +272,7 @@ const EditForm = ({
                         `${option.questionNumber}. ${option.name}`
                       }
                       value={
+                        props.selections &&
                         props.selections.find((item) =>
                           question.questionOptions.some(
                             (option) =>
@@ -268,9 +280,7 @@ const EditForm = ({
                                 item.questionNumber &&
                               option.numberOption == key + 1
                           )
-                        ) ||
-                        props.selections[`${question.id}`] ||
-                        null
+                        )
                       }
                       onChange={(event, value) => {
                         // Crear un objeto que incluya el valor seleccionado y el número de la pregunta
@@ -279,7 +289,13 @@ const EditForm = ({
                           questionNumber: value ? value.questionNumber : null,
                           index: key,
                         };
-                        handleSelect(`${question.id}-${key}`, dataToSend);
+                        handleSelect(question.id, {
+                          selectedValue: optionFilteredSelect.find(
+                            (opt) => opt.id === event.target.value
+                          ),
+                          questionNumber: question.questionNumber,
+                          index: questions.indexOf(question),
+                        });
                       }}
                       renderInput={(params) => (
                         <TextField
@@ -287,11 +303,11 @@ const EditForm = ({
                           label="preguntas"
                           error={
                             errorMessage.autocomplete &&
-                            !props.selections[`${question.id}-${key}`]
+                            !props.selections[`${question.id}`]
                           }
                           helperText={
                             errorMessage.autocomplete &&
-                            !props.selections[`${question.id}-${key}`]
+                            !props.selections[`${question.id}`]
                               ? helperText.autocomplete
                               : ""
                           }
