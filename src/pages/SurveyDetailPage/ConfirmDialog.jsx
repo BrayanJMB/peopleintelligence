@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import Button from "@mui/material/Button";
-import CircularProgress from "@mui/material/CircularProgress";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import TextField from "@mui/material/TextField";
+import React, { useEffect, useState } from 'react';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
 
 export const ConfirmDialog = ({
   open,
@@ -67,7 +67,7 @@ export const ConfirmDialog = ({
 
   return (
     <Dialog open={open} onClose={handleCancel}>
-      <DialogTitle>{"Confirmar Acción"}</DialogTitle>
+      <DialogTitle>{'Confirmar Acción'}</DialogTitle>
       <DialogContent>
         <DialogContentText>{message}</DialogContentText>
         <div style={{marginTop:'15px'}}>
@@ -90,11 +90,11 @@ export const ConfirmDialog = ({
         {confirming && skipConfirmation && (
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginTop: "20px",
-              flexDirection: "column",
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: '20px',
+              flexDirection: 'column',
             }}
           >
             <CircularProgress />
