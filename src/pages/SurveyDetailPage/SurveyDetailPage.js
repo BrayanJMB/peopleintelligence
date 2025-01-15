@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { renderMatches, useParams, useSearchParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -105,9 +105,11 @@ const SurveyDetailPage = () => {
   const [reminderSent, setReminderSent] = useState(false);
   const [showDemographicData, setShowDemographicData] = useState(false);
   const [alertType, setAlertType] = useState('');
-  const [openDialog, setOpenDialog] = useState(false);
+  const [errorReminderDay, setErrorReminderDay] = useState(null);
+  const [reminderDays, setReminderDays] = useState('60');
   const [openDialogs, setOpenDialogs] = useState({});
   const qrRef = useRef(null);
+  const reminderDaysRef = useRef(reminderDays);
   const [openModal, setOpenModal] = useState(false);
   const handleOpen = () => setOpenModal(true);
   const handleClose = () => setOpenModal(false);
@@ -404,9 +406,16 @@ const SurveyDetailPage = () => {
    * @param event
    */
   const sendReminder = async (idSurvey, dialogPosition) => {
+    const currentReminderDays = reminderDaysRef.current.trim(); // Usar el valor del ref
+
+    if (currentReminderDays === '') {
+      setErrorReminderDay(true);
+      return; // Sal de la función
+    }
+    
     handleCloseDialog(dialogPosition);
     const companyId = userInfo.Company;
-    const url = `${API}SendReminder/${surveyId}/${companyId}`;
+    const url = `${API}SendReminder/${surveyId}/${companyId}/${reminderDays}`;
 
     await client.get(url);
     setReminderSent(true);
@@ -428,6 +437,7 @@ const SurveyDetailPage = () => {
    *
    * **/
   const handleOpenDialog = (id, ...args) => {
+    console.log(args);
     setOpenDialogs((prevDialogs) => ({
       ...prevDialogs,
       [id]: {
@@ -435,6 +445,7 @@ const SurveyDetailPage = () => {
         message: args[0],
         consume: args[1],
         needConfirm: args[2],
+        confirmationInput: args[3],
       },
     }));
   };
@@ -514,7 +525,13 @@ const SurveyDetailPage = () => {
       setVisibility(currentSurvey.response.visibleSurvey);
     }
   }, [currentSurvey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    reminderDaysRef.current = reminderDays;
+  }, [reminderDays]);
+
   const generateSurveyId = () => Math.floor(Math.random() * 3) + 1; // Simula un ID dinámico entre 1 y 3
+
   return (
     <Box sx={{ display: 'flex' }} translate="no">
       <Snackbar
@@ -668,9 +685,13 @@ const SurveyDetailPage = () => {
                             onClick={() =>
                               handleOpenDialog(
                                 generateSurveyId(),
-                                'Al ejecutar esta acción se enviaran los recordatorios',
+                                `Se enviarán los recordatorios a las personas
+                                cuya antigüedad sea igual o menor al número de días indicado en la casilla.
+                                El valor predeterminado es 60 días, pero puedes modificarlo si lo deseas:
+                                `,
                                 sendReminder,
-                                false
+                                false,
+                                true
                               )
                             }
                             startIcon={<ScheduleSendIcon />}
@@ -888,7 +909,11 @@ const SurveyDetailPage = () => {
           idSurvey={surveyId}
           message={openDialogs[idDialog]?.message} // Mensaje personalizado para cada id
           skipConfirmation={openDialogs[idDialog]?.needConfirm}
+          confirmationInput={openDialogs[idDialog]?.confirmationInput}
           dialogPosition={idDialog}
+          reminderDays={reminderDays}
+          setReminderDays={setReminderDays}
+          errorReminderDay={errorReminderDay}
         />
       ))}
     </Box>
