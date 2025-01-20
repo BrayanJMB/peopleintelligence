@@ -6,6 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 
 export const ConfirmDialog = ({
@@ -19,6 +20,8 @@ export const ConfirmDialog = ({
   confirmationInput,
   reminderDays,
   setReminderDays,
+  switchChecked,
+  setSwitchChecked,
   errorReminderDay,
 }) => {
   const [confirming, setConfirming] = useState(false);
@@ -45,7 +48,6 @@ export const ConfirmDialog = ({
     setConfirming(false);
     setTimer(skipConfirmation ? 5 : 0); // Restablece el temporizador a 5 segundos
     setIsSubmitting(false);
-    
   };
 
   const handleCancel = () => {
@@ -59,6 +61,10 @@ export const ConfirmDialog = ({
     setReminderDays(value);
   };
 
+  const handleSwitchChange = (event) => {
+    setSwitchChecked(event.target.checked);
+  };
+
   useEffect(() => {
     if (errorReminderDay === false) {
       onClose();
@@ -70,16 +76,31 @@ export const ConfirmDialog = ({
       <DialogTitle>{'Confirmar Acción'}</DialogTitle>
       <DialogContent>
         <DialogContentText>{message}</DialogContentText>
-        <div style={{marginTop:'15px'}}>
+        <div style={{ marginTop: '15px' }}>
           {confirmationInput && (
-            <TextField
-              error={errorReminderDay}
-              id="outlined-error-helper-text"
-              label="Ingrese los días"
-              value={reminderDays}
-              helperText="Este campo no puede estar vacío"
-              onChange={handleReminderDay}
-            />
+            <>
+              <TextField
+                error={errorReminderDay}
+                id="outlined-error-helper-text"
+                label="Ingrese los días"
+                value={reminderDays}
+                helperText="Este campo no puede estar vacío, ni puede contener el valor de 0"
+                onChange={handleReminderDay}
+                disabled={switchChecked} // Desactiva el TextField si el Switch está desactivado
+              />
+
+              <div style={{ marginTop: '15px' }}>
+                <Switch
+                  checked={switchChecked}
+                  onChange={handleSwitchChange} // Maneja el cambio de estado
+                />
+                <span>
+                  {
+                    'Activa esta opción para enviar recordatorios sin importar la cantidad de días.'
+                  }
+                </span>
+              </div>
+            </>
           )}
         </div>
 

@@ -107,9 +107,11 @@ const SurveyDetailPage = () => {
   const [alertType, setAlertType] = useState('');
   const [errorReminderDay, setErrorReminderDay] = useState(null);
   const [reminderDays, setReminderDays] = useState('60');
-  const [openDialogs, setOpenDialogs] = useState({});
-  const qrRef = useRef(null);
   const reminderDaysRef = useRef(reminderDays);
+  const [openDialogs, setOpenDialogs] = useState({});
+  const [switchChecked, setSwitchChecked] = useState(null); // Estado del switch
+  const switchCheckedReminderDaysRef = useRef(switchChecked);
+  const qrRef = useRef(null);
   const [openModal, setOpenModal] = useState(false);
   const handleOpen = () => setOpenModal(true);
   const handleClose = () => setOpenModal(false);
@@ -408,14 +410,16 @@ const SurveyDetailPage = () => {
   const sendReminder = async (idSurvey, dialogPosition) => {
     const currentReminderDays = reminderDaysRef.current.trim(); // Usar el valor del ref
 
-    if (currentReminderDays === '') {
+    if ((currentReminderDays === '' || currentReminderDays == 0) && !switchCheckedReminderDaysRef.current) {
       setErrorReminderDay(true);
       return; // Sal de la función
     }
-    
     handleCloseDialog(dialogPosition);
     const companyId = userInfo.Company;
-    const url = `${API}SendReminder/${surveyId}/${companyId}/${reminderDays}`;
+    
+    const url = switchCheckedReminderDaysRef.current
+      ? `${API}SendReminder/${surveyId}/${companyId}`
+      : `${API}SendReminder/${surveyId}/${companyId}/${reminderDays}`;
 
     await client.get(url);
     setReminderSent(true);
@@ -437,7 +441,6 @@ const SurveyDetailPage = () => {
    *
    * **/
   const handleOpenDialog = (id, ...args) => {
-    console.log(args);
     setOpenDialogs((prevDialogs) => ({
       ...prevDialogs,
       [id]: {
@@ -529,6 +532,11 @@ const SurveyDetailPage = () => {
   useEffect(() => {
     reminderDaysRef.current = reminderDays;
   }, [reminderDays]);
+
+  
+  useEffect(() => {
+    switchCheckedReminderDaysRef.current = switchChecked;
+  }, [switchChecked]);
 
   const generateSurveyId = () => Math.floor(Math.random() * 3) + 1; // Simula un ID dinámico entre 1 y 3
 
@@ -914,6 +922,8 @@ const SurveyDetailPage = () => {
           reminderDays={reminderDays}
           setReminderDays={setReminderDays}
           errorReminderDay={errorReminderDay}
+          switchChecked={switchChecked}
+          setSwitchChecked={setSwitchChecked}
         />
       ))}
     </Box>
