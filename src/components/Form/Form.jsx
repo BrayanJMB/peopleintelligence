@@ -14,8 +14,7 @@ import { RelationalQuestions } from '../Questions/RelationQuestion/RelationalQue
 
 import styles from './Form.module.css';
 export default function Form(props) {
-  console.log(props.type);
-  console.log(props);
+
   const [categoryId, setCategoryId] = useState('');
   const [open, setOpen] = useState(false);
 

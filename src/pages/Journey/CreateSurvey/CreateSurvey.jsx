@@ -329,7 +329,6 @@ export default function CreateSurvey() {
    * Handle next step.
    */
   const handleNextStep = async () => {
-    console.log(activeStep);
     switch (activeStep) {
       case 0:
         setCheckForm(true);
@@ -579,7 +578,6 @@ export default function CreateSurvey() {
    * @param index
    */
   const handleEdit = (index) => {
-    console.log(questions);
     setTarget(index);
     setQuestion(questions[index]);
     setEdit(true);

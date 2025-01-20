@@ -296,7 +296,6 @@ const MyTable = ({ title, rows, columns }) => {
                                         >
                                           <DeleteIcon fontSize="inherit" />
                                         </IconButton>
-                                        {console.log(currentRol)}
                                         {currentDialog === item.payload.id &&
                                           (currentRol != null
                                             ? currentRol === item.payload.rolId
