@@ -40,7 +40,6 @@ function Options({
   demographicRefs,
   questionRefs,
 }) {
-  console.log(demographicRefs);
   const [files, setFiles] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');

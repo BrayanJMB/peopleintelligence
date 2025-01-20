@@ -41,9 +41,11 @@ import client from '../../../utils/axiosInstance';
 
 import Cuestionario from './Cuestionario/Cuestionario';
 import { Exclusiveness } from './Exclusividad/Exclusiveness.jsx';
+import { WhatsAppForSurvey } from './HasWhatsApp/WhatsAppForSurvey.jsx';
 import Intimidad from './Intimidad/Intimidad.jsx';
 import Introduction from './Introduction/Introduction';
 import { MessagesSurvey } from './MessagesSurvey/MessagesSurvey.jsx';
+import { MultiAnswerSurvey } from './MultiAnswerSurvey/MultiAnswerSurvey.jsx';
 
 import styles from './CreateSurvey.module.css';
 
@@ -88,6 +90,9 @@ export default function CreateSurvey() {
   const [question, setQuestion] = useState();
   const [anonymous, setAnonymous] = useState(true);
   const [exclusiviness, setExclusiviness] = useState(true);
+  const [hasWhatsApp, setHasWhatsApp] = useState(true);
+  const [dayConcurrency, setDayConcurrency] = useState(1);
+  const [isAMultiAnswerSurvey, setIsAMultiAnswerSurvey] = useState(false);
   const [checkForm, setCheckForm] = useState(false);
   const [newDemographics, setNewDemographics] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -99,6 +104,7 @@ export default function CreateSurvey() {
     confidentialityMessage:
       'Tus respuestas serán completamente confidenciales y no podrán ser vinculadas a tu identidad.',
   });
+  const [errorDayConcurrency, setErrorDayConcurrency] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const isMap = searchParams.get('isMap') === 'true';
   const isEdit = searchParams.get('isEdit') === 'true';
@@ -110,9 +116,11 @@ export default function CreateSurvey() {
     searchParams.get('templateId') || location.pathname.split('/')[3];
   const steps = [
     'Introducción',
+    'WhatsApp',
     'Cuestionario',
     'Configuración',
     ...(!isTemplate ? ['Privacidad'] : []),
+    'Concurrencia',
   ];
   const { surveyId } = useParams();
   /**
@@ -160,7 +168,7 @@ export default function CreateSurvey() {
    */
   const createSurvey = async () => {
     setLoading(true);
-
+    if (errorDayConcurrency || dayConcurrency === '') return;
     const newSurvey = {
       survey: {
         nameSurvey: data.title,
@@ -175,6 +183,9 @@ export default function CreateSurvey() {
         wellcomeMessage: surveyMessages.welcomeMessage,
         inputMessage: surveyMessages.inputMessage,
         confindencialityMessage: surveyMessages.confidentialityMessage,
+        duplicateResponses: isAMultiAnswerSurvey,
+        daysConcurrency: dayConcurrency,
+        hasWhatsApp: hasWhatsApp,
       },
       questions: questions.map((question) => ({
         question: {
@@ -325,6 +336,37 @@ export default function CreateSurvey() {
     setLoading(false);
   };
 
+  const validateLengthQuestion = (questions) =>{
+    if (questions.length === 0){
+      enqueueSnackbar('La encuesta debe tener al menos una pregunta.', {
+        variant: 'error',
+        autoHideDuration: 3000,
+      });
+      return true;
+    }
+  };
+
+  const validateCategoryForQuestions = (questions) =>{
+    const invalidQuestions = questions
+    .map((question, index) => ({
+      ...question,
+      originalIndex: index + 1, // Guardar índice original (1 basado)
+    }))
+    .filter((question) => question.categoryId === null || question.categoryId === undefined);
+    if (invalidQuestions.length > 0) {
+      invalidQuestions.forEach((question, index) => {
+        enqueueSnackbar(
+          `La pregunta # ${question.originalIndex} no tiene categoría, por favor asignar una categoría`,
+          {
+            variant: 'error',
+            autoHideDuration: 3000,
+          }
+        );
+      });
+      return true;
+    }
+  };
+
   /**
    * Handle next step.
    */
@@ -362,9 +404,18 @@ export default function CreateSurvey() {
         setActiveStep((val) => val + 1);
         break;
       case 2:
+        if(validateLengthQuestion(questions) || validateCategoryForQuestions(questions)){
+          return;
+        }
         setActiveStep((val) => val + 1);
         break;
       case 3:
+        setActiveStep((val) => val + 1);
+        break;
+      case 4:
+        setActiveStep((val) => val + 1);
+        break;
+      case 5:
         if (isEdit) {
           editSurvey();
         } else {
@@ -669,6 +720,17 @@ export default function CreateSurvey() {
     setNewDemographics(demographics);
   };
 
+  const handleChangeDayConcurrency = (event) => {
+    const inputValue = event.target.value;
+    // Permitir solo números
+    if (/^[1-9]\d*$/.test(inputValue) || inputValue === '') {
+      setDayConcurrency(inputValue);
+      setErrorDayConcurrency(false);
+    } else {
+      setErrorDayConcurrency(true);
+    }
+  };
+
   const renderSwitch = (activeStep) => {
     switch (activeStep) {
       case 0:
@@ -683,6 +745,15 @@ export default function CreateSurvey() {
           />
         );
       case 1:
+        return (
+          <Box width="100%">
+            <WhatsAppForSurvey
+              hasWhatsApp={hasWhatsApp}
+              handleHasWhatsApp={handleHasWhatsApp}
+            />
+          </Box>
+        );
+      case 2:
         return (
           <Box width="100%">
             <DemographicDataForm
@@ -702,7 +773,7 @@ export default function CreateSurvey() {
             />
           </Box>
         );
-      case 2:
+      case 3:
         return (
           <Box width="100%">
             <MessagesSurvey
@@ -711,7 +782,7 @@ export default function CreateSurvey() {
             />
           </Box>
         );
-      case 3:
+      case 4:
         return (
           <div style={{ display: 'flex', width: '100%' }}>
             <Intimidad anonyme={anonymous} handleAnonyme={handleanonyme} />
@@ -719,6 +790,41 @@ export default function CreateSurvey() {
               exclusiviness={exclusiviness}
               handleExclusiviness={handleExclusiviness}
             />
+          </div>
+        );
+
+      case 5:
+        return (
+          <div
+            style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
+          >
+            <MultiAnswerSurvey
+              isAMultiAnswerSurvey={isAMultiAnswerSurvey}
+              handleMultiAnswerSurvey={handleMultiAnswerSurvey}
+            />
+
+            {isAMultiAnswerSurvey && (
+              <>
+                <p>
+                  Ingrese cada cuántos días se va repetir la encuesta para los
+                  usuarios:
+                </p>
+
+                <TextField
+                  label="Días"
+                  value={dayConcurrency}
+                  onChange={handleChangeDayConcurrency}
+                  type="text"
+                  inputProps={{ inputMode: 'numeric', pattern: '^[1-9]\\d*$' }} // Solo permite números positivos (sin 0 como valor único)
+                  error={errorDayConcurrency} // Activa el estilo de error en el campo
+                  helperText={
+                    errorDayConcurrency
+                      ? 'El valor no puede ser 0 ni estar vacío'
+                      : ''
+                  } // Mensaje de error condicional
+                />
+              </>
+            )}
           </div>
         );
 
@@ -731,11 +837,19 @@ export default function CreateSurvey() {
     setEdit(false);
   };
   const handleCloseEditModal = () => setEdit(false);
+
   const handleanonyme = (event) => {
     setAnonymous(event.target.value === 'true');
   };
   const handleExclusiviness = (event) => {
     setExclusiviness(event.target.value === 'true');
+  };
+  const handleHasWhatsApp = (event) => {
+    setHasWhatsApp(event.target.value === 'true');
+  };
+
+  const handleMultiAnswerSurvey = (event) => {
+    setIsAMultiAnswerSurvey(event.target.value === 'true');
   };
 
   const reorder = (list, start, end) => {
@@ -775,22 +889,22 @@ export default function CreateSurvey() {
   };
 
   function getOptions(lang) {
-    if (lang === 2) {
+    if (lang === 16) {
       // Verifica el valor del idioma
-      return [
-        'Totalmente de Acuerdo',
-        'De Acuerdo',
-        'Ni de Acuerdo Ni en Desacuerdo',
-        'En Desacuerdo',
-        'Totalmente en Desacuerdo',
-      ];
-    } else {
       return [
         'Strongly Agree',
         'Agree',
         'Neither Agree nor Disagree',
         'Disagree',
         'Strongly Disagree',
+      ];
+    } else {
+      return [
+        'Totalmente de Acuerdo',
+        'De Acuerdo',
+        'Ni de Acuerdo Ni en Desacuerdo',
+        'En Desacuerdo',
+        'Totalmente en Desacuerdo',
       ];
     }
   }
@@ -1450,11 +1564,12 @@ export default function CreateSurvey() {
                     variant="contained"
                     onClick={handleNextStep}
                     disabled={
-                      (activeStep !== 0 && questions.length === 0) ||
-                      loading === true
+                      ((activeStep !== 0 && questions.length === 0) ||
+                        loading === true) &&
+                      errorDayConcurrency
                     }
                   >
-                    {activeStep === 3 || (activeStep === 1 && isTemplate)
+                    {activeStep === 5 || (activeStep === 1 && isTemplate)
                       ? 'Finalizar'
                       : 'Continuar'}
                   </Button>

@@ -27,6 +27,7 @@ import Questions from './pages/Questions/Questions';
 import Register from './pages/Register/Register';
 import Roles from './pages/Roles/Roles';
 import SurveyDetailPage from './pages/SurveyDetailPage/SurveyDetailPage';
+import { AssignUserCompany } from './pages/userAdministrator/AssignUserCompany';
 import UserAdministrator from './pages/userAdministrator/UserAdministrator';
 import { store } from './redux/store';
 import IdleTimer from './utils/IdleTimer';
@@ -57,7 +58,11 @@ export default function App() {
                 path="/answer-survey/:surveyId/:companyId/:answerId"
                 element={<AnswerSurvey />}
               />
-              <Route path="bancolombia/:surveyId/:companyId/:answerId" element={<Bancolombia />} exact />
+              <Route
+                path="bancolombia/:surveyId/:companyId/:answerId"
+                element={<Bancolombia />}
+                exact
+              />
               <Route element={<PrivateRoutes />}>
                 <Route path="/dashboard" element={<Dashboard />} exact />
                 <Route path="/onas" element={<Onas />} exact />
@@ -78,6 +83,13 @@ export default function App() {
                   element={<UserAdministrator />}
                   exact
                 />
+                {/* 
+                Posibility of use
+                <Route
+                  path="/assignments/users-to-companies"
+                  element={<AssignUserCompany />}
+                  exact
+                />*/}
                 <Route path="/powerbi" element={<PowerBiDashboard />} exact />
                 <Route
                   path="/powerbi/:idDashboard"

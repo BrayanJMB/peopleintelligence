@@ -99,6 +99,9 @@ export default function Navbar() {
   const handleUserAdministrator = () => {
     navigate('/UserAministrator');
   };
+  const handleUserAdministratorCompany = () => {
+    navigate('/assignments/users-to-companies');
+  };
   const handleLogOut = () => {
     localStorage.removeItem('userInfo');
     if (process.env.REACT_APP_DOMAIN_B2C === 'suite') {
@@ -350,6 +353,15 @@ export default function Navbar() {
               >
                 Administrar usuarios
               </MenuItem>
+              {/*
+              <MenuItem
+                disabled={
+                  userInfo?.role.findIndex((p) => p === "Administrador") < 0
+                }
+                onClick={() => handleUserAdministratorCompany()}
+              >
+                Asignar compañia a usuarios
+              </MenuItem> posibilidad de uso*/}
             </Menu>
           </Box>
         </Toolbar>
