@@ -311,6 +311,24 @@ const MyCreateDialog = ({
     }
   }, [file]);
 
+  useEffect(() => {
+    const fetchRoles = async () => {
+      const userRolChangeField = fields.find((field) => field.name === 'userRolChange');
+      const fixedValue = userRolChangeField?.defaultValue;
+      if (fixedValue) {
+        setValues((prevValues) => ({
+          ...prevValues,
+          userRolChange: fixedValue.value,
+          userRolChangeError: false,
+          userRolChangeHelperText: '', 
+        }));
+      }
+    };
+    
+    fetchRoles();
+  }, []);
+  
+
   return (
     <div>
       <Dialog
@@ -587,6 +605,7 @@ const MyCreateDialog = ({
                         <Autocomplete
                           fullWidth
                           id={field.name}
+                          disabled={field.name === 'userRolChange'}
                           options={
                             field.name === 'userRol'
                               ? field.options.filter(
@@ -597,11 +616,14 @@ const MyCreateDialog = ({
                                 )
                               : field.options
                           }
+                          isOptionEqualToValue={(option, value) => option.value === value.value}
                           getOptionLabel={(option) => option.label}
                           value={
-                            field.options.find(
-                              (option) => option.value === values[field.name]
-                            ) || null
+                            field.name === 'userRolChange'
+                              ? field.defaultValue // Usa el valor fijo predeterminado
+                              : field.options.find(
+                                  (option) => option.value === values[field.name]
+                                ) || null
                           }
                           onChange={(event, newValue) =>
                             handleSelectChange(field.name, newValue)

@@ -6,6 +6,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
 
 export const ConfirmDialog = ({
   open,
@@ -15,9 +17,15 @@ export const ConfirmDialog = ({
   skipConfirmation,
   message,
   dialogPosition,
+  confirmationInput,
+  reminderDays,
+  setReminderDays,
+  switchChecked,
+  setSwitchChecked,
+  errorReminderDay,
 }) => {
   const [confirming, setConfirming] = useState(false);
-  const [timer, setTimer] = useState(skipConfirmation ? 5: 0 ); // Temporizador de 5 segundos
+  const [timer, setTimer] = useState(skipConfirmation ? 5 : 0); // Temporizador de 5 segundos
   const [isSubmitting, setIsSubmitting] = useState(false); // Estado para controlar si se está procesando
   useEffect(() => {
     let timeout;
@@ -38,22 +46,64 @@ export const ConfirmDialog = ({
   const handleConfirm = async () => {
     await onConfirm(idSurvey, dialogPosition);
     setConfirming(false);
-    setTimer(skipConfirmation ? 5: 0 ); // Restablece el temporizador a 5 segundos
+    setTimer(skipConfirmation ? 5 : 0); // Restablece el temporizador a 5 segundos
     setIsSubmitting(false);
-    onClose();
   };
 
   const handleCancel = () => {
     setConfirming(false);
-    setTimer(skipConfirmation ? 5: 0 ); // Restablece el temporizador a 5 segundos
+    setTimer(skipConfirmation ? 5 : 0); // Restablece el temporizador a 5 segundos
     onClose();
   };
+
+  const handleReminderDay = (event) => {
+    const value = event.target.value;
+    setReminderDays(value);
+  };
+
+  const handleSwitchChange = (event) => {
+    setSwitchChecked(event.target.checked);
+  };
+
+  useEffect(() => {
+    if (errorReminderDay === false) {
+      onClose();
+    }
+  }, [errorReminderDay]);
 
   return (
     <Dialog open={open} onClose={handleCancel}>
       <DialogTitle>{'Confirmar Acción'}</DialogTitle>
       <DialogContent>
         <DialogContentText>{message}</DialogContentText>
+        <div style={{ marginTop: '15px' }}>
+          {confirmationInput && (
+            <>
+              <TextField
+                error={errorReminderDay}
+                id="outlined-error-helper-text"
+                label="Ingrese los días"
+                value={reminderDays}
+                helperText="Este campo no puede estar vacío, ni puede contener el valor de 0"
+                onChange={handleReminderDay}
+                disabled={switchChecked} // Desactiva el TextField si el Switch está desactivado
+              />
+
+              <div style={{ marginTop: '15px' }}>
+                <Switch
+                  checked={switchChecked}
+                  onChange={handleSwitchChange} // Maneja el cambio de estado
+                />
+                <span>
+                  {
+                    'Activa esta opción para enviar recordatorios sin importar la cantidad de días.'
+                  }
+                </span>
+              </div>
+            </>
+          )}
+        </div>
+
         <DialogContentText>
           ¿Estás seguro de que deseas ejecutar esta acción?
         </DialogContentText>
