@@ -388,7 +388,7 @@ export default function CreateSurvey() {
           setActiveStep((val) => val + 1);
           setCheckForm(false);
         }
-        break;z
+        break;z;
       case 1:
         if (isUpdate && isTemplate) {
           await updateTemplate();
