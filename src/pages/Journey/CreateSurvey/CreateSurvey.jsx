@@ -38,7 +38,6 @@ import {
   updateTemplateQuestionAPI,
 } from '../../../services/templates.service';
 import client from '../../../utils/axiosInstance';
-
 import Cuestionario from './Cuestionario/Cuestionario';
 import { Exclusiveness } from './Exclusividad/Exclusiveness.jsx';
 import { WhatsAppForSurvey } from './HasWhatsApp/WhatsAppForSurvey.jsx';
