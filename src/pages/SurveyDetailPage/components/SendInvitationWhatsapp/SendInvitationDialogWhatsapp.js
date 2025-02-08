@@ -457,7 +457,7 @@ export const SendInvitationDialogWhatsapp = ({
   useEffect(() => {
     fetchGroups();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  console.log(hasWhatsApp);
+
   return (
     <div >
       <ButtonSendInvitation

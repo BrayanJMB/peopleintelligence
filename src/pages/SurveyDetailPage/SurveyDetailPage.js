@@ -731,8 +731,8 @@ const SurveyDetailPage = () => {
                             emailMessage={currentSurvey.response.emailMessage}
                             visibility={visibility}
                           />
-
-                          {/* send invitation  Whatsapp*/}
+                          
+                          {/* send invitation  Whatsapp
                           <SendInvitationDialogWhatsapp
                             isPersonal={currentSurvey.ispersonal}
                             copyUrl={handleClickCopyUrlWhatsApp}
@@ -742,7 +742,7 @@ const SurveyDetailPage = () => {
                             emailMessage={currentSurvey.response.emailMessage}
                             visibility={visibility}
                             hasWhatsApp={currentSurvey.response.hasWhatsApp}
-                          />
+                          />*/}
                         </Stack>
                       </div>
                     </div>
