@@ -129,7 +129,6 @@ export const handleDelete = async (
  */
 
 export const validateForm = (fields, values, type) => {
-  console.log(values);
   const validationErrors = {};
   if (type === 'employee') {
     fields.forEach((sectionObj) =>
@@ -162,7 +161,7 @@ export const validateForm = (fields, values, type) => {
           (!value || (typeof value === 'string' && value.trim() === ''))
         ) {
           validationErrors[`${name}Error`] = true;
-          validationErrors[`${name}HelperText`] = 'Este campo es obligatorio';
+          validationErrors[`${name}HelperText`] = 'Este campo es obligatorioooooooo';
         } else if (error) {
           validationErrors[`${name}Error`] = error;
           validationErrors[`${name}HelperText`] = helperText;
@@ -170,6 +169,7 @@ export const validateForm = (fields, values, type) => {
       }else{
         field.options.forEach((fieldOptions) => {
           const { name, isRequired } = field;
+
           const value = values[`${name}${fieldOptions.id}`] || (fieldOptions.value ? fieldOptions.value : '');
           const { error, helperText } = validateField(name, value);
           if (

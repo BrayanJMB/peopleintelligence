@@ -172,7 +172,7 @@ const SurveyForm = ({
     switch (typeQuestion.toLowerCase()) {
       case 'selección':
       case 'escala likert':
-        case 'escala likert -eng':
+      case 'escala likert -eng':
         return true;
       default:
         return false;
@@ -602,7 +602,7 @@ const SurveyForm = ({
       }))
     );
   }, []);
-  
+
   let firstUncheckedIndex = -1;
   let firstUnansweredQuestionIndex = unansweredQuestions[0];
   // Estos bucles buscan el primer checkbox sin marcar
@@ -618,26 +618,46 @@ const SurveyForm = ({
     }
   }
 
+  const isFirstVisibleQuestionInGroup = (index, activeStep, visibleQuestions) => {
+    const groupStart = activeStep * 5;
+    // Recorremos desde el inicio del grupo hasta el índice actual (excluyéndolo)
+    for (let i = groupStart; i < index; i++) {
+      if (visibleQuestions[i]) {
+        // Si encontramos una pregunta visible antes del índice actual,
+        // entonces este no es el primero visible.
+        return false;
+      }
+    }
+    // Si la pregunta actual es visible, y no se encontró ninguna visible antes en el grupo,
+    // es la primera visible.
+    return visibleQuestions[index];
+  };
+
   return (
     <div className={styles.SurveyForm}>
-      <Typography
-        variant="h6"
-        style={{
-          whiteSpace: 'pre-line',
-          textAlign: 'justify',
-          fontSize: '15px',
-          display: 'block',
-          fontStyle: 'italic',
-          marginBottom: '10px',
-        }}
-      >
-        {textoAMostrar}
-      </Typography>
-      {isMobile && (
-        <Button onClick={() => setVerMas(!verMas)}>
-          {verMas ? 'Ver menos' : 'Ver más'}
-        </Button>
+      {activeStep === 0 && (
+        <>
+          <Typography
+            variant="h6"
+            style={{
+              whiteSpace: 'pre-line',
+              textAlign: 'justify',
+              fontSize: '15px',
+              display: 'block',
+              fontStyle: 'italic',
+              marginBottom: '50px',
+            }}
+          >
+            {textoAMostrar}
+          </Typography>
+          {isMobile && (
+            <Button onClick={() => setVerMas(!verMas)}>
+              {verMas ? 'Ver menos' : 'Ver más'}
+            </Button>
+          )}
+        </>
       )}
+
       {questions.map(
         (
           {
@@ -656,6 +676,9 @@ const SurveyForm = ({
           <FormControl
             key={questionId}
             style={{
+              marginTop: isFirstVisibleQuestionInGroup(index, activeStep, visibleQuestions)
+              ? '0'
+              : '4em',
               marginBottom: '1.1em',
               width: '100%',
               display:
@@ -684,7 +707,7 @@ const SurveyForm = ({
                       : 'rgba(0, 0, 0, 0.6)',
                   }}
                 >
-                  {questionName}
+                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
@@ -1002,7 +1025,7 @@ const SurveyForm = ({
                 ref={questionRefs[questionId]}
               >
                 <InputLabel id={`${questionId}-${typeQuestion}`}>
-                  {questionName}
+                {questionName}
                 </InputLabel>
                 <Typography
                   variant="caption"

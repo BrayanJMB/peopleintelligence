@@ -139,7 +139,6 @@ export const useOffice = (currentCompany) => {
 
     const { data } = await getOfficesAPI(currentCompany.id);
     /*
-      console.log(data)
       const companies = await getAllCompanies();
       const companyNames = companies.reduce((acc, company) => {
         acc[company.id] = company.nombreCompania;

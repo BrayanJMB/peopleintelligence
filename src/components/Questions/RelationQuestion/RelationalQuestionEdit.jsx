@@ -9,7 +9,6 @@ import { RelationalOptions } from './RelationalOptions';
 
 import styles from '../../Form/Form.module.css';
 export const RelationalQuestionsEdit = (props) => {
-  console.log(props);
   const addPreguntaOpcionInput = () => {
     props.handleaddoption(props.type.id);
   };
