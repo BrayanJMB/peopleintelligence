@@ -118,7 +118,7 @@ export default function CreateSurvey() {
     searchParams.get('templateId') || location.pathname.split('/')[3];
   const steps = [
     'Introducción',
-    'WhatsApp',
+    //'WhatsApp',
     'Cuestionario',
     'Configuración',
     ...(!isTemplate ? ['Privacidad'] : []),
@@ -388,7 +388,7 @@ export default function CreateSurvey() {
           setActiveStep((val) => val + 1);
           setCheckForm(false);
         }
-        break;
+        break;z
       case 1:
         if (isUpdate && isTemplate) {
           await updateTemplate();
@@ -404,21 +404,25 @@ export default function CreateSurvey() {
           createTemplate();
           return;
         }
+        if(validateLengthQuestion(questions) || validateCategoryForQuestions(questions)){
+          return;
+        }
         setActiveStep((val) => val + 1);
         break;
+      /*
       case 2:
         if(validateLengthQuestion(questions) || validateCategoryForQuestions(questions)){
           return;
         }
+        setActiveStep((val) => val + 1);
+        break;*/
+      case 2:
         setActiveStep((val) => val + 1);
         break;
       case 3:
         setActiveStep((val) => val + 1);
         break;
       case 4:
-        setActiveStep((val) => val + 1);
-        break;
-      case 5:
         if (isEdit) {
           editSurvey();
         } else {
@@ -747,6 +751,7 @@ export default function CreateSurvey() {
             setMapsLoaded={setMapsLoaded}
           />
         );
+        /*
       case 1:
         return (
           <Box width="100%">
@@ -755,8 +760,8 @@ export default function CreateSurvey() {
               handleHasWhatsApp={handleHasWhatsApp}
             />
           </Box>
-        );
-      case 2:
+        );*/
+      case 1:
         return (
           <Box width="100%">
             <DemographicDataForm
@@ -776,7 +781,7 @@ export default function CreateSurvey() {
             />
           </Box>
         );
-      case 3:
+      case 2:
         return (
           <Box width="100%">
             <MessagesSurvey
@@ -789,7 +794,7 @@ export default function CreateSurvey() {
             />
           </Box>
         );
-      case 4:
+      case 3:
         return (
           <div style={{ display: 'flex', width: '100%' }}>
             <Intimidad anonyme={anonymous} handleAnonyme={handleanonyme} />
@@ -800,7 +805,7 @@ export default function CreateSurvey() {
           </div>
         );
 
-      case 5:
+      case 4:
         return (
           <div
             style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
@@ -1576,7 +1581,7 @@ export default function CreateSurvey() {
                       errorDayConcurrency
                     }
                   >
-                    {activeStep === 5 || (activeStep === 1 && isTemplate)
+                    {activeStep === 4 || (activeStep === 1 && isTemplate)
                       ? 'Finalizar'
                       : 'Continuar'}
                   </Button>
