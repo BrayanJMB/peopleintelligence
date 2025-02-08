@@ -46,6 +46,7 @@ import Intimidad from './Intimidad/Intimidad.jsx';
 import Introduction from './Introduction/Introduction';
 import { MessagesSurvey } from './MessagesSurvey/MessagesSurvey.jsx';
 import { MultiAnswerSurvey } from './MultiAnswerSurvey/MultiAnswerSurvey.jsx';
+import { NumerationSurvey } from './NumerationSurvey.jsx';
 
 import styles from './CreateSurvey.module.css';
 
@@ -104,6 +105,7 @@ export default function CreateSurvey() {
     confidentialityMessage:
       'Tus respuestas serán completamente confidenciales y no podrán ser vinculadas a tu identidad.',
   });
+  const [hasNumerationNumber, setHasNumerationNumber] =  useState(true);
   const [errorDayConcurrency, setErrorDayConcurrency] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const isMap = searchParams.get('isMap') === 'true';
@@ -186,6 +188,7 @@ export default function CreateSurvey() {
         duplicateResponses: isAMultiAnswerSurvey,
         daysConcurrency: dayConcurrency,
         hasWhatsApp: hasWhatsApp,
+        hasNumerationNumber: hasNumerationNumber,
       },
       questions: questions.map((question) => ({
         question: {
@@ -779,6 +782,10 @@ export default function CreateSurvey() {
             <MessagesSurvey
               surveyMessages={surveyMessages}
               setSurveyMessages={setSurveyMessages}
+            />
+            <NumerationSurvey 
+              hasNumerationNumber={hasNumerationNumber}
+              setHasNumerationNumber={setHasNumerationNumber}     
             />
           </Box>
         );
