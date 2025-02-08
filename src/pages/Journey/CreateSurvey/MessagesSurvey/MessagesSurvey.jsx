@@ -1,4 +1,5 @@
 import { FormControl, TextField } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import styles from './MessagesSurvey.module.css';
 
@@ -12,6 +13,12 @@ export const MessagesSurvey = ({ surveyMessages, setSurveyMessages }) => {
 
   return (
     <div className={styles.form}>
+      <Typography
+        variant="h6"
+        style={{ fontWeight: 'bold', marginBottom: '15px' }}
+      >
+        Configuración mensaje de bienvenida encuesta:
+      </Typography>
       <FormControl
         style={{
           marginBottom: '1.5em',

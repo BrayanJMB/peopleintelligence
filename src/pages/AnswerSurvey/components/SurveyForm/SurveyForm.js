@@ -684,7 +684,7 @@ const SurveyForm = ({
                       : 'rgba(0, 0, 0, 0.6)',
                   }}
                 >
-                  {questionName}
+                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
@@ -1002,7 +1002,7 @@ const SurveyForm = ({
                 ref={questionRefs[questionId]}
               >
                 <InputLabel id={`${questionId}-${typeQuestion}`}>
-                  {questionName}
+                {questionName}
                 </InputLabel>
                 <Typography
                   variant="caption"
