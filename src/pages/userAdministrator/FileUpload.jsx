@@ -71,7 +71,7 @@ const FileUpload = () => {
 
     try {
       const response = await axios.post(
-        `/Create-user?companyId=${currentCompany.id}`,
+        `/users/import/excel?companyId=${currentCompany.id}`,
         formData,
         {
           headers: {
