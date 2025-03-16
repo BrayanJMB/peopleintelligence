@@ -1,55 +1,56 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect,useState } from 'react';
+import { useParams } from 'react-router-dom';
+import {
+  Assessment,
+  CheckCircle,
+  Close,
+  ErrorOutline,
+  HourglassEmpty,
+  Notifications,
+  Refresh,
+  Send,
+} from '@mui/icons-material';
 import {
   AppBar,
-  Toolbar,
-  Typography,
+  Box,
   Button,
   Card,
   CardContent,
   Container,
-  Grid,
-  Box,
-  Paper,
-  Divider,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-} from "@mui/material";
-import {
-  Notifications,
-  Assessment,
-  CheckCircle,
-  HourglassEmpty,
-  ErrorOutline,
-  Refresh,
-  Close,
-  Send,
-} from "@mui/icons-material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { fetchStaticsMailAPI } from "./services/statitcsMail";
+  Divider,
+  Grid,
+  Paper,
+  Toolbar,
+  Typography,
+} from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+import { fetchStaticsMailAPI } from './services/statitcsMail';
 // Tema personalizado
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#1976d2",
+      main: '#1976d2',
     },
     secondary: {
-      main: "#f50057",
+      main: '#f50057',
     },
     success: {
-      main: "#4caf50",
-      light: "#e8f5e9",
+      main: '#4caf50',
+      light: '#e8f5e9',
     },
     warning: {
-      main: "#ff9800",
-      light: "#fff8e1",
+      main: '#ff9800',
+      light: '#fff8e1',
     },
     error: {
-      main: "#f44336",
-      light: "#ffebee",
+      main: '#f44336',
+      light: '#ffebee',
     },
   },
   typography: {
@@ -63,7 +64,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 8,
-          textTransform: "none",
+          textTransform: 'none',
           fontWeight: 500,
         },
       },
@@ -72,7 +73,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 12,
-          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         },
       },
     },
@@ -84,7 +85,7 @@ function StaticsEmails({ openDialog, handleOpenDialog, handleCloseDialog }) {
   const [dataMails, setDataMails] = useState({});
   const handleEmailsStatics = async (idSurvey) => {
     const { data } = await fetchStaticsMailAPI(idSurvey);
-    console.log(data)
+    console.log(data);
     setDataMails(data);
   };
 
@@ -205,8 +206,8 @@ function StaticsEmails({ openDialog, handleOpenDialog, handleCloseDialog }) {
         <DialogActions>
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "center",
+              display: 'flex',
+              justifyContent: 'center',
               mt: 4,
               gap: 2,
             }}
