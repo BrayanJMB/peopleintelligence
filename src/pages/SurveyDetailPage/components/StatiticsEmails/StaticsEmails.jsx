@@ -85,13 +85,12 @@ function StaticsEmails({ openDialog, handleOpenDialog, handleCloseDialog }) {
   const [dataMails, setDataMails] = useState({});
   const handleEmailsStatics = async (idSurvey) => {
     const { data } = await fetchStaticsMailAPI(idSurvey);
-    console.log(data);
     setDataMails(data);
   };
 
   useEffect(() => {
     handleEmailsStatics(id);
-  }, []);
+  }, [openDialog]);
   return (
     <ThemeProvider theme={theme}>
       {/* Diálogo de confirmación */}
@@ -136,6 +135,33 @@ function StaticsEmails({ openDialog, handleOpenDialog, handleCloseDialog }) {
                             <Typography variant="body1">
                               {dataMails && dataMails.received} correos
                               entregados correctamente
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Paper>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 3,
+                          bgcolor: theme.palette.success.light,
+                          borderLeft: `6px solid ${theme.palette.info.main}`,
+                          borderRadius: 2,
+                        }}
+                      >
+                        <Box display="flex" alignItems="center">
+                          <CheckCircle
+                            color="info"
+                            sx={{ mr: 2, fontSize: 28 }}
+                          />
+                          <Box>
+                            <Typography variant="h6" component="div">
+                              Correos Abiertos
+                            </Typography>
+                            <Typography variant="body1">
+                              {dataMails && dataMails.opened} correos
+                              abiertos
                             </Typography>
                           </Box>
                         </Box>

@@ -153,6 +153,7 @@ const SurveyDetailPage = () => {
   const [openDialogEmail, setOpenDialogEmail] = useState(false);
 
   const handleOpenDialogEmails = () => {
+    
     setOpenDialogEmail(true);
   };
 
