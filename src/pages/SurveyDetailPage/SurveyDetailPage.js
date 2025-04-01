@@ -53,6 +53,7 @@ import NotFoundMessage from '../AnswerSurvey/components/NotFoundMessage/NotFound
 
 import SendInvitationDialog from './components/SendInvitationDialog/SendInvitationDialog';
 import { SendInvitationDialogWhatsapp } from './components/SendInvitationWhatsapp/SendInvitationDialogWhatsapp';
+import StaticsEmails from './components/StatiticsEmails/StaticsEmails';
 import {
   templateFromSurveyAllCompanies,
   templateFromSurveyByCompany,
@@ -148,6 +149,18 @@ const SurveyDetailPage = () => {
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  const [openDialogEmail, setOpenDialogEmail] = useState(false);
+
+  const handleOpenDialogEmails = () => {
+    
+    setOpenDialogEmail(true);
+  };
+
+  const handleCloseDialogEmails = () => {
+    setOpenDialogEmail(false);
+  };
+
   const navigate = useNavigate();
   /**
    * Handle click menu for open survey options.
@@ -410,13 +423,16 @@ const SurveyDetailPage = () => {
   const sendReminder = async (idSurvey, dialogPosition) => {
     const currentReminderDays = reminderDaysRef.current.trim(); // Usar el valor del ref
 
-    if ((currentReminderDays === '' || currentReminderDays == 0) && !switchCheckedReminderDaysRef.current) {
+    if (
+      (currentReminderDays === '' || currentReminderDays == 0) &&
+      !switchCheckedReminderDaysRef.current
+    ) {
       setErrorReminderDay(true);
       return; // Sal de la función
     }
     handleCloseDialog(dialogPosition);
     const companyId = userInfo.Company;
-    
+
     const url = switchCheckedReminderDaysRef.current
       ? `${API}SendReminder/${surveyId}/${companyId}`
       : `${API}SendReminder/${surveyId}/${companyId}/${reminderDays}`;
@@ -533,7 +549,6 @@ const SurveyDetailPage = () => {
     reminderDaysRef.current = reminderDays;
   }, [reminderDays]);
 
-  
   useEffect(() => {
     switchCheckedReminderDaysRef.current = switchChecked;
   }, [switchChecked]);
@@ -559,7 +574,7 @@ const SurveyDetailPage = () => {
           <div className={styles.SurveyDetailPage__content}>
             {surveysStatus === 'loading' && <MyLoader />}
             {surveysStatus === 'failed' && (
-              <div style={{display:'flex', flexDirection:'column'}}>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <NotFoundMessage
                   infoMessage={
                     'Esta encuesta no esta disponible para esta compañía :('
@@ -645,16 +660,20 @@ const SurveyDetailPage = () => {
                     <Stack spacing={1} alignItems="left">
                       <Stack direction="row" spacing={1}>
                         {chips.map(
-                          ({
-                            id,
-                            text,
-                            backgroundColor,
-                            color,
-                            icon,
-                            counter,
-                          }) => (
+                          (
+                            { id, text, backgroundColor, color, icon, counter },
+                            index
+                          ) => (
                             <Chip
                               key={id}
+                              onClick={
+                                index === 1
+                                  ? () => {
+                                      // Función para el segundo elemento
+                                      handleOpenDialogEmails();
+                                    }
+                                  : undefined
+                              }
                               style={{
                                 backgroundColor: backgroundColor,
                                 color: color,
@@ -731,7 +750,7 @@ const SurveyDetailPage = () => {
                             emailMessage={currentSurvey.response.emailMessage}
                             visibility={visibility}
                           />
-                          
+
                           {/* send invitation  Whatsapp
                           <SendInvitationDialogWhatsapp
                             isPersonal={currentSurvey.ispersonal}
@@ -926,6 +945,12 @@ const SurveyDetailPage = () => {
           setSwitchChecked={setSwitchChecked}
         />
       ))}
+      <StaticsEmails
+        openDialog={openDialogEmail}
+        setOpenDialog={setOpenDialogEmail}
+        handleOpenDialog={handleOpenDialogEmails}
+        handleCloseDialog={handleCloseDialogEmails}
+      />
     </Box>
   );
 };
