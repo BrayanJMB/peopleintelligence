@@ -18,7 +18,7 @@ export const SurveyChat = ({ handleMove }) => {
   const [surveyChat, setSurveyChat] = useState([]);
   const [loading, setLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  console.log(surveyChat)
+  console.log(surveyChat);
   const surveyChatColumns = [
     {
       id: 'name',
