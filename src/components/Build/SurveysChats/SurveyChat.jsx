@@ -61,7 +61,7 @@ export const SurveyChat = ({ handleMove }) => {
     ]);
 
     const handleCopyLinkSurvey = (surveyChat) => {
-      const surveyLink = `https://chatapppeopleintelligence.azurewebsites.net/respondente/${surveyChat.id}`; // Reemplaza esto con el enlace real de la encuesta
+      const surveyLink = `https://chatapppeopleintelligence.azurewebsites.net/respondente?chatId=${surveyChat.id}`; // Reemplaza esto con el enlace real de la encuesta
       navigator.clipboard.writeText(surveyLink).then(() => {
         enqueueSnackbar('Link copiado al portapapeles', { variant: 'success' });
       }).catch(err => {
