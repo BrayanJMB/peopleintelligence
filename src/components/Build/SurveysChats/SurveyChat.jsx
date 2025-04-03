@@ -18,6 +18,7 @@ export const SurveyChat = ({ handleMove }) => {
   const [surveyChat, setSurveyChat] = useState([]);
   const [loading, setLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  console.log(surveyChat)
   const surveyChatColumns = [
     {
       id: 'name',
@@ -53,14 +54,14 @@ export const SurveyChat = ({ handleMove }) => {
           handleView: handleView,
           handleDelete: handleDeleteSurveyChat,
           handleEdit: handleEditSurveyChat,
-          handleCopyLink: handleCopyLinkSurvey,
+          handleCopyLink: () => handleCopyLinkSurvey(surveyChat),
           id: surveyChat.id,
         },
       },
     ]);
 
-    const handleCopyLinkSurvey = () => {
-      const surveyLink = 'https://chatapppeopleintelligence.azurewebsites.net/respondente'; // Reemplaza esto con el enlace real de la encuesta
+    const handleCopyLinkSurvey = (surveyChat) => {
+      const surveyLink = `https://chatapppeopleintelligence.azurewebsites.net/respondente/${surveyChat.id}`; // Reemplaza esto con el enlace real de la encuesta
       navigator.clipboard.writeText(surveyLink).then(() => {
         enqueueSnackbar('Link copiado al portapapeles', { variant: 'success' });
       }).catch(err => {
