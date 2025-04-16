@@ -448,13 +448,11 @@ const AnswerSurvey = () => {
                           }}
                           error={emailError}
                         >
-                          {companyId === '59'
-                            ? 'Ingrese su documento de identificación sin puntos guiones, espacios o caracteres especiales para continuar'
-                            : currentSurvey.response.welcomeMessage}
+                          { currentSurvey.response.welcomeMessage}
                         </FormLabel>
                         <TextField
                           id="email"
-                          label={companyId === '59' ? ('Documento identificación'):(currentSurvey.response.inputMessage)}
+                          label={currentSurvey.response.inputMessage}
                           variant="outlined"
                           type="email"
                           onChange={handleEmailChange}
