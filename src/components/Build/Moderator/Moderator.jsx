@@ -101,7 +101,6 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
       setModeratorAvatar(response.data);
     } catch (error) {}
   };
-
   const initializeConnectionAndFetchData = async () => {
     try {
       await fetchSurvey();
@@ -109,7 +108,7 @@ export const Moderator = ({ id, questions, setQuestions2 }) => {
       const signalRConnection = new HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
         .withUrl(
-          'https://chatapppeopleintelligence.azurewebsites.net/discusion'
+          `https://chatapppeopleintelligence.azurewebsites.net/discusion?chatId=${id}`
         )
         .withAutomaticReconnect()
         .build();
