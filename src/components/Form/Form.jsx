@@ -1,20 +1,21 @@
-import { Fragment, useState } from 'react';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import TextareaAutosize from '@mui/material/TextareaAutosize';
-import TextField from '@mui/material/TextField';
+import { Fragment, useState } from "react";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import FormControl from "@mui/material/FormControl";
+import FormHelperText from "@mui/material/FormHelperText";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import TextareaAutosize from "@mui/material/TextareaAutosize";
+import TextField from "@mui/material/TextField";
 
-import { RelationalQuestions } from '../Questions/RelationQuestion/RelationalQuestion';
+import { RelationalQuestions } from "../Questions/RelationQuestion/RelationalQuestion";
 
-import styles from './Form.module.css';
+import styles from "./Form.module.css";
+import { Slider } from "@mui/material";
 export default function Form(props) {
-  const [categoryId, setCategoryId] = useState('');
+  const [categoryId, setCategoryId] = useState("");
   const [open, setOpen] = useState(false);
 
   // Funciones para abrir y cerrar el modal
@@ -76,14 +77,14 @@ export default function Form(props) {
                   inputComponent: TextareaAutosize,
                   inputProps: {
                     style: {
-                      height: '80px',
+                      height: "80px",
                     },
                   },
                 }}
                 value={props.information.description}
                 style={{
-                  width: '100%',
-                  marginTop: '0.5rem',
+                  width: "100%",
+                  marginTop: "0.5rem",
                 }}
                 name="description"
                 onChange={props.handleInformation}
@@ -122,14 +123,14 @@ export default function Form(props) {
                   inputComponent: TextareaAutosize,
                   inputProps: {
                     style: {
-                      height: '80px',
+                      height: "80px",
                     },
                   },
                 }}
                 value={props.information.description}
                 style={{
-                  width: '100%',
-                  marginTop: '0.5rem',
+                  width: "100%",
+                  marginTop: "0.5rem",
                 }}
                 name="description"
                 onChange={props.handleInformation}
@@ -141,13 +142,13 @@ export default function Form(props) {
                   <div className={styles.option} key={key}>
                     <div
                       style={{
-                        padding: '3px 9px',
-                        backgroundColor: '#fce4e4',
-                        borderRadius: '4px',
-                        textAlign: 'center',
-                        marginRight: '15px',
-                        fontSize: '12px',
-                        color: '#808080',
+                        padding: "3px 9px",
+                        backgroundColor: "#fce4e4",
+                        borderRadius: "4px",
+                        textAlign: "center",
+                        marginRight: "15px",
+                        fontSize: "12px",
+                        color: "#808080",
                       }}
                     >
                       {key + 1}
@@ -202,14 +203,14 @@ export default function Form(props) {
                   inputComponent: TextareaAutosize,
                   inputProps: {
                     style: {
-                      height: '80px',
+                      height: "80px",
                     },
                   },
                 }}
                 value={props.information.description}
                 style={{
-                  width: '100%',
-                  marginTop: '0.5rem',
+                  width: "100%",
+                  marginTop: "0.5rem",
                 }}
                 name="description"
                 onChange={props.handleInformation}
@@ -221,13 +222,13 @@ export default function Form(props) {
                   <div className={styles.option} key={key}>
                     <div
                       style={{
-                        padding: '3px 9px',
-                        backgroundColor: '#F0F2F5',
-                        borderRadius: '4px',
-                        textAlign: 'center',
-                        marginRight: '15px',
-                        fontSize: '14px',
-                        color: 'rgb(134, 140, 204)',
+                        padding: "3px 9px",
+                        backgroundColor: "#F0F2F5",
+                        borderRadius: "4px",
+                        textAlign: "center",
+                        marginRight: "15px",
+                        fontSize: "14px",
+                        color: "rgb(134, 140, 204)",
                       }}
                     >
                       {key + 1}
@@ -241,8 +242,8 @@ export default function Form(props) {
                       error={props.customOptionError[key]}
                       helperText={
                         props.customOptionError[key]
-                          ? 'La opción no puede estar vacía'
-                          : ''
+                          ? "La opción no puede estar vacía"
+                          : ""
                       }
                       InputProps={{
                         disableUnderline: true,
@@ -259,7 +260,7 @@ export default function Form(props) {
                 variant="text"
                 startIcon={<AddCircleOutlineIcon />}
                 onClick={props.handleaddoption}
-                style={{ backgroundColor: '#F7F7F7', width: '255px' }}
+                style={{ backgroundColor: "#F7F7F7", width: "255px" }}
               >
                 Añadir opción
               </Button>
@@ -273,7 +274,7 @@ export default function Form(props) {
                     props.information.customOptions.length - 1
                   )
                 }
-                style={{ backgroundColor: '#F7F7F7', width: '255px' }}
+                style={{ backgroundColor: "#F7F7F7", width: "255px" }}
               >
                 Eliminar opción
               </Button>
@@ -310,14 +311,14 @@ export default function Form(props) {
                   inputComponent: TextareaAutosize,
                   inputProps: {
                     style: {
-                      height: '80px',
+                      height: "80px",
                     },
                   },
                 }}
                 value={props.information.description}
                 style={{
-                  width: '100%',
-                  marginTop: '0.5rem',
+                  width: "100%",
+                  marginTop: "0.5rem",
                 }}
                 name="description"
                 onChange={props.handleInformation}
@@ -329,13 +330,13 @@ export default function Form(props) {
                   <div className={styles.option} key={key}>
                     <div
                       style={{
-                        padding: '3px 9px',
-                        backgroundColor: '#F0F2F5',
-                        borderRadius: '4px',
-                        textAlign: 'center',
-                        marginRight: '15px',
-                        fontSize: '14px',
-                        color: 'rgb(134, 140, 204)',
+                        padding: "3px 9px",
+                        backgroundColor: "#F0F2F5",
+                        borderRadius: "4px",
+                        textAlign: "center",
+                        marginRight: "15px",
+                        fontSize: "14px",
+                        color: "rgb(134, 140, 204)",
                       }}
                     >
                       {key + 1}
@@ -349,8 +350,8 @@ export default function Form(props) {
                       error={props.customOptionError[key]}
                       helperText={
                         props.customOptionError[key]
-                          ? 'La opción no puede estar vacía'
-                          : ''
+                          ? "La opción no puede estar vacía"
+                          : ""
                       }
                       InputProps={{
                         disableUnderline: true,
@@ -367,8 +368,8 @@ export default function Form(props) {
                   startIcon={<AddCircleOutlineIcon />}
                   onClick={props.handleaddoption}
                   style={{
-                    backgroundColor: '#F7F7F7',
-                    width: '255px',
+                    backgroundColor: "#F7F7F7",
+                    width: "255px",
                   }}
                 >
                   Añadir opción
@@ -383,7 +384,7 @@ export default function Form(props) {
                       props.information.customOptions.length - 1
                     )
                   }
-                  style={{ backgroundColor: '#F7F7F7', width: '255px' }}
+                  style={{ backgroundColor: "#F7F7F7", width: "255px" }}
                 >
                   Eliminar opción
                 </Button>
@@ -421,14 +422,14 @@ export default function Form(props) {
                   inputComponent: TextareaAutosize,
                   inputProps: {
                     style: {
-                      height: '80px',
+                      height: "80px",
                     },
                   },
                 }}
                 value={props.information.description}
                 style={{
-                  width: '100%',
-                  marginTop: '0.5rem',
+                  width: "100%",
+                  marginTop: "0.5rem",
                 }}
                 name="description"
                 onChange={props.handleInformation}
@@ -439,19 +440,19 @@ export default function Form(props) {
                 variant="text"
                 onClick={props.handledeletestars}
                 style={{
-                  backgroundColor: '#F7F7F7',
-                  color: 'black',
-                  fontSize: '1.8rem',
-                  padding: '0',
+                  backgroundColor: "#F7F7F7",
+                  color: "black",
+                  fontSize: "1.8rem",
+                  padding: "0",
                 }}
               >
                 -
               </Button>
               <div
                 style={{
-                  border: '1px solid #ddd',
-                  padding: '18px 20px',
-                  borderRadius: '4px',
+                  border: "1px solid #ddd",
+                  padding: "18px 20px",
+                  borderRadius: "4px",
                 }}
               >
                 {props.information.stars.length}
@@ -460,19 +461,19 @@ export default function Form(props) {
                 variant="text"
                 onClick={props.handleaddstars}
                 style={{
-                  backgroundColor: '#F7F7F7',
-                  color: 'black',
-                  fontSize: '1.8rem',
-                  padding: '0',
+                  backgroundColor: "#F7F7F7",
+                  color: "black",
+                  fontSize: "1.8rem",
+                  padding: "0",
                 }}
               >
                 +
               </Button>
               <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  marginTop: '0.3em',
+                  display: "flex",
+                  alignItems: "center",
+                  marginTop: "0.3em",
                 }}
               >
                 {props.information.stars.map((val, index) => {
@@ -527,14 +528,14 @@ export default function Form(props) {
                   inputComponent: TextareaAutosize,
                   inputProps: {
                     style: {
-                      height: '80px',
+                      height: "80px",
                     },
                   },
                 }}
                 value={props.information.description}
                 style={{
-                  width: '100%',
-                  marginTop: '0.5rem',
+                  width: "100%",
+                  marginTop: "0.5rem",
                 }}
                 name="description"
                 onChange={props.handleInformation}
@@ -577,14 +578,14 @@ export default function Form(props) {
                       inputComponent: TextareaAutosize,
                       inputProps: {
                         style: {
-                          height: '80px',
+                          height: "80px",
                         },
                       },
                     }}
                     value={props.information.description}
                     style={{
-                      width: '100%',
-                      marginTop: '0.5rem',
+                      width: "100%",
+                      marginTop: "0.5rem",
                     }}
                     name="description"
                     onChange={props.handleInformation}
@@ -594,18 +595,18 @@ export default function Form(props) {
                   {[...Array(2)].map((_, key) => (
                     <div
                       key={key}
-                      style={{ display: 'flex', flexDirection: 'column' }}
+                      style={{ display: "flex", flexDirection: "column" }}
                     >
                       <div className={styles.option}>
                         <div
                           style={{
-                            padding: '3px 9px',
-                            backgroundColor: '#F0F2F5',
-                            borderRadius: '4px',
-                            textAlign: 'center',
-                            marginRight: '15px',
-                            fontSize: '14px',
-                            color: 'rgb(134, 140, 204)',
+                            padding: "3px 9px",
+                            backgroundColor: "#F0F2F5",
+                            borderRadius: "4px",
+                            textAlign: "center",
+                            marginRight: "15px",
+                            fontSize: "14px",
+                            color: "rgb(134, 140, 204)",
                           }}
                         >
                           {key + 1}
@@ -619,8 +620,8 @@ export default function Form(props) {
                           error={props.customOptionError[key]}
                           helperText={
                             props.customOptionError[key]
-                              ? 'La opción no puede estar vacía'
-                              : ''
+                              ? "La opción no puede estar vacía"
+                              : ""
                           }
                           InputProps={{
                             disableUnderline: true,
@@ -629,12 +630,12 @@ export default function Form(props) {
                           size="small"
                         />
                       </div>
-                      <div style={{ marginTop: '5px' }}>
+                      <div style={{ marginTop: "5px" }}>
                         <Button
                           variant="text"
                           startIcon={<AddCircleOutlineIcon />}
                           onClick={handleClickOpen}
-                          style={{ backgroundColor: '#F7F7F7', width: '255px' }}
+                          style={{ backgroundColor: "#F7F7F7", width: "255px" }}
                         >
                           Añadir pregunta
                         </Button>
@@ -679,14 +680,14 @@ export default function Form(props) {
                   inputComponent: TextareaAutosize,
                   inputProps: {
                     style: {
-                      height: '80px',
+                      height: "80px",
                     },
                   },
                 }}
                 value={props.information.description}
                 style={{
-                  width: '100%',
-                  marginTop: '0.5rem',
+                  width: "100%",
+                  marginTop: "0.5rem",
                 }}
                 name="description"
                 onChange={props.handleInformation}
@@ -696,6 +697,110 @@ export default function Form(props) {
         );
       case 15:
         return <RelationalQuestions {...props} />;
+      case 19:
+        return (
+          <div className={styles.top}>
+            <div className={styles.question}>
+              <div className={styles.number}>{`Q${props.questions}`}</div>
+              <div className={styles.input}>
+                <TextField
+                  id="outlined-name"
+                  variant="standard"
+                  label="Añadir prequnta"
+                  placeholder="Añadir prequnta aquí..."
+                  value={props.information.name}
+                  name="name"
+                  onChange={props.handleInformation}
+                  error={props.errorMessage.name}
+                  helperText={props.helperText.name}
+                  fullWidth
+                  size="small"
+                  InputProps={{
+                    inputComponent: TextareaAutosize,
+                  }}
+                />
+              </div>
+            </div>
+            <div className={styles.input}>
+              <TextField
+                id="outlined-name"
+                label="Añadir descripción"
+                placeholder="Añadir descripción aquí (opcional)..."
+                InputProps={{
+                  inputComponent: TextareaAutosize,
+                  inputProps: {
+                    style: {
+                      height: "80px",
+                    },
+                  },
+                }}
+                value={props.information.description}
+                style={{
+                  width: "100%",
+                  marginTop: "0.5rem",
+                }}
+                name="description"
+                onChange={props.handleInformation}
+              />
+            </div>
+            {/* Input numérico para el valor */}
+            <div
+              style={{
+                marginTop: "4px",
+              }}
+            >
+              <TextField
+                label="Valor de respuesta"
+                type="number"
+                inputProps={{ min: 0, max: 10 }}
+                value={props.information.barBipolarValue}
+                name="barBipolarValue"
+                onChange={props.handleInformation}
+                variant="standard"
+                fullWidth
+                error={props.errorMessage.bipolar}
+                helperText={props.errorMessage.bipolar ? props.helperText.bipolar : ""}
+              />
+            </div>
+            {/* Textos para los extremos de la escala */}
+            <div
+              style={{
+                marginTop: "4px",
+              }}
+            >
+              <TextField
+                label="Texto extremo izquierdo"
+                placeholder="Ej: Totalmente en desacuerdo"
+                value={props.information.textsBipolarBar.leftText}
+                name="textsBipolarBar.leftText"
+                onChange={props.handleInformation}
+                size="small"
+                variant="standard"
+                style={{ width: "45%" }}
+                error={props.errorMessage.bipolarText}
+                helperText={props.errorMessage.bipolarText ? props.helperText.bipolarText : ""}
+              />
+            </div>
+            <div
+              style={{
+                marginTop: "4px",
+              }}
+            >
+              <TextField
+                label="Texto extremo derecho"
+                placeholder="Ej: Totalmente de acuerdo"
+                value={props.information.textsBipolarBar.rigthText}
+                name="textsBipolarBar.rightText"
+                onChange={props.handleInformation}
+                size="small"
+                variant="standard"
+                style={{ width: "45%" }}
+                error={props.errorMessage.bipolarText}
+                helperText={props.errorMessage.bipolarText ? props.helperText.bipolarText : ""}
+              />
+            </div>
+          </div>
+        );
       default:
         return null;
     }
@@ -703,7 +808,7 @@ export default function Form(props) {
   return (
     <Fragment>
       <div className={styles.form}>
-        {props.type === '' || props.type === null
+        {props.type === "" || props.type === null
           ? null
           : renderForm(props.type)}
       </div>
@@ -717,8 +822,8 @@ export default function Form(props) {
             <InputLabel
               id="category-id-label"
               sx={{
-                backgroundColor: 'white',
-                paddingRight: '0 6px',
+                backgroundColor: "white",
+                paddingRight: "0 6px",
               }}
             >
               Seleccionar categoría
