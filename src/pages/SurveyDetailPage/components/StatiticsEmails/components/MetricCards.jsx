@@ -1,28 +1,27 @@
-import React from "react";
+import React from 'react';
+import {
+  HourglassBottom as QueueIcon,
+  MarkEmailRead as OpenedIcon,
+  ReportProblem as BounceIcon,
+  Send as SendIcon} from '@mui/icons-material';
 import {
   Box,
   Card,
   CardContent,
-  Typography
-} from "@mui/material";
-import {
-  Send as SendIcon,
-  MarkEmailRead as OpenedIcon,
-  HourglassBottom as QueueIcon,
-  ReportProblem as BounceIcon
-} from "@mui/icons-material";
+  Typography,
+} from '@mui/material';
 
-export default function MetricCards({ title = "", data = {} }) {
+export default function MetricCards({ title = '', data = {} }) {
   return (
     <>
       <Box
         sx={{
-          display: "grid",
-          gridTemplateColumns: { md: "repeat(4, 1fr)" },
+          display: 'grid',
+          gridTemplateColumns: { md: 'repeat(4, 1fr)' },
           gap: 2,
         }}
       >
-        <Card sx={{ bgcolor: "#ebf8ff" }}>
+        <Card sx={{ bgcolor: '#ebf8ff' }}>
           <CardContent>
             <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
               <SendIcon color="primary" />
@@ -36,7 +35,7 @@ export default function MetricCards({ title = "", data = {} }) {
           </CardContent>
         </Card>
 
-        <Card sx={{ bgcolor: "#e6ffed" }}>
+        <Card sx={{ bgcolor: '#e6ffed' }}>
           <CardContent>
             <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
               <OpenedIcon color="success" />
@@ -50,7 +49,7 @@ export default function MetricCards({ title = "", data = {} }) {
           </CardContent>
         </Card>
 
-        <Card sx={{ bgcolor: "#fff8e1" }}>
+        <Card sx={{ bgcolor: '#fff8e1' }}>
           <CardContent>
             <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
               <QueueIcon color="warning" />
@@ -64,7 +63,7 @@ export default function MetricCards({ title = "", data = {} }) {
           </CardContent>
         </Card>
 
-        <Card sx={{ bgcolor: "#ffebee" }}>
+        <Card sx={{ bgcolor: '#ffebee' }}>
           <CardContent>
             <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
               <BounceIcon color="error" />
@@ -80,10 +79,10 @@ export default function MetricCards({ title = "", data = {} }) {
       </Box>
 
       <Box
-        sx={{ mt: 4, bgcolor: "white", p: 2, borderRadius: 2, boxShadow: 1 }}
+        sx={{ mt: 4, bgcolor: 'white', p: 2, borderRadius: 2, boxShadow: 1 }}
       >
         <Typography color="primary">
-          Total de correos enviados (incluyendo reintentos):{" "}
+          Total de correos enviados (incluyendo reintentos):{' '}
           <strong>{data.totalSend ?? 0}</strong>
         </Typography>
       </Box>

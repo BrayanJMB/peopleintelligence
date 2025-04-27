@@ -5,14 +5,14 @@ export const validationForMultipleQuestion = (
   setErrorMessage,
   setHelperText
 ) => {
-    if (information.maximunValueOptions.trim() === "") {
+    if (information.maximunValueOptions.trim() === '') {
         setErrorMessage({
           ...errorMessage,
           maximunValueOptions: true,
         });
         setHelperText({
           ...helperText,
-          maximunValueOptions: "Este valor no puede ir vacío",
+          maximunValueOptions: 'Este valor no puede ir vacío',
         });
         return;
       }
@@ -24,7 +24,7 @@ export const validationForMultipleQuestion = (
         }));
         setHelperText((prev) => ({
           ...prev,
-          maximunValueOptions: "Debe ingresar un número.",
+          maximunValueOptions: 'Debe ingresar un número.',
         }));
         return;
       }
@@ -36,7 +36,7 @@ export const validationForMultipleQuestion = (
         }));
         setHelperText((prev) => ({
           ...prev,
-          maximunValueOptions: "Solo se permiten números enteros.",
+          maximunValueOptions: 'Solo se permiten números enteros.',
         }));
         return;
       }
@@ -48,7 +48,7 @@ export const validationForMultipleQuestion = (
         }));
         setHelperText((prev) => ({
           ...prev,
-          maximunValueOptions: "Debe ser un número mayor a 0.",
+          maximunValueOptions: 'Debe ser un número mayor a 0.',
         }));
         return;
       }
@@ -60,7 +60,7 @@ export const validationForMultipleQuestion = (
         });
         setHelperText({
           ...helperText,
-          maximunValueOptions: "No puede colocar un valor mayor ni igual al número de opciones que tiene la pregunta.",
+          maximunValueOptions: 'No puede colocar un valor mayor ni igual al número de opciones que tiene la pregunta.',
         });
         return;
       }
