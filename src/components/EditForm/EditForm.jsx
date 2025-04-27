@@ -56,8 +56,8 @@ const EditForm = ({
   customOptionError,
   ...props
 }) => {
+  console.log(question)
   const [categoryId, setCategoryId] = useState("");
-
   /**
    * Handle category id change.
    *
@@ -121,7 +121,6 @@ const EditForm = ({
     filteredQuestions.push(preguntaFinal);
     return filteredQuestions;
   };
-  console.log(question);
   return (
     <Fragment>
       <div className={styles.form}>
@@ -144,7 +143,9 @@ const EditForm = ({
                 variant="standard"
                 InputProps={{
                   inputComponent: TextareaAutosize,
-                  ...(type.id == 21 ? { style: { height: "80px" } } : {}),
+                  ...(question.typeId == 21
+                    ? { style: { height: "80px" } }
+                    : {}),
                 }}
               />
             </div>
@@ -240,98 +241,141 @@ const EditForm = ({
 
           {/* multiple option */}
           {(question.typeId === 3 || question.typeId === 8) && (
-            <div className={styles.options}>
-              {question.customOptions.map((val, key) => (
-                <>
-                  <div className={styles.option} key={key}>
-                    <div
-                      style={{
-                        backgroundColor: "#F0F2F5",
-                        borderRadius: "4px",
-                        color: "rgb(134, 140, 204)",
-                        fontSize: "14px",
-                        marginRight: "15px",
-                        padding: "3px 9px",
-                        textAlign: "center",
-                      }}
-                    >
-                      {key + 1}
+            <>
+              <div className={styles.options}>
+                {question.customOptions.map((val, key) => (
+                  <>
+                    <div className={styles.option} key={key}>
+                      <div
+                        style={{
+                          backgroundColor: "#F0F2F5",
+                          borderRadius: "4px",
+                          color: "rgb(134, 140, 204)",
+                          fontSize: "14px",
+                          marginRight: "15px",
+                          padding: "3px 9px",
+                          textAlign: "center",
+                        }}
+                      >
+                        {key + 1}
+                      </div>
+                      <TextField
+                        fullWidth
+                        id={"option-{key}"}
+                        InputProps={{
+                          disableUnderline: true,
+                        }}
+                        onChange={handleInformationOptions(key)}
+                        placeholder="Añadir opción..."
+                        size="small"
+                        value={question.customOptions[key]}
+                        variant="standard"
+                        error={customOptionError[key]}
+                        helperText={
+                          customOptionError[key]
+                            ? "La opción no puede estar vacía"
+                            : ""
+                        }
+                      />
                     </div>
+                    {question.typeId === 8 && question.conditionalQuestion && (
+                      <Autocomplete
+                        key={key}
+                        disablePortal
+                        id={`autocomplete-${question.id}-${key}`}
+                        options={getFilteredOptions(
+                          `${question.id}-${key}`,
+                          question.questionNumber
+                        )}
+                        getOptionLabel={(option) =>
+                          `${option.questionNumber}. ${option.name}`
+                        }
+                        value={
+                          props.selections[`${question.id}-${key}`] || null
+                        }
+                        onChange={(event, value) => {
+                          // Crear un objeto que incluya el valor seleccionado y el número de la pregunta
+                          const dataToSend = {
+                            selectedValue: value,
+                            questionNumber: value ? value.questionNumber : null,
+                            index: key,
+                          };
+                          handleSelect(`${question.id}-${key}`, dataToSend);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Preguntas"
+                            error={
+                              errorMessage.autocomplete &&
+                              !props.selections[`${question.id}-${key}`]
+                            }
+                            helperText={
+                              errorMessage.autocomplete &&
+                              !props.selections[`${question.id}-${key}`]
+                                ? helperText.autocomplete
+                                : ""
+                            }
+                          />
+                        )}
+                      />
+                    )}
+                  </>
+                ))}
+                {question.customOptions.length < 10 && (
+                  <Button
+                    onClick={handleAddOption}
+                    startIcon={<AddCircleOutlineIcon />}
+                    style={{
+                      backgroundColor: "#F7F7F7",
+                      width: "255px",
+                    }}
+                    variant="text"
+                  >
+                    Añadir opción
+                  </Button>
+                )}
+              </div>
+              {question.typeId === 3 && (
+                <div className={styles.input}>
+                  <FormControl
+                    fullWidth
+                    size="small"
+                    style={{ marginTop: "1rem" }}
+                  >
+                    <InputLabel id="limit-type-label">
+                      Tipo de límite
+                    </InputLabel>
+                    <Select
+                      labelId="limit-type-label"
+                      value={props.limitType}
+                      label="Tipo de límite"
+                      onChange={(event) =>
+                        props.setLimitType(event.target.value)
+                      }
+                    >
+                      <MenuItem value="ilimitado">Ilimitado</MenuItem>
+                      <MenuItem value="fijo">Valor fijo</MenuItem>
+                    </Select>
+                  </FormControl>
+
+                  {props.limitType === "fijo" && (
                     <TextField
+                      label="Valor fijo"
+                      placeholder="Por favor ingresa el valor máximo que los usuarios pueden seleccionar:"
+                      value={question.stars}
+                      onChange={handleInformation}
+                      style={{ marginTop: "0.8rem" }}
                       fullWidth
-                      id={"option-{key}"}
-                      InputProps={{
-                        disableUnderline: true,
-                      }}
-                      onChange={handleInformationOptions(key)}
-                      placeholder="Añadir opción..."
                       size="small"
-                      value={question.customOptions[key]}
-                      variant="standard"
-                      error={customOptionError[key]}
-                      helperText={
-                        customOptionError[key]
-                          ? "La opción no puede estar vacía"
-                          : ""
-                      }
-                    />
-                  </div>
-                  {question.typeId === 8 && question.conditionalQuestion && (
-                    <Autocomplete
-                      key={key}
-                      disablePortal
-                      id={`autocomplete-${question.id}-${key}`}
-                      options={getFilteredOptions(
-                        `${question.id}-${key}`,
-                        question.questionNumber
-                      )}
-                      getOptionLabel={(option) =>
-                        `${option.questionNumber}. ${option.name}`
-                      }
-                      value={props.selections[`${question.id}-${key}`] || null}
-                      onChange={(event, value) => {
-                        // Crear un objeto que incluya el valor seleccionado y el número de la pregunta
-                        const dataToSend = {
-                          selectedValue: value,
-                          questionNumber: value ? value.questionNumber : null,
-                          index: key,
-                        };
-                        handleSelect(`${question.id}-${key}`, dataToSend);
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Preguntas"
-                          error={
-                            errorMessage.autocomplete &&
-                            !props.selections[`${question.id}-${key}`]
-                          }
-                          helperText={
-                            errorMessage.autocomplete &&
-                            !props.selections[`${question.id}-${key}`]
-                              ? helperText.autocomplete
-                              : ""
-                          }
-                        />
-                      )}
+                      name="stars"
+                      error={errorMessage.maximunValueOptions}
+                      helperText={helperText.maximunValueOptions}
                     />
                   )}
-                </>
-              ))}
-              {question.customOptions.length < 10 && (
-                <Button
-                  onClick={handleAddOption}
-                  startIcon={<AddCircleOutlineIcon />}
-                  style={{
-                    backgroundColor: "#F7F7F7",
-                    width: "255px",
-                  }}
-                  variant="text"
-                >
-                  Añadir opción
-                </Button>
+                </div>
               )}
-            </div>
+            </>
           )}
 
           {/* ratings */}

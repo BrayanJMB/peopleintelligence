@@ -56,7 +56,7 @@ export default function CreateSurvey() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(1);
   const [questionTypes, setQuestionTypes] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [target, setTarget] = useState("");
@@ -80,7 +80,9 @@ export default function CreateSurvey() {
       leftText: "",
       rightText: "",
     },
+    maximunValueOptions: "",
   });
+  const [limitType, setLimitType] = useState("ilimitado");
 
   const [selections, setSelections] = useState({});
   const dispatch = useDispatch();
@@ -466,7 +468,7 @@ export default function CreateSurvey() {
    */
   const handleInformation = (event) => {
     const { name, value } = event.target;
-    console.log(name,value)
+    console.log(name, value);
     // Soporte para campos anidados como textsBipolarBar.leftText
     if (name.includes(".")) {
       const [parentKey, childKey] = name.split(".");
@@ -497,8 +499,8 @@ export default function CreateSurvey() {
     setCategoryId(categoryId);
   };
   const handleQuestion = (event) => {
+    console.log("ok")
     const { name, value } = event.target;
-    console.log(name, value);
     // Soporte para campos anidados tipo "obj.prop"
     if (name.includes(".")) {
       const [parentKey, childKey] = name.split(".");
@@ -688,6 +690,7 @@ export default function CreateSurvey() {
   const handleEdit = (index) => {
     setTarget(index);
     setQuestion(questions[index]);
+    console.log("ok")
     console.log(questions[index]);
     setEdit(true);
   };
@@ -1114,6 +1117,72 @@ export default function CreateSurvey() {
           return;
         }
       }
+      console.log(question)
+      if (limitType === "fijo") {
+        if (question.stars.trim() === "") {
+          setErrorMessage({
+            ...errorMessage,
+            maximunValueOptions: true,
+          });
+          setHelperText({
+            ...helperText,
+            maximunValueOptions: "Este valor no puede ir vacío",
+          });
+          return;
+        }
+
+        if (isNaN(question.stars)) {
+          setErrorMessage((prev) => ({
+            ...prev,
+            maximunValueOptions: true,
+          }));
+          setHelperText((prev) => ({
+            ...prev,
+            maximunValueOptions: "Debe ingresar un número.",
+          }));
+          return;
+        }
+
+        if (!Number.isInteger(Number(question.stars))) {
+          setErrorMessage((prev) => ({
+            ...prev,
+            maximunValueOptions: true,
+          }));
+          setHelperText((prev) => ({
+            ...prev,
+            maximunValueOptions: "Solo se permiten números enteros.",
+          }));
+          return;
+        }
+
+        if (Number(question.stars) <= 0) {
+          setErrorMessage((prev) => ({
+            ...prev,
+            maximunValueOptions: true,
+          }));
+          setHelperText((prev) => ({
+            ...prev,
+            maximunValueOptions: "Debe ser un número mayor a 0.",
+          }));
+          return;
+        }
+
+        if (
+          Number(question.stars) >=
+          question.customOptions.length
+        ) {
+          setErrorMessage({
+            ...errorMessage,
+            maximunValueOptions: true,
+          });
+          setHelperText({
+            ...helperText,
+            maximunValueOptions:
+              "No puede colocar un valor mayor ni igual al número de opciones que tiene la pregunta.",
+          });
+          return;
+        }
+      }
 
       setErrorMessage({});
       setHelperText({});
@@ -1123,7 +1192,6 @@ export default function CreateSurvey() {
       handleCloseModal();
       return;
     }
-
     if (information.name.length < 5) {
       setErrorMessage({
         ...errorMessage,
@@ -1157,6 +1225,72 @@ export default function CreateSurvey() {
         name: "El número máximo de carácteres de 400.",
       });
     }
+    if (limitType === "fijo") {
+      if (information.maximunValueOptions.trim() === "") {
+        setErrorMessage({
+          ...errorMessage,
+          maximunValueOptions: true,
+        });
+        setHelperText({
+          ...helperText,
+          maximunValueOptions: "Este valor no puede ir vacío",
+        });
+        return;
+      }
+
+      if (isNaN(information.maximunValueOptions)) {
+        setErrorMessage((prev) => ({
+          ...prev,
+          maximunValueOptions: true,
+        }));
+        setHelperText((prev) => ({
+          ...prev,
+          maximunValueOptions: "Debe ingresar un número.",
+        }));
+        return;
+      }
+
+      if (!Number.isInteger(Number(information.maximunValueOptions))) {
+        setErrorMessage((prev) => ({
+          ...prev,
+          maximunValueOptions: true,
+        }));
+        setHelperText((prev) => ({
+          ...prev,
+          maximunValueOptions: "Solo se permiten números enteros.",
+        }));
+        return;
+      }
+
+      if (Number(information.maximunValueOptions) <= 0) {
+        setErrorMessage((prev) => ({
+          ...prev,
+          maximunValueOptions: true,
+        }));
+        setHelperText((prev) => ({
+          ...prev,
+          maximunValueOptions: "Debe ser un número mayor a 0.",
+        }));
+        return;
+      }
+
+      if (
+        Number(information.maximunValueOptions) >=
+        information.customOptions.length
+      ) {
+        setErrorMessage({
+          ...errorMessage,
+          maximunValueOptions: true,
+        });
+        setHelperText({
+          ...helperText,
+          maximunValueOptions:
+            "No puede colocar un valor mayor ni igual al número de opciones que tiene la pregunta.",
+        });
+        return;
+      }
+    }
+
     if (
       !information.customOptions.every((elemento) => elemento !== "") &&
       (type.id === 3 || type.id === 8 || type.id === 15)
@@ -1248,9 +1382,10 @@ export default function CreateSurvey() {
         return;
       }
     }
-
+    console.log(!type.id);
     // validate category id
-    if (!type.id === 19) {
+    if (type.id !== 19) {
+      console.log(type.id);
       if (categoryId === "" || categoryId === null) {
         setCategoryError("Seleccione una categoría");
 
@@ -1357,7 +1492,7 @@ export default function CreateSurvey() {
    * @param {object} question
    */
   const handleAddQuestion = async (question) => {
-    console.log(question)
+    console.log(question);
     const newQuestion = {
       id: uuid.v4(),
       categoryId,
@@ -1687,6 +1822,8 @@ export default function CreateSurvey() {
                   optionRelationalError={optionRelationalError}
                   questionTypes={questionTypes}
                   handleAutocomplete={handleAutocomplete}
+                  limitType={limitType}
+                  setLimitType={setLimitType}
                 />
               </div>
             </div>
@@ -1734,6 +1871,8 @@ export default function CreateSurvey() {
                       handleInformationRelationalOptionsEdit
                     }
                     optionRelationalError={optionRelationalError}
+                    limitType={limitType}
+                    setLimitType={setLimitType}
                   />
                 )}
               </div>
