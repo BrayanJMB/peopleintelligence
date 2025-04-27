@@ -1,88 +1,93 @@
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import DesignServicesIcon from '@mui/icons-material/DesignServices';
-import { Divider } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Stepper from '@mui/material/Stepper';
-import TextField from '@mui/material/TextField';
-import { useSnackbar } from 'notistack';
-import * as uuid from 'uuid';
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import DesignServicesIcon from "@mui/icons-material/DesignServices";
+import { Divider } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import Stepper from "@mui/material/Stepper";
+import TextField from "@mui/material/TextField";
+import { useSnackbar } from "notistack";
+import * as uuid from "uuid";
 
-import DemographicDataForm from '../../../components/DemographicDataForm/DemographicDataForm';
-import EditForm from '../../../components/EditForm/EditForm';
-import Form from '../../../components/Form/Form';
-import MyPageHeader from '../../../components/MyPageHeader/MyPageHeader';
-import { fetchSurveyByIdAndCompanyId } from '../../../features/surveys/surveysSlice';
-import IconSidebar from '../../../Layout/IconSidebar/IconSidebar';
-import Navbar from '../../../Layout/Navbar/Navbar';
+import DemographicDataForm from "../../../components/DemographicDataForm/DemographicDataForm";
+import EditForm from "../../../components/EditForm/EditForm";
+import Form from "../../../components/Form/Form";
+import MyPageHeader from "../../../components/MyPageHeader/MyPageHeader";
+import { fetchSurveyByIdAndCompanyId } from "../../../features/surveys/surveysSlice";
+import IconSidebar from "../../../Layout/IconSidebar/IconSidebar";
+import Navbar from "../../../Layout/Navbar/Navbar";
 import {
   fetchCategoriesAPI,
   fetchCategoriesByCompanyAPI,
-} from '../../../services/getCategories.service';
-import { fetchQuestionTypesAPI } from '../../../services/questionTypes.service';
+} from "../../../services/getCategories.service";
+import { fetchQuestionTypesAPI } from "../../../services/questionTypes.service";
 import {
   deleteTemplateQuestionAPI,
   showTemplateAPI,
   updateTemplateAPI,
   updateTemplateOptionAPI,
   updateTemplateQuestionAPI,
-} from '../../../services/templates.service';
-import client from '../../../utils/axiosInstance';
+} from "../../../services/templates.service";
+import client from "../../../utils/axiosInstance";
 
-import Cuestionario from './Cuestionario/Cuestionario';
-import { Exclusiveness } from './Exclusividad/Exclusiveness.jsx';
-import { WhatsAppForSurvey } from './HasWhatsApp/WhatsAppForSurvey.jsx';
-import Intimidad from './Intimidad/Intimidad.jsx';
-import Introduction from './Introduction/Introduction';
-import { MessagesSurvey } from './MessagesSurvey/MessagesSurvey.jsx';
-import { MultiAnswerSurvey } from './MultiAnswerSurvey/MultiAnswerSurvey.jsx';
-import { NumerationSurvey } from './NumerationSurvey.jsx';
+import Cuestionario from "./Cuestionario/Cuestionario";
+import { Exclusiveness } from "./Exclusividad/Exclusiveness.jsx";
+import { WhatsAppForSurvey } from "./HasWhatsApp/WhatsAppForSurvey.jsx";
+import Intimidad from "./Intimidad/Intimidad.jsx";
+import Introduction from "./Introduction/Introduction";
+import { MessagesSurvey } from "./MessagesSurvey/MessagesSurvey.jsx";
+import { MultiAnswerSurvey } from "./MultiAnswerSurvey/MultiAnswerSurvey.jsx";
+import { NumerationSurvey } from "./NumerationSurvey.jsx";
 
-import styles from './CreateSurvey.module.css';
+import styles from "./CreateSurvey.module.css";
 
 export default function CreateSurvey() {
-  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [questionChildNumer, setQuestionChilNumber] = useState();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const [activeStep, setActiveStep] = useState(1);
+  const [activeStep, setActiveStep] = useState(0);
   const [questionTypes, setQuestionTypes] = useState([]);
   const [questions, setQuestions] = useState([]);
-  const [target, setTarget] = useState('');
+  const [target, setTarget] = useState("");
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
   const [data, setData] = useState(null);
   const [helperText, setHelperText] = useState({});
   const [errorMessage, setErrorMessage] = useState({});
   const [type, setType] = useState(null);
-  const [starmsg, setStarmsg] = useState('');
+  const [starmsg, setStarmsg] = useState("");
   const [information, setInformation] = useState({
-    name: '',
-    description: '',
+    name: "",
+    description: "",
     options: [],
-    customOptions: Array(2).fill(''),
-    opcionesInputs: Array(2).fill(''),
-    stars: Array(3).fill(''),
-    rangeOptions: ['Rango 0-6', 'Rango 7-8', 'Rango 9-10'],
+    customOptions: Array(2).fill(""),
+    opcionesInputs: Array(2).fill(""),
+    stars: Array(3).fill(""),
+    rangeOptions: ["Rango 0-6", "Rango 7-8", "Rango 9-10"],
     barBipolarValue: 0,
     textsBipolarBar: {
-      leftText: '',
-      rightText: '',
+      leftText: "",
+      rightText: "",
+      valueRight: "0",
+      valueLeft: "2",
     },
-    maximunValueOptions: '',
+    maximunValueOptions: "",
+    secondSelectOptions: Array.from({ length: 9 }, (_, i) => 2 + i),
   });
-  const [limitType, setLimitType] = useState('ilimitado');
+  const [firstSelect, setFirstSelect] = useState(0);
+  const [secondSelect, setSecondSelect] = useState(2);
+  const [limitType, setLimitType] = useState("ilimitado");
 
   const [selections, setSelections] = useState({});
   const dispatch = useDispatch();
@@ -91,7 +96,7 @@ export default function CreateSurvey() {
   const [conditionalQuestion, setConditionalQuestion] = useState(false);
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState(null);
-  const [categoryError, setCategoryError] = useState('');
+  const [categoryError, setCategoryError] = useState("");
   const [customOptionError, setCustomOptionError] = useState([]);
   const [optionRelationalError, setOptionRelationalError] = useState([]);
   const currentCompany = useSelector((state) => state.companies.currentCompany);
@@ -107,29 +112,29 @@ export default function CreateSurvey() {
   const [templateDemographics, setTemplateDemographics] = useState([]);
   const [mapsLoaded, setMapsLoaded] = useState(false);
   const [surveyMessages, setSurveyMessages] = useState({
-    welcomeMessage: 'Ingrese su correo electrónico o cédula para continuar',
-    inputMessage: 'Correo electrónico o cédula',
+    welcomeMessage: "Ingrese su correo electrónico o cédula para continuar",
+    inputMessage: "Correo electrónico o cédula",
     confidentialityMessage:
-      'Tus respuestas serán completamente confidenciales y no podrán ser vinculadas a tu identidad.',
+      "Tus respuestas serán completamente confidenciales y no podrán ser vinculadas a tu identidad.",
   });
   const [hasNumerationNumber, setHasNumerationNumber] = useState(true);
   const [errorDayConcurrency, setErrorDayConcurrency] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-  const isMap = searchParams.get('isMap') === 'true';
-  const isEdit = searchParams.get('isEdit') === 'true';
+  const isMap = searchParams.get("isMap") === "true";
+  const isEdit = searchParams.get("isEdit") === "true";
   const isTemplate =
-    searchParams.get('isTemplate') === 'true' ||
-    location.pathname.indexOf('journey/update-template') !== -1;
-  const isUpdate = location.pathname.indexOf('journey/update-template') !== -1;
+    searchParams.get("isTemplate") === "true" ||
+    location.pathname.indexOf("journey/update-template") !== -1;
+  const isUpdate = location.pathname.indexOf("journey/update-template") !== -1;
   const templateId =
-    searchParams.get('templateId') || location.pathname.split('/')[3];
+    searchParams.get("templateId") || location.pathname.split("/")[3];
   const steps = [
-    'Introducción',
+    "Introducción",
     //'WhatsApp',
-    'Cuestionario',
-    'Configuración',
-    ...(!isTemplate ? ['Privacidad'] : []),
-    'Concurrencia',
+    "Cuestionario",
+    "Configuración",
+    ...(!isTemplate ? ["Privacidad"] : []),
+    "Concurrencia",
   ];
   const { surveyId } = useParams();
   /**
@@ -140,6 +145,31 @@ export default function CreateSurvey() {
   const handleIntroductionChange = (updatedData) => {
     setData(updatedData);
   };
+
+  //ENPS PROMOTE SQAURES
+  const handleFirstSelectChange = (event) => {
+    console.log(information);
+    const value = parseInt(event.target.value, 10);
+    setFirstSelect(value);
+
+    // Cambiar automáticamente el segundo select dependiendo del primer select
+    if (value === 0) {
+      setSecondSelect(2);
+    } else if (value === 1) {
+      setSecondSelect(3);
+    }
+  };
+
+  const handleSecondSelectChange = (event) => {
+    setSecondSelect(event.target.value);
+  };
+
+  // Crear el rango dinámico basado en el primer select
+  const startValue = firstSelect === 0 ? 2 : 3;
+  const secondSelectOptions = Array.from(
+    { length: 10 - startValue + 1 },
+    (_, i) => startValue + i
+  );
 
   /**
    * Get demographics for create survey or template.
@@ -177,7 +207,7 @@ export default function CreateSurvey() {
    */
   const createSurvey = async () => {
     setLoading(true);
-    if (errorDayConcurrency || dayConcurrency === '') return;
+    if (errorDayConcurrency || dayConcurrency === "") return;
     console.log(questions);
     const newSurvey = {
       survey: {
@@ -213,7 +243,7 @@ export default function CreateSurvey() {
           return {
             optionsName: option,
             numberOption: index + 1,
-            questionChildren: question.childQuestionIds?.[index] || '', // Corrección aquí usando encadenamiento opcional
+            questionChildren: question.childQuestionIds?.[index] || "", // Corrección aquí usando encadenamiento opcional
           };
         }),
         selectOptions: question.selectOptions?.map((option, index) => {
@@ -233,8 +263,8 @@ export default function CreateSurvey() {
 
     setLoading(false);
     navigate(`/journey/survey/${createdJourney.id}/detail?sendMail=true`);
-    enqueueSnackbar('Cuestionario creado con éxito', {
-      variant: 'success',
+    enqueueSnackbar("Cuestionario creado con éxito", {
+      variant: "success",
     });
   };
   /**
@@ -270,11 +300,11 @@ export default function CreateSurvey() {
       demographics: getDemographics(),
     };
 
-    const { data: createdJourney } = await client.put('/editSurvey', newSurvey);
+    const { data: createdJourney } = await client.put("/editSurvey", newSurvey);
     setLoading(false);
     navigate(`/journey/survey/${createdJourney.id}/detail`);
-    enqueueSnackbar('Cuestionario editado con éxito', {
-      variant: 'success',
+    enqueueSnackbar("Cuestionario editado con éxito", {
+      variant: "success",
     });
   };
 
@@ -291,7 +321,7 @@ export default function CreateSurvey() {
       messageMail: data.mailingMessage,
       emailSubject: data.emailSubject,
       emailMask: data.emailMask,
-      isObligatory: !(data.surveyOrMap === 'survey'),
+      isObligatory: !(data.surveyOrMap === "survey"),
       questionSection: questions.map((question, index) => ({
         templateCategoryId: question.categoryId,
         templateQuestion: {
@@ -315,7 +345,7 @@ export default function CreateSurvey() {
       })),
     };
     const resourceName =
-      data.surveyOrMap === 'survey' ? 'Plantilla' : 'Ruta de mapa';
+      data.surveyOrMap === "survey" ? "Plantilla" : "Ruta de mapa";
     await client.post(
       `Administrator/createTemplate/${currentCompany.id}`,
       newTemplate
@@ -324,7 +354,7 @@ export default function CreateSurvey() {
     setLoading(false);
     navigate(`/journeysettings?tab=${data.surveyOrMap}`);
     enqueueSnackbar(`${resourceName} creada con éxito`, {
-      variant: 'success',
+      variant: "success",
     });
   };
 
@@ -352,8 +382,8 @@ export default function CreateSurvey() {
 
   const validateLengthQuestion = (questions) => {
     if (questions.length === 0) {
-      enqueueSnackbar('La encuesta debe tener al menos una pregunta.', {
-        variant: 'error',
+      enqueueSnackbar("La encuesta debe tener al menos una pregunta.", {
+        variant: "error",
         autoHideDuration: 3000,
       });
       return true;
@@ -376,7 +406,7 @@ export default function CreateSurvey() {
         enqueueSnackbar(
           `La pregunta # ${question.originalIndex} no tiene categoría, por favor asignar una categoría`,
           {
-            variant: 'error',
+            variant: "error",
             autoHideDuration: 3000,
           }
         );
@@ -407,9 +437,9 @@ export default function CreateSurvey() {
       case 1:
         if (isUpdate && isTemplate) {
           await updateTemplate();
-          navigate('/journey/survey-template');
-          enqueueSnackbar('Plantilla actualizada con éxito', {
-            variant: 'success',
+          navigate("/journey/survey-template");
+          enqueueSnackbar("Plantilla actualizada con éxito", {
+            variant: "success",
             autoHideDuration: 3000,
           });
 
@@ -454,7 +484,7 @@ export default function CreateSurvey() {
 
   const handleCerrar = () => {
     if (activeStep === 0) {
-      navigate('/journey');
+      navigate("/journey");
     } else {
       setMapsLoaded(true);
       setActiveStep((val) => val - 1);
@@ -468,17 +498,32 @@ export default function CreateSurvey() {
    */
   const handleInformation = (event) => {
     const { name, value } = event.target;
-    console.log(name, value);
-    // Soporte para campos anidados como textsBipolarBar.leftText
-    if (name.includes('.')) {
-      const [parentKey, childKey] = name.split('.');
-      setInformation((prev) => ({
-        ...prev,
-        [parentKey]: {
-          ...prev[parentKey],
-          [childKey]: value,
-        },
-      }));
+
+    if (name.includes(".")) {
+      const [parentKey, childKey] = name.split(".");
+
+      setInformation((prev) => {
+        const updatedInfo = {
+          ...prev,
+          [parentKey]: {
+            ...prev[parentKey],
+            [childKey]: value,
+          },
+        };
+
+        // Si estamos cambiando el valueLeft (el izquierdo)
+        if (name === "textsBipolarBar.valueLeft") {
+          const start = Number(value) === 0 ? 2 : 3;
+          updatedInfo.secondSelectOptions = Array.from(
+            { length: 10 - start + 1 },
+            (_, i) => start + i
+          );
+          // También reseteamos valueRight para que empiece correctamente
+          updatedInfo.textsBipolarBar.valueRight = start.toString();
+        }
+
+        return updatedInfo;
+      });
     } else {
       setInformation((prev) => ({
         ...prev,
@@ -486,6 +531,7 @@ export default function CreateSurvey() {
       }));
     }
   };
+
   useEffect(() => {
     console.log(information);
   }, [information]);
@@ -499,11 +545,10 @@ export default function CreateSurvey() {
     setCategoryId(categoryId);
   };
   const handleQuestion = (event) => {
-    console.log('ok');
     const { name, value } = event.target;
     // Soporte para campos anidados tipo "obj.prop"
-    if (name.includes('.')) {
-      const [parentKey, childKey] = name.split('.');
+    if (name.includes(".")) {
+      const [parentKey, childKey] = name.split(".");
       setQuestion((prev) => ({
         ...prev,
         [parentKey]: {
@@ -611,29 +656,29 @@ export default function CreateSurvey() {
 
   const handleaddstars = () => {
     if (information.stars.length === 10) {
-      setStarmsg('Elija un valor entre 3 y 10');
+      setStarmsg("Elija un valor entre 3 y 10");
     } else {
-      setStarmsg('');
+      setStarmsg("");
       let holder = [...information.stars];
-      holder.push('');
+      holder.push("");
       setInformation({ ...information, stars: holder });
     }
   };
   const handleeditstars = () => {
     let holder = [...question.stars];
     if (holder.length === 10) {
-      setStarmsg('Elija un valor entre 3 y 10');
+      setStarmsg("Elija un valor entre 3 y 10");
     } else {
-      setStarmsg('');
-      holder.push('');
+      setStarmsg("");
+      holder.push("");
       setQuestion({ ...question, stars: holder });
     }
   };
   const handledeletestars = () => {
     if (information.stars.length === 3) {
-      setStarmsg('Elija un valor entre 3 y 10');
+      setStarmsg("Elija un valor entre 3 y 10");
     } else {
-      setStarmsg('');
+      setStarmsg("");
       let holder = [...information.stars];
       holder.splice(1, 1);
       setInformation({ ...information, stars: holder });
@@ -642,9 +687,9 @@ export default function CreateSurvey() {
   const handleeditdeletestars = () => {
     let holder = [...question.stars];
     if (holder.length === 3) {
-      setStarmsg('Elija un valor entre 3 y 10');
+      setStarmsg("Elija un valor entre 3 y 10");
     } else {
-      setStarmsg('');
+      setStarmsg("");
       holder.splice(1, 1);
       setQuestion({ ...question, stars: holder });
     }
@@ -653,9 +698,9 @@ export default function CreateSurvey() {
   const handleaddoption = (type) => {
     if (type === 15) {
       let holder = [...information.customOptions];
-      holder.push('');
+      holder.push("");
       let holder2 = [...information.opcionesInputs];
-      holder2.push('');
+      holder2.push("");
       setInformation({
         ...information,
         customOptions: holder,
@@ -663,7 +708,7 @@ export default function CreateSurvey() {
       });
     } else {
       let holder = [...information.customOptions];
-      holder.push('');
+      holder.push("");
       setInformation({ ...information, customOptions: holder });
     }
   };
@@ -675,7 +720,7 @@ export default function CreateSurvey() {
   };
   const handleeditaddoption = () => {
     let holder = [...question.customOptions];
-    holder.push('');
+    holder.push("");
     setQuestion({ ...question, customOptions: holder });
   };
   const handleAdd = () => {
@@ -690,7 +735,7 @@ export default function CreateSurvey() {
   const handleEdit = (index) => {
     setTarget(index);
     setQuestion(questions[index]);
-    console.log('ok');
+    console.log("ok");
     console.log(questions[index]);
     setEdit(true);
   };
@@ -784,7 +829,7 @@ export default function CreateSurvey() {
   const handleChangeDayConcurrency = (event) => {
     const inputValue = event.target.value;
     // Permitir solo números
-    if (/^[1-9]\d*$/.test(inputValue) || inputValue === '') {
+    if (/^[1-9]\d*$/.test(inputValue) || inputValue === "") {
       setDayConcurrency(inputValue);
       setErrorDayConcurrency(false);
     } else {
@@ -850,7 +895,7 @@ export default function CreateSurvey() {
         );
       case 3:
         return (
-          <div style={{ display: 'flex', width: '100%' }}>
+          <div style={{ display: "flex", width: "100%" }}>
             <Intimidad anonyme={anonymous} handleAnonyme={handleanonyme} />
             <Exclusiveness
               exclusiviness={exclusiviness}
@@ -862,7 +907,7 @@ export default function CreateSurvey() {
       case 4:
         return (
           <div
-            style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
+            style={{ display: "flex", flexDirection: "column", width: "100%" }}
           >
             <MultiAnswerSurvey
               isAMultiAnswerSurvey={isAMultiAnswerSurvey}
@@ -881,12 +926,12 @@ export default function CreateSurvey() {
                   value={dayConcurrency}
                   onChange={handleChangeDayConcurrency}
                   type="text"
-                  inputProps={{ inputMode: 'numeric', pattern: '^[1-9]\\d*$' }} // Solo permite números positivos (sin 0 como valor único)
+                  inputProps={{ inputMode: "numeric", pattern: "^[1-9]\\d*$" }} // Solo permite números positivos (sin 0 como valor único)
                   error={errorDayConcurrency} // Activa el estilo de error en el campo
                   helperText={
                     errorDayConcurrency
-                      ? 'El valor no puede ser 0 ni estar vacío'
-                      : ''
+                      ? "El valor no puede ser 0 ni estar vacío"
+                      : ""
                   } // Mensaje de error condicional
                 />
               </>
@@ -905,17 +950,17 @@ export default function CreateSurvey() {
   const handleCloseEditModal = () => setEdit(false);
 
   const handleanonyme = (event) => {
-    setAnonymous(event.target.value === 'true');
+    setAnonymous(event.target.value === "true");
   };
   const handleExclusiviness = (event) => {
-    setExclusiviness(event.target.value === 'true');
+    setExclusiviness(event.target.value === "true");
   };
   const handleHasWhatsApp = (event) => {
-    setHasWhatsApp(event.target.value === 'true');
+    setHasWhatsApp(event.target.value === "true");
   };
 
   const handleMultiAnswerSurvey = (event) => {
-    setIsAMultiAnswerSurvey(event.target.value === 'true');
+    setIsAMultiAnswerSurvey(event.target.value === "true");
   };
 
   const reorder = (list, start, end) => {
@@ -958,24 +1003,24 @@ export default function CreateSurvey() {
     if (lang === 16) {
       // Verifica el valor del idioma
       return [
-        'Strongly Agree',
-        'Agree',
-        'Neither Agree nor Disagree',
-        'Disagree',
-        'Strongly Disagree',
+        "Strongly Agree",
+        "Agree",
+        "Neither Agree nor Disagree",
+        "Disagree",
+        "Strongly Disagree",
       ];
     } else {
       return [
-        'Totalmente de Acuerdo',
-        'De Acuerdo',
-        'Ni de Acuerdo Ni en Desacuerdo',
-        'En Desacuerdo',
-        'Totalmente en Desacuerdo',
+        "Totalmente de Acuerdo",
+        "De Acuerdo",
+        "Ni de Acuerdo Ni en Desacuerdo",
+        "En Desacuerdo",
+        "Totalmente en Desacuerdo",
       ];
     }
   }
   const handleAgregar = () => {
-    setCategoryError('');
+    setCategoryError("");
     setErrorMessage({});
     setHelperText({});
 
@@ -987,7 +1032,7 @@ export default function CreateSurvey() {
         });
         setHelperText({
           ...helperText,
-          name: 'Se requiere un mínimo de 5 caracteres.',
+          name: "Se requiere un mínimo de 5 caracteres.",
         });
 
         return;
@@ -998,7 +1043,7 @@ export default function CreateSurvey() {
         });
         setHelperText({
           ...helperText,
-          name: 'El número máximo de carácteres de 400.',
+          name: "El número máximo de carácteres de 400.",
         });
         return;
       }
@@ -1010,17 +1055,17 @@ export default function CreateSurvey() {
         });
         setHelperText({
           ...helperText,
-          name: 'El número máximo de carácteres de 400.',
+          name: "El número máximo de carácteres de 400.",
         });
       }
 
       if (
         question.customOptions !== null &&
         (question.typeId === 3 || question.typeId === 8) &&
-        question.customOptions.some((option) => option === '')
+        question.customOptions.some((option) => option === "")
       ) {
         setCustomOptionError(
-          question.customOptions.map((option) => option === '')
+          question.customOptions.map((option) => option === "")
         );
         return;
       }
@@ -1042,13 +1087,14 @@ export default function CreateSurvey() {
           });
           setHelperText({
             ...helperText,
-            autocomplete: 'Debe seleccionar una pregunta para cada opción.',
+            autocomplete: "Debe seleccionar una pregunta para cada opción.",
           });
           return; // Detiene la ejecución si hay errores
         }
       }
 
-      if (question.typeId === 19) {
+      if (question.typeId === 19 || question.typeId === 22) {
+        
         const value = Number(question.stars);
         if (isNaN(value)) {
           setErrorMessage((prev) => ({
@@ -1057,7 +1103,7 @@ export default function CreateSurvey() {
           }));
           setHelperText((prev) => ({
             ...prev,
-            bipolar: 'Debe ingresar un número.',
+            bipolar: "Debe ingresar un número.",
           }));
           return;
         }
@@ -1069,20 +1115,20 @@ export default function CreateSurvey() {
           }));
           setHelperText((prev) => ({
             ...prev,
-            bipolar: 'Solo se permiten números enteros.',
+            bipolar: "Solo se permiten números enteros.",
           }));
           return;
         }
 
         // Validación: valor vacío o menor o igual a 0
-        if (information.stars === '' || value <= 0) {
+        if (information.stars === "" || value <= 0) {
           setErrorMessage((prev) => ({
             ...prev,
             bipolar: true,
           }));
           setHelperText((prev) => ({
             ...prev,
-            bipolar: 'El valor debe ser mayor a 0.',
+            bipolar: "El valor debe ser mayor a 0.",
           }));
           return;
         }
@@ -1095,15 +1141,15 @@ export default function CreateSurvey() {
           }));
           setHelperText((prev) => ({
             ...prev,
-            bipolar: 'El valor no puede ser mayor a 10.',
+            bipolar: "El valor no puede ser mayor a 10.",
           }));
           return;
         }
 
         // Validación: extremos vacíos
         if (
-          question.textsBipolarBar.leftText.trim() === '' ||
-          question.textsBipolarBar.rightText.trim() === ''
+          question.textsBipolarBar.leftText.trim() === "" ||
+          question.textsBipolarBar.rightText.trim() === ""
         ) {
           setErrorMessage((prev) => ({
             ...prev,
@@ -1112,21 +1158,21 @@ export default function CreateSurvey() {
           setHelperText((prev) => ({
             ...prev,
             bipolarText:
-              'Debe completar los textos de los extremos de la escala bipolar.',
+              "Debe completar los textos de los extremos de la escala bipolar.",
           }));
           return;
         }
       }
       console.log(question);
-      if (limitType === 'fijo') {
-        if (question.stars.trim() === '') {
+      if (limitType === "fijo") {
+        if (question.stars.trim() === "") {
           setErrorMessage({
             ...errorMessage,
             maximunValueOptions: true,
           });
           setHelperText({
             ...helperText,
-            maximunValueOptions: 'Este valor no puede ir vacío',
+            maximunValueOptions: "Este valor no puede ir vacío",
           });
           return;
         }
@@ -1138,7 +1184,7 @@ export default function CreateSurvey() {
           }));
           setHelperText((prev) => ({
             ...prev,
-            maximunValueOptions: 'Debe ingresar un número.',
+            maximunValueOptions: "Debe ingresar un número.",
           }));
           return;
         }
@@ -1150,7 +1196,7 @@ export default function CreateSurvey() {
           }));
           setHelperText((prev) => ({
             ...prev,
-            maximunValueOptions: 'Solo se permiten números enteros.',
+            maximunValueOptions: "Solo se permiten números enteros.",
           }));
           return;
         }
@@ -1162,15 +1208,12 @@ export default function CreateSurvey() {
           }));
           setHelperText((prev) => ({
             ...prev,
-            maximunValueOptions: 'Debe ser un número mayor a 0.',
+            maximunValueOptions: "Debe ser un número mayor a 0.",
           }));
           return;
         }
 
-        if (
-          Number(question.stars) >=
-          question.customOptions.length
-        ) {
+        if (Number(question.stars) >= question.customOptions.length) {
           setErrorMessage({
             ...errorMessage,
             maximunValueOptions: true,
@@ -1178,7 +1221,7 @@ export default function CreateSurvey() {
           setHelperText({
             ...helperText,
             maximunValueOptions:
-              'No puede colocar un valor mayor ni igual al número de opciones que tiene la pregunta.',
+              "No puede colocar un valor mayor ni igual al número de opciones que tiene la pregunta.",
           });
           return;
         }
@@ -1199,7 +1242,7 @@ export default function CreateSurvey() {
       });
       setHelperText({
         ...helperText,
-        name: 'Se requiere un mínimo de 5 carácteres.',
+        name: "Se requiere un mínimo de 5 carácteres.",
       });
 
       return;
@@ -1210,7 +1253,7 @@ export default function CreateSurvey() {
       });
       setHelperText({
         ...helperText,
-        name: 'El número máximo de carácteres de 400.',
+        name: "El número máximo de carácteres de 400.",
       });
       return;
     }
@@ -1222,18 +1265,18 @@ export default function CreateSurvey() {
       });
       setHelperText({
         ...helperText,
-        name: 'El número máximo de carácteres de 400.',
+        name: "El número máximo de carácteres de 400.",
       });
     }
-    if (limitType === 'fijo') {
-      if (information.maximunValueOptions.trim() === '') {
+    if (limitType === "fijo") {
+      if (information.maximunValueOptions.trim() === "") {
         setErrorMessage({
           ...errorMessage,
           maximunValueOptions: true,
         });
         setHelperText({
           ...helperText,
-          maximunValueOptions: 'Este valor no puede ir vacío',
+          maximunValueOptions: "Este valor no puede ir vacío",
         });
         return;
       }
@@ -1245,7 +1288,7 @@ export default function CreateSurvey() {
         }));
         setHelperText((prev) => ({
           ...prev,
-          maximunValueOptions: 'Debe ingresar un número.',
+          maximunValueOptions: "Debe ingresar un número.",
         }));
         return;
       }
@@ -1257,7 +1300,7 @@ export default function CreateSurvey() {
         }));
         setHelperText((prev) => ({
           ...prev,
-          maximunValueOptions: 'Solo se permiten números enteros.',
+          maximunValueOptions: "Solo se permiten números enteros.",
         }));
         return;
       }
@@ -1269,7 +1312,7 @@ export default function CreateSurvey() {
         }));
         setHelperText((prev) => ({
           ...prev,
-          maximunValueOptions: 'Debe ser un número mayor a 0.',
+          maximunValueOptions: "Debe ser un número mayor a 0.",
         }));
         return;
       }
@@ -1285,29 +1328,29 @@ export default function CreateSurvey() {
         setHelperText({
           ...helperText,
           maximunValueOptions:
-            'No puede colocar un valor mayor ni igual al número de opciones que tiene la pregunta.',
+            "No puede colocar un valor mayor ni igual al número de opciones que tiene la pregunta.",
         });
         return;
       }
     }
 
     if (
-      !information.customOptions.every((elemento) => elemento !== '') &&
+      !information.customOptions.every((elemento) => elemento !== "") &&
       (type.id === 3 || type.id === 8 || type.id === 15)
     ) {
       let checkCustomOptions = information.customOptions.map(
-        (elemento) => elemento === ''
+        (elemento) => elemento === ""
       );
       setCustomOptionError(checkCustomOptions);
       return;
     }
 
     if (
-      !information.opcionesInputs.every((elemento) => elemento !== '') &&
+      !information.opcionesInputs.every((elemento) => elemento !== "") &&
       type.id === 15
     ) {
       let relationalOptions = information.opcionesInputs.map(
-        (elemento) => elemento === ''
+        (elemento) => elemento === ""
       );
       setOptionRelationalError(relationalOptions);
       return;
@@ -1322,7 +1365,7 @@ export default function CreateSurvey() {
         }));
         setHelperText((prev) => ({
           ...prev,
-          bipolar: 'Debe ingresar un número.',
+          bipolar: "Debe ingresar un número.",
         }));
         return;
       }
@@ -1334,20 +1377,20 @@ export default function CreateSurvey() {
         }));
         setHelperText((prev) => ({
           ...prev,
-          bipolar: 'Solo se permiten números enteros.',
+          bipolar: "Solo se permiten números enteros.",
         }));
         return;
       }
 
       // Validación: valor vacío o menor o igual a 0
-      if (information.barBipolarValue === '' || value <= 0) {
+      if (information.barBipolarValue === "" || value <= 0) {
         setErrorMessage((prev) => ({
           ...prev,
           bipolar: true,
         }));
         setHelperText((prev) => ({
           ...prev,
-          bipolar: 'El valor debe ser mayor a 0.',
+          bipolar: "El valor debe ser mayor a 0.",
         }));
         return;
       }
@@ -1360,15 +1403,15 @@ export default function CreateSurvey() {
         }));
         setHelperText((prev) => ({
           ...prev,
-          bipolar: 'El valor no puede ser mayor a 10.',
+          bipolar: "El valor no puede ser mayor a 10.",
         }));
         return;
       }
 
       // Validación: extremos vacíos
       if (
-        information.textsBipolarBar.leftText.trim() === '' ||
-        information.textsBipolarBar.rightText.trim() === ''
+        information.textsBipolarBar.leftText.trim() === "" ||
+        information.textsBipolarBar.rightText.trim() === ""
       ) {
         setErrorMessage((prev) => ({
           ...prev,
@@ -1377,17 +1420,36 @@ export default function CreateSurvey() {
         setHelperText((prev) => ({
           ...prev,
           bipolarText:
-            'Debe completar los textos de los extremos de la escala bipolar.',
+            "Debe completar los textos de los extremos de la escala bipolar.",
         }));
         return;
       }
     }
-    console.log(!type.id);
-    // validate category id
+
+    if (type.id === 22) {
+
+      // Validación: extremos vacíos
+      if (
+        information.textsBipolarBar.leftText.trim() === "" ||
+        information.textsBipolarBar.rightText.trim() === ""
+      ) {
+        setErrorMessage((prev) => ({
+          ...prev,
+          bipolarText: true,
+        }));
+        setHelperText((prev) => ({
+          ...prev,
+          bipolarText:
+            "Debe completar los textos de los extremos de la escala bipolar.",
+        }));
+        return;
+      }
+    }
+
     if (type.id !== 19) {
       console.log(type.id);
-      if (categoryId === '' || categoryId === null) {
-        setCategoryError('Seleccione una categoría');
+      if (categoryId === "" || categoryId === null) {
+        setCategoryError("Seleccione una categoría");
 
         return;
       }
@@ -1401,20 +1463,20 @@ export default function CreateSurvey() {
     // validate questions
     if (type.id === 1 || type.id === 21) {
       handleAddQuestion({
-        type: 'Texto corto',
+        type: "Texto corto",
         name: information.name,
         description: information.description,
       });
     } else if (type.id === 2 || type.id === 16) {
       handleAddQuestion({
-        type: 'Escala Likert',
+        type: "Escala Likert",
         name: information.name,
         description: information.description,
         options: information.options,
       });
     } else if (type.id === 3) {
       handleAddQuestion({
-        type: 'Opción múltiple',
+        type: "Opción múltiple",
         name: information.name,
         description: information.description,
         customOptions: information.customOptions,
@@ -1422,7 +1484,7 @@ export default function CreateSurvey() {
       });
     } else if (type.id === 8) {
       handleAddQuestion({
-        type: 'Opción única',
+        type: "Opción única",
         name: information.name,
         description: information.description,
         customOptions: information.customOptions,
@@ -1431,27 +1493,27 @@ export default function CreateSurvey() {
       });
     } else if (type.id === 5) {
       handleAddQuestion({
-        type: 'Calificaciones',
+        type: "Calificaciones",
         name: information.name,
         description: information.description,
         stars: information.stars,
       });
     } else if (type.id === 10) {
       handleAddQuestion({
-        type: 'E-NPS',
+        type: "E-NPS",
         name: information.name,
         description: information.description,
       });
     } else if (type.id === 14) {
       handleAddQuestion({
-        type: 'Sentimental',
+        type: "Sentimental",
         name: information.name,
         description: information.description,
         options: information.options,
       });
     } else if (type.id === 15) {
       handleAddQuestion({
-        type: 'Relacional',
+        type: "Relacional",
         name: information.name,
         description: information.description,
         customOptions: information.customOptions,
@@ -1459,26 +1521,38 @@ export default function CreateSurvey() {
       });
     } else if (type.id === 19) {
       handleAddQuestion({
-        type: 'Evaluación',
+        type: "Evaluación",
         name: information.name,
         description: information.description,
         stars: information.barBipolarValue,
         textsBipolarBar: information.textsBipolarBar,
       });
+    } else if (type.id === 22) {
+      handleAddQuestion({
+        type: "ENPS cuadros",
+        name: information.name,
+        description: information.description,
+        textsBipolarBar: information.textsBipolarBar,
+      });
     }
 
     setInformation({
-      name: '',
-      description: '',
+      name: "",
+      description: "",
       options: [],
-      customOptions: Array(2).fill(''),
-      opcionesInputs: Array(2).fill(''),
-      stars: Array(3).fill(''),
+      customOptions: Array(2).fill(""),
+      opcionesInputs: Array(2).fill(""),
+      stars: Array(3).fill(""),
+      rangeOptions: ["Rango 0-6", "Rango 7-8", "Rango 9-10"],
       barBipolarValue: 0,
       textsBipolarBar: {
-        leftText: '',
-        rightText: '',
+        leftText: "",
+        rightText: "",
+        valueRight: "0",
+        valueLeft: "2",
       },
+      maximunValueOptions: "",
+      secondSelectOptions: Array.from({ length: 9 }, (_, i) => 2 + i),
     });
     setQuestion(null);
     setType(null);
@@ -1531,7 +1605,7 @@ export default function CreateSurvey() {
     );
 
     await deleteTemplateQuestionAPI(question.id);
-    enqueueSnackbar('Pregunta eliminada', { variant: 'success' });
+    enqueueSnackbar("Pregunta eliminada", { variant: "success" });
   };
 
   /**
@@ -1541,16 +1615,16 @@ export default function CreateSurvey() {
    */
   const getHeaderTitle = () => {
     if (isTemplate && isMap && !isEdit) {
-      return 'Crear encuesta de mapa';
+      return "Crear encuesta de mapa";
     } else if (isTemplate && isMap && isEdit) {
-      return 'Editar encuesta de mapa';
+      return "Editar encuesta de mapa";
     } else if (isTemplate) {
-      return 'Crear plantilla';
+      return "Crear plantilla";
     }
     if (isEdit) {
-      return 'Editar encuesta';
+      return "Editar encuesta";
     } else {
-      return 'Crear encuesta';
+      return "Crear encuesta";
     }
   };
 
@@ -1730,11 +1804,11 @@ export default function CreateSurvey() {
 
   useEffect(() => {
     if (
-      userInfo?.role.findIndex((p) => p === 'Journey') < 0 &&
-      userInfo?.role.findIndex((p) => p === 'Administrador') < 0
+      userInfo?.role.findIndex((p) => p === "Journey") < 0 &&
+      userInfo?.role.findIndex((p) => p === "Administrador") < 0
     ) {
-      alert('No tiene permiso para acceder a esta funcionalidad');
-      navigate('/dashboard');
+      alert("No tiene permiso para acceder a esta funcionalidad");
+      navigate("/dashboard");
     }
     setQuestions(questions);
   }, [questions]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -1765,7 +1839,7 @@ export default function CreateSurvey() {
   }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <Dialog maxWidth="lg" open={open} onClose={handleCloseModal}>
         <DialogTitle>Agregar pregunta</DialogTitle>
         <DialogContent>
@@ -1775,14 +1849,14 @@ export default function CreateSurvey() {
                 <div className={styles.input}>
                   <Autocomplete
                     id="combo-box-demo"
-                    style={{ flexBasis: '40%' }}
+                    style={{ flexBasis: "40%" }}
                     options={questionTypes}
                     value={type}
                     onChange={(e, value) => {
                       handleAutocomplete(value);
                     }}
                     getOptionLabel={(option) => option.typeQuestionName}
-                    noOptionsText={'No se encontraron tipos de pregunta'}
+                    noOptionsText={"No se encontraron tipos de pregunta"}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -1824,6 +1898,14 @@ export default function CreateSurvey() {
                   handleAutocomplete={handleAutocomplete}
                   limitType={limitType}
                   setLimitType={setLimitType}
+                  firstSelect={firstSelect}
+                  setFirstSelect={setFirstSelect}
+                  secondSelect={secondSelect}
+                  setSecondSelect={setSecondSelect}
+                  handleFirstSelectChange={handleFirstSelectChange}
+                  handleSecondSelectChange={handleSecondSelectChange}
+                  startValue={startValue}
+                  secondSelectOptions={secondSelectOptions}
                 />
               </div>
             </div>
@@ -1890,7 +1972,7 @@ export default function CreateSurvey() {
       </Dialog>
       <Navbar />
       <IconSidebar />
-      <div style={{ backgroundColor: 'white' }}>
+      <div style={{ backgroundColor: "white" }}>
         <div className={styles.content}>
           <div className={styles.survey_template}>
             <div className={styles.data}>
@@ -1913,11 +1995,11 @@ export default function CreateSurvey() {
               <div className={styles.display}>{renderSwitch(activeStep)}</div>
               <div
                 className={styles.display}
-                style={{ position: 'sticky', bottom: 0 }}
+                style={{ position: "sticky", bottom: 0 }}
               >
                 <div className={styles.impexp}>
                   <Button variant="text" onClick={handleCerrar}>
-                    {activeStep === 0 ? 'Cerrar' : 'atrás'}
+                    {activeStep === 0 ? "Cerrar" : "atrás"}
                   </Button>
                   <Button
                     variant="contained"
@@ -1929,8 +2011,8 @@ export default function CreateSurvey() {
                     }
                   >
                     {activeStep === 4 || (activeStep === 1 && isTemplate)
-                      ? 'Finalizar'
-                      : 'Continuar'}
+                      ? "Finalizar"
+                      : "Continuar"}
                   </Button>
                 </div>
               </div>
