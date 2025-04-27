@@ -17,6 +17,15 @@ import styles from "./Form.module.css";
 export default function Form(props) {
   const [categoryId, setCategoryId] = useState("");
   const [open, setOpen] = useState(false);
+  const [limitType, setLimitType] = useState("ilimitado");
+  const [fixedValue, setFixedValue] = useState("");
+
+  const handleLimitChange = (event) => {
+    setLimitType(event.target.value);
+    if (event.target.value === "ilimitado") {
+      setFixedValue(""); // Limpiar el valor si vuelve a ilimitado
+    }
+  };
 
   // Funciones para abrir y cerrar el modal
 
@@ -313,6 +322,33 @@ export default function Form(props) {
                 Eliminar opción
               </Button>
             ) : null}
+            <div className={styles.input}>
+              <FormControl fullWidth size="small" style={{ marginTop: "1rem" }}>
+                <InputLabel id="limit-type-label">Tipo de límite</InputLabel>
+                <Select
+                  labelId="limit-type-label"
+                  value={limitType}
+                  label="Tipo de límite"
+                  onChange={handleLimitChange}
+                >
+                  <MenuItem value="ilimitado">Ilimitado</MenuItem>
+                  <MenuItem value="fijo">Valor fijo</MenuItem>
+                </Select>
+              </FormControl>
+
+              {limitType === "fijo" && (
+                <TextField
+                  label="Valor fijo"
+                  placeholder="Por favor ingresa el valor máximo que los usuarios pueden seleccionar:"
+                  value={props.score}
+                  onChange={props.handleInformation}
+                  style={{ marginTop: "0.8rem" }}
+                  fullWidth
+                  size="small"
+                  name="maximunValueOptions"
+                />
+              )}
+            </div>
           </div>
         );
       case 8:

@@ -466,7 +466,7 @@ export default function CreateSurvey() {
    */
   const handleInformation = (event) => {
     const { name, value } = event.target;
-
+    console.log(name,value)
     // Soporte para campos anidados como textsBipolarBar.leftText
     if (name.includes(".")) {
       const [parentKey, childKey] = name.split(".");
@@ -1283,6 +1283,7 @@ export default function CreateSurvey() {
         name: information.name,
         description: information.description,
         customOptions: information.customOptions,
+        stars: information.maximunValueOptions,
       });
     } else if (type.id === 8) {
       handleAddQuestion({
@@ -1356,6 +1357,7 @@ export default function CreateSurvey() {
    * @param {object} question
    */
   const handleAddQuestion = async (question) => {
+    console.log(question)
     const newQuestion = {
       id: uuid.v4(),
       categoryId,

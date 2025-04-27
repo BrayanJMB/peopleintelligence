@@ -550,45 +550,42 @@ const SurveyForm = ({
   // Función para parsear texto con **negrilla**
   const parseTextWithStyles = (text) => {
     if (!text) return null;
-  
+
     const elements = [];
-    const lines = text.split('\n'); // Dividir primero por saltos de línea
-  
+    const lines = text.split("\n"); // Dividir primero por saltos de línea
+
     lines.forEach((line, lineIndex) => {
       const parts = line.split(/(\*\*\*.*?\*\*\*|\*\*.*?\*\*|\*.*?\*)/g); // Formato dentro de cada línea
-  
+
       parts.forEach((part, partIndex) => {
-        if (part.startsWith('***') && part.endsWith('***')) {
+        if (part.startsWith("***") && part.endsWith("***")) {
           const content = part.slice(3, -3);
           elements.push(
             <strong key={`${lineIndex}-${partIndex}`}>
               <em>{content}</em>
             </strong>
           );
-        } else if (part.startsWith('**') && part.endsWith('**')) {
+        } else if (part.startsWith("**") && part.endsWith("**")) {
           const content = part.slice(2, -2);
           elements.push(
             <strong key={`${lineIndex}-${partIndex}`}>{content}</strong>
           );
-        } else if (part.startsWith('*') && part.endsWith('*')) {
+        } else if (part.startsWith("*") && part.endsWith("*")) {
           const content = part.slice(1, -1);
-          elements.push(
-            <em key={`${lineIndex}-${partIndex}`}>{content}</em>
-          );
+          elements.push(<em key={`${lineIndex}-${partIndex}`}>{content}</em>);
         } else {
           elements.push(part);
         }
       });
-  
+
       // Después de cada línea (excepto la última), agregar un salto de línea
       if (lineIndex < lines.length - 1) {
         elements.push(<br key={`br-${lineIndex}`} />);
       }
     });
-  
+
     return elements;
   };
-  
 
   useEffect(() => {
     // Establecer refs para cada pregunta en la primera renderización
@@ -914,30 +911,44 @@ const SurveyForm = ({
                   {description}
                 </Typography>
                 <FormGroup>
-                  {options.map(({ numberOption, optionName }, optionIndex) => (
-                    <FormControlLabel
-                      ref={optionIndex === 0 ? questionRefs[questionId] : null}
-                      key={numberOption}
-                      control={
-                        <Checkbox
-                          checked={
-                            formValues[index].values[optionName] || false
-                          }
-                          name={optionName}
-                          value={optionName}
-                          onChange={(event) =>
-                            handleCheckboxChange(event, index)
-                          }
-                          style={{
-                            color: unansweredQuestions.includes(index)
-                              ? "red"
-                              : "#03aae4",
-                          }}
-                        />
-                      }
-                      label={optionName}
-                    />
-                  ))}
+                  {options.map(({ numberOption, optionName }, optionIndex) => {
+                    const isChecked =
+                      formValues[index].values[optionName] || false;
+                    const selectedCount = Object.values(
+                      formValues[index].values
+                    ).filter((v) => v).length;
+
+                    const limitActive =
+                      score !== null && score !== undefined && score > 0;
+                    const disableCheckbox =
+                      limitActive && !isChecked && selectedCount >= score;
+
+                    return (
+                      <FormControlLabel
+                        ref={
+                          optionIndex === 0 ? questionRefs[questionId] : null
+                        }
+                        key={numberOption}
+                        control={
+                          <Checkbox
+                            checked={isChecked}
+                            name={optionName}
+                            value={optionName}
+                            onChange={(event) =>
+                              handleCheckboxChange(event, index)
+                            }
+                            disabled={disableCheckbox}
+                            style={{
+                              color: unansweredQuestions.includes(index)
+                                ? "red"
+                                : "#03aae4",
+                            }}
+                          />
+                        }
+                        label={optionName}
+                      />
+                    );
+                  })}
                 </FormGroup>
                 <Divider variant="middle" />
               </Fragment>
