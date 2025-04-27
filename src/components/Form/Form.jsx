@@ -255,7 +255,7 @@ export default function Form(props) {
                 );
               })}
             </div>
-            {props.information.customOptions.length < 10 ? (
+            {props.information.customOptions.length < 20 ? (
               <Button
                 variant="text"
                 startIcon={<AddCircleOutlineIcon />}
@@ -362,7 +362,7 @@ export default function Form(props) {
                   </div>
                 );
               })}
-              {props.information.customOptions.length < 10 ? (
+              {props.information.customOptions.length < 20 ? (
                 <Button
                   variant="text"
                   startIcon={<AddCircleOutlineIcon />}
