@@ -282,7 +282,7 @@ const SurveyForm = ({
   };
 
   const isENPSPromoter = (typeQuestion) => {
-    switch (typeQuestion) {
+    switch (typeQuestion.toLowerCase()) {
       case 'escala de opinión':
         return true;
       default:
