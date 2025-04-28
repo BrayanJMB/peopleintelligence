@@ -228,6 +228,7 @@ const SurveyForm = ({
   };
 
   const isInformativeText = (typeQuestion) => {
+    if (!typeQuestion) return false; // protección extra
     switch (typeQuestion.toLowerCase()) {
       case 'texto infomativo':
         return true;
@@ -381,47 +382,56 @@ const SurveyForm = ({
       activeStep * 5,
       (activeStep + 1) * 5
     );
-    const unansweredIndexes = currentStepAnswers
-      .map((formValue, i) => {
-        if (
-          !visibleQuestions[i + activeStep * 5] ||
-          isInformativeText(currentStepAnswers[i + activeStep * 5].questionType)
-        ) {
-          return -1; // Ignora las preguntas no visibles y de texto informativo
-        }
-
-        let isUnanswered;
-        if (formValue.questionType === 'Opción Múltiple') {
-          isUnanswered =
-            formValue.values === null ||
-            Object.keys(formValue.values).length === 0 ||
-            !Object.values(formValue.values).some((val) => val === true);
-        } else if (formValue.questionType === 'Relacional') {
-          // Verifica cada selección individual en preguntas relacionales
-          isUnanswered =
-            formValue.selectionValues === null ||
-            Object.keys(formValue.selectionValues).length === 0 ||
-            Object.values(formValue.selectionValues).some(
-              (val) => val === '' || val === null
-            );
-        } else {
-          // Para otros tipos de preguntas, verifica si value es nulo o vacío
-          isUnanswered = formValue.value === null || formValue.value === '';
-        }
-
-        return isUnanswered ? i + activeStep * 5 : -1;
-      })
-      .filter((index) => index !== -1);
-    setUnansweredQuestions(unansweredIndexes);
-
-    if (unansweredIndexes.length > 0) {
-      questionRefs[
-        questions[unansweredIndexes[0]].questionId
-      ].current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  
+    const unansweredIndexes = [];
+  
+    for (let i = 0; i < currentStepAnswers.length; i++) {
+      const globalIndex = i + activeStep * 5;
+      const formValue = currentStepAnswers[i];
+  
+      if (!visibleQuestions[globalIndex]) continue; // ignorar preguntas no visibles
+      if (isInformativeText(formValue?.questionType)) continue; // ignorar informativas
+  
+      let isUnanswered = false;
+  
+      if (formValue.questionType === 'Opción Múltiple') {
+        isUnanswered =
+          formValue.values === null ||
+          Object.keys(formValue.values).length === 0 ||
+          !Object.values(formValue.values).some((val) => val === true);
+      } else if (formValue.questionType === 'Relacional') {
+        isUnanswered =
+          formValue.selectionValues === null ||
+          Object.keys(formValue.selectionValues).length === 0 ||
+          Object.values(formValue.selectionValues).some(
+            (val) => val === '' || val === null
+          );
+      } else {
+        isUnanswered = formValue.value === null || formValue.value === '';
+      }
+  
+      if (isUnanswered) {
+        unansweredIndexes.push(globalIndex);
+      }
     }
-
+  
+    setUnansweredQuestions(unansweredIndexes);
+  
+    if (unansweredIndexes.length > 0) {
+      const firstUnanswered = unansweredIndexes[0];
+      const questionType = questions[firstUnanswered]?.typeQuestion;
+  
+      if (!isInformativeText(questionType)) {
+        questionRefs[questions[firstUnanswered].questionId]?.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }
+    }
+  
     return unansweredIndexes.length === 0;
   };
+  
 
   /**
    * Handles the change of the checkbox.
