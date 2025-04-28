@@ -69,11 +69,21 @@ export default function Form(props) {
                   helperText={props.helperText.name}
                   fullWidth
                   size="small"
-                  multiline
-                  InputProps={{
-                    inputComponent: TextareaAutosize,
-                    ...(type.id == 21 ? { style: { height: '80px' } } : {}),
-                  }}
+                  multiline={type.id == 21}
+                  InputProps={
+                    type.id === 21
+                      ? {
+                        inputComponent: 'textarea',
+                        inputProps: {
+                          style: {
+                            height: '80px',
+                            resize: 'none',
+                            overflow: 'auto',
+                          },
+                        },
+                        }
+                      : undefined // Si no es 21, no ponemos nada
+                  }
                 />
               </div>
             </div>
