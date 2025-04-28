@@ -20,7 +20,7 @@ export default function Form(props) {
   const [fixedValue, setFixedValue] = useState('');
 
   const handleLimitChange = (event) => {
-    props.setLimitType(event.target.value);
+    props.setLimitType(event.target.value.toString());
   };
 
   // Funciones para abrir y cerrar el modal
@@ -990,8 +990,8 @@ export default function Form(props) {
                   onChange={props.handleInformation}
                   name="textsBipolarBar.valueLeft"
                 >
-                  <MenuItem value={0}>0</MenuItem>
-                  <MenuItem value={1}>1</MenuItem>
+                  <MenuItem value={'0'}>0</MenuItem>
+                  <MenuItem value={'1'}>1</MenuItem>
                 </Select>
               </FormControl>
 

@@ -498,7 +498,7 @@ export default function CreateSurvey() {
    */
   const handleInformation = (event) => {
     const { name, value } = event.target;
-
+    
     if (name.includes('.')) {
       const [parentKey, childKey] = name.split('.');
 
@@ -513,10 +513,10 @@ export default function CreateSurvey() {
 
         // Si estamos cambiando el valueLeft (el izquierdo)
         if (name === 'textsBipolarBar.valueLeft') {
-          const start = Number(value) === 0 ? 2 : 3;
+          const start = value === '0' ? 2 : 3;
           updatedInfo.secondSelectOptions = Array.from(
             { length: 10 - start + 1 },
-            (_, i) => start + i
+            (_, i) => (start + i).toString() // <- aquí fuerza a string
           );
           // También reseteamos valueRight para que empiece correctamente
           updatedInfo.textsBipolarBar.valueRight = start.toString();
@@ -1524,7 +1524,7 @@ export default function CreateSurvey() {
       });
     } else if (type.id === 22) {
       handleAddQuestion({
-        type: 'ENPS cuadros',
+        type: 'Escala de Opinión',
         name: information.name,
         description: information.description,
         textsBipolarBar: information.textsBipolarBar,
