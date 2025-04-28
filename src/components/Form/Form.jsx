@@ -51,6 +51,7 @@ export default function Form(props) {
     switch (type.id) {
       case 1:
       case 21:
+      case 23:
         return (
           <div className={styles.top}>
             <div className={styles.question}>

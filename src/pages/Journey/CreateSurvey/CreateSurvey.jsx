@@ -82,7 +82,7 @@ export default function CreateSurvey() {
       valueRight: '0',
       valueLeft: '2',
     },
-    maximunValueOptions: '',
+    maximunValueOptions: null,
     secondSelectOptions: Array.from({ length: 9 }, (_, i) => 2 + i),
   });
   const [firstSelect, setFirstSelect] = useState(0);
@@ -531,10 +531,6 @@ export default function CreateSurvey() {
       }));
     }
   };
-
-  useEffect(() => {
-    console.log(information);
-  }, [information]);
 
   /**
    * Handle change for category id.
@@ -1479,7 +1475,7 @@ export default function CreateSurvey() {
         name: information.name,
         description: information.description,
         customOptions: information.customOptions,
-        stars: information.maximunValueOptions,
+        stars: parseInt(information.maximunValueOptions),
       });
     } else if (type.id === 8) {
       handleAddQuestion({
