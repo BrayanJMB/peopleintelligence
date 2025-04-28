@@ -1013,7 +1013,7 @@ export default function Form(props) {
                   labelId="second-select-label"
                   value={
                     props.information.secondSelectOptions.includes(
-                      Number(props.information.textsBipolarBar.valueRight)
+                      props.information.textsBipolarBar.valueRight
                     )
                       ? props.information.textsBipolarBar.valueRight
                       : props.information.secondSelectOptions.length > 0
