@@ -56,7 +56,7 @@ export default function CreateSurvey() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const [activeStep, setActiveStep] = useState(1);
+  const [activeStep, setActiveStep] = useState(0);
   const [questionTypes, setQuestionTypes] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [target, setTarget] = useState('');
@@ -513,7 +513,8 @@ export default function CreateSurvey() {
 
         // Si estamos cambiando el valueLeft (el izquierdo)
         if (name === 'textsBipolarBar.valueLeft') {
-          const start = value === '0' ? 2 : 3;
+          console.log(value)
+          const start = value == '0' ? 2 : 3;
           updatedInfo.secondSelectOptions = Array.from(
             { length: 10 - start + 1 },
             (_, i) => (start + i).toString() // <- aquí fuerza a string
@@ -531,6 +532,11 @@ export default function CreateSurvey() {
       }));
     }
   };
+
+  useEffect(() => {
+    console.log(information)
+  }, [information])
+  
 
   /**
    * Handle change for category id.
