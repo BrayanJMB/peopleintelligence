@@ -1,5 +1,6 @@
-import Grid from '@mui/material/Grid';
 import { useMediaQuery } from '@mui/material';
+import Grid from '@mui/material/Grid';
+
 import IconSidebarResponsive from '../IconSidebar/IconSidebarResponsive';
 import NavbarResponsive from '../Navbar/NavbarResponsive';
 

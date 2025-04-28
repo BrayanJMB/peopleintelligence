@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { ThemeProvider } from "@emotion/react";
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { ThemeProvider } from '@emotion/react';
 import {
   CalendarToday,
   Close as CloseIcon,
   Download,
   Search,
-} from "@mui/icons-material";
+} from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -32,14 +32,14 @@ import {
   Tabs,
   TextField,
   Typography,
-} from "@mui/material";
-import { createTheme } from "@mui/material";
+} from '@mui/material';
+import { createTheme } from '@mui/material';
 
-import { InvitationSection } from "./components/InvitationSection";
+import { InvitationSection } from './components/InvitationSection';
 import {
   fetchStaticsMailReminderAPI,
   fetchStaticsMailSenderAPI,
-} from "./services/statitcsMail";
+} from './services/statitcsMail';
 export default function StaticsEmails({
   openDialog,
   handleOpenDialog,
@@ -49,35 +49,35 @@ export default function StaticsEmails({
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [showUserDetailsReminders, setShowUserDetailsReminders] =
     useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [tabValue, setTabValue] = useState(0);
-  const [selectedDate, setSelectedDate] = useState("10/04/2025");
+  const [selectedDate, setSelectedDate] = useState('10/04/2025');
   const [selectedSender, setSelectedSender] = useState(null);
-  const [selectedReminderDate, setSelectedReminderDate] = useState("");
+  const [selectedReminderDate, setSelectedReminderDate] = useState('');
   const [selectedReminderIndex, setSelectedReminderIndex] = useState(0);
-  const [filterEstado, setFilterEstado] = useState("Todos");
+  const [filterEstado, setFilterEstado] = useState('Todos');
   const [senders, setSenders] = useState({});
   const [reminders, setReminders] = useState({});
 
   const theme = createTheme({
     palette: {
       primary: {
-        main: "#1976d2",
+        main: '#1976d2',
       },
       secondary: {
-        main: "#f50057",
+        main: '#f50057',
       },
       success: {
-        main: "#4caf50",
-        light: "#e8f5e9",
+        main: '#4caf50',
+        light: '#e8f5e9',
       },
       warning: {
-        main: "#ff9800",
-        light: "#fff8e1",
+        main: '#ff9800',
+        light: '#fff8e1',
       },
       error: {
-        main: "#f44336",
-        light: "#ffebee",
+        main: '#f44336',
+        light: '#ffebee',
       },
     },
     typography: {
@@ -91,7 +91,7 @@ export default function StaticsEmails({
         styleOverrides: {
           root: {
             borderRadius: 8,
-            textTransform: "none",
+            textTransform: 'none',
             fontWeight: 500,
           },
         },
@@ -100,7 +100,7 @@ export default function StaticsEmails({
         styleOverrides: {
           root: {
             borderRadius: 12,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
           },
         },
       },
@@ -161,8 +161,8 @@ export default function StaticsEmails({
 
   useEffect(() => {
     if (!showUserDetails && !showUserDetailsReminders) {
-      setFilterEstado("Todos");
-      setSearchTerm("");
+      setFilterEstado('Todos');
+      setSearchTerm('');
     }
   }, [showUserDetails, showUserDetailsReminders]);
   return (
@@ -170,7 +170,7 @@ export default function StaticsEmails({
       {/* Diálogo de confirmación */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="lg">
         <DialogContent>
-          <Box sx={{ maxWidth: 1000, mx: "auto", p: 4 }}>
+          <Box sx={{ maxWidth: 1000, mx: 'auto', p: 4 }}>
             <Tabs
               value={tabValue}
               onChange={(e, newVal) => setTabValue(newVal)}
@@ -215,7 +215,7 @@ export default function StaticsEmails({
                 <IconButton
                   aria-label="close"
                   onClick={() => setShowUserDetails(false)}
-                  sx={{ position: "absolute", right: 8, top: 8 }}
+                  sx={{ position: 'absolute', right: 8, top: 8 }}
                 >
                   <CloseIcon />
                 </IconButton>
@@ -224,18 +224,18 @@ export default function StaticsEmails({
                 <Box
                   sx={{
                     mb: 2,
-                    display: "flex",
+                    display: 'flex',
                     gap: 2,
-                    flexDirection: { xs: "column", sm: "column" },
+                    flexDirection: { xs: 'column', sm: 'column' },
                   }}
                 >
                   <Box>
                     <Search
                       sx={{
-                        position: "absolute",
+                        position: 'absolute',
                         top: 10,
                         fontSize: 20,
-                        color: "grey.500",
+                        color: 'grey.500',
                       }}
                     />
                     <TextField
@@ -279,7 +279,7 @@ export default function StaticsEmails({
                             user.correo
                               .toLowerCase()
                               .includes(searchTerm.toLowerCase()) &&
-                            (filterEstado === "Todos" ||
+                            (filterEstado === 'Todos' ||
                               user.estado === filterEstado)
                         )
                         .map((user) => (
@@ -290,17 +290,17 @@ export default function StaticsEmails({
                                 label={user.estado}
                                 sx={{
                                   bgcolor:
-                                    user.estado === "Enviado"
-                                      ? "#ebf8ff"
-                                      : user.estado === "Abierto"
-                                      ? "#e6ffed"
-                                      : "#ffe6e6",
+                                    user.estado === 'Enviado'
+                                      ? '#ebf8ff'
+                                      : user.estado === 'Abierto'
+                                      ? '#e6ffed'
+                                      : '#ffe6e6',
                                   color:
-                                    user.estado === "Enviado"
-                                      ? "primary.main"
-                                      : user.estado === "Abierto"
-                                      ? "success.main"
-                                      : "error.main",
+                                    user.estado === 'Enviado'
+                                      ? 'primary.main'
+                                      : user.estado === 'Abierto'
+                                      ? 'success.main'
+                                      : 'error.main',
                                 }}
                               />
                             </TableCell>
@@ -323,7 +323,7 @@ export default function StaticsEmails({
                 <IconButton
                   aria-label="close"
                   onClick={() => setShowUserDetails(false)}
-                  sx={{ position: "absolute", right: 8, top: 8 }}
+                  sx={{ position: 'absolute', right: 8, top: 8 }}
                 >
                   <CloseIcon />
                 </IconButton>
@@ -332,19 +332,19 @@ export default function StaticsEmails({
                 <Box
                   sx={{
                     mb: 2,
-                    display: "flex",
+                    display: 'flex',
                     gap: 2,
-                    flexDirection: { xs: "column", sm: "column" },
+                    flexDirection: { xs: 'column', sm: 'column' },
                   }}
                 >
-                  <Box sx={{ position: "relative", flex: 1 }}>
+                  <Box sx={{ position: 'relative', flex: 1 }}>
                     <Search
                       sx={{
-                        position: "absolute",
+                        position: 'absolute',
                         top: 10,
                         left: 10,
                         fontSize: 20,
-                        color: "grey.500",
+                        color: 'grey.500',
                       }}
                     />
                     <TextField
@@ -396,7 +396,7 @@ export default function StaticsEmails({
                             user.correo
                               .toLowerCase()
                               .includes(searchTerm.toLowerCase()) &&
-                            (filterEstado === "Todos" ||
+                            (filterEstado === 'Todos' ||
                               user.estado === filterEstado)
                         )
                         .map((user, index) => (
@@ -407,17 +407,17 @@ export default function StaticsEmails({
                                 label={user.estado}
                                 sx={{
                                   bgcolor:
-                                    user.estado === "Enviado"
-                                      ? "#ebf8ff"
-                                      : user.estado === "Abierto"
-                                      ? "#e6ffed"
-                                      : "#ffe6e6",
+                                    user.estado === 'Enviado'
+                                      ? '#ebf8ff'
+                                      : user.estado === 'Abierto'
+                                      ? '#e6ffed'
+                                      : '#ffe6e6',
                                   color:
-                                    user.estado === "Enviado"
-                                      ? "primary.main"
-                                      : user.estado === "Abierto"
-                                      ? "success.main"
-                                      : "error.main",
+                                    user.estado === 'Enviado'
+                                      ? 'primary.main'
+                                      : user.estado === 'Abierto'
+                                      ? 'success.main'
+                                      : 'error.main',
                                 }}
                               />
                             </TableCell>
