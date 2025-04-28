@@ -1191,11 +1191,11 @@ const SurveyForm = ({
                     {Array.from(
                       {
                         length:
-                          Number(textBipolarBar.valueLeft) -
-                          Number(textBipolarBar.valueRight) +
+                          Number(textBipolarBar.valueRight) -
+                          Number(textBipolarBar.valueLeft) +
                           1,
                       },
-                      (_, i) => Number(textBipolarBar.valueRight) + i
+                      (_, i) => Number(textBipolarBar.valueLeft) + i
                     ).map((num) => (
                       <ToggleButton
                         key={num}
@@ -1220,8 +1220,8 @@ const SurveyForm = ({
                     display="flex"
                     justifyContent="space-between"
                     width={`calc(48px * ${
-                      Number(textBipolarBar.valueLeft) -
-                      Number(textBipolarBar.valueRight) +
+                      Number(textBipolarBar.valueRight) -
+                      Number(textBipolarBar.valueLeft) +
                       1
                     })`} // 👈 ajustamos el ancho exacto de los botones
                     mt={1}

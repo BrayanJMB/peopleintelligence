@@ -79,8 +79,8 @@ export default function CreateSurvey() {
     textsBipolarBar: {
       leftText: '',
       rightText: '',
-      valueRight: '0',
-      valueLeft: '2',
+      valueRight: '2',
+      valueLeft: '0',
     },
     maximunValueOptions: null,
     secondSelectOptions: Array.from({ length: 9 }, (_, i) => 2 + i),
@@ -513,7 +513,6 @@ export default function CreateSurvey() {
 
         // Si estamos cambiando el valueLeft (el izquierdo)
         if (name === 'textsBipolarBar.valueLeft') {
-          console.log(value);
           const start = value == '0' ? 2 : 3;
           updatedInfo.secondSelectOptions = Array.from(
             { length: 10 - start + 1 },
