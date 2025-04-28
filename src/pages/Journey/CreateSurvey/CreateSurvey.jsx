@@ -1163,7 +1163,6 @@ export default function CreateSurvey() {
           return;
         }
       }
-      console.log(question);
       if (limitType === 'fijo') {
         if (question.stars.trim() === '') {
           setErrorMessage({
@@ -1268,7 +1267,7 @@ export default function CreateSurvey() {
         name: 'El número máximo de carácteres de 400.',
       });
     }
-    if (limitType === 'fijo') {
+    if (limitType === 'fijo' && type.id === 3) {
       if (information.maximunValueOptions.trim() === '') {
         setErrorMessage({
           ...errorMessage,
@@ -1445,8 +1444,8 @@ export default function CreateSurvey() {
         return;
       }
     }
-
-    if (type.id !== 19) {
+    console.log(type.id);
+    if (type.id != 21) {
       console.log(type.id);
       if (categoryId === '' || categoryId === null) {
         setCategoryError('Seleccione una categoría');
