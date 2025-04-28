@@ -1,12 +1,12 @@
-import { useEffect,useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { ThemeProvider } from '@emotion/react';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { ThemeProvider } from "@emotion/react";
 import {
   CalendarToday,
   Close as CloseIcon,
   Download,
   Search,
-} from '@mui/icons-material';
+} from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -32,214 +32,52 @@ import {
   Tabs,
   TextField,
   Typography,
-} from '@mui/material';
-import { createTheme } from '@mui/material';
+} from "@mui/material";
+import { createTheme } from "@mui/material";
 
-import { InvitationSection } from './components/InvitationSection';
-import { fetchStaticsMailAPI } from './services/statitcsMail';
+import { InvitationSection } from "./components/InvitationSection";
+import {
+  fetchStaticsMailReminderAPI,
+  fetchStaticsMailSenderAPI,
+} from "./services/statitcsMail";
 export default function StaticsEmails({
   openDialog,
   handleOpenDialog,
   handleCloseDialog,
 }) {
   const { id } = useParams();
-  const [dataMails, setDataMails] = useState({});
-  const handleEmailsStatics = async (idSurvey) => {
-    const { data } = await fetchStaticsMailAPI(idSurvey);
-    setDataMails([]);
-  };
-
-  useEffect(() => {
-    handleEmailsStatics(id);
-  }, [openDialog]);
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [showUserDetailsReminders, setShowUserDetailsReminders] =
     useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [tabValue, setTabValue] = useState(0);
-  const [selectedDate, setSelectedDate] = useState('10/04/2025');
+  const [selectedDate, setSelectedDate] = useState("10/04/2025");
   const [selectedSender, setSelectedSender] = useState(null);
-  const [selectedReminderDate, setSelectedReminderDate] = useState('');
+  const [selectedReminderDate, setSelectedReminderDate] = useState("");
   const [selectedReminderIndex, setSelectedReminderIndex] = useState(0);
-  const [filterEstado, setFilterEstado] = useState('Todos');
-  const [senders, setSenders] = useState({
-    envios: [
-      {
-        fechaEnvio: '10/10/2013',
-        campaingId: 0,
-        received: 20,
-        queue: 23,
-        opened: 122,
-        temporaryBounces: 3,
-        totalSend: 43,
-        listaCorreos: [
-          {
-            correo: 'brayan',
-            estado: 'melo',
-          },
-        ],
-      },
-      {
-        fechaEnvio: '12/23/2023',
-        campaingId: 45,
-        received: 34,
-        queue: 45,
-        opened: 56,
-        temporaryBounces: 65,
-        totalSend: 65,
-        listaCorreos: [
-          {
-            correo: 'wilder',
-            estado: 're melo',
-          },
-        ],
-      },
-    ],
-  });
-  const [reminders, setReminders] = useState({
-    recordatorios: [
-      {
-        fechaEnvio: '12/23/2023',
-        enviosPorFecha: [
-          {
-            campaingId: 10,
-            received: 10,
-            queue: 10,
-            opened: 10,
-            temporaryBounces: 10,
-            totalSend: 10,
-            listaCorreos: [
-              {
-                correo: 'brayan',
-                estado: 'enviado',
-              },
-              {
-                correo: 'brayan2',
-                estado: 'enviado',
-              },
-              {
-                correo: 'critisna',
-                estado: 'fallido',
-              },
-            ],
-          },
-          {
-            campaingId: 20,
-            received: 20,
-            queue: 20,
-            opened: 20,
-            temporaryBounces: 20,
-            totalSend: 20,
-            listaCorreos: [
-              {
-                correo: 'bray232an',
-                estado: 'melo',
-              },
-              {
-                correo: 'crit323isna',
-                estado: 'meloski',
-              },
-            ],
-          },
-        ],
-      },
-      {
-        fechaEnvio: '10/10/2024',
-        enviosPorFecha: [
-          {
-            campaingId: 10,
-            received: 10,
-            queue: 10,
-            opened: 10,
-            temporaryBounces: 10,
-            totalSend: 10,
-            listaCorreos: [
-              {
-                correo: 'wilder',
-                estado: 'dasdas',
-              },
-            ],
-          },
-          {
-            campaingId: 20,
-            received: 20,
-            queue: 20,
-            opened: 20,
-            temporaryBounces: 20,
-            totalSend: 20,
-            listaCorreos: [
-              {
-                correo: 'wilder',
-                estado: 'dasdas',
-              },
-              {
-                correo: 'wilder',
-                estado: 'dasdas',
-              },
-            ],
-          },
-          {
-            campaingId: 20,
-            received: 30,
-            queue: 30,
-            opened: 30,
-            temporaryBounces: 30,
-            totalSend: 30,
-            listaCorreos: [
-              {
-                correo: 'wilderbrayan',
-                estado: 'dasdas',
-              },
-            ],
-          },
-          {
-            campaingId: 20,
-            received: 40,
-            queue: 40,
-            opened: 40,
-            temporaryBounces: 40,
-            totalSend: 40,
-            listaCorreos: [
-              {
-                correo: 'se acbao',
-                estado: 'dasdadaasas',
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  });
-
-  const users = [
-    { email: 'juan@example.com', status: 'Enviado' },
-    { email: 'maria@example.com', status: 'Abierto' },
-    { email: 'pedro@example.com', status: 'Fallido' },
-  ];
-
-  const filteredUsers = users.filter((user) =>
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [filterEstado, setFilterEstado] = useState("Todos");
+  const [senders, setSenders] = useState({});
+  const [reminders, setReminders] = useState({});
 
   const theme = createTheme({
     palette: {
       primary: {
-        main: '#1976d2',
+        main: "#1976d2",
       },
       secondary: {
-        main: '#f50057',
+        main: "#f50057",
       },
       success: {
-        main: '#4caf50',
-        light: '#e8f5e9',
+        main: "#4caf50",
+        light: "#e8f5e9",
       },
       warning: {
-        main: '#ff9800',
-        light: '#fff8e1',
+        main: "#ff9800",
+        light: "#fff8e1",
       },
       error: {
-        main: '#f44336',
-        light: '#ffebee',
+        main: "#f44336",
+        light: "#ffebee",
       },
     },
     typography: {
@@ -253,7 +91,7 @@ export default function StaticsEmails({
         styleOverrides: {
           root: {
             borderRadius: 8,
-            textTransform: 'none',
+            textTransform: "none",
             fontWeight: 500,
           },
         },
@@ -262,7 +100,7 @@ export default function StaticsEmails({
         styleOverrides: {
           root: {
             borderRadius: 12,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
           },
         },
       },
@@ -286,24 +124,45 @@ export default function StaticsEmails({
     setSelectedReminderIndex(Number(event.target.value));
   };
 
-  useEffect(() => {
-    if (senders.envios.length > 0) {
-      const first = senders.envios[0];
-      setSelectedDate(first.fechaEnvio);
-      setSelectedSender(first);
-    }
+  const fecthMailRemainder = async () => {
+    const data = await fetchStaticsMailReminderAPI(id);
+    setReminders({ recordatorios: data.result });
+  };
 
-    if (reminders.recordatorios.length > 0) {
+  const fecthMailSender = async () => {
+    const data = await fetchStaticsMailSenderAPI(id);
+    setSenders({ envios: data.result });
+  };
+  useEffect(() => {
+    fecthMailSender();
+    fecthMailRemainder(); // Solo llamas aquí a la API
+  }, [openDialog]);
+
+  useEffect(() => {
+    if (
+      reminders &&
+      reminders.recordatorios &&
+      reminders.recordatorios.length > 0
+    ) {
       const first = reminders.recordatorios[0];
       setSelectedReminderDate(first.fechaEnvio);
       setSelectedReminderIndex(0);
     }
-  }, []);
+  }, [reminders]); 
+  
+  
+  useEffect(() => {
+    if (senders?.envios?.length > 0) {
+      const first = senders.envios[0];
+      setSelectedDate(first.fechaEnvio);
+      setSelectedSender(first);
+    }
+  }, [senders]);
 
   useEffect(() => {
     if (!showUserDetails && !showUserDetailsReminders) {
-      setFilterEstado('Todos');
-      setSearchTerm('');
+      setFilterEstado("Todos");
+      setSearchTerm("");
     }
   }, [showUserDetails, showUserDetailsReminders]);
   return (
@@ -311,7 +170,7 @@ export default function StaticsEmails({
       {/* Diálogo de confirmación */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="lg">
         <DialogContent>
-          <Box sx={{ maxWidth: 1000, mx: 'auto', p: 4 }}>
+          <Box sx={{ maxWidth: 1000, mx: "auto", p: 4 }}>
             <Tabs
               value={tabValue}
               onChange={(e, newVal) => setTabValue(newVal)}
@@ -356,7 +215,7 @@ export default function StaticsEmails({
                 <IconButton
                   aria-label="close"
                   onClick={() => setShowUserDetails(false)}
-                  sx={{ position: 'absolute', right: 8, top: 8 }}
+                  sx={{ position: "absolute", right: 8, top: 8 }}
                 >
                   <CloseIcon />
                 </IconButton>
@@ -365,18 +224,18 @@ export default function StaticsEmails({
                 <Box
                   sx={{
                     mb: 2,
-                    display: 'flex',
+                    display: "flex",
                     gap: 2,
-                    flexDirection: { xs: 'column', sm: 'column' },
+                    flexDirection: { xs: "column", sm: "column" },
                   }}
                 >
                   <Box>
                     <Search
                       sx={{
-                        position: 'absolute',
+                        position: "absolute",
                         top: 10,
                         fontSize: 20,
-                        color: 'grey.500',
+                        color: "grey.500",
                       }}
                     />
                     <TextField
@@ -420,7 +279,7 @@ export default function StaticsEmails({
                             user.correo
                               .toLowerCase()
                               .includes(searchTerm.toLowerCase()) &&
-                            (filterEstado === 'Todos' ||
+                            (filterEstado === "Todos" ||
                               user.estado === filterEstado)
                         )
                         .map((user) => (
@@ -431,17 +290,17 @@ export default function StaticsEmails({
                                 label={user.estado}
                                 sx={{
                                   bgcolor:
-                                    user.estado === 'Enviado'
-                                      ? '#ebf8ff'
-                                      : user.estado === 'Abierto'
-                                      ? '#e6ffed'
-                                      : '#ffe6e6',
+                                    user.estado === "Enviado"
+                                      ? "#ebf8ff"
+                                      : user.estado === "Abierto"
+                                      ? "#e6ffed"
+                                      : "#ffe6e6",
                                   color:
-                                    user.estado === 'Enviado'
-                                      ? 'primary.main'
-                                      : user.estado === 'Abierto'
-                                      ? 'success.main'
-                                      : 'error.main',
+                                    user.estado === "Enviado"
+                                      ? "primary.main"
+                                      : user.estado === "Abierto"
+                                      ? "success.main"
+                                      : "error.main",
                                 }}
                               />
                             </TableCell>
@@ -464,7 +323,7 @@ export default function StaticsEmails({
                 <IconButton
                   aria-label="close"
                   onClick={() => setShowUserDetails(false)}
-                  sx={{ position: 'absolute', right: 8, top: 8 }}
+                  sx={{ position: "absolute", right: 8, top: 8 }}
                 >
                   <CloseIcon />
                 </IconButton>
@@ -473,19 +332,19 @@ export default function StaticsEmails({
                 <Box
                   sx={{
                     mb: 2,
-                    display: 'flex',
+                    display: "flex",
                     gap: 2,
-                    flexDirection: { xs: 'column', sm: 'column' },
+                    flexDirection: { xs: "column", sm: "column" },
                   }}
                 >
-                  <Box sx={{ position: 'relative', flex: 1 }}>
+                  <Box sx={{ position: "relative", flex: 1 }}>
                     <Search
                       sx={{
-                        position: 'absolute',
+                        position: "absolute",
                         top: 10,
                         left: 10,
                         fontSize: 20,
-                        color: 'grey.500',
+                        color: "grey.500",
                       }}
                     />
                     <TextField
@@ -537,7 +396,7 @@ export default function StaticsEmails({
                             user.correo
                               .toLowerCase()
                               .includes(searchTerm.toLowerCase()) &&
-                            (filterEstado === 'Todos' ||
+                            (filterEstado === "Todos" ||
                               user.estado === filterEstado)
                         )
                         .map((user, index) => (
@@ -548,17 +407,17 @@ export default function StaticsEmails({
                                 label={user.estado}
                                 sx={{
                                   bgcolor:
-                                    user.estado === 'Enviado'
-                                      ? '#ebf8ff'
-                                      : user.estado === 'Abierto'
-                                      ? '#e6ffed'
-                                      : '#ffe6e6',
+                                    user.estado === "Enviado"
+                                      ? "#ebf8ff"
+                                      : user.estado === "Abierto"
+                                      ? "#e6ffed"
+                                      : "#ffe6e6",
                                   color:
-                                    user.estado === 'Enviado'
-                                      ? 'primary.main'
-                                      : user.estado === 'Abierto'
-                                      ? 'success.main'
-                                      : 'error.main',
+                                    user.estado === "Enviado"
+                                      ? "primary.main"
+                                      : user.estado === "Abierto"
+                                      ? "success.main"
+                                      : "error.main",
                                 }}
                               />
                             </TableCell>
