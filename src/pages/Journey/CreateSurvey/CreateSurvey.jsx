@@ -56,7 +56,7 @@ export default function CreateSurvey() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const [activeStep, setActiveStep] = useState(1);
+  const [activeStep, setActiveStep] = useState(0);
   const [questionTypes, setQuestionTypes] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [target, setTarget] = useState('');
