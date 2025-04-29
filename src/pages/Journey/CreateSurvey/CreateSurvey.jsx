@@ -56,7 +56,7 @@ export default function CreateSurvey() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(1);
   const [questionTypes, setQuestionTypes] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [target, setTarget] = useState('');
@@ -83,7 +83,7 @@ export default function CreateSurvey() {
       valueLeft: '0',
     },
     maximunValueOptions: null,
-    secondSelectOptions: Array.from({ length: 9 }, (_, i) => 2 + i),
+    secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
   });
   const [firstSelect, setFirstSelect] = useState(0);
   const [secondSelect, setSecondSelect] = useState(2);
@@ -1548,11 +1548,12 @@ export default function CreateSurvey() {
       textsBipolarBar: {
         leftText: '',
         rightText: '',
-        valueRight: '0',
-        valueLeft: '2',
+        valueRight: '2',
+        valueLeft: '0',
       },
       maximunValueOptions: '',
-      secondSelectOptions: Array.from({ length: 9 }, (_, i) => 2 + i),
+      secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
+
     });
     setQuestion(null);
     setType(null);

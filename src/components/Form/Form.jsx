@@ -73,14 +73,14 @@ export default function Form(props) {
                   InputProps={
                     type.id === 21
                       ? {
-                        inputComponent: 'textarea',
-                        inputProps: {
-                          style: {
-                            height: '80px',
-                            resize: 'none',
-                            overflow: 'auto',
+                          inputComponent: 'textarea',
+                          inputProps: {
+                            style: {
+                              height: '80px',
+                              resize: 'none',
+                              overflow: 'auto',
+                            },
                           },
-                        },
                         }
                       : undefined // Si no es 21, no ponemos nada
                   }
@@ -857,12 +857,15 @@ export default function Form(props) {
                 onChange={props.handleInformation}
                 size="small"
                 variant="standard"
-                style={{ width: '45%' }}
+                fullWidth
                 error={props.errorMessage.bipolarText}
+                inputProps={{
+                  maxLength: 120, // ✅ Limita la entrada a 120 caracteres
+                }}
                 helperText={
                   props.errorMessage.bipolarText
                     ? props.helperText.bipolarText
-                    : ''
+                    : `${props.information.textsBipolarBar.leftText.length}/120` // ✅ Muestra el contador
                 }
               />
             </div>
@@ -879,12 +882,15 @@ export default function Form(props) {
                 onChange={props.handleInformation}
                 size="small"
                 variant="standard"
-                style={{ width: '45%' }}
+                fullWidth
                 error={props.errorMessage.bipolarText}
+                inputProps={{
+                  maxLength: 120, // ✅ Limita la entrada a 120 caracteres
+                }}
                 helperText={
                   props.errorMessage.bipolarText
                     ? props.helperText.bipolarText
-                    : ''
+                    : `${props.information.textsBipolarBar.rightText.length}/120` // ✅ Muestra el contador
                 }
               />
             </div>
@@ -949,10 +955,13 @@ export default function Form(props) {
                 variant="standard"
                 style={{ width: '45%' }}
                 error={props.errorMessage.bipolarText}
+                inputProps={{
+                  maxLength: 25, // ✅ Limita la entrada a 120 caracteres
+                }}
                 helperText={
                   props.errorMessage.bipolarText
                     ? props.helperText.bipolarText
-                    : ''
+                    : `${props.information.textsBipolarBar.leftText.length}/25` // ✅ Muestra el contador
                 }
               />
             </div>
@@ -971,10 +980,13 @@ export default function Form(props) {
                 variant="standard"
                 style={{ width: '45%' }}
                 error={props.errorMessage.bipolarText}
+                inputProps={{
+                  maxLength: 25, // ✅ Limita la entrada a 120 caracteres
+                }}
                 helperText={
                   props.errorMessage.bipolarText
                     ? props.helperText.bipolarText
-                    : ''
+                    : `${props.information.textsBipolarBar.rightText.length}/25` // ✅ Muestra el contador
                 }
               />
             </div>

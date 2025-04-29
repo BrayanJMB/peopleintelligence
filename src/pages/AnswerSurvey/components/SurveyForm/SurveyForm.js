@@ -105,17 +105,17 @@ const SurveyForm = ({
 
   const handleChangeSlider = (event, newValue, index) => {
     if (newValue === null) return; // <- Seguridad, si deselecciona todo
-  
+
     setFormValues((prevFormValues) => {
       const newFormValues = [...prevFormValues];
       newFormValues[index].value = newValue.toString();
       return newFormValues;
     });
-  
+
     setUnansweredQuestions((prevUnanswered) =>
       prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
     );
-  
+
     setValues((prevValues) => ({
       ...prevValues,
       [index]: newValue, // 👈 Aquí debes usar newValue, no event.target.value
@@ -299,7 +299,7 @@ const SurveyForm = ({
    */
   const isBipolarSlider = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case 'evaluación':
+      case 'escala bipolar':
         return true;
       default:
         return false;
@@ -382,18 +382,18 @@ const SurveyForm = ({
       activeStep * 5,
       (activeStep + 1) * 5
     );
-  
+
     const unansweredIndexes = [];
-  
+
     for (let i = 0; i < currentStepAnswers.length; i++) {
       const globalIndex = i + activeStep * 5;
       const formValue = currentStepAnswers[i];
-  
+
       if (!visibleQuestions[globalIndex]) continue; // ignorar preguntas no visibles
       if (isInformativeText(formValue?.questionType)) continue; // ignorar informativas
-  
+
       let isUnanswered = false;
-  
+
       if (formValue.questionType === 'Opción Múltiple') {
         isUnanswered =
           formValue.values === null ||
@@ -409,29 +409,30 @@ const SurveyForm = ({
       } else {
         isUnanswered = formValue.value === null || formValue.value === '';
       }
-  
+
       if (isUnanswered) {
         unansweredIndexes.push(globalIndex);
       }
     }
-  
+
     setUnansweredQuestions(unansweredIndexes);
-  
+
     if (unansweredIndexes.length > 0) {
       const firstUnanswered = unansweredIndexes[0];
       const questionType = questions[firstUnanswered]?.typeQuestion;
-  
+
       if (!isInformativeText(questionType)) {
-        questionRefs[questions[firstUnanswered].questionId]?.current?.scrollIntoView({
+        questionRefs[
+          questions[firstUnanswered].questionId
+        ]?.current?.scrollIntoView({
           behavior: 'smooth',
           block: 'center',
         });
       }
     }
-  
+
     return unansweredIndexes.length === 0;
   };
-  
 
   /**
    * Handles the change of the checkbox.
@@ -1191,7 +1192,7 @@ const SurveyForm = ({
                 >
                   {/* Botones */}
                   <ToggleButtonGroup
-                    value={values[index] || 0}
+                    value={values[index] ?? null}
                     exclusive
                     aria-label="Net Promoter Score"
                     onChange={(event, newValue) =>
@@ -1251,9 +1252,9 @@ const SurveyForm = ({
                 <FormLabel
                   id={`${questionId}-${typeQuestion}`}
                   style={{
-                    fontSize: '1.1',
+                    fontSize: '1.1rem',
                     fontWeight: 'bold',
-                    marginBottom: '1.1m',
+                    marginBottom: '1.1rem',
                     color: unansweredQuestions.includes(index)
                       ? 'red'
                       : 'rgba(0, 0, 0, 0.6)',
@@ -1275,21 +1276,49 @@ const SurveyForm = ({
                   onChange={(event, newValue) =>
                     handleChangeSlider(event, newValue, index)
                   }
-                  marks={[
-                    {
-                      value: -Math.abs(score),
-                      label: textBipolarBar.leftText,
-                    },
-                    { value: 0, label: '' },
-                    {
-                      value: Math.abs(score),
-                      label: textBipolarBar.rightText,
-                    },
-                  ]}
                   valueLabelDisplay="on"
+                  marks={[
+                    { value: -Math.abs(score), label: '' },
+                    { value: 0, label: '' },
+                    { value: Math.abs(score), label: '' },
+                  ]}
                 />
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginTop: '4px',
+                  }}
+                >
+                  <Typography
+                    variant="caption"
+                    style={{
+                      fontSize: '0.8rem',
+                      textAlign: 'left',
+                      maxWidth: '20%',
+                      whiteSpace: 'normal', // permite que el texto se divida en varias líneas
+                      wordBreak: 'break-word', // rompe la palabra si es muy larga
+                    }}
+                  >
+                    {textBipolarBar.rightText}
+                  </Typography>
+
+                  <Typography
+                    variant="caption"
+                    style={{
+                      fontSize: '0.8rem',
+                      textAlign: 'right',
+                      maxWidth: '20%',
+                      whiteSpace: 'normal', // permite que el texto se divida en varias líneas
+                      wordBreak: 'break-word', // rompe la palabra si es muy larga
+                    }}
+                  >
+                    {textBipolarBar.leftText}
+                  </Typography>
+                </div>
               </>
             )}
+
             {isSelect(typeQuestion) && (
               <FormControl
                 fullWidth
