@@ -39,6 +39,7 @@ import { InvitationSection } from './components/InvitationSection';
 import {
   fetchStaticsMailReminderAPI,
   fetchStaticsMailSenderAPI,
+  getDownloadMaisAPI,
 } from './services/statitcsMail';
 export default function StaticsEmails({
   openDialog,
@@ -133,6 +134,11 @@ export default function StaticsEmails({
     const data = await fetchStaticsMailSenderAPI(id);
     setSenders({ envios: data.result });
   };
+
+  const getDownloadMails = async (idSurvey, date, sendType) => {
+    const data = await getDownloadMaisAPI(idSurvey, date, sendType);
+  };
+
   useEffect(() => {
     fecthMailSender();
     fecthMailRemainder(); // Solo llamas aquí a la API
@@ -181,11 +187,14 @@ export default function StaticsEmails({
             {tabValue === 0 && (
               <>
                 <InvitationSection
+                  idSurvey={id}
                   selectedDate={selectedDate}
                   handleDateChange={handleDateChange}
                   selectedSender={selectedSender}
                   onOpenDialog={setShowUserDetails}
                   data={senders}
+                  getDownloadMails={getDownloadMails}
+                  sendType={1}
                 />
               </>
             )}
@@ -193,6 +202,7 @@ export default function StaticsEmails({
             {tabValue === 1 && (
               <>
                 <InvitationSection
+                  idSurvey={id}
                   selectedDate={selectedReminderDate}
                   onOpenDialog={setShowUserDetailsReminders}
                   data={reminders}
@@ -201,6 +211,8 @@ export default function StaticsEmails({
                   handleReminderDateChange={handleReminderDateChange}
                   handleReminderIndexChange={handleReminderIndexChange}
                   selectedReminderDate={selectedReminderDate}
+                  getDownloadMails={getDownloadMails}
+                  sendType={2}
                 />
               </>
             )}
