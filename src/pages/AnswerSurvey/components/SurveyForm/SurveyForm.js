@@ -1185,10 +1185,64 @@ const SurveyForm = ({
                   {description}
                 </Typography>
                 <Box
+                  display={{ xs: 'flex', md: 'none' }} // ✅ Solo visible en móvil
+                  flexDirection="column"
+                  width="100%"
+                  maxWidth="600px"
+                  mt={1}
+                  px={2}
+                >
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'flex', // ✅ Hace que la flecha y el texto estén en línea limpia
+                      alignItems: 'center', // ✅ Centra verticalmente
+                      gap: 1, // ✅ Pequeño espacio entre número, flecha y texto
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      fontSize: '0.85rem', // ✅ Un poquito más grande para que se vea mejor
+                      fontWeight: 500, // ✅ Un poco más de grosor
+                    }}
+                  >
+                    {textBipolarBar.valueLeft}
+                    <Box
+                      component="span"
+                      sx={{ fontSize: '1rem', color: 'primary.main' }}
+                    >
+                      ➔ {/* ✅ Una flechita bonita */}
+                    </Box>
+                    {textBipolarBar.leftText}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'flex', // ✅ Hace que la flecha y el texto estén en línea limpia
+                      alignItems: 'center', // ✅ Centra verticalmente
+                      gap: 1, // ✅ Pequeño espacio entre número, flecha y texto
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      fontSize: '0.85rem', // ✅ Un poquito más grande para que se vea mejor
+                      fontWeight: 500, // ✅ Un poco más de grosor
+                    }}
+                  >
+                    {textBipolarBar.valueRight}
+                    <Box
+                      component="span"
+                      sx={{ fontSize: '1rem', color: 'primary.main' }}
+                    >
+                      ➔ {/* ✅ Una flechita bonita */}
+                    </Box>
+                    {textBipolarBar.rightText}
+                  </Typography>
+                </Box>
+                <Box
                   display="flex"
                   flexDirection="column"
                   alignItems="center"
                   mt={2}
+                  width="100%"
                 >
                   {/* Botones */}
                   <ToggleButtonGroup
@@ -1198,6 +1252,11 @@ const SurveyForm = ({
                     onChange={(event, newValue) =>
                       handleChangeSlider(event, newValue, index)
                     }
+                    sx={{
+                      flexWrap: 'wrap', // ✅ Permite que los botones bajen de línea si no caben
+                      justifyContent: 'center',
+                      width: '100%', // ✅ Para que sea fluido
+                    }}
                   >
                     {Array.from(
                       {
@@ -1212,8 +1271,9 @@ const SurveyForm = ({
                         key={num}
                         value={num}
                         sx={{
-                          width: 48,
-                          height: 48,
+                          width: { xs: 36, sm: 42, md: 48 }, // ✅ Tamaño de botón adaptable a pantallas
+                          height: { xs: 36, sm: 42, md: 48 },
+                          m: 0.5, // Pequeño margen entre botones
                           borderRadius: 2,
                           '&.Mui-selected': {
                             backgroundColor: '#1976d2',
@@ -1228,19 +1288,32 @@ const SurveyForm = ({
 
                   {/* Textos debajo */}
                   <Box
-                    display="flex"
+                    display={{ xs: 'none', md: 'flex' }} // ✅ Solo visible en escritorio
                     justifyContent="space-between"
-                    width={`calc(48px * ${
-                      Number(textBipolarBar.valueRight) -
-                      Number(textBipolarBar.valueLeft) +
-                      1
-                    })`} // 👈 ajustamos el ancho exacto de los botones
+                    width="100%"
+                    maxWidth="600px"
                     mt={1}
+                    px={2}
                   >
-                    <Typography variant="caption">
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
                       {textBipolarBar.leftText}
                     </Typography>
-                    <Typography variant="caption">
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        textAlign: 'right',
+                      }}
+                    >
                       {textBipolarBar.rightText}
                     </Typography>
                   </Box>
@@ -1268,6 +1341,7 @@ const SurveyForm = ({
                 >
                   {description}
                 </Typography>
+
                 <Slider
                   min={-Math.abs(Number(score))}
                   max={Math.abs(Number(score))}
@@ -1283,9 +1357,53 @@ const SurveyForm = ({
                     { value: Math.abs(score), label: '' },
                   ]}
                 />
-                <div
-                  style={{
-                    display: 'flex',
+                <Box
+                  display={{ xs: 'flex', md: 'none' }} // ✅ Solo visible en móvil
+                  flexDirection="column"
+                  width="100%"
+                  mt={1}
+                  px={2}
+                >
+                  <Typography
+                    variant="caption"
+                    style={{
+                      fontSize: '0.8rem',
+                      textAlign: 'left',
+                      whiteSpace: 'normal', // permite que el texto se divida en varias líneas
+                      wordBreak: 'break-word', // rompe la palabra si es muy larga
+                    }}
+                  >
+                    {-Math.abs(score)}
+                    <Box
+                      component="span"
+                      sx={{ fontSize: '1rem', color: 'primary.main' }}
+                    >
+                      ➔ {/* ✅ Una flechita bonita */}
+                    </Box>
+                    {textBipolarBar.rightText}
+                  </Typography>
+
+                  <Typography
+                    variant="caption"
+                    style={{
+                      fontSize: '0.8rem',
+                      whiteSpace: 'normal', // permite que el texto se divida en varias líneas
+                      wordBreak: 'break-word', // rompe la palabra si es muy larga
+                    }}
+                  >
+                    {Math.abs(score)}
+                    <Box
+                      component="span"
+                      sx={{ fontSize: '1rem', color: 'primary.main' }}
+                    >
+                      ➔ {/* ✅ Una flechita bonita */}
+                    </Box>
+                    {textBipolarBar.leftText}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: { xs: 'none', md: 'flex' }, // ✅ Responsive correcto
                     justifyContent: 'space-between',
                     marginTop: '4px',
                   }}
@@ -1315,7 +1433,7 @@ const SurveyForm = ({
                   >
                     {textBipolarBar.leftText}
                   </Typography>
-                </div>
+                </Box>
               </>
             )}
 
