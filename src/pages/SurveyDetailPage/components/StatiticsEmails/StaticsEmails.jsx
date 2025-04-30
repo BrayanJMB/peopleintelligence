@@ -39,7 +39,7 @@ import { InvitationSection } from './components/InvitationSection';
 import {
   fetchStaticsMailReminderAPI,
   fetchStaticsMailSenderAPI,
-  getDownloadMaisAPI,
+  getDownloadMailsAPI ,
 } from './services/statitcsMail';
 export default function StaticsEmails({
   openDialog,
@@ -137,7 +137,7 @@ export default function StaticsEmails({
 
   const getDownloadMails = async (idSurvey, date, sendType) => {
     try {
-      const blob = await getDownloadMaisAPI(idSurvey, date, sendType);
+      const blob = await getDownloadMailsAPI(idSurvey, date, sendType);
   
       const url = window.URL.createObjectURL(new Blob([blob]));
       const link = document.createElement('a');
