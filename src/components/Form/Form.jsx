@@ -1,5 +1,6 @@
 import { Fragment, useState } from 'react';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { Slider } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -16,6 +17,11 @@ import styles from './Form.module.css';
 export default function Form(props) {
   const [categoryId, setCategoryId] = useState('');
   const [open, setOpen] = useState(false);
+  const [fixedValue, setFixedValue] = useState('');
+
+  const handleLimitChange = (event) => {
+    props.setLimitType(event.target.value.toString());
+  };
 
   // Funciones para abrir y cerrar el modal
 
@@ -44,6 +50,8 @@ export default function Form(props) {
   const renderForm = (type) => {
     switch (type.id) {
       case 1:
+      case 21:
+      case 23:
         return (
           <div className={styles.top}>
             <div className={styles.question}>
@@ -61,9 +69,21 @@ export default function Form(props) {
                   helperText={props.helperText.name}
                   fullWidth
                   size="small"
-                  InputProps={{
-                    inputComponent: TextareaAutosize,
-                  }}
+                  multiline={type.id == 21}
+                  InputProps={
+                    type.id === 21
+                      ? {
+                          inputComponent: 'textarea',
+                          inputProps: {
+                            style: {
+                              height: '80px',
+                              resize: 'none',
+                              overflow: 'auto',
+                            },
+                          },
+                        }
+                      : undefined // Si no es 21, no ponemos nada
+                  }
                 />
               </div>
             </div>
@@ -80,6 +100,7 @@ export default function Form(props) {
                     },
                   },
                 }}
+                multiline
                 value={props.information.description}
                 style={{
                   width: '100%',
@@ -89,6 +110,36 @@ export default function Form(props) {
                 onChange={props.handleInformation}
               />
             </div>
+            {/* Mostrar ayuda si typeId es 21 */}
+            {type.id == 21 && (
+              <div
+                style={{
+                  backgroundColor: '#e8f0fe',
+                  padding: '0.5em',
+                  borderRadius: '6px',
+                  marginTop: '0.5rem',
+                  fontSize: '0.85rem',
+                  color: '#333',
+                }}
+              >
+                Para darle más estilo a tus textos puedes usar, los siguientes
+                comandos:
+                <ul style={{ margin: '0.3em 0 0 1em', padding: 0 }}>
+                  <li>
+                    <b>**negrita**</b> → <strong>negrita</strong>
+                  </li>
+                  <li>
+                    <b>*cursiva*</b> → <em>cursiva</em>
+                  </li>
+                  <li>
+                    <b>***negrita cursiva***</b> →{' '}
+                    <strong>
+                      <em>negrita cursiva</em>
+                    </strong>
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
         );
       case 2:
@@ -254,7 +305,7 @@ export default function Form(props) {
                 );
               })}
             </div>
-            {props.information.customOptions.length < 10 ? (
+            {props.information.customOptions.length < 20 ? (
               <Button
                 variant="text"
                 startIcon={<AddCircleOutlineIcon />}
@@ -278,6 +329,35 @@ export default function Form(props) {
                 Eliminar opción
               </Button>
             ) : null}
+            <div className={styles.input}>
+              <FormControl fullWidth size="small" style={{ marginTop: '1rem' }}>
+                <InputLabel id="limit-type-label">Tipo de límite</InputLabel>
+                <Select
+                  labelId="limit-type-label"
+                  value={props.limitType}
+                  label="Tipo de límite"
+                  onChange={handleLimitChange}
+                >
+                  <MenuItem value="ilimitado">Ilimitado</MenuItem>
+                  <MenuItem value="fijo">Valor fijo</MenuItem>
+                </Select>
+              </FormControl>
+
+              {props.limitType === 'fijo' && (
+                <TextField
+                  label="Valor fijo"
+                  placeholder="Por favor ingresa el valor máximo que los usuarios pueden seleccionar:"
+                  value={props.score}
+                  onChange={props.handleInformation}
+                  style={{ marginTop: '0.8rem' }}
+                  fullWidth
+                  size="small"
+                  name="maximunValueOptions"
+                  error={props.errorMessage.maximunValueOptions}
+                  helperText={props.helperText.maximunValueOptions}
+                />
+              )}
+            </div>
           </div>
         );
       case 8:
@@ -361,7 +441,7 @@ export default function Form(props) {
                   </div>
                 );
               })}
-              {props.information.customOptions.length < 10 ? (
+              {props.information.customOptions.length < 20 ? (
                 <Button
                   variant="text"
                   startIcon={<AddCircleOutlineIcon />}
@@ -696,6 +776,276 @@ export default function Form(props) {
         );
       case 15:
         return <RelationalQuestions {...props} />;
+      case 19:
+        return (
+          <div className={styles.top}>
+            <div className={styles.question}>
+              <div className={styles.number}>{`Q${props.questions}`}</div>
+              <div className={styles.input}>
+                <TextField
+                  id="outlined-name"
+                  variant="standard"
+                  label="Añadir prequnta"
+                  placeholder="Añadir prequnta aquí..."
+                  value={props.information.name}
+                  name="name"
+                  onChange={props.handleInformation}
+                  error={props.errorMessage.name}
+                  helperText={props.helperText.name}
+                  fullWidth
+                  size="small"
+                  InputProps={{
+                    inputComponent: TextareaAutosize,
+                  }}
+                />
+              </div>
+            </div>
+            <div className={styles.input}>
+              <TextField
+                id="outlined-name"
+                label="Añadir descripción"
+                placeholder="Añadir descripción aquí (opcional)..."
+                InputProps={{
+                  inputComponent: TextareaAutosize,
+                  inputProps: {
+                    style: {
+                      height: '80px',
+                    },
+                  },
+                }}
+                value={props.information.description}
+                style={{
+                  width: '100%',
+                  marginTop: '0.5rem',
+                }}
+                name="description"
+                onChange={props.handleInformation}
+              />
+            </div>
+            {/* Input numérico para el valor */}
+            <div
+              style={{
+                marginTop: '4px',
+              }}
+            >
+              <TextField
+                label="Valor de respuesta"
+                type="number"
+                inputProps={{ min: 0, max: 10 }}
+                value={props.information.barBipolarValue}
+                name="barBipolarValue"
+                onChange={props.handleInformation}
+                variant="standard"
+                fullWidth
+                error={props.errorMessage.bipolar}
+                helperText={
+                  props.errorMessage.bipolar ? props.helperText.bipolar : ''
+                }
+              />
+            </div>
+            {/* Textos para los extremos de la escala */}
+            <div
+              style={{
+                marginTop: '4px',
+              }}
+            >
+              <TextField
+                label="Texto extremo izquierdo"
+                placeholder="Ej: Totalmente en desacuerdo"
+                value={props.information.textsBipolarBar.leftText}
+                name="textsBipolarBar.leftText"
+                onChange={props.handleInformation}
+                size="small"
+                variant="standard"
+                fullWidth
+                error={props.errorMessage.bipolarText}
+                inputProps={{
+                  maxLength: 120, // ✅ Limita la entrada a 120 caracteres
+                }}
+                helperText={
+                  props.errorMessage.bipolarText
+                    ? props.helperText.bipolarText
+                    : `${props.information.textsBipolarBar.leftText.length}/120` // ✅ Muestra el contador
+                }
+              />
+            </div>
+            <div
+              style={{
+                marginTop: '4px',
+              }}
+            >
+              <TextField
+                label="Texto extremo derecho"
+                placeholder="Ej: Totalmente de acuerdo"
+                value={props.information.textsBipolarBar.rigthText}
+                name="textsBipolarBar.rightText"
+                onChange={props.handleInformation}
+                size="small"
+                variant="standard"
+                fullWidth
+                error={props.errorMessage.bipolarText}
+                inputProps={{
+                  maxLength: 120, // ✅ Limita la entrada a 120 caracteres
+                }}
+                helperText={
+                  props.errorMessage.bipolarText
+                    ? props.helperText.bipolarText
+                    : `${props.information.textsBipolarBar.rightText.length}/120` // ✅ Muestra el contador
+                }
+              />
+            </div>
+          </div>
+        );
+      case 22:
+        return (
+          <div className={styles.top}>
+            <div className={styles.question}>
+              <div className={styles.number}>{`Q${props.questions}`}</div>
+              <div className={styles.input}>
+                <TextField
+                  id="outlined-name"
+                  variant="standard"
+                  label="Añadir prequnta"
+                  placeholder="Añadir prequnta aquí..."
+                  value={props.information.name}
+                  name="name"
+                  onChange={props.handleInformation}
+                  error={props.errorMessage.name}
+                  helperText={props.helperText.name}
+                  fullWidth
+                  size="small"
+                />
+              </div>
+            </div>
+            <div className={styles.input}>
+              <TextField
+                id="outlined-name"
+                label="Añadir descripción"
+                placeholder="Añadir descripción aquí (opcional)..."
+                InputProps={{
+                  inputComponent: TextareaAutosize,
+                  inputProps: {
+                    style: {
+                      height: '80px',
+                    },
+                  },
+                }}
+                value={props.information.description}
+                style={{
+                  width: '100%',
+                  marginTop: '0.5rem',
+                }}
+                name="description"
+                onChange={props.handleInformation}
+              />
+            </div>
+            {/* Textos para los extremos de la escala */}
+            <div
+              style={{
+                marginTop: '4px',
+              }}
+            >
+              <TextField
+                label="Texto extremo izquierdo"
+                placeholder="Ej: Totalmente en desacuerdo"
+                value={props.information.textsBipolarBar.leftText}
+                name="textsBipolarBar.leftText"
+                onChange={props.handleInformation}
+                size="small"
+                variant="standard"
+                style={{ width: '45%' }}
+                error={props.errorMessage.bipolarText}
+                inputProps={{
+                  maxLength: 25, // ✅ Limita la entrada a 120 caracteres
+                }}
+                helperText={
+                  props.errorMessage.bipolarText
+                    ? props.helperText.bipolarText
+                    : `${props.information.textsBipolarBar.leftText.length}/25` // ✅ Muestra el contador
+                }
+              />
+            </div>
+            <div
+              style={{
+                marginTop: '4px',
+              }}
+            >
+              <TextField
+                label="Texto extremo derecho"
+                placeholder="Ej: Totalmente de acuerdo"
+                value={props.information.textsBipolarBar.rigthText}
+                name="textsBipolarBar.rightText"
+                onChange={props.handleInformation}
+                size="small"
+                variant="standard"
+                style={{ width: '45%' }}
+                error={props.errorMessage.bipolarText}
+                inputProps={{
+                  maxLength: 25, // ✅ Limita la entrada a 120 caracteres
+                }}
+                helperText={
+                  props.errorMessage.bipolarText
+                    ? props.helperText.bipolarText
+                    : `${props.information.textsBipolarBar.rightText.length}/25` // ✅ Muestra el contador
+                }
+              />
+            </div>
+            <div className={styles.input} style={{ marginTop: '1rem' }}>
+              <FormControl
+                fullWidth
+                size="small"
+                style={{ marginBottom: '1rem' }}
+              >
+                <InputLabel id="first-select-label">
+                  Seleccionar 0 o 1
+                </InputLabel>
+                <Select
+                  labelId="first-select-label"
+                  value={
+                    [0, 1].includes(
+                      Number(props.information.textsBipolarBar.valueLeft)
+                    )
+                      ? props.information.textsBipolarBar.valueLeft
+                      : '0'
+                  }
+                  label="Seleccionar 0 o 1"
+                  onChange={props.handleInformation}
+                  name="textsBipolarBar.valueLeft"
+                >
+                  <MenuItem value={'0'}>0</MenuItem>
+                  <MenuItem value={'1'}>1</MenuItem>
+                </Select>
+              </FormControl>
+
+              <FormControl fullWidth size="small">
+                <InputLabel id="second-select-label">
+                  Seleccionar un número
+                </InputLabel>
+                <Select
+                  labelId="second-select-label"
+                  value={
+                    props.information.secondSelectOptions.includes(
+                      props.information.textsBipolarBar.valueRight
+                    )
+                      ? props.information.textsBipolarBar.valueRight
+                      : props.information.secondSelectOptions.length > 0
+                      ? props.information.secondSelectOptions[0].toString()
+                      : ''
+                  }
+                  label="Seleccionar un número"
+                  onChange={props.handleInformation}
+                  name="textsBipolarBar.valueRight"
+                >
+                  {props.information.secondSelectOptions.map((num) => (
+                    <MenuItem key={num} value={num}>
+                      {num}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </div>
+          </div>
+        );
       default:
         return null;
     }
@@ -707,7 +1057,7 @@ export default function Form(props) {
           ? null
           : renderForm(props.type)}
       </div>
-      {!props.isConditionalQuestion && (
+      {!props.isConditionalQuestion && (props.type && props.type.id) !== 21 && (
         <Box
           sx={{
             mt: 2,

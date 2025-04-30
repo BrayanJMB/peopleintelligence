@@ -4,6 +4,7 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -103,20 +104,21 @@ const SurveyForm = ({
   };
 
   const handleChangeSlider = (event, newValue, index) => {
+    if (newValue === null) return; // <- Seguridad, si deselecciona todo
+
     setFormValues((prevFormValues) => {
       const newFormValues = [...prevFormValues];
-
       newFormValues[index].value = newValue.toString();
-
-      setUnansweredQuestions((prevUnanswered) =>
-        prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
-      );
-
       return newFormValues;
     });
+
+    setUnansweredQuestions((prevUnanswered) =>
+      prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
+    );
+
     setValues((prevValues) => ({
-      ...prevValues, // Copia los valores actuales
-      [index]: event.target.value, // Actualiza el valor para el Slider actual
+      ...prevValues,
+      [index]: newValue, // 👈 Aquí debes usar newValue, no event.target.value
     }));
   };
 
@@ -225,6 +227,16 @@ const SurveyForm = ({
     }
   };
 
+  const isInformativeText = (typeQuestion) => {
+    if (!typeQuestion) return false; // protección extra
+    switch (typeQuestion.toLowerCase()) {
+      case 'texto infomativo':
+        return true;
+      default:
+        return false;
+    }
+  };
+
   /**
    * Returns true if the type of question is select .
    *
@@ -264,6 +276,30 @@ const SurveyForm = ({
   const isSlider = (typeQuestion) => {
     switch (typeQuestion) {
       case 'E-NPS':
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  const isENPSPromoter = (typeQuestion) => {
+    switch (typeQuestion.toLowerCase()) {
+      case 'escala de opinión':
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  /**
+   * Returns true if the type of question is select .
+   *
+   * @param typeQuestion
+   * @returns {boolean}
+   */
+  const isBipolarSlider = (typeQuestion) => {
+    switch (typeQuestion.toLowerCase()) {
+      case 'escala bipolar':
         return true;
       default:
         return false;
@@ -347,40 +383,52 @@ const SurveyForm = ({
       (activeStep + 1) * 5
     );
 
-    const unansweredIndexes = currentStepAnswers
-      .map((formValue, i) => {
-        if (!visibleQuestions[i + activeStep * 5]) {
-          return -1; // Ignora las preguntas no visibles
-        }
+    const unansweredIndexes = [];
 
-        let isUnanswered;
-        if (formValue.questionType === 'Opción Múltiple') {
-          isUnanswered =
-            formValue.values === null ||
-            Object.keys(formValue.values).length === 0 ||
-            !Object.values(formValue.values).some((val) => val === true);
-        } else if (formValue.questionType === 'Relacional') {
-          // Verifica cada selección individual en preguntas relacionales
-          isUnanswered =
-            formValue.selectionValues === null ||
-            Object.keys(formValue.selectionValues).length === 0 ||
-            Object.values(formValue.selectionValues).some(
-              (val) => val === '' || val === null
-            );
-        } else {
-          // Para otros tipos de preguntas, verifica si value es nulo o vacío
-          isUnanswered = formValue.value === null || formValue.value === '';
-        }
+    for (let i = 0; i < currentStepAnswers.length; i++) {
+      const globalIndex = i + activeStep * 5;
+      const formValue = currentStepAnswers[i];
 
-        return isUnanswered ? i + activeStep * 5 : -1;
-      })
-      .filter((index) => index !== -1);
+      if (!visibleQuestions[globalIndex]) continue; // ignorar preguntas no visibles
+      if (isInformativeText(formValue?.questionType)) continue; // ignorar informativas
+
+      let isUnanswered = false;
+
+      if (formValue.questionType === 'Opción Múltiple') {
+        isUnanswered =
+          formValue.values === null ||
+          Object.keys(formValue.values).length === 0 ||
+          !Object.values(formValue.values).some((val) => val === true);
+      } else if (formValue.questionType === 'Relacional') {
+        isUnanswered =
+          formValue.selectionValues === null ||
+          Object.keys(formValue.selectionValues).length === 0 ||
+          Object.values(formValue.selectionValues).some(
+            (val) => val === '' || val === null
+          );
+      } else {
+        isUnanswered = formValue.value === null || formValue.value === '';
+      }
+
+      if (isUnanswered) {
+        unansweredIndexes.push(globalIndex);
+      }
+    }
+
     setUnansweredQuestions(unansweredIndexes);
 
     if (unansweredIndexes.length > 0) {
-      questionRefs[
-        questions[unansweredIndexes[0]].questionId
-      ].current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const firstUnanswered = unansweredIndexes[0];
+      const questionType = questions[firstUnanswered]?.typeQuestion;
+
+      if (!isInformativeText(questionType)) {
+        questionRefs[
+          questions[firstUnanswered].questionId
+        ]?.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }
     }
 
     return unansweredIndexes.length === 0;
@@ -521,6 +569,46 @@ const SurveyForm = ({
     return Math.ceil(totalOfQuestions / 5);
   };
 
+  // Función para parsear texto con **negrilla**
+  const parseTextWithStyles = (text) => {
+    if (!text) return null;
+
+    const elements = [];
+    const lines = text.split('\n'); // Dividir primero por saltos de línea
+
+    lines.forEach((line, lineIndex) => {
+      const parts = line.split(/(\*\*\*.*?\*\*\*|\*\*.*?\*\*|\*.*?\*)/g); // Formato dentro de cada línea
+
+      parts.forEach((part, partIndex) => {
+        if (part.startsWith('***') && part.endsWith('***')) {
+          const content = part.slice(3, -3);
+          elements.push(
+            <strong key={`${lineIndex}-${partIndex}`}>
+              <em>{content}</em>
+            </strong>
+          );
+        } else if (part.startsWith('**') && part.endsWith('**')) {
+          const content = part.slice(2, -2);
+          elements.push(
+            <strong key={`${lineIndex}-${partIndex}`}>{content}</strong>
+          );
+        } else if (part.startsWith('*') && part.endsWith('*')) {
+          const content = part.slice(1, -1);
+          elements.push(<em key={`${lineIndex}-${partIndex}`}>{content}</em>);
+        } else {
+          elements.push(part);
+        }
+      });
+
+      // Después de cada línea (excepto la última), agregar un salto de línea
+      if (lineIndex < lines.length - 1) {
+        elements.push(<br key={`br-${lineIndex}`} />);
+      }
+    });
+
+    return elements;
+  };
+
   useEffect(() => {
     // Establecer refs para cada pregunta en la primera renderización
     const newRefs = questions.reduce((acc, { questionId }) => {
@@ -618,7 +706,11 @@ const SurveyForm = ({
     }
   }
 
-  const isFirstVisibleQuestionInGroup = (index, activeStep, visibleQuestions) => {
+  const isFirstVisibleQuestionInGroup = (
+    index,
+    activeStep,
+    visibleQuestions
+  ) => {
     const groupStart = activeStep * 5;
     // Recorremos desde el inicio del grupo hasta el índice actual (excluyéndolo)
     for (let i = groupStart; i < index; i++) {
@@ -670,15 +762,20 @@ const SurveyForm = ({
             description,
             conditional,
             selectOptions,
+            textBipolarBar,
           },
           index
         ) => (
           <FormControl
             key={questionId}
             style={{
-              marginTop: isFirstVisibleQuestionInGroup(index, activeStep, visibleQuestions)
-              ? '0'
-              : '4em',
+              marginTop: isFirstVisibleQuestionInGroup(
+                index,
+                activeStep,
+                visibleQuestions
+              )
+                ? '0'
+                : '4em',
               marginBottom: '1.1em',
               width: '100%',
               display:
@@ -707,7 +804,7 @@ const SurveyForm = ({
                       : 'rgba(0, 0, 0, 0.6)',
                   }}
                 >
-                   {questionName}
+                  {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
@@ -836,30 +933,44 @@ const SurveyForm = ({
                   {description}
                 </Typography>
                 <FormGroup>
-                  {options.map(({ numberOption, optionName }, optionIndex) => (
-                    <FormControlLabel
-                      ref={optionIndex === 0 ? questionRefs[questionId] : null}
-                      key={numberOption}
-                      control={
-                        <Checkbox
-                          checked={
-                            formValues[index].values[optionName] || false
-                          }
-                          name={optionName}
-                          value={optionName}
-                          onChange={(event) =>
-                            handleCheckboxChange(event, index)
-                          }
-                          style={{
-                            color: unansweredQuestions.includes(index)
-                              ? 'red'
-                              : '#03aae4',
-                          }}
-                        />
-                      }
-                      label={optionName}
-                    />
-                  ))}
+                  {options.map(({ numberOption, optionName }, optionIndex) => {
+                    const isChecked =
+                      formValues[index].values[optionName] || false;
+                    const selectedCount = Object.values(
+                      formValues[index].values
+                    ).filter((v) => v).length;
+
+                    const limitActive =
+                      score !== null && score !== undefined && score > 0;
+                    const disableCheckbox =
+                      limitActive && !isChecked && selectedCount >= score;
+
+                    return (
+                      <FormControlLabel
+                        ref={
+                          optionIndex === 0 ? questionRefs[questionId] : null
+                        }
+                        key={numberOption}
+                        control={
+                          <Checkbox
+                            checked={isChecked}
+                            name={optionName}
+                            value={optionName}
+                            onChange={(event) =>
+                              handleCheckboxChange(event, index)
+                            }
+                            disabled={disableCheckbox}
+                            style={{
+                              color: unansweredQuestions.includes(index)
+                                ? 'red'
+                                : '#03aae4',
+                            }}
+                          />
+                        }
+                        label={optionName}
+                      />
+                    );
+                  })}
                 </FormGroup>
                 <Divider variant="middle" />
               </Fragment>
@@ -970,6 +1081,39 @@ const SurveyForm = ({
                 <Divider variant="middle" />
               </Fragment>
             )}
+            {isInformativeText(typeQuestion) && (
+              <Fragment>
+                <div
+                  style={{
+                    backgroundColor: '#f5f5f5', // gris claro
+                    padding: '1em',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                    marginBottom: '1.5em',
+                  }}
+                >
+                  <FormLabel
+                    style={{
+                      fontSize: '1.1rem',
+                      marginBottom: '0.5em',
+                      display: 'block',
+                    }}
+                  >
+                    {parseTextWithStyles(questionName)}
+                  </FormLabel>
+                  <Typography
+                    variant="caption"
+                    style={{
+                      display: 'block',
+                      color: 'rgba(0, 0, 0, 0.7)',
+                    }}
+                  >
+                    {parseTextWithStyles(description)}
+                  </Typography>
+                </div>
+              </Fragment>
+            )}
+
             {isSlider(typeQuestion) && (
               <>
                 <FormLabel
@@ -1018,6 +1162,281 @@ const SurveyForm = ({
                 </Box>
               </>
             )}
+
+            {isENPSPromoter(typeQuestion) && (
+              <>
+                <FormLabel
+                  id={`${questionId}-${typeQuestion}`}
+                  style={{
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '1.1m',
+                    color: unansweredQuestions.includes(index)
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
+                  }}
+                >
+                  {questionName}
+                </FormLabel>
+                <Typography
+                  variant="caption"
+                  style={{ display: 'block', fontStyle: 'italic' }}
+                >
+                  {description}
+                </Typography>
+                <Box
+                  display={{ xs: 'flex', md: 'none' }} // ✅ Solo visible en móvil
+                  flexDirection="column"
+                  width="100%"
+                  maxWidth="600px"
+                  mt={1}
+                  px={2}
+                >
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'flex', // ✅ Hace que la flecha y el texto estén en línea limpia
+                      alignItems: 'center', // ✅ Centra verticalmente
+                      gap: 1, // ✅ Pequeño espacio entre número, flecha y texto
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      fontSize: '0.85rem', // ✅ Un poquito más grande para que se vea mejor
+                      fontWeight: 500, // ✅ Un poco más de grosor
+                    }}
+                  >
+                    {textBipolarBar.valueLeft}
+                    <Box
+                      component="span"
+                      sx={{ fontSize: '1rem', color: 'primary.main' }}
+                    >
+                      ➔ {/* ✅ Una flechita bonita */}
+                    </Box>
+                    {textBipolarBar.leftText}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'flex', // ✅ Hace que la flecha y el texto estén en línea limpia
+                      alignItems: 'center', // ✅ Centra verticalmente
+                      gap: 1, // ✅ Pequeño espacio entre número, flecha y texto
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      fontSize: '0.85rem', // ✅ Un poquito más grande para que se vea mejor
+                      fontWeight: 500, // ✅ Un poco más de grosor
+                    }}
+                  >
+                    {textBipolarBar.valueRight}
+                    <Box
+                      component="span"
+                      sx={{ fontSize: '1rem', color: 'primary.main' }}
+                    >
+                      ➔ {/* ✅ Una flechita bonita */}
+                    </Box>
+                    {textBipolarBar.rightText}
+                  </Typography>
+                </Box>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  mt={2}
+                  width="100%"
+                >
+                  {/* Botones */}
+                  <ToggleButtonGroup
+                    value={values[index] ?? null}
+                    exclusive
+                    aria-label="Net Promoter Score"
+                    onChange={(event, newValue) =>
+                      handleChangeSlider(event, newValue, index)
+                    }
+                    sx={{
+                      flexWrap: 'wrap', // ✅ Permite que los botones bajen de línea si no caben
+                      justifyContent: 'center',
+                      width: '100%', // ✅ Para que sea fluido
+                    }}
+                  >
+                    {Array.from(
+                      {
+                        length:
+                          Number(textBipolarBar.valueRight) -
+                          Number(textBipolarBar.valueLeft) +
+                          1,
+                      },
+                      (_, i) => Number(textBipolarBar.valueLeft) + i
+                    ).map((num) => (
+                      <ToggleButton
+                        key={num}
+                        value={num}
+                        sx={{
+                          width: { xs: 36, sm: 42, md: 48 }, // ✅ Tamaño de botón adaptable a pantallas
+                          height: { xs: 36, sm: 42, md: 48 },
+                          m: 0.5, // Pequeño margen entre botones
+                          borderRadius: 2,
+                          '&.Mui-selected': {
+                            backgroundColor: '#1976d2',
+                            color: 'white',
+                          },
+                        }}
+                      >
+                        {num}
+                      </ToggleButton>
+                    ))}
+                  </ToggleButtonGroup>
+
+                  {/* Textos debajo */}
+                  <Box
+                    display={{ xs: 'none', md: 'flex' }} // ✅ Solo visible en escritorio
+                    justifyContent="space-between"
+                    width="100%"
+                    maxWidth="600px"
+                    mt={1}
+                    px={2}
+                  >
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {textBipolarBar.leftText}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        textAlign: 'right',
+                      }}
+                    >
+                      {textBipolarBar.rightText}
+                    </Typography>
+                  </Box>
+                </Box>
+              </>
+            )}
+            {isBipolarSlider(typeQuestion) && (
+              <>
+                <FormLabel
+                  id={`${questionId}-${typeQuestion}`}
+                  style={{
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                    marginBottom: '1.1rem',
+                    color: unansweredQuestions.includes(index)
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
+                  }}
+                >
+                  {questionName}
+                </FormLabel>
+                <Typography
+                  variant="caption"
+                  style={{ display: 'block', fontStyle: 'italic' }}
+                >
+                  {description}
+                </Typography>
+
+                <Slider
+                  min={-Math.abs(Number(score))}
+                  max={Math.abs(Number(score))}
+                  step={1}
+                  value={values[index] || 0}
+                  onChange={(event, newValue) =>
+                    handleChangeSlider(event, newValue, index)
+                  }
+                  valueLabelDisplay="on"
+                  marks={[
+                    { value: -Math.abs(score), label: '' },
+                    { value: 0, label: '' },
+                    { value: Math.abs(score), label: '' },
+                  ]}
+                />
+                <Box
+                  display={{ xs: 'flex', md: 'none' }} // ✅ Solo visible en móvil
+                  flexDirection="column"
+                  width="100%"
+                  mt={1}
+                  px={2}
+                >
+                  <Typography
+                    variant="caption"
+                    style={{
+                      fontSize: '0.8rem',
+                      textAlign: 'left',
+                      whiteSpace: 'normal', // permite que el texto se divida en varias líneas
+                      wordBreak: 'break-word', // rompe la palabra si es muy larga
+                    }}
+                  >
+                    {-Math.abs(score)}
+                    <Box
+                      component="span"
+                      sx={{ fontSize: '1rem', color: 'primary.main' }}
+                    >
+                      ➔ {/* ✅ Una flechita bonita */}
+                    </Box>
+                    {textBipolarBar.rightText}
+                  </Typography>
+
+                  <Typography
+                    variant="caption"
+                    style={{
+                      fontSize: '0.8rem',
+                      whiteSpace: 'normal', // permite que el texto se divida en varias líneas
+                      wordBreak: 'break-word', // rompe la palabra si es muy larga
+                    }}
+                  >
+                    {Math.abs(score)}
+                    <Box
+                      component="span"
+                      sx={{ fontSize: '1rem', color: 'primary.main' }}
+                    >
+                      ➔ {/* ✅ Una flechita bonita */}
+                    </Box>
+                    {textBipolarBar.leftText}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: { xs: 'none', md: 'flex' }, // ✅ Responsive correcto
+                    justifyContent: 'space-between',
+                    marginTop: '4px',
+                  }}
+                >
+                  <Typography
+                    variant="caption"
+                    style={{
+                      fontSize: '0.8rem',
+                      textAlign: 'left',
+                      maxWidth: '20%',
+                      whiteSpace: 'normal', // permite que el texto se divida en varias líneas
+                      wordBreak: 'break-word', // rompe la palabra si es muy larga
+                    }}
+                  >
+                    {textBipolarBar.rightText}
+                  </Typography>
+
+                  <Typography
+                    variant="caption"
+                    style={{
+                      fontSize: '0.8rem',
+                      textAlign: 'right',
+                      maxWidth: '20%',
+                      whiteSpace: 'normal', // permite que el texto se divida en varias líneas
+                      wordBreak: 'break-word', // rompe la palabra si es muy larga
+                    }}
+                  >
+                    {textBipolarBar.leftText}
+                  </Typography>
+                </Box>
+              </>
+            )}
+
             {isSelect(typeQuestion) && (
               <FormControl
                 fullWidth
@@ -1025,7 +1444,7 @@ const SurveyForm = ({
                 ref={questionRefs[questionId]}
               >
                 <InputLabel id={`${questionId}-${typeQuestion}`}>
-                {questionName}
+                  {questionName}
                 </InputLabel>
                 <Typography
                   variant="caption"

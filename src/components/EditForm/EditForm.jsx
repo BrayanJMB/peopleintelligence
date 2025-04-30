@@ -56,8 +56,8 @@ const EditForm = ({
   customOptionError,
   ...props
 }) => {
+  console.log(question);
   const [categoryId, setCategoryId] = useState('');
-
   /**
    * Handle category id change.
    *
@@ -121,7 +121,6 @@ const EditForm = ({
     filteredQuestions.push(preguntaFinal);
     return filteredQuestions;
   };
-
   return (
     <Fragment>
       <div className={styles.form}>
@@ -142,6 +141,12 @@ const EditForm = ({
                 size="small"
                 value={question.name}
                 variant="standard"
+                InputProps={{
+                  inputComponent: TextareaAutosize,
+                  ...(question.typeId == 21
+                    ? { style: { height: '80px' } }
+                    : {}),
+                }}
               />
             </div>
           </div>
@@ -168,6 +173,35 @@ const EditForm = ({
               }}
               value={question.description}
             />
+            {question.typeId == 21 && (
+              <div
+                style={{
+                  backgroundColor: '#e8f0fe',
+                  padding: '0.5em',
+                  borderRadius: '6px',
+                  marginTop: '0.5rem',
+                  fontSize: '0.85rem',
+                  color: '#333',
+                }}
+              >
+                Para darle más estilo a tus textos puedes usar, los siguientes
+                comandos:
+                <ul style={{ margin: '0.3em 0 0 1em', padding: 0 }}>
+                  <li>
+                    <b>**negrita**</b> → <strong>negrita</strong>
+                  </li>
+                  <li>
+                    <b>*cursiva*</b> → <em>cursiva</em>
+                  </li>
+                  <li>
+                    <b>***negrita cursiva***</b> →{' '}
+                    <strong>
+                      <em>negrita cursiva</em>
+                    </strong>
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
 
           {/* likert scale */}
@@ -207,98 +241,141 @@ const EditForm = ({
 
           {/* multiple option */}
           {(question.typeId === 3 || question.typeId === 8) && (
-            <div className={styles.options}>
-              {question.customOptions.map((val, key) => (
-                <>
-                  <div className={styles.option} key={key}>
-                    <div
-                      style={{
-                        backgroundColor: '#F0F2F5',
-                        borderRadius: '4px',
-                        color: 'rgb(134, 140, 204)',
-                        fontSize: '14px',
-                        marginRight: '15px',
-                        padding: '3px 9px',
-                        textAlign: 'center',
-                      }}
-                    >
-                      {key + 1}
+            <>
+              <div className={styles.options}>
+                {question.customOptions.map((val, key) => (
+                  <>
+                    <div className={styles.option} key={key}>
+                      <div
+                        style={{
+                          backgroundColor: '#F0F2F5',
+                          borderRadius: '4px',
+                          color: 'rgb(134, 140, 204)',
+                          fontSize: '14px',
+                          marginRight: '15px',
+                          padding: '3px 9px',
+                          textAlign: 'center',
+                        }}
+                      >
+                        {key + 1}
+                      </div>
+                      <TextField
+                        fullWidth
+                        id={'option-{key}'}
+                        InputProps={{
+                          disableUnderline: true,
+                        }}
+                        onChange={handleInformationOptions(key)}
+                        placeholder="Añadir opción..."
+                        size="small"
+                        value={question.customOptions[key]}
+                        variant="standard"
+                        error={customOptionError[key]}
+                        helperText={
+                          customOptionError[key]
+                            ? 'La opción no puede estar vacía'
+                            : ''
+                        }
+                      />
                     </div>
+                    {question.typeId === 8 && question.conditionalQuestion && (
+                      <Autocomplete
+                        key={key}
+                        disablePortal
+                        id={`autocomplete-${question.id}-${key}`}
+                        options={getFilteredOptions(
+                          `${question.id}-${key}`,
+                          question.questionNumber
+                        )}
+                        getOptionLabel={(option) =>
+                          `${option.questionNumber}. ${option.name}`
+                        }
+                        value={
+                          props.selections[`${question.id}-${key}`] || null
+                        }
+                        onChange={(event, value) => {
+                          // Crear un objeto que incluya el valor seleccionado y el número de la pregunta
+                          const dataToSend = {
+                            selectedValue: value,
+                            questionNumber: value ? value.questionNumber : null,
+                            index: key,
+                          };
+                          handleSelect(`${question.id}-${key}`, dataToSend);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Preguntas"
+                            error={
+                              errorMessage.autocomplete &&
+                              !props.selections[`${question.id}-${key}`]
+                            }
+                            helperText={
+                              errorMessage.autocomplete &&
+                              !props.selections[`${question.id}-${key}`]
+                                ? helperText.autocomplete
+                                : ''
+                            }
+                          />
+                        )}
+                      />
+                    )}
+                  </>
+                ))}
+                {question.customOptions.length < 10 && (
+                  <Button
+                    onClick={handleAddOption}
+                    startIcon={<AddCircleOutlineIcon />}
+                    style={{
+                      backgroundColor: '#F7F7F7',
+                      width: '255px',
+                    }}
+                    variant="text"
+                  >
+                    Añadir opción
+                  </Button>
+                )}
+              </div>
+              {question.typeId === 3 && (
+                <div className={styles.input}>
+                  <FormControl
+                    fullWidth
+                    size="small"
+                    style={{ marginTop: '1rem' }}
+                  >
+                    <InputLabel id="limit-type-label">
+                      Tipo de límite
+                    </InputLabel>
+                    <Select
+                      labelId="limit-type-label"
+                      value={props.limitType}
+                      label="Tipo de límite"
+                      onChange={(event) =>
+                        props.setLimitType(event.target.value)
+                      }
+                    >
+                      <MenuItem value="ilimitado">Ilimitado</MenuItem>
+                      <MenuItem value="fijo">Valor fijo</MenuItem>
+                    </Select>
+                  </FormControl>
+
+                  {props.limitType === 'fijo' && (
                     <TextField
+                      label="Valor fijo"
+                      placeholder="Por favor ingresa el valor máximo que los usuarios pueden seleccionar:"
+                      value={question.stars}
+                      onChange={handleInformation}
+                      style={{ marginTop: '0.8rem' }}
                       fullWidth
-                      id={'option-{key}'}
-                      InputProps={{
-                        disableUnderline: true,
-                      }}
-                      onChange={handleInformationOptions(key)}
-                      placeholder="Añadir opción..."
                       size="small"
-                      value={question.customOptions[key]}
-                      variant="standard"
-                      error={customOptionError[key]}
-                      helperText={
-                        customOptionError[key]
-                          ? 'La opción no puede estar vacía'
-                          : ''
-                      }
-                    />
-                  </div>
-                  {question.typeId === 8 && question.conditionalQuestion && (
-                    <Autocomplete
-                      key={key}
-                      disablePortal
-                      id={`autocomplete-${question.id}-${key}`}
-                      options={getFilteredOptions(
-                        `${question.id}-${key}`,
-                        question.questionNumber
-                      )}
-                      getOptionLabel={(option) =>
-                        `${option.questionNumber}. ${option.name}`
-                      }
-                      value={props.selections[`${question.id}-${key}`] || null}
-                      onChange={(event, value) => {
-                        // Crear un objeto que incluya el valor seleccionado y el número de la pregunta
-                        const dataToSend = {
-                          selectedValue: value,
-                          questionNumber: value ? value.questionNumber : null,
-                          index: key,
-                        };
-                        handleSelect(`${question.id}-${key}`, dataToSend);
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Preguntas"
-                          error={
-                            errorMessage.autocomplete &&
-                            !props.selections[`${question.id}-${key}`]
-                          }
-                          helperText={
-                            errorMessage.autocomplete &&
-                            !props.selections[`${question.id}-${key}`]
-                              ? helperText.autocomplete
-                              : ''
-                          }
-                        />
-                      )}
+                      name="stars"
+                      error={errorMessage.maximunValueOptions}
+                      helperText={helperText.maximunValueOptions}
                     />
                   )}
-                </>
-              ))}
-              {question.customOptions.length < 10 && (
-                <Button
-                  onClick={handleAddOption}
-                  startIcon={<AddCircleOutlineIcon />}
-                  style={{
-                    backgroundColor: '#F7F7F7',
-                    width: '255px',
-                  }}
-                  variant="text"
-                >
-                  Añadir opción
-                </Button>
+                </div>
               )}
-            </div>
+            </>
           )}
 
           {/* ratings */}
@@ -372,50 +449,122 @@ const EditForm = ({
               <RelationalQuestionsEdit
                 question={question}
                 handleInformationOptions={handleInformationOptions}
-                handleInformationRelationalOptions={handleInformationRelationalOptions}
+                handleInformationRelationalOptions={
+                  handleInformationRelationalOptions
+                }
                 optionRelationalError={optionRelationalError}
                 customOptionError={customOptionError}
               />
             </Fragment>
           )}
+
+          {/* ratings */}
+          {question.typeId === 19 && (
+            <Fragment>
+              <div className={styles.top}>
+                {/* Input numérico para el valor */}
+                <div
+                  style={{
+                    marginTop: '4px',
+                  }}
+                >
+                  <TextField
+                    label="Valor de respuesta"
+                    type="number"
+                    inputProps={{ min: 0, max: 10 }}
+                    value={question.stars}
+                    name="stars"
+                    onChange={handleInformation}
+                    variant="standard"
+                    fullWidth
+                    error={errorMessage.bipolar}
+                    helperText={errorMessage.bipolar ? helperText.bipolar : ''}
+                  />
+                </div>
+                {/* Textos para los extremos de la escala */}
+                <div
+                  style={{
+                    marginTop: '4px',
+                  }}
+                >
+                  <TextField
+                    label="Texto extremo izquierdo"
+                    placeholder="Ej: Totalmente en desacuerdo"
+                    value={question.textsBipolarBar.leftText}
+                    name="textsBipolarBar.leftText"
+                    onChange={handleInformation}
+                    size="small"
+                    variant="standard"
+                    style={{ width: '45%' }}
+                    error={errorMessage.bipolarText}
+                    helperText={
+                      errorMessage.bipolarText ? helperText.bipolarText : ''
+                    }
+                  />
+                </div>
+                <div
+                  style={{
+                    marginTop: '4px',
+                  }}
+                >
+                  <TextField
+                    label="Texto extremo derecho"
+                    placeholder="Ej: Totalmente de acuerdo"
+                    value={question.textsBipolarBar.rightText}
+                    name="textsBipolarBar.rightText"
+                    onChange={handleInformation}
+                    size="small"
+                    variant="standard"
+                    style={{ width: '45%' }}
+                    error={errorMessage.bipolarText}
+                    helperText={
+                      errorMessage.bipolarText ? helperText.bipolarText : ''
+                    }
+                  />
+                </div>
+              </div>
+            </Fragment>
+          )}
         </div>
       </div>
-      <Box
-        sx={{
-          mt: 4,
-        }}
-      >
-        <FormControl fullWidth error={categoryError.length > 0}>
-          <InputLabel
-            id="category-id-label"
-            sx={{
-              backgroundColor: 'white',
-              paddingRight: '0 6px',
-            }}
-          >
-            Seleccionar categoría
-          </InputLabel>
-          <Select
-            labelId="category-id-label"
-            id="category-id"
-            label="Categoría"
-            value={categoryId || question.categoryId}
-            onChange={handleCategoryIdChange}
-          >
-            <MenuItem value={question.categoryId}>
-              <em>Seleccione</em>
-            </MenuItem>
-            {categories.map((category) => (
-              <MenuItem key={category.id} value={category.id}>
-                {category.nameCatogory}
+      {(question.typeId && question.typeId) !== 21 && (
+        <Box
+          sx={{
+            mt: 4,
+          }}
+        >
+          <FormControl fullWidth error={categoryError.length > 0}>
+            <InputLabel
+              id="category-id-label"
+              sx={{
+                backgroundColor: 'white',
+                paddingRight: '0 6px',
+              }}
+            >
+              Seleccionar categoría
+            </InputLabel>
+            <Select
+              labelId="category-id-label"
+              id="category-id"
+              label="Categoría"
+              value={categoryId || question.categoryId}
+              onChange={handleCategoryIdChange}
+            >
+              <MenuItem value={question.categoryId}>
+                <em>Seleccione</em>
               </MenuItem>
-            ))}
-          </Select>
-          {categoryError.length > 0 && (
-            <FormHelperText>{categoryError}</FormHelperText>
-          )}
-        </FormControl>
-      </Box>
+              {categories.map((category) => (
+                <MenuItem key={category.id} value={category.id}>
+                  {category.nameCatogory}
+                </MenuItem>
+              ))}
+            </Select>
+            {categoryError.length > 0 && (
+              <FormHelperText>{categoryError}</FormHelperText>
+            )}
+          </FormControl>
+        </Box>
+      )}
     </Fragment>
   );
 };
