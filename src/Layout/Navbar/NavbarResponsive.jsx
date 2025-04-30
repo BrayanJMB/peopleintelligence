@@ -11,6 +11,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { Drawer, List, ListItem, ListItemText } from '@mui/material';
+import { useMediaQuery } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -20,7 +21,6 @@ import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
-import Hidden from '@mui/material/Hidden';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -130,6 +130,7 @@ const optionsMenuMobile = [
 ];
 
 export default function NavbarResponsive() {
+  const isMdUp = useMediaQuery('(min-width:600px)'); // 'sm' breakpoint (600px)
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const activeCompanies = useSelector(
@@ -148,7 +149,7 @@ export default function NavbarResponsive() {
     content: { company: [] },
     ids: { company: [] },
   });
-
+  const isSmallScreen = useMediaQuery('(max-width:600px)');
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -199,8 +200,7 @@ export default function NavbarResponsive() {
         holder.ids.company = id;
         setData(holder);
       });
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleSelect = (value) => {
@@ -286,12 +286,21 @@ export default function NavbarResponsive() {
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
-                    sx={{display:'flex', alignItems:'center'}}
+                    sx={{ display: 'flex', alignItems: 'center' }}
                   >
-                    { typeof value.letterImage === 'string' 
-                      ? <img src={value.letterImage} alt={value} style={{ height: '30px', width: '30px', marginRight:'5px' }} /> 
-                      : value.letterImage 
-                    }
+                    {typeof value.letterImage === 'string' ? (
+                      <img
+                        src={value.letterImage}
+                        alt={value}
+                        style={{
+                          height: '30px',
+                          width: '30px',
+                          marginRight: '5px',
+                        }}
+                      />
+                    ) : (
+                      value.letterImage
+                    )}
                     <ListItemText
                       primary={value.optionName}
                       primaryTypographyProps={{
@@ -313,18 +322,23 @@ export default function NavbarResponsive() {
                 </Accordion>
               ) : (
                 <>
-                { typeof value.letterImage === 'string' 
-                  ? <img src={value.letterImage} alt={value} style={{ height: '30px', width: '30px' }} /> 
-                  : value.letterImage 
-                }
-                <ListItemText
-                  primary={value.optionName}
-                  primaryTypographyProps={{
-                    style: {
-                      wordWrap: 'break-word',
-                    },
-                  }}
-                />
+                  {typeof value.letterImage === 'string' ? (
+                    <img
+                      src={value.letterImage}
+                      alt={value}
+                      style={{ height: '30px', width: '30px' }}
+                    />
+                  ) : (
+                    value.letterImage
+                  )}
+                  <ListItemText
+                    primary={value.optionName}
+                    primaryTypographyProps={{
+                      style: {
+                        wordWrap: 'break-word',
+                      },
+                    }}
+                  />
                 </>
               )}
             </ListItem>
@@ -349,18 +363,18 @@ export default function NavbarResponsive() {
           >
             {userInfo.role.findIndex((p) => p === 'MultiCompania') > -1 ? (
               <>
-                <Hidden smUp>
+                {isSmallScreen && (
                   <img
                     src={
                       userInfo?.role.findIndex((p) => p === 'MultiCompania') < 0
-                        ? currentCompany && currentCompany.Logotipo // Verifica si currentCompany no es null antes de intentar acceder a Logotipo
+                        ? currentCompany && currentCompany.Logotipo
                         : multicompani
                     }
                     alt="profile"
                     onClick={handleDrawerOpen}
                     className={styles.photo}
                   />
-                </Hidden>
+                )}
                 <Autocomplete
                   id="combo-box-demo"
                   options={activeCompanies}
@@ -375,19 +389,19 @@ export default function NavbarResponsive() {
                       {...params}
                       label="Compañias"
                       variant="standard"
-                      sx={{ width: {
-                        sm:300,
-                        xs: 200}}
-                      }
+                      sx={{
+                        width: {
+                          sm: 300,
+                          xs: 200,
+                        },
+                      }}
                     />
                   )}
                 />
               </>
             ) : (
               <>
-                <Hidden smUp>
-                  <MenuIcon onClick={handleDrawerOpen} />
-                </Hidden>
+                {isSmallScreen && <MenuIcon onClick={handleDrawerOpen} />}
                 <Typography
                   color="textPrimary"
                   variant="h6"
@@ -397,7 +411,7 @@ export default function NavbarResponsive() {
                 </Typography>
               </>
             )}
-            <Hidden smDown>
+            {isMdUp && (
               <Box>
                 <IconButton onClick={handleHome}>
                   <HomeOutlinedIcon sx={{ fontSize: '40px' }} />
@@ -491,7 +505,7 @@ export default function NavbarResponsive() {
                   </MenuItem>
                 </Menu>
               </Box>
-            </Hidden>
+            )}
           </Box>
         </Toolbar>
       </AppBar>

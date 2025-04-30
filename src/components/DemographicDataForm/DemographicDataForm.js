@@ -343,7 +343,7 @@ const DemographicDataForm = ({
 
             {demographicData.map(({ value }) => (
               <Grid key={value} item xs={6} sm={4} md={3}>
-                <FormGroup>
+                <FormGroup row>
                   <FormControlLabel
                     control={
                       <Checkbox

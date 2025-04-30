@@ -75,7 +75,19 @@ export default function CreateSurvey() {
     opcionesInputs: Array(2).fill(''),
     stars: Array(3).fill(''),
     rangeOptions: ['Rango 0-6', 'Rango 7-8', 'Rango 9-10'],
+    barBipolarValue: 0,
+    textsBipolarBar: {
+      leftText: '',
+      rightText: '',
+      valueRight: '2',
+      valueLeft: '0',
+    },
+    maximunValueOptions: null,
+    secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
   });
+  const [firstSelect, setFirstSelect] = useState(0);
+  const [secondSelect, setSecondSelect] = useState(2);
+  const [limitType, setLimitType] = useState('ilimitado');
 
   const [selections, setSelections] = useState({});
   const dispatch = useDispatch();
@@ -105,7 +117,7 @@ export default function CreateSurvey() {
     confidentialityMessage:
       'Tus respuestas serán completamente confidenciales y no podrán ser vinculadas a tu identidad.',
   });
-  const [hasNumerationNumber, setHasNumerationNumber] =  useState(true);
+  const [hasNumerationNumber, setHasNumerationNumber] = useState(true);
   const [errorDayConcurrency, setErrorDayConcurrency] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const isMap = searchParams.get('isMap') === 'true';
@@ -133,6 +145,31 @@ export default function CreateSurvey() {
   const handleIntroductionChange = (updatedData) => {
     setData(updatedData);
   };
+
+  //ENPS PROMOTE SQAURES
+  const handleFirstSelectChange = (event) => {
+    console.log(information);
+    const value = parseInt(event.target.value, 10);
+    setFirstSelect(value);
+
+    // Cambiar automáticamente el segundo select dependiendo del primer select
+    if (value === 0) {
+      setSecondSelect(2);
+    } else if (value === 1) {
+      setSecondSelect(3);
+    }
+  };
+
+  const handleSecondSelectChange = (event) => {
+    setSecondSelect(event.target.value);
+  };
+
+  // Crear el rango dinámico basado en el primer select
+  const startValue = firstSelect === 0 ? 2 : 3;
+  const secondSelectOptions = Array.from(
+    { length: 10 - startValue + 1 },
+    (_, i) => startValue + i
+  );
 
   /**
    * Get demographics for create survey or template.
@@ -171,6 +208,7 @@ export default function CreateSurvey() {
   const createSurvey = async () => {
     setLoading(true);
     if (errorDayConcurrency || dayConcurrency === '') return;
+    console.log(questions);
     const newSurvey = {
       survey: {
         nameSurvey: data.title,
@@ -195,8 +233,11 @@ export default function CreateSurvey() {
           nameQuestion: question.name,
           description: question.description,
           typeQuestionId: question.typeId,
-          score: question.stars?.length,
+          score: Array.isArray(question.stars)
+            ? question.stars.length
+            : question.stars,
           conditional: question.conditionalQuestion,
+          textsBipolarBar: question.textsBipolarBar,
         },
         options: question.customOptions?.map((option, index) => {
           return {
@@ -214,7 +255,7 @@ export default function CreateSurvey() {
       })),
       demographics: getDemographics(),
     };
-
+    console.log(newSurvey);
     const { data: createdJourney } = await client.post(
       `/createJourney/${currentCompany.id}`,
       newSurvey
@@ -339,8 +380,8 @@ export default function CreateSurvey() {
     setLoading(false);
   };
 
-  const validateLengthQuestion = (questions) =>{
-    if (questions.length === 0){
+  const validateLengthQuestion = (questions) => {
+    if (questions.length === 0) {
       enqueueSnackbar('La encuesta debe tener al menos una pregunta.', {
         variant: 'error',
         autoHideDuration: 3000,
@@ -349,13 +390,17 @@ export default function CreateSurvey() {
     }
   };
 
-  const validateCategoryForQuestions = (questions) =>{
+  const validateCategoryForQuestions = (questions) => {
     const invalidQuestions = questions
-    .map((question, index) => ({
-      ...question,
-      originalIndex: index + 1, // Guardar índice original (1 basado)
-    }))
-    .filter((question) => question.categoryId === null || question.categoryId === undefined);
+      .map((question, index) => ({
+        ...question,
+        originalIndex: index + 1, // Guardar índice original (1 basado)
+      }))
+      .filter(
+        (question) =>
+          (question.categoryId === null || question.categoryId === undefined) &&
+          question.typeId !== 21 // Ignorar tipo informativo
+      );
     if (invalidQuestions.length > 0) {
       invalidQuestions.forEach((question, index) => {
         enqueueSnackbar(
@@ -404,7 +449,10 @@ export default function CreateSurvey() {
           createTemplate();
           return;
         }
-        if(validateLengthQuestion(questions) || validateCategoryForQuestions(questions)){
+        if (
+          validateLengthQuestion(questions) ||
+          validateCategoryForQuestions(questions)
+        ) {
           return;
         }
         setActiveStep((val) => val + 1);
@@ -449,12 +497,45 @@ export default function CreateSurvey() {
    * @param {object} event
    */
   const handleInformation = (event) => {
-    //handleAgregar();
-    setInformation({
-      ...information,
-      [event.target.name]: event.target.value,
-    });
+    const { name, value } = event.target;
+    
+    if (name.includes('.')) {
+      const [parentKey, childKey] = name.split('.');
+
+      setInformation((prev) => {
+        const updatedInfo = {
+          ...prev,
+          [parentKey]: {
+            ...prev[parentKey],
+            [childKey]: value,
+          },
+        };
+
+        // Si estamos cambiando el valueLeft (el izquierdo)
+        if (name === 'textsBipolarBar.valueLeft') {
+          const start = value == '0' ? 2 : 3;
+          updatedInfo.secondSelectOptions = Array.from(
+            { length: 10 - start + 1 },
+            (_, i) => (start + i).toString() // <- aquí fuerza a string
+          );
+          // También reseteamos valueRight para que empiece correctamente
+          updatedInfo.textsBipolarBar.valueRight = start.toString();
+        }
+
+        return updatedInfo;
+      });
+    } else {
+      setInformation((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
+
+  useEffect(() => {
+    console.log(information);
+  }, [information]);
+  
 
   /**
    * Handle change for category id.
@@ -464,9 +545,26 @@ export default function CreateSurvey() {
   const handleCategoryIdChange = (categoryId) => {
     setCategoryId(categoryId);
   };
-
   const handleQuestion = (event) => {
-    setQuestion({ ...question, [event.target.name]: event.target.value });
+    const { name, value } = event.target;
+    // Soporte para campos anidados tipo "obj.prop"
+    if (name.includes('.')) {
+      const [parentKey, childKey] = name.split('.');
+      setQuestion((prev) => ({
+        ...prev,
+        [parentKey]: {
+          ...prev[parentKey],
+          [childKey]: value,
+        },
+      }));
+      return;
+    }
+
+    // Campo simple
+    setQuestion((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleinformationoptions = (key) => (event) => {
@@ -638,6 +736,8 @@ export default function CreateSurvey() {
   const handleEdit = (index) => {
     setTarget(index);
     setQuestion(questions[index]);
+    console.log('ok');
+    console.log(questions[index]);
     setEdit(true);
   };
 
@@ -751,7 +851,7 @@ export default function CreateSurvey() {
             setMapsLoaded={setMapsLoaded}
           />
         );
-        /*
+      /*
       case 1:
         return (
           <Box width="100%">
@@ -788,9 +888,9 @@ export default function CreateSurvey() {
               surveyMessages={surveyMessages}
               setSurveyMessages={setSurveyMessages}
             />
-            <NumerationSurvey 
+            <NumerationSurvey
               hasNumerationNumber={hasNumerationNumber}
-              setHasNumerationNumber={setHasNumerationNumber}     
+              setHasNumerationNumber={setHasNumerationNumber}
             />
           </Box>
         );
@@ -994,6 +1094,139 @@ export default function CreateSurvey() {
         }
       }
 
+      if (question.typeId === 19 || question.typeId === 22) {
+        
+        const value = Number(question.stars);
+        if (isNaN(value)) {
+          setErrorMessage((prev) => ({
+            ...prev,
+            bipolar: true,
+          }));
+          setHelperText((prev) => ({
+            ...prev,
+            bipolar: 'Debe ingresar un número.',
+          }));
+          return;
+        }
+
+        if (!Number.isInteger(value)) {
+          setErrorMessage((prev) => ({
+            ...prev,
+            bipolar: true,
+          }));
+          setHelperText((prev) => ({
+            ...prev,
+            bipolar: 'Solo se permiten números enteros.',
+          }));
+          return;
+        }
+
+        // Validación: valor vacío o menor o igual a 0
+        if (information.stars === '' || value <= 0) {
+          setErrorMessage((prev) => ({
+            ...prev,
+            bipolar: true,
+          }));
+          setHelperText((prev) => ({
+            ...prev,
+            bipolar: 'El valor debe ser mayor a 0.',
+          }));
+          return;
+        }
+
+        // Validación: valor mayor a 10
+        if (value > 10) {
+          setErrorMessage((prev) => ({
+            ...prev,
+            bipolar: true,
+          }));
+          setHelperText((prev) => ({
+            ...prev,
+            bipolar: 'El valor no puede ser mayor a 10.',
+          }));
+          return;
+        }
+
+        // Validación: extremos vacíos
+        if (
+          question.textsBipolarBar.leftText.trim() === '' ||
+          question.textsBipolarBar.rightText.trim() === ''
+        ) {
+          setErrorMessage((prev) => ({
+            ...prev,
+            bipolarText: true,
+          }));
+          setHelperText((prev) => ({
+            ...prev,
+            bipolarText:
+              'Debe completar los textos de los extremos de la escala bipolar.',
+          }));
+          return;
+        }
+      }
+      if (limitType === 'fijo') {
+        if (question.stars.trim() === '') {
+          setErrorMessage({
+            ...errorMessage,
+            maximunValueOptions: true,
+          });
+          setHelperText({
+            ...helperText,
+            maximunValueOptions: 'Este valor no puede ir vacío',
+          });
+          return;
+        }
+
+        if (isNaN(question.stars)) {
+          setErrorMessage((prev) => ({
+            ...prev,
+            maximunValueOptions: true,
+          }));
+          setHelperText((prev) => ({
+            ...prev,
+            maximunValueOptions: 'Debe ingresar un número.',
+          }));
+          return;
+        }
+
+        if (!Number.isInteger(Number(question.stars))) {
+          setErrorMessage((prev) => ({
+            ...prev,
+            maximunValueOptions: true,
+          }));
+          setHelperText((prev) => ({
+            ...prev,
+            maximunValueOptions: 'Solo se permiten números enteros.',
+          }));
+          return;
+        }
+
+        if (Number(question.stars) <= 0) {
+          setErrorMessage((prev) => ({
+            ...prev,
+            maximunValueOptions: true,
+          }));
+          setHelperText((prev) => ({
+            ...prev,
+            maximunValueOptions: 'Debe ser un número mayor a 0.',
+          }));
+          return;
+        }
+
+        if (Number(question.stars) >= question.customOptions.length) {
+          setErrorMessage({
+            ...errorMessage,
+            maximunValueOptions: true,
+          });
+          setHelperText({
+            ...helperText,
+            maximunValueOptions:
+              'No puede colocar un valor mayor ni igual al número de opciones que tiene la pregunta.',
+          });
+          return;
+        }
+      }
+
       setErrorMessage({});
       setHelperText({});
       setCustomOptionError([]);
@@ -1002,7 +1235,6 @@ export default function CreateSurvey() {
       handleCloseModal();
       return;
     }
-
     if (information.name.length < 5) {
       setErrorMessage({
         ...errorMessage,
@@ -1036,6 +1268,72 @@ export default function CreateSurvey() {
         name: 'El número máximo de carácteres de 400.',
       });
     }
+    if (limitType === 'fijo' && type.id === 3) {
+      if (information.maximunValueOptions.trim() === '') {
+        setErrorMessage({
+          ...errorMessage,
+          maximunValueOptions: true,
+        });
+        setHelperText({
+          ...helperText,
+          maximunValueOptions: 'Este valor no puede ir vacío',
+        });
+        return;
+      }
+
+      if (isNaN(information.maximunValueOptions)) {
+        setErrorMessage((prev) => ({
+          ...prev,
+          maximunValueOptions: true,
+        }));
+        setHelperText((prev) => ({
+          ...prev,
+          maximunValueOptions: 'Debe ingresar un número.',
+        }));
+        return;
+      }
+
+      if (!Number.isInteger(Number(information.maximunValueOptions))) {
+        setErrorMessage((prev) => ({
+          ...prev,
+          maximunValueOptions: true,
+        }));
+        setHelperText((prev) => ({
+          ...prev,
+          maximunValueOptions: 'Solo se permiten números enteros.',
+        }));
+        return;
+      }
+
+      if (Number(information.maximunValueOptions) <= 0) {
+        setErrorMessage((prev) => ({
+          ...prev,
+          maximunValueOptions: true,
+        }));
+        setHelperText((prev) => ({
+          ...prev,
+          maximunValueOptions: 'Debe ser un número mayor a 0.',
+        }));
+        return;
+      }
+
+      if (
+        Number(information.maximunValueOptions) >=
+        information.customOptions.length
+      ) {
+        setErrorMessage({
+          ...errorMessage,
+          maximunValueOptions: true,
+        });
+        setHelperText({
+          ...helperText,
+          maximunValueOptions:
+            'No puede colocar un valor mayor ni igual al número de opciones que tiene la pregunta.',
+        });
+        return;
+      }
+    }
+
     if (
       !information.customOptions.every((elemento) => elemento !== '') &&
       (type.id === 3 || type.id === 8 || type.id === 15)
@@ -1057,12 +1355,104 @@ export default function CreateSurvey() {
       setOptionRelationalError(relationalOptions);
       return;
     }
+    // ✅ Validación escala bipolar
+    if (type.id === 19) {
+      const value = Number(information.barBipolarValue);
+      if (isNaN(value)) {
+        setErrorMessage((prev) => ({
+          ...prev,
+          bipolar: true,
+        }));
+        setHelperText((prev) => ({
+          ...prev,
+          bipolar: 'Debe ingresar un número.',
+        }));
+        return;
+      }
 
-    // validate category id
-    if (categoryId === '' || categoryId === null) {
-      setCategoryError('Seleccione una categoría');
+      if (!Number.isInteger(value)) {
+        setErrorMessage((prev) => ({
+          ...prev,
+          bipolar: true,
+        }));
+        setHelperText((prev) => ({
+          ...prev,
+          bipolar: 'Solo se permiten números enteros.',
+        }));
+        return;
+      }
 
-      return;
+      // Validación: valor vacío o menor o igual a 0
+      if (information.barBipolarValue === '' || value <= 0) {
+        setErrorMessage((prev) => ({
+          ...prev,
+          bipolar: true,
+        }));
+        setHelperText((prev) => ({
+          ...prev,
+          bipolar: 'El valor debe ser mayor a 0.',
+        }));
+        return;
+      }
+
+      // Validación: valor mayor a 10
+      if (value > 10) {
+        setErrorMessage((prev) => ({
+          ...prev,
+          bipolar: true,
+        }));
+        setHelperText((prev) => ({
+          ...prev,
+          bipolar: 'El valor no puede ser mayor a 10.',
+        }));
+        return;
+      }
+
+      // Validación: extremos vacíos
+      if (
+        information.textsBipolarBar.leftText.trim() === '' ||
+        information.textsBipolarBar.rightText.trim() === ''
+      ) {
+        setErrorMessage((prev) => ({
+          ...prev,
+          bipolarText: true,
+        }));
+        setHelperText((prev) => ({
+          ...prev,
+          bipolarText:
+            'Debe completar los textos de los extremos de la escala bipolar.',
+        }));
+        return;
+      }
+    }
+
+    if (type.id === 22) {
+
+      // Validación: extremos vacíos
+      if (
+        information.textsBipolarBar.leftText.trim() === '' ||
+        information.textsBipolarBar.rightText.trim() === ''
+      ) {
+        setErrorMessage((prev) => ({
+          ...prev,
+          bipolarText: true,
+        }));
+        setHelperText((prev) => ({
+          ...prev,
+          bipolarText:
+            'Debe completar los textos de los extremos de la escala bipolar.',
+        }));
+        return;
+      }
+    }
+    console.log(type.id);
+    if (type.id != 21) {
+      console.log(type.id);
+      if (categoryId === '' || categoryId === null) {
+        setCategoryError('Seleccione una categoría');
+
+        return;
+      }
     }
 
     setErrorMessage({});
@@ -1071,7 +1461,7 @@ export default function CreateSurvey() {
     setOptionRelationalError([]);
 
     // validate questions
-    if (type.id === 1) {
+    if (type.id === 1 || type.id === 21) {
       handleAddQuestion({
         type: 'Texto corto',
         name: information.name,
@@ -1090,6 +1480,7 @@ export default function CreateSurvey() {
         name: information.name,
         description: information.description,
         customOptions: information.customOptions,
+        stars: parseInt(information.maximunValueOptions),
       });
     } else if (type.id === 8) {
       handleAddQuestion({
@@ -1128,6 +1519,21 @@ export default function CreateSurvey() {
         customOptions: information.customOptions,
         selectOptions: information.opcionesInputs,
       });
+    } else if (type.id === 19) {
+      handleAddQuestion({
+        type: 'Evaluación',
+        name: information.name,
+        description: information.description,
+        stars: information.barBipolarValue,
+        textsBipolarBar: information.textsBipolarBar,
+      });
+    } else if (type.id === 22) {
+      handleAddQuestion({
+        type: 'Escala de Opinión',
+        name: information.name,
+        description: information.description,
+        textsBipolarBar: information.textsBipolarBar,
+      });
     }
 
     setInformation({
@@ -1137,6 +1543,17 @@ export default function CreateSurvey() {
       customOptions: Array(2).fill(''),
       opcionesInputs: Array(2).fill(''),
       stars: Array(3).fill(''),
+      rangeOptions: ['Rango 0-6', 'Rango 7-8', 'Rango 9-10'],
+      barBipolarValue: 0,
+      textsBipolarBar: {
+        leftText: '',
+        rightText: '',
+        valueRight: '2',
+        valueLeft: '0',
+      },
+      maximunValueOptions: '',
+      secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
+
     });
     setQuestion(null);
     setType(null);
@@ -1150,6 +1567,7 @@ export default function CreateSurvey() {
    * @param {object} question
    */
   const handleAddQuestion = async (question) => {
+    console.log(question);
     const newQuestion = {
       id: uuid.v4(),
       categoryId,
@@ -1479,6 +1897,16 @@ export default function CreateSurvey() {
                   optionRelationalError={optionRelationalError}
                   questionTypes={questionTypes}
                   handleAutocomplete={handleAutocomplete}
+                  limitType={limitType}
+                  setLimitType={setLimitType}
+                  firstSelect={firstSelect}
+                  setFirstSelect={setFirstSelect}
+                  secondSelect={secondSelect}
+                  setSecondSelect={setSecondSelect}
+                  handleFirstSelectChange={handleFirstSelectChange}
+                  handleSecondSelectChange={handleSecondSelectChange}
+                  startValue={startValue}
+                  secondSelectOptions={secondSelectOptions}
                 />
               </div>
             </div>
@@ -1526,6 +1954,8 @@ export default function CreateSurvey() {
                       handleInformationRelationalOptionsEdit
                     }
                     optionRelationalError={optionRelationalError}
+                    limitType={limitType}
+                    setLimitType={setLimitType}
                   />
                 )}
               </div>
