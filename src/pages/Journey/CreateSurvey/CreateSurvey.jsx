@@ -148,7 +148,6 @@ export default function CreateSurvey() {
 
   //ENPS PROMOTE SQAURES
   const handleFirstSelectChange = (event) => {
-    console.log(information);
     const value = parseInt(event.target.value, 10);
     setFirstSelect(value);
 
@@ -208,7 +207,6 @@ export default function CreateSurvey() {
   const createSurvey = async () => {
     setLoading(true);
     if (errorDayConcurrency || dayConcurrency === '') return;
-    console.log(questions);
     const newSurvey = {
       survey: {
         nameSurvey: data.title,
@@ -255,7 +253,6 @@ export default function CreateSurvey() {
       })),
       demographics: getDemographics(),
     };
-    console.log(newSurvey);
     const { data: createdJourney } = await client.post(
       `/createJourney/${currentCompany.id}`,
       newSurvey
@@ -531,10 +528,6 @@ export default function CreateSurvey() {
       }));
     }
   };
-
-  useEffect(() => {
-    console.log(information);
-  }, [information]);
   
 
   /**
@@ -736,8 +729,6 @@ export default function CreateSurvey() {
   const handleEdit = (index) => {
     setTarget(index);
     setQuestion(questions[index]);
-    console.log('ok');
-    console.log(questions[index]);
     setEdit(true);
   };
 
@@ -1446,9 +1437,7 @@ export default function CreateSurvey() {
         return;
       }
     }
-    console.log(type.id);
     if (type.id != 21) {
-      console.log(type.id);
       if (categoryId === '' || categoryId === null) {
         setCategoryError('Seleccione una categoría');
 
@@ -1562,10 +1551,6 @@ export default function CreateSurvey() {
     setCategoryId(null);
     handleCloseModal();
   };
-
-  useEffect(() => {
-    console.log(errorMessage);
-  }, [errorMessage]);
   
 
   /**
@@ -1574,7 +1559,6 @@ export default function CreateSurvey() {
    * @param {object} question
    */
   const handleAddQuestion = async (question) => {
-    console.log(question);
     const newQuestion = {
       id: uuid.v4(),
       categoryId,
