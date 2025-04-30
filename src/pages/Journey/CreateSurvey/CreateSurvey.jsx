@@ -1461,7 +1461,7 @@ export default function CreateSurvey() {
     setOptionRelationalError([]);
 
     // validate questions
-    if (type.id === 1 || type.id === 21) {
+    if (type.id === 1 || type.id === 21 || type.id === 23) {
       handleAddQuestion({
         type: 'Texto corto',
         name: information.name,
