@@ -21,10 +21,16 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Select from '@mui/material/Select';
 import Slider from '@mui/material/Slider';
+import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import axios from 'axios';
+import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 
 import Deacuerdo from '../../../../assets/icons/deacuerdo.svg';
@@ -121,6 +127,26 @@ const SurveyForm = ({
       [index]: newValue, // 👈 Aquí debes usar newValue, no event.target.value
     }));
   };
+
+  const handleChangeDate = (newValue, index) => {
+    if (!newValue) return;
+  
+    setFormValues((prevFormValues) => {
+      const newFormValues = [...prevFormValues];
+      newFormValues[index].value = newValue.format('YYYY-MM-DD'); // formato a string
+      return newFormValues;
+    });
+  
+    setUnansweredQuestions((prevUnanswered) =>
+      prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
+    );
+  
+    setValues((prevValues) => ({
+      ...prevValues,
+      [index]: newValue,
+    }));
+  };
+  
 
   const marks = [];
 
@@ -300,6 +326,15 @@ const SurveyForm = ({
   const isBipolarSlider = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
       case 'escala bipolar':
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  const isDate = (typeQuestion) => {
+    switch (typeQuestion.toLowerCase()) {
+      case 'fecha':
         return true;
       default:
         return false;
@@ -1477,6 +1512,42 @@ const SurveyForm = ({
                   )}
                 </Select>
               </FormControl>
+            )}
+            {isDate(typeQuestion) && (
+              <>
+                <FormLabel
+                  id={`${questionId}-${typeQuestion}`}
+                  style={{
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '0.8m',
+                    color: unansweredQuestions.includes(index)
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
+                  }}
+                >
+                  {questionName}
+                </FormLabel>
+                <Typography
+                  variant="caption"
+                  style={{ display: 'block', fontStyle: 'italic' }}
+                >
+                  {description}
+                </Typography>
+                <Box sx={{marginTop:'10px'}}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <Stack spacing={3}>
+                    <DesktopDatePicker
+                      label="Ingresa la fecha por favor"
+                      inputFormat="MM/DD/YYYY"
+                      value={values[index] || null}
+                      onChange={(newValue) => handleChangeDate(newValue, index)}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                  </Stack>
+                </LocalizationProvider>
+                </Box>
+              </>
             )}
             {isRelational(typeQuestion) && (
               <Fragment>

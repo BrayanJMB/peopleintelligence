@@ -17,7 +17,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.27.2",
     "classnames": "^2.3.2",
-    "dayjs": "^1.11.7",
+    "dayjs": "^1.11.13",
     "dotenv": "^16.0.3",
     "font-awesome": "^4.7.0",
     "jwt-decode": "^4.0.0",
