@@ -68,15 +68,39 @@ const SurveyForm = ({
   const [visibleQuestions, setVisibleQuestions] = useState(
     questions.map(() => true)
   );
-  const [formValues, setFormValues] = useState(() => {
-    return questions.map((question) => ({
+
+  const initializeFormValue = (question) => {
+    const base = {
       id: question.questionId,
       questionType: question.typeQuestion,
       value: '',
       values: {},
       selectionValues: {},
-    }));
+    };
+  
+    if (isConstantAdd(question.typeQuestion)) {
+      const sliders = {};
+      const values = {};
+  
+      question.options.forEach((option) => {
+        sliders[option.optionName] = 0;
+        values[option.optionName] = false;
+      });
+  
+      return {
+        ...base,
+        sliders,
+        values,
+      };
+    }
+  
+    return base;
+  };
+  
+  const [formValues, setFormValues] = useState(() => {
+    return questions.map((question) => initializeFormValue(question));
   });
+
   const [apiOptions, setApiOptions] = useState({});
   const [isZeroIndexActive, setIsZeroIndexActive] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
@@ -130,23 +154,22 @@ const SurveyForm = ({
 
   const handleChangeDate = (newValue, index) => {
     if (!newValue) return;
-  
+
     setFormValues((prevFormValues) => {
       const newFormValues = [...prevFormValues];
       newFormValues[index].value = newValue.format('YYYY-MM-DD'); // formato a string
       return newFormValues;
     });
-  
+
     setUnansweredQuestions((prevUnanswered) =>
       prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
     );
-  
+
     setValues((prevValues) => ({
       ...prevValues,
       [index]: newValue,
     }));
   };
-  
 
   const marks = [];
 
@@ -232,6 +255,15 @@ const SurveyForm = ({
   const isRange = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
       case 'calificaciones':
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  function isConstantAdd(typeQuestion) {
+    switch (typeQuestion.toLowerCase()) {
+      case 'suma constante':
         return true;
       default:
         return false;
@@ -441,6 +473,9 @@ const SurveyForm = ({
           Object.values(formValue.selectionValues).some(
             (val) => val === '' || val === null
           );
+      } else if (isConstantAdd(formValue.questionType)) {
+        const sum = Object.values(formValue.sliders || {}).reduce((a, b) => a + b, 0);
+        isUnanswered = sum !== 100;
       } else {
         isUnanswered = formValue.value === null || formValue.value === '';
       }
@@ -487,6 +522,63 @@ const SurveyForm = ({
       return newFormValues;
     });
   };
+
+  const handleSliderSumaConstante = (event, questionIndex, optionName) => {
+    const newValue = parseInt(event.target.value);
+  
+    setFormValues((prevFormValues) => {
+      const newFormValues = [...prevFormValues];
+  
+      const currentSliders = { ...newFormValues[questionIndex].sliders } || {};
+      const currentValues = { ...newFormValues[questionIndex].values } || {};
+  
+      const previousValue = currentSliders[optionName] ?? 0;
+      const totalActual = Object.values(currentSliders).reduce(
+        (a, b) => a + b,
+        0
+      );
+  
+      const nuevaSuma = totalActual - previousValue + newValue;
+  
+      const finalValue =
+        nuevaSuma <= 100
+          ? newValue
+          : 100 - (totalActual - previousValue);
+  
+      // ✅ Guardar valor numérico incluso si es 0
+      currentSliders[optionName] = finalValue;
+  
+      // ✅ Marcar como "respondido" incluso si se deja en 0
+      currentValues[optionName] = true;
+  
+      newFormValues[questionIndex].sliders = currentSliders;
+      newFormValues[questionIndex].values = currentValues;
+  
+      // Validar suma total
+      const sumaFinal = Object.values(currentSliders).reduce((a, b) => a + b, 0);
+  
+      setUnansweredQuestions((prev) => {
+        const yaMarcada = prev.includes(questionIndex);
+  
+        if (sumaFinal === 100 && yaMarcada) {
+          return prev.filter((i) => i !== questionIndex);
+        }
+  
+        if (sumaFinal !== 100 && !yaMarcada) {
+          return [...prev, questionIndex];
+        }
+  
+        return prev;
+      });
+  
+      return newFormValues;
+    });
+  };
+  
+
+  useEffect(() => {
+    console.log(unansweredQuestions);
+  }, [unansweredQuestions]);
 
   /**
    * Handles the change of the checkbox.
@@ -1534,18 +1626,20 @@ const SurveyForm = ({
                 >
                   {description}
                 </Typography>
-                <Box sx={{marginTop:'10px'}}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <Stack spacing={3}>
-                    <DesktopDatePicker
-                      label="Ingresa la fecha por favor"
-                      inputFormat="MM/DD/YYYY"
-                      value={values[index] || null}
-                      onChange={(newValue) => handleChangeDate(newValue, index)}
-                      renderInput={(params) => <TextField {...params} />}
-                    />
-                  </Stack>
-                </LocalizationProvider>
+                <Box sx={{ marginTop: '10px' }}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <Stack spacing={3}>
+                      <DesktopDatePicker
+                        label="Ingresa la fecha por favor"
+                        inputFormat="MM/DD/YYYY"
+                        value={values[index] || null}
+                        onChange={(newValue) =>
+                          handleChangeDate(newValue, index)
+                        }
+                        renderInput={(params) => <TextField {...params} />}
+                      />
+                    </Stack>
+                  </LocalizationProvider>
                 </Box>
               </>
             )}
@@ -1577,6 +1671,64 @@ const SurveyForm = ({
                   indexQuestion={index}
                   unansweredQuestions={unansweredQuestions}
                 />
+              </Fragment>
+            )}
+            {isConstantAdd(typeQuestion) && (
+              <Fragment>
+                <FormLabel
+                  id={`${questionId}-${typeQuestion}`}
+                  style={{
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '0.8m',
+                    color: unansweredQuestions.includes(index)
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
+                  }}
+                >
+                  {questionName}
+                </FormLabel>
+                <Typography
+                  variant="caption"
+                  style={{ display: 'block', fontStyle: 'italic' }}
+                >
+                  {description}
+                </Typography>
+                <Box sx={{ mt: 2 }}>
+                  {options.map(({ optionName }) => {
+                    const currentValue =
+                      formValues[index].sliders?.[optionName] ?? 0;
+
+                    return (
+                      <Box key={optionName} sx={{ mb: 2 }}>
+                        <Typography variant="body2" gutterBottom>
+                          {optionName}: {currentValue}
+                        </Typography>
+                        <Slider
+                          value={currentValue}
+                          min={0}
+                          max={100}
+                          step={1}
+                          onChange={(e) =>
+                            handleSliderSumaConstante(e, index, optionName)
+                          }
+                          valueLabelDisplay="auto"
+                        />
+                      </Box>
+                    );
+                  })}
+                </Box>
+
+                <Typography variant="subtitle2" sx={{ mt: 1 }}>
+                  Total asignado:{' '}
+                  {Object.values(formValues[index].sliders || {}).reduce(
+                    (a, b) => a + b,
+                    0
+                  )}{' '}
+                  / 100
+                </Typography>
+
+                <Divider variant="middle" />
               </Fragment>
             )}
           </FormControl>
