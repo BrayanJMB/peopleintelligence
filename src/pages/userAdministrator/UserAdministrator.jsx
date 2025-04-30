@@ -280,7 +280,6 @@ export default function UserAdministrator() {
   };
 
   const handleSubmittedCreateDialog = async (formValues) => {
-    console.log(currentCreate.type);
     if (currentCreate.type === 'user') {
       try {
         await postUserAPI({
@@ -322,7 +321,6 @@ export default function UserAdministrator() {
     }
 
     if (currentCreate.type === 'userCompany') {
-      console.log(formValues);
       try {
         await postCompaniesUserAPI({
           userId: formValues.userRolChange,
@@ -334,7 +332,6 @@ export default function UserAdministrator() {
           variant: 'success',
         });
       } catch (e) {
-        console.log('Error al agregar la compañía:', e);
         enqueueSnackbar('Hubo un error al agregar la compañia', {
           variant: 'error',
         });
