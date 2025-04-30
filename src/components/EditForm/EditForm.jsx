@@ -495,10 +495,15 @@ const EditForm = ({
                     onChange={handleInformation}
                     size="small"
                     variant="standard"
-                    style={{ width: '45%' }}
                     error={errorMessage.bipolarText}
+                    fullWidth
+                    inputProps={{
+                      maxLength: 120, // ✅ Limita la entrada a 120 caracteres
+                    }}
                     helperText={
-                      errorMessage.bipolarText ? helperText.bipolarText : ''
+                      errorMessage.bipolarText
+                        ? helperText.bipolarText
+                        : `${question.textsBipolarBar.leftText.length}/120` // ✅ Muestra el contador
                     }
                   />
                 </div>
@@ -515,15 +520,131 @@ const EditForm = ({
                     onChange={handleInformation}
                     size="small"
                     variant="standard"
-                    style={{ width: '45%' }}
                     error={errorMessage.bipolarText}
+                    fullWidth
+                    inputProps={{
+                      maxLength: 120, // ✅ Limita la entrada a 120 caracteres
+                    }}
                     helperText={
-                      errorMessage.bipolarText ? helperText.bipolarText : ''
+                      errorMessage.bipolarText
+                        ? helperText.bipolarText
+                        : `${question.textsBipolarBar.rightText.length}/120` // ✅ Muestra el contador
                     }
                   />
                 </div>
               </div>
             </Fragment>
+          )}
+
+          {/* Escala Opinion*/}
+          {question.typeId === 22 && (
+            <div className={styles.top}>
+              {/* Textos para los extremos de la escala */}
+              <div
+                style={{
+                  marginTop: '4px',
+                }}
+              >
+                <TextField
+                  label="Texto extremo izquierdo"
+                  placeholder="Ej: Totalmente en desacuerdo"
+                  value={question.textsBipolarBar.leftText}
+                  name="textsBipolarBar.leftText"
+                  onChange={handleInformation}
+                  size="small"
+                  variant="standard"
+                  style={{ width: '45%' }}
+                  error={errorMessage.bipolarText}
+                  inputProps={{
+                    maxLength: 25, // ✅ Limita la entrada a 120 caracteres
+                  }}
+                  helperText={
+                    errorMessage.bipolarText
+                      ? helperText.bipolarText
+                      : `${question.textsBipolarBar.leftText.length}/25` // ✅ Muestra el contador
+                  }
+                />
+              </div>
+              <div
+                style={{
+                  marginTop: '4px',
+                }}
+              >
+                <TextField
+                  label="Texto extremo derecho"
+                  placeholder="Ej: Totalmente de acuerdo"
+                  value={question.textsBipolarBar.rightText}
+                  name="textsBipolarBar.rightText"
+                  onChange={handleInformation}
+                  size="small"
+                  variant="standard"
+                  style={{ width: '45%' }}
+                  error={errorMessage.bipolarText}
+                  inputProps={{
+                    maxLength: 25, // ✅ Limita la entrada a 120 caracteres
+                  }}
+                  helperText={
+                    errorMessage.bipolarText
+                      ? helperText.bipolarText
+                      : `${question.textsBipolarBar.rightText.length}/25` // ✅ Muestra el contador
+                  }
+                />
+              </div>
+              <div className={styles.input} style={{ marginTop: '1rem' }}>
+                <FormControl
+                  fullWidth
+                  size="small"
+                  style={{ marginBottom: '1rem' }}
+                >
+                  <InputLabel id="first-select-label">
+                    Seleccionar 0 o 1
+                  </InputLabel>
+                  <Select
+                    labelId="first-select-label"
+                    value={
+                      [0, 1].includes(
+                        Number(question.textsBipolarBar.valueLeft)
+                      )
+                        ? question.textsBipolarBar.valueLeft
+                        : '0'
+                    }
+                    label="Seleccionar 0 o 1"
+                    onChange={handleInformation}
+                    name="textsBipolarBar.valueLeft"
+                  >
+                    <MenuItem value={'0'}>0</MenuItem>
+                    <MenuItem value={'1'}>1</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth size="small">
+                  <InputLabel id="second-select-label">
+                    Seleccionar un número
+                  </InputLabel>
+                  <Select
+                    labelId="second-select-label"
+                    value={
+                      question.secondSelectOptions.includes(
+                        question.textsBipolarBar.valueRight
+                      )
+                        ? question.textsBipolarBar.valueRight
+                        : question.secondSelectOptions.length > 0
+                        ? question.secondSelectOptions[0].toString()
+                        : ''
+                    }
+                    label="Seleccionar un número"
+                    onChange={handleInformation}
+                    name="textsBipolarBar.valueRight"
+                  >
+                    {question.secondSelectOptions.map((num) => (
+                      <MenuItem key={num} value={num}>
+                        {num}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </div>
+            </div>
           )}
         </div>
       </div>
