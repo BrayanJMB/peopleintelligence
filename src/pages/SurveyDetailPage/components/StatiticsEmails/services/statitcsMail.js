@@ -18,7 +18,10 @@ export const fetchStaticsMailReminderAPI = async (idSurvey) => {
     return response.data; // 👈 Retornas directamente el "data" limpio
   };
 
-  export const getDownloadMaisAPI = async (idSurvey, date, tipoEnvio) => {
-    const response = await axios.get(`Mail/DownloadMails/${idSurvey}/${date}/${tipoEnvio}`);
-    return response.data; // 👈 Retornas directamente el "data" limpio
+  export const getDownloadMailsAPI = async (idSurvey, date, tipoEnvio) => {
+    const response = await axios.get(`Mail/DownloadMails/${idSurvey}/${date}/${tipoEnvio}`, {
+      responseType: 'blob', // 👈 importante
+    });
+  
+    return response.data; // ✅ Aquí sí, esto es el blob del archivo
   };
