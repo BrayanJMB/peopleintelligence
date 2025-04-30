@@ -1094,8 +1094,7 @@ export default function CreateSurvey() {
         }
       }
 
-      if (question.typeId === 19 || question.typeId === 22) {
-        
+      if (question.typeId === 19) {
         const value = Number(question.stars);
         if (isNaN(value)) {
           setErrorMessage((prev) => ({
@@ -1146,7 +1145,8 @@ export default function CreateSurvey() {
           }));
           return;
         }
-
+      }
+      if( question.typeId === 22){
         // Validación: extremos vacíos
         if (
           question.textsBipolarBar.leftText.trim() === '' ||
@@ -1164,7 +1164,8 @@ export default function CreateSurvey() {
           return;
         }
       }
-      if (limitType === 'fijo') {
+
+      if (limitType === 'fijo' && type.id === 3) {
         if (question.stars.trim() === '') {
           setErrorMessage({
             ...errorMessage,
@@ -1533,6 +1534,7 @@ export default function CreateSurvey() {
         name: information.name,
         description: information.description,
         textsBipolarBar: information.textsBipolarBar,
+        secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
       });
     }
 
@@ -1560,6 +1562,11 @@ export default function CreateSurvey() {
     setCategoryId(null);
     handleCloseModal();
   };
+
+  useEffect(() => {
+    console.log(errorMessage);
+  }, [errorMessage]);
+  
 
   /**
    * Add new question.

@@ -39,7 +39,7 @@ import { InvitationSection } from './components/InvitationSection';
 import {
   fetchStaticsMailReminderAPI,
   fetchStaticsMailSenderAPI,
-  getDownloadMaisAPI,
+  getDownloadMailsAPI ,
 } from './services/statitcsMail';
 export default function StaticsEmails({
   openDialog,
@@ -136,8 +136,26 @@ export default function StaticsEmails({
   };
 
   const getDownloadMails = async (idSurvey, date, sendType) => {
-    const data = await getDownloadMaisAPI(idSurvey, date, sendType);
+    try {
+      const blob = await getDownloadMailsAPI(idSurvey, date, sendType);
+  
+      const url = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement('a');
+      link.href = url;
+  
+      // Define el nombre del archivo dinámico si quieres
+      const fileName = `mails_${idSurvey}_${date}_${sendType}.xlsx`;
+  
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error descargando archivo:', error);
+    }
   };
+  
 
   useEffect(() => {
     fecthMailSender();
