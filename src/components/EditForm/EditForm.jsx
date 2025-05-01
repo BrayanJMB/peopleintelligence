@@ -645,6 +645,81 @@ const EditForm = ({
               </div>
             </div>
           )}
+
+          {question.typeId === 24 && (
+            <>
+              <div className={styles.top}>
+                {question.customOptions.map((val, key) => {
+                  return (
+                    <div
+                      className={styles.option}
+                      key={key}
+                      style={{
+                        marginTop: '10px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          padding: '3px 9px',
+                          backgroundColor: '#F0F2F5',
+                          borderRadius: '4px',
+                          textAlign: 'center',
+                          marginRight: '15px',
+                          fontSize: '14px',
+                          color: 'rgb(134, 140, 204)',
+                        }}
+                      >
+                        {key + 1}
+                      </div>
+                      <TextField
+                        id="outlined-name"
+                        variant="standard"
+                        placeholder="Añadir opción..."
+                        value={question.customOptions[key]}
+                        onChange={handleInformationOptions(key)}
+                        error={customOptionError[key]}
+                        helperText={
+                          customOptionError[key]
+                            ? 'La opción no puede estar vacía'
+                            : ''
+                        }
+                        InputProps={{
+                          disableUnderline: true,
+                        }}
+                        fullWidth
+                        size="small"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+              {question.customOptions.length < 10 ? (
+                <Button
+                  variant="text"
+                  startIcon={<AddCircleOutlineIcon />}
+                  onClick={handleAddOption}
+                  style={{ backgroundColor: '#F7F7F7', width: '255px' }}
+                >
+                  Añadir opción
+                </Button>
+              ) : null}
+              {question.customOptions.length >= 3 ? (
+                <Button
+                  variant="text"
+                  startIcon={<AddCircleOutlineIcon />}
+                  /*}
+                  onClick={() =>
+                    handleRemoveOption(
+                      question.customOptions.length - 1
+                    )
+                  }*/
+                  style={{ backgroundColor: '#F7F7F7', width: '255px' }}
+                >
+                  Eliminar opción
+                </Button>
+              ) : null}
+            </>
+          )}
         </div>
       </div>
       {(question.typeId && question.typeId) !== 21 && (
