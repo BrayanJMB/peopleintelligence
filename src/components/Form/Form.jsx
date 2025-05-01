@@ -1046,6 +1046,122 @@ export default function Form(props) {
             </div>
           </div>
         );
+      case 24:
+        return (
+          <div className={styles.top}>
+            <div className={styles.question}>
+              <div className={styles.number}>{`Q${props.questions}`}</div>
+              <div className={styles.input}>
+                <TextField
+                  id="outlined-name"
+                  variant="standard"
+                  label="Añadir prequnta"
+                  placeholder="Añadir prequnta aquí..."
+                  value={props.information.name}
+                  name="name"
+                  onChange={props.handleInformation}
+                  error={props.errorMessage.name}
+                  helperText={props.helperText.name}
+                  fullWidth
+                  size="small"
+                />
+              </div>
+            </div>
+            <div className={styles.input}>
+              <TextField
+                id="outlined-name"
+                label="Añadir descripción"
+                placeholder="Añadir descripción aquí (opcional)..."
+                InputProps={{
+                  inputComponent: TextareaAutosize,
+                  inputProps: {
+                    style: {
+                      height: '80px',
+                    },
+                  },
+                }}
+                value={props.information.description}
+                style={{
+                  width: '100%',
+                  marginTop: '0.5rem',
+                }}
+                name="description"
+                onChange={props.handleInformation}
+              />
+            </div>
+            {/* Textos para los extremos de la escala */}
+            
+            <div>
+              {props.information.customOptions.map((val, key) => {
+                return (
+                  <div
+                    className={styles.option}
+                    key={key}
+                    style={{
+                      marginTop: '10px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        padding: '3px 9px',
+                        backgroundColor: '#F0F2F5',
+                        borderRadius: '4px',
+                        textAlign: 'center',
+                        marginRight: '15px',
+                        fontSize: '14px',
+                        color: 'rgb(134, 140, 204)',
+                      }}
+                    >
+                      {key + 1}
+                    </div>
+                    <TextField
+                      id="outlined-name"
+                      variant="standard"
+                      placeholder="Añadir opción..."
+                      value={props.information.customOptions[key]}
+                      onChange={props.handleinformationoptions(key)}
+                      error={props.customOptionError[key]}
+                      helperText={
+                        props.customOptionError[key]
+                          ? 'La opción no puede estar vacía'
+                          : ''
+                      }
+                      InputProps={{
+                        disableUnderline: true,
+                      }}
+                      fullWidth
+                      size="small"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+            {props.information.customOptions.length < 10 ? (
+              <Button
+                variant="text"
+                startIcon={<AddCircleOutlineIcon />}
+                onClick={props.handleaddoption}
+                style={{ backgroundColor: '#F7F7F7', width: '255px' }}
+              >
+                Añadir opción
+              </Button>
+            ) : null}
+            {props.information.customOptions.length >= 3 ? (
+              <Button
+                variant="text"
+                startIcon={<AddCircleOutlineIcon />}
+                onClick={() =>
+                  props.handleRemoveOption(
+                    props.information.customOptions.length - 1
+                  )
+                }
+                style={{ backgroundColor: '#F7F7F7', width: '255px' }}
+              >
+                Eliminar opción
+              </Button>
+            ) : null}
+          </div>
+        );
       default:
         return null;
     }

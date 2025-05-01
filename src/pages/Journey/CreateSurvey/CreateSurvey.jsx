@@ -1053,7 +1053,7 @@ export default function CreateSurvey() {
 
       if (
         question.customOptions !== null &&
-        (question.typeId === 3 || question.typeId === 8) &&
+        (question.typeId === 3 || question.typeId === 8 || question.typeId === 24) &&
         question.customOptions.some((option) => option === '')
       ) {
         setCustomOptionError(
@@ -1328,7 +1328,7 @@ export default function CreateSurvey() {
 
     if (
       !information.customOptions.every((elemento) => elemento !== '') &&
-      (type.id === 3 || type.id === 8 || type.id === 15)
+      (type.id === 3 || type.id === 8 || type.id === 15 || type.id === 24)
     ) {
       let checkCustomOptions = information.customOptions.map(
         (elemento) => elemento === ''
@@ -1524,6 +1524,13 @@ export default function CreateSurvey() {
         description: information.description,
         textsBipolarBar: information.textsBipolarBar,
         secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
+      });
+    } else if (type.id === 24) {
+      handleAddQuestion({
+        type: 'Suma Constante',
+        name: information.name,
+        description: information.description,
+        customOptions: information.customOptions,
       });
     }
 
