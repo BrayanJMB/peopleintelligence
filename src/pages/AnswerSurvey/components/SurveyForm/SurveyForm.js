@@ -289,7 +289,7 @@ const SurveyForm = ({
   const isInformativeText = (typeQuestion) => {
     if (!typeQuestion) return false; // protección extra
     switch (typeQuestion.toLowerCase()) {
-      case 'texto infomativo':
+      case 'texto informativo':
         return true;
       default:
         return false;
