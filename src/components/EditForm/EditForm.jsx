@@ -707,11 +707,12 @@ const EditForm = ({
                 <Button
                   variant="text"
                   startIcon={<AddCircleOutlineIcon />}
+                  /*}
                   onClick={() =>
                     handleRemoveOption(
-                      information.customOptions.length - 1
+                      question.customOptions.length - 1
                     )
-                  }
+                  }*/
                   style={{ backgroundColor: '#F7F7F7', width: '255px' }}
                 >
                   Eliminar opción
