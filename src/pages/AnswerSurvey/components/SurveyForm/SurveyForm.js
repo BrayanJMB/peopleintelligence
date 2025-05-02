@@ -1674,7 +1674,6 @@ const SurveyForm = ({
                 >
                   {description}
                 </Typography>
-                <Divider variant="middle" />
                 <RelationalQuestion
                   options={options}
                   selectOptions={selectOptions}
@@ -1682,7 +1681,7 @@ const SurveyForm = ({
                   indexQuestion={index}
                   unansweredQuestions={unansweredQuestions}
                 />
-                <Divider variant="middle" />
+                <Divider variant="middle" sx={{marginTop="5px"}}/>
               </Fragment>
             )}
             {isConstantAdd(typeQuestion) && (
