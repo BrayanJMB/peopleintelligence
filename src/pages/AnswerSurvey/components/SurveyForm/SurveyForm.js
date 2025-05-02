@@ -852,7 +852,7 @@ const SurveyForm = ({
       }
     }
     // Si la pregunta actual es visible, y no se encontró ninguna visible antes en el grupo,
-    // es la primera visible.
+    // es la primera visible.overflowY
     return visibleQuestions[index];
   };
 
@@ -906,7 +906,7 @@ const SurveyForm = ({
                 visibleQuestions
               )
                 ? '0'
-                : '4em',
+                : '2em',
               marginBottom: '1.1em',
               width: '100%',
               display:
@@ -1214,7 +1214,7 @@ const SurveyForm = ({
                   onChange={(event) => handleRadioChange(event, index)}
                   error={unansweredQuestions.includes(index)}
                 />
-                <Divider variant="middle" />
+                <Divider variant="middle" sx={{marginTop:'10px'}}/>
               </Fragment>
             )}
             {isInformativeText(typeQuestion) && (
@@ -1497,10 +1497,34 @@ const SurveyForm = ({
                   }
                   valueLabelDisplay="on"
                   marks={[
-                    { value: -Math.abs(score), label: '' },
+                    {
+                      value: -Math.abs(score),
+                      label: String(-Math.abs(score)),
+                    },
                     { value: 0, label: '' },
-                    { value: Math.abs(score), label: '' },
+                    { value: Math.abs(score), label: String(Math.abs(score)) },
                   ]}
+                  sx={{
+                    '& .MuiSlider-track': {
+                      backgroundColor:
+                        (values[index] || 0) === 0 ? 'transparent' : '#0288d1', // solo azul
+                      height: 8,
+                      borderRadius: 4,
+                      border: 'none', // ✅ quita borde
+                    },
+                    '& .MuiSlider-rail': {
+                      backgroundColor: '#b3e5fc', // azul clarito
+                      height: 8,
+                      borderRadius: 4,
+                      border: 'none', // ✅ por si acaso
+                    },
+                    '& .MuiSlider-thumb': {
+                      width: 20,
+                      height: 20,
+                      border: 'none', // ✅ sin borde también en el thumb
+                      boxShadow: 'none', // ✅ sin sombra
+                    },
+                  }}
                 />
                 <Box
                   display={{ xs: 'flex', md: 'none' }} // ✅ Solo visible en móvil
@@ -1525,7 +1549,7 @@ const SurveyForm = ({
                     >
                       ➔ {/* ✅ Una flechita bonita */}
                     </Box>
-                    {textBipolarBar.rightText}
+                    {textBipolarBar.leftText}
                   </Typography>
 
                   <Typography
@@ -1543,7 +1567,7 @@ const SurveyForm = ({
                     >
                       ➔ {/* ✅ Una flechita bonita */}
                     </Box>
-                    {textBipolarBar.leftText}
+                    {textBipolarBar.rightText}
                   </Typography>
                 </Box>
                 <Box
