@@ -852,12 +852,12 @@ const SurveyForm = ({
       }
     }
     // Si la pregunta actual es visible, y no se encontró ninguna visible antes en el grupo,
-    // es la primera visible.
+    // es la primera visible.overflowY
     return visibleQuestions[index];
   };
 
   return (
-    <div className={styles.SurveyForm}>
+    <div className={styles.SurveyForm}  style={{ maxHeight: '90vh', overflowY: 'auto' }}>
       {activeStep === 0 && (
         <>
           <Typography
@@ -1525,7 +1525,7 @@ const SurveyForm = ({
                     >
                       ➔ {/* ✅ Una flechita bonita */}
                     </Box>
-                    {textBipolarBar.rightText}
+                    {textBipolarBar.leftText}
                   </Typography>
 
                   <Typography
@@ -1543,7 +1543,7 @@ const SurveyForm = ({
                     >
                       ➔ {/* ✅ Una flechita bonita */}
                     </Box>
-                    {textBipolarBar.leftText}
+                    {textBipolarBar.rightText}
                   </Typography>
                 </Box>
                 <Box
