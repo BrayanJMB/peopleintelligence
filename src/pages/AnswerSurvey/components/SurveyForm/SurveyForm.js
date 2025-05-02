@@ -1451,7 +1451,7 @@ const SurveyForm = ({
                   </Box>
                 </Box>
                 <Divider variant="middle" sx={{
-                  marginTop:"5px"
+                  marginTop:'5px',
                 }}/>
               </>
             )}
@@ -1681,7 +1681,7 @@ const SurveyForm = ({
                   indexQuestion={index}
                   unansweredQuestions={unansweredQuestions}
                 />
-                <Divider variant="middle" sx={{marginTop:"5px"}}/>
+                <Divider variant="middle" sx={{marginTop:'5px'}}/>
               </Fragment>
             )}
             {isConstantAdd(typeQuestion) && (
