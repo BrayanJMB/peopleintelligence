@@ -989,7 +989,11 @@ const SurveyForm = ({
                     fontSize: '1.1',
                     fontWeight: 'bold',
                     marginBottom: '0.8m',
+                    color: unansweredQuestions.includes(index)
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
                   }}
+                  ref={questionRefs[questionId]}
                 >
                   {questionName}
                 </FormLabel>
@@ -1010,6 +1014,7 @@ const SurveyForm = ({
                 >
                   {options.map(({ numberOption, optionName }) => (
                     <FormControlLabel
+                      ref={questionRefs[questionId]}
                       key={numberOption}
                       value={optionName}
                       control={<Radio />}
@@ -1307,6 +1312,7 @@ const SurveyForm = ({
                       ? 'red'
                       : 'rgba(0, 0, 0, 0.6)',
                   }}
+                  ref={questionRefs[questionId]}
                 >
                   {questionName}
                 </FormLabel>
@@ -1450,9 +1456,12 @@ const SurveyForm = ({
                     </Typography>
                   </Box>
                 </Box>
-                <Divider variant="middle" sx={{
-                  marginTop:'5px',
-                }}/>
+                <Divider
+                  variant="middle"
+                  sx={{
+                    marginTop: '5px',
+                  }}
+                />
               </>
             )}
             {isBipolarSlider(typeQuestion) && (
@@ -1467,6 +1476,7 @@ const SurveyForm = ({
                       ? 'red'
                       : 'rgba(0, 0, 0, 0.6)',
                   }}
+                  ref={questionRefs[questionId]}
                 >
                   {questionName}
                 </FormLabel>
@@ -1553,7 +1563,7 @@ const SurveyForm = ({
                       wordBreak: 'break-word', // rompe la palabra si es muy larga
                     }}
                   >
-                    {textBipolarBar.rightText}
+                    {textBipolarBar.leftText}
                   </Typography>
 
                   <Typography
@@ -1566,10 +1576,15 @@ const SurveyForm = ({
                       wordBreak: 'break-word', // rompe la palabra si es muy larga
                     }}
                   >
-                    {textBipolarBar.leftText}
+                    {textBipolarBar.rightText}
                   </Typography>
-                  <Divider variant="middle" />
                 </Box>
+                <Divider
+                  variant="middle"
+                  sx={{
+                    marginTop: '5px',
+                  }}
+                />
               </>
             )}
 
@@ -1627,6 +1642,7 @@ const SurveyForm = ({
                       ? 'red'
                       : 'rgba(0, 0, 0, 0.6)',
                   }}
+                  ref={questionRefs[questionId]}
                 >
                   {questionName}
                 </FormLabel>
@@ -1665,6 +1681,7 @@ const SurveyForm = ({
                       ? 'red'
                       : 'rgba(0, 0, 0, 0.6)',
                   }}
+                  ref={questionRefs[questionId]}
                 >
                   {questionName}
                 </FormLabel>
@@ -1681,7 +1698,7 @@ const SurveyForm = ({
                   indexQuestion={index}
                   unansweredQuestions={unansweredQuestions}
                 />
-                <Divider variant="middle" sx={{marginTop:'5px'}}/>
+                <Divider variant="middle" sx={{ marginTop: '10px' }} />
               </Fragment>
             )}
             {isConstantAdd(typeQuestion) && (
@@ -1696,6 +1713,7 @@ const SurveyForm = ({
                       ? 'red'
                       : 'rgba(0, 0, 0, 0.6)',
                   }}
+                  ref={questionRefs[questionId]}
                 >
                   {questionName}
                 </FormLabel>
