@@ -123,7 +123,6 @@ const SurveyForm = ({
     if (verifyCurrentStepAnswersSelected()) {
       if (activeStep + 1 !== totalOfSteps()) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        window.scrollTo({ top: 0, behavior: 'smooth' }); // 👈 Aquí
         return;
       }
       handleNextAnswer();
@@ -580,9 +579,6 @@ const SurveyForm = ({
     });
   };
 
-  useEffect(() => {
-    console.log(unansweredQuestions);
-  }, [unansweredQuestions]);
 
   /**
    * Handles the change of the checkbox.
@@ -821,6 +817,26 @@ const SurveyForm = ({
       }))
     );
   }, []);
+
+  useEffect(() => {
+    // Encuentra la primera pregunta visible en el nuevo paso
+    const startIndex = activeStep * 5;
+    const endIndex = (activeStep + 1) * 5;
+    for (let i = startIndex; i < endIndex; i++) {
+      const question = questions[i];
+      if (question && visibleQuestions[i]) {
+        const ref = questionRefs[question.questionId];
+        if (ref?.current) {
+          ref.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+          break;
+        }
+      }
+    }
+  }, [activeStep]);
+  
 
   let firstUncheckedIndex = -1;
   let firstUnansweredQuestionIndex = unansweredQuestions[0];
@@ -1253,6 +1269,7 @@ const SurveyForm = ({
             {isSlider(typeQuestion) && (
               <>
                 <FormLabel
+                  ref={questionRefs[questionId]}
                   id={`${questionId}-${typeQuestion}`}
                   style={{
                     fontSize: '1.1',
@@ -1271,9 +1288,8 @@ const SurveyForm = ({
                 >
                   {description}
                 </Typography>
-                <Box width="100%" ref={questionRefs[questionId]}>
+                <Box width="100%" >
                   <Slider
-                    ref={questionRefs[questionId]}
                     value={values[index] || 0}
                     min={0}
                     step={1}
