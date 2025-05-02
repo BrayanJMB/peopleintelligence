@@ -1242,7 +1242,6 @@ const SurveyForm = ({
                     {parseTextWithStyles(description)}
                   </Typography>
                 </div>
-                <Divider variant="middle" />
               </Fragment>
             )}
 
@@ -1450,8 +1449,10 @@ const SurveyForm = ({
                       {textBipolarBar.rightText}
                     </Typography>
                   </Box>
-                  <Divider variant="middle" />
                 </Box>
+                <Divider variant="middle" sx={{
+                  marginTop:"5px"
+                }}/>
               </>
             )}
             {isBipolarSlider(typeQuestion) && (
