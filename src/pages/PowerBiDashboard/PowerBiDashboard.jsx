@@ -53,7 +53,6 @@ export default function PowerBiDashboard() {
       <Navbar />
       <IconSidebar />
       <div style={{ backgroundColor: 'white' }}>
-        <Stack spacing={2}>
           <div className={styles.content}>
             <div className={styles.dashboards}>
               {powerBi.companyDashboards.map((val, index) => {
@@ -90,7 +89,6 @@ export default function PowerBiDashboard() {
               <Pagination count={10} page={page} onChange={handleChange} />
             </div>
           </div>
-        </Stack>
       </div>
     </Box>
   );
