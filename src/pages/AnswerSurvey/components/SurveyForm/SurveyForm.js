@@ -1450,7 +1450,9 @@ const SurveyForm = ({
                     </Typography>
                   </Box>
                 </Box>
-                <Divider variant="middle" />
+                <Divider variant="middle" sx={{
+                  marginTop:"5px"
+                }}/>
               </>
             )}
             {isBipolarSlider(typeQuestion) && (
