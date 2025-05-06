@@ -1,21 +1,21 @@
-import React, { Fragment } from "react";
-import { useState, useEffect } from "react";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { Autocomplete } from "@mui/material";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import FormControl from "@mui/material/FormControl";
-import FormHelperText from "@mui/material/FormHelperText";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import TextareaAutosize from "@mui/material/TextareaAutosize";
-import TextField from "@mui/material/TextField";
-import PropTypes from "prop-types";
+import React, { Fragment } from 'react';
+import { useEffect,useState } from 'react';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { Autocomplete } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import TextareaAutosize from '@mui/material/TextareaAutosize';
+import TextField from '@mui/material/TextField';
+import PropTypes from 'prop-types';
 
-import { RelationalQuestionsEdit } from "../Questions/RelationQuestion/RelationalQuestionEdit";
+import { RelationalQuestionsEdit } from '../Questions/RelationQuestion/RelationalQuestionEdit';
 
-import styles from "./EditForm.module.css";
+import styles from './EditForm.module.css';
 
 /**
  * Edit form component for create survey page.
@@ -56,7 +56,7 @@ const EditForm = ({
   customOptionError,
   ...props
 }) => {
-  const [categoryId, setCategoryId] = useState("");
+  const [categoryId, setCategoryId] = useState('');
   /**
    * Handle category id change.
    *
@@ -87,7 +87,7 @@ const EditForm = ({
   };
 
   const getFilteredOptions = (uniqueId, questionNumber) => {
-    const lastDashIndex = uniqueId.lastIndexOf("-");
+    const lastDashIndex = uniqueId.lastIndexOf('-');
     const currentQuestionId = uniqueId.substring(0, lastDashIndex);
     // Extracción de todas las ids de preguntas ya seleccionadas, excluyendo la id de la pregunta actual
     const selectedValues = Object.values(props.selections)
@@ -104,15 +104,15 @@ const EditForm = ({
 
     // Definir el objeto "pregunta final"
     const preguntaFinal = {
-      id: "cc12a501-cf65-4f2f-bd23-44c79e5c4a64",
+      id: 'cc12a501-cf65-4f2f-bd23-44c79e5c4a64',
       categoryId: 6,
       typeId: 1,
       questionId: null,
       questionOptions: [],
       questionNumber: 0,
-      type: "Texto corto",
-      name: "Fin de la encuesta",
-      description: "321321",
+      type: 'Texto corto',
+      name: 'Fin de la encuesta',
+      description: '321321',
       customOptions: undefined,
     };
 
@@ -150,7 +150,7 @@ const EditForm = ({
                 InputProps={{
                   inputComponent: TextareaAutosize,
                   ...(question.typeId == 21
-                    ? { style: { height: "80px" } }
+                    ? { style: { height: '80px' } }
                     : {}),
                 }}
               />
@@ -165,7 +165,7 @@ const EditForm = ({
                 inputComponent: TextareaAutosize,
                 inputProps: {
                   style: {
-                    height: "80px",
+                    height: '80px',
                   },
                 },
               }}
@@ -174,25 +174,25 @@ const EditForm = ({
               onChange={handleInformation}
               placeholder="Añadir descripción aquí (opcional)..."
               style={{
-                width: "100%",
-                marginTop: "0.5rem",
+                width: '100%',
+                marginTop: '0.5rem',
               }}
               value={question.description}
             />
             {question.typeId == 21 && (
               <div
                 style={{
-                  backgroundColor: "#e8f0fe",
-                  padding: "0.5em",
-                  borderRadius: "6px",
-                  marginTop: "0.5rem",
-                  fontSize: "0.85rem",
-                  color: "#333",
+                  backgroundColor: '#e8f0fe',
+                  padding: '0.5em',
+                  borderRadius: '6px',
+                  marginTop: '0.5rem',
+                  fontSize: '0.85rem',
+                  color: '#333',
                 }}
               >
                 Para darle más estilo a tus textos puedes usar, los siguientes
                 comandos:
-                <ul style={{ margin: "0.3em 0 0 1em", padding: 0 }}>
+                <ul style={{ margin: '0.3em 0 0 1em', padding: 0 }}>
                   <li>
                     <b>**negrita**</b> → <strong>negrita</strong>
                   </li>
@@ -200,7 +200,7 @@ const EditForm = ({
                     <b>*cursiva*</b> → <em>cursiva</em>
                   </li>
                   <li>
-                    <b>***negrita cursiva***</b> →{" "}
+                    <b>***negrita cursiva***</b> →{' '}
                     <strong>
                       <em>negrita cursiva</em>
                     </strong>
@@ -217,13 +217,13 @@ const EditForm = ({
                 <div className={styles.option} key={key}>
                   <div
                     style={{
-                      backgroundColor: "#fce4e4",
-                      borderRadius: "4px",
-                      color: "#808080",
-                      fontSize: "12px",
-                      marginRight: "15px",
-                      padding: "3px 9px",
-                      textAlign: "center",
+                      backgroundColor: '#fce4e4',
+                      borderRadius: '4px',
+                      color: '#808080',
+                      fontSize: '12px',
+                      marginRight: '15px',
+                      padding: '3px 9px',
+                      textAlign: 'center',
                     }}
                   >
                     {key + 1}
@@ -254,20 +254,20 @@ const EditForm = ({
                     <div className={styles.option} key={key}>
                       <div
                         style={{
-                          backgroundColor: "#F0F2F5",
-                          borderRadius: "4px",
-                          color: "rgb(134, 140, 204)",
-                          fontSize: "14px",
-                          marginRight: "15px",
-                          padding: "3px 9px",
-                          textAlign: "center",
+                          backgroundColor: '#F0F2F5',
+                          borderRadius: '4px',
+                          color: 'rgb(134, 140, 204)',
+                          fontSize: '14px',
+                          marginRight: '15px',
+                          padding: '3px 9px',
+                          textAlign: 'center',
                         }}
                       >
                         {key + 1}
                       </div>
                       <TextField
                         fullWidth
-                        id={"option-{key}"}
+                        id={'option-{key}'}
                         InputProps={{
                           disableUnderline: true,
                         }}
@@ -279,8 +279,8 @@ const EditForm = ({
                         error={customOptionError[key]}
                         helperText={
                           customOptionError[key]
-                            ? "La opción no puede estar vacía"
-                            : ""
+                            ? 'La opción no puede estar vacía'
+                            : ''
                         }
                       />
                     </div>
@@ -320,7 +320,7 @@ const EditForm = ({
                               errorMessage.autocomplete &&
                               !props.selections[`${question.id}-${key}`]
                                 ? helperText.autocomplete
-                                : ""
+                                : ''
                             }
                           />
                         )}
@@ -333,8 +333,8 @@ const EditForm = ({
                     onClick={handleAddOption}
                     startIcon={<AddCircleOutlineIcon />}
                     style={{
-                      backgroundColor: "#F7F7F7",
-                      width: "255px",
+                      backgroundColor: '#F7F7F7',
+                      width: '255px',
                     }}
                     variant="text"
                   >
@@ -347,7 +347,7 @@ const EditForm = ({
                   <FormControl
                     fullWidth
                     size="small"
-                    style={{ marginTop: "1rem" }}
+                    style={{ marginTop: '1rem' }}
                   >
                     <InputLabel id="limit-type-label">
                       Tipo de límite
@@ -371,13 +371,13 @@ const EditForm = ({
                     </Select>
                   </FormControl>
 
-                  {props.limitType === "fijo" && (
+                  {props.limitType === 'fijo' && (
                     <TextField
                       label="Valor fijo"
                       placeholder="Por favor ingresa el valor máximo que los usuarios pueden seleccionar:"
                       value={question.stars}
                       onChange={handleInformation}
-                      style={{ marginTop: "0.8rem" }}
+                      style={{ marginTop: '0.8rem' }}
                       fullWidth
                       size="small"
                       name="stars"
@@ -391,15 +391,15 @@ const EditForm = ({
           )}
 
           {/* ratings */}
-          {question.type === "Calificaciones" && (
+          {question.type === 'Calificaciones' && (
             <Fragment>
               <div className={styles.stars}>
                 <Button
                   onClick={handleDeleteStars}
                   style={{
-                    backgroundColor: "#F7F7F7",
-                    color: "black",
-                    fontSize: "1.8rem",
+                    backgroundColor: '#F7F7F7',
+                    color: 'black',
+                    fontSize: '1.8rem',
                     padding: 0,
                   }}
                   variant="text"
@@ -408,9 +408,9 @@ const EditForm = ({
                 </Button>
                 <div
                   style={{
-                    border: "1px solid #ddd",
-                    borderRadius: "4px",
-                    padding: "18px 20px",
+                    border: '1px solid #ddd',
+                    borderRadius: '4px',
+                    padding: '18px 20px',
                   }}
                 >
                   {question.stars.length}
@@ -418,9 +418,9 @@ const EditForm = ({
                 <Button
                   onClick={handleAddStars}
                   style={{
-                    backgroundColor: "#F7F7F7",
-                    color: "black",
-                    fontSize: "1.8rem",
+                    backgroundColor: '#F7F7F7',
+                    color: 'black',
+                    fontSize: '1.8rem',
                     padding: 0,
                   }}
                   variant="text"
@@ -429,9 +429,9 @@ const EditForm = ({
                 </Button>
                 <div
                   style={{
-                    alignItems: "center",
-                    display: "flex",
-                    marginTop: "0.3em",
+                    alignItems: 'center',
+                    display: 'flex',
+                    marginTop: '0.3em',
                   }}
                 >
                   {question.stars.map((val, index) => (
@@ -456,7 +456,7 @@ const EditForm = ({
           )}
 
           {/* ratings */}
-          {(question.type === "Relacional" || question.typeId == 15) && (
+          {(question.type === 'Relacional' || question.typeId == 15) && (
             <Fragment>
               <RelationalQuestionsEdit
                 question={question}
@@ -477,7 +477,7 @@ const EditForm = ({
                 {/* Input numérico para el valor */}
                 <div
                   style={{
-                    marginTop: "4px",
+                    marginTop: '4px',
                   }}
                 >
                   <TextField
@@ -490,13 +490,13 @@ const EditForm = ({
                     variant="standard"
                     fullWidth
                     error={errorMessage.bipolar}
-                    helperText={errorMessage.bipolar ? helperText.bipolar : ""}
+                    helperText={errorMessage.bipolar ? helperText.bipolar : ''}
                   />
                 </div>
                 {/* Textos para los extremos de la escala */}
                 <div
                   style={{
-                    marginTop: "4px",
+                    marginTop: '4px',
                   }}
                 >
                   <TextField
@@ -521,7 +521,7 @@ const EditForm = ({
                 </div>
                 <div
                   style={{
-                    marginTop: "4px",
+                    marginTop: '4px',
                   }}
                 >
                   <TextField
@@ -554,7 +554,7 @@ const EditForm = ({
               {/* Textos para los extremos de la escala */}
               <div
                 style={{
-                  marginTop: "4px",
+                  marginTop: '4px',
                 }}
               >
                 <TextField
@@ -565,7 +565,7 @@ const EditForm = ({
                   onChange={handleInformation}
                   size="small"
                   variant="standard"
-                  style={{ width: "45%" }}
+                  style={{ width: '45%' }}
                   error={errorMessage.bipolarText}
                   inputProps={{
                     maxLength: 25, // ✅ Limita la entrada a 120 caracteres
@@ -579,7 +579,7 @@ const EditForm = ({
               </div>
               <div
                 style={{
-                  marginTop: "4px",
+                  marginTop: '4px',
                 }}
               >
                 <TextField
@@ -590,7 +590,7 @@ const EditForm = ({
                   onChange={handleInformation}
                   size="small"
                   variant="standard"
-                  style={{ width: "45%" }}
+                  style={{ width: '45%' }}
                   error={errorMessage.bipolarText}
                   inputProps={{
                     maxLength: 25, // ✅ Limita la entrada a 120 caracteres
@@ -602,11 +602,11 @@ const EditForm = ({
                   }
                 />
               </div>
-              <div className={styles.input} style={{ marginTop: "1rem" }}>
+              <div className={styles.input} style={{ marginTop: '1rem' }}>
                 <FormControl
                   fullWidth
                   size="small"
-                  style={{ marginBottom: "1rem" }}
+                  style={{ marginBottom: '1rem' }}
                 >
                   <InputLabel id="first-select-label">
                     Seleccionar 0 o 1
@@ -618,14 +618,14 @@ const EditForm = ({
                         Number(question.textsBipolarBar.valueLeft)
                       )
                         ? question.textsBipolarBar.valueLeft
-                        : "0"
+                        : '0'
                     }
                     label="Seleccionar 0 o 1"
                     onChange={handleInformation}
                     name="textsBipolarBar.valueLeft"
                   >
-                    <MenuItem value={"0"}>0</MenuItem>
-                    <MenuItem value={"1"}>1</MenuItem>
+                    <MenuItem value={'0'}>0</MenuItem>
+                    <MenuItem value={'1'}>1</MenuItem>
                   </Select>
                 </FormControl>
 
@@ -642,7 +642,7 @@ const EditForm = ({
                         ? question.textsBipolarBar.valueRight
                         : question.secondSelectOptions.length > 0
                         ? question.secondSelectOptions[0].toString()
-                        : ""
+                        : ''
                     }
                     label="Seleccionar un número"
                     onChange={handleInformation}
@@ -668,18 +668,18 @@ const EditForm = ({
                       className={styles.option}
                       key={key}
                       style={{
-                        marginTop: "10px",
+                        marginTop: '10px',
                       }}
                     >
                       <div
                         style={{
-                          padding: "3px 9px",
-                          backgroundColor: "#F0F2F5",
-                          borderRadius: "4px",
-                          textAlign: "center",
-                          marginRight: "15px",
-                          fontSize: "14px",
-                          color: "rgb(134, 140, 204)",
+                          padding: '3px 9px',
+                          backgroundColor: '#F0F2F5',
+                          borderRadius: '4px',
+                          textAlign: 'center',
+                          marginRight: '15px',
+                          fontSize: '14px',
+                          color: 'rgb(134, 140, 204)',
                         }}
                       >
                         {key + 1}
@@ -693,8 +693,8 @@ const EditForm = ({
                         error={customOptionError[key]}
                         helperText={
                           customOptionError[key]
-                            ? "La opción no puede estar vacía"
-                            : ""
+                            ? 'La opción no puede estar vacía'
+                            : ''
                         }
                         InputProps={{
                           disableUnderline: true,
@@ -711,7 +711,7 @@ const EditForm = ({
                   variant="text"
                   startIcon={<AddCircleOutlineIcon />}
                   onClick={handleAddOption}
-                  style={{ backgroundColor: "#F7F7F7", width: "255px" }}
+                  style={{ backgroundColor: '#F7F7F7', width: '255px' }}
                 >
                   Añadir opción
                 </Button>
@@ -726,7 +726,7 @@ const EditForm = ({
                       question.customOptions.length - 1
                     )
                   }*/
-                  style={{ backgroundColor: "#F7F7F7", width: "255px" }}
+                  style={{ backgroundColor: '#F7F7F7', width: '255px' }}
                 >
                   Eliminar opción
                 </Button>
@@ -745,8 +745,8 @@ const EditForm = ({
             <InputLabel
               id="category-id-label"
               sx={{
-                backgroundColor: "white",
-                paddingRight: "0 6px",
+                backgroundColor: 'white',
+                paddingRight: '0 6px',
               }}
             >
               Seleccionar categoría
