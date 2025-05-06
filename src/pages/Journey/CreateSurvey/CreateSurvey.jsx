@@ -981,15 +981,24 @@ export default function CreateSurvey() {
 
   const handleAutocomplete = (val) => {
     setType(val);
-    setInformation((prevInfo) => {
-      let updatedOptions = prevInfo.options;
-      updatedOptions = getOptions(val.id); // Llama a tu función getOptions para obtener las nuevas opciones
-      return {
+  
+    if (!val) {
+      // Si el valor es null, probablemente quieras limpiar también las opciones
+      setInformation((prevInfo) => ({
         ...prevInfo,
-        options: updatedOptions, // Actualiza las options si es necesario
-      };
-    });
+        options: [],
+      }));
+      return;
+    }
+  
+    const updatedOptions = getOptions(val.id);
+  
+    setInformation((prevInfo) => ({
+      ...prevInfo,
+      options: updatedOptions,
+    }));
   };
+  
 
   function getOptions(lang) {
     if (lang === 16) {
