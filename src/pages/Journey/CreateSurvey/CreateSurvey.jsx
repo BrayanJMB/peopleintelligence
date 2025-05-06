@@ -1156,7 +1156,7 @@ export default function CreateSurvey() {
         }
       }
 
-      if (limitType === 'fijo' && type.id === 3) {
+      if (limitType === 'fijo' && question.typeId === 3) {
         if (question.stars.trim() === '') {
           setErrorMessage({
             ...errorMessage,
@@ -1793,6 +1793,21 @@ export default function CreateSurvey() {
         options: question.options.map((option) => option.templateOptionsName),
         questionOptions: question.options,
         stars: question.question.score,
+        selectOptions: question.selectOptions?.map((option) => option.selectOption),
+        ...(question.question.textsBipolarBar && {
+          textsBipolarBar: {
+            leftText: question.question.textsBipolarBar.leftText,
+            rightText: question.question.textsBipolarBar.rightText,
+            valueRight: question.question.textsBipolarBar.valueRight,
+            valueLeft: question.question.textsBipolarBar.valueLeft,
+          },
+        }),
+        limitType:
+          Array.isArray(question.question.score) &&
+          question.question.score.length > 0
+            ? 'fijo'
+            : 'ilimitado',
+        secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
       })
     );
     setQuestions(questionsCopy);
