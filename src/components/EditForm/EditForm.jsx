@@ -56,6 +56,7 @@ const EditForm = ({
   customOptionError,
   ...props
 }) => {
+  console.log(question.questionNumber);
   const [categoryId, setCategoryId] = useState('');
   /**
    * Handle category id change.

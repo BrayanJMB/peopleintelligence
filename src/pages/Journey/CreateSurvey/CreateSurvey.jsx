@@ -1785,7 +1785,7 @@ export default function CreateSurvey() {
     }
     setData(dataCopy);
     let questionsCopy = [...questions];
-
+    console.log(template);
     // fill questions
     template.templatesQuestions.map((question) =>
       questionsCopy.push({
@@ -1803,6 +1803,7 @@ export default function CreateSurvey() {
         questionOptions: question.options,
         stars: question.question.score,
         selectOptions: question.selectOptions?.map((option) => option.selectOption),
+        questionNumber: question.question.numberQuestion,
         ...(question.question.textsBipolarBar && {
           textsBipolarBar: {
             leftText: question.question.textsBipolarBar.leftText,
