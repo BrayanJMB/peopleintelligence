@@ -1804,6 +1804,7 @@ export default function CreateSurvey() {
         stars: question.question.score,
         selectOptions: question.selectOptions?.map((option) => option.selectOption),
         questionNumber: question.question.numberQuestion,
+        childQuestionIds: [],
         ...(question.question.textsBipolarBar && {
           textsBipolarBar: {
             leftText: question.question.textsBipolarBar.leftText,
