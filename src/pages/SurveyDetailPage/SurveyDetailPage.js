@@ -205,7 +205,7 @@ const SurveyDetailPage = () => {
           handleTemplateFromSurveyAll(
             currentSurvey.response.surveyId,
             currentCompany.id
-          ),
+          );
           handleCloseDialog(id);
         },
         false

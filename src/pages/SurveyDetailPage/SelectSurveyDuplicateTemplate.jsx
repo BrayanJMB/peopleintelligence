@@ -29,7 +29,7 @@ export const SelectSurveyDuplicateTemplate = ({
        id,
       `Al ejecutar esta acción creará una plantilla para la empresa ${datos[1]}`,
       () => {
-        handleTemplateByCompany(surveyId, event.target.value),
+        handleTemplateByCompany(surveyId, event.target.value);
         handleCloseDialog(id);
       },
       false
