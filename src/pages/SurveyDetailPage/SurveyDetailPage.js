@@ -197,14 +197,17 @@ const SurveyDetailPage = () => {
       );
     }
     if (option === 'Generar plantilla (todos)') {
+      const id = generateSurveyId();
       handleOpenDialog(
-        generateSurveyId(),
+        id,
         'El ejecutar esta opción se generará una plantilla para todas las empresas',
-        () =>
+        () =>{
           handleTemplateFromSurveyAll(
             currentSurvey.response.surveyId,
             currentCompany.id
           ),
+          handleCloseDialog(id);
+        },
         false
       );
     }
@@ -611,6 +614,7 @@ const SurveyDetailPage = () => {
                             currentCompanyId={currentCompany}
                             handleOpenDialog={handleOpenDialog}
                             generateSurveyId={generateSurveyId}
+                            handleCloseDialog={handleCloseDialog}
                           />
                         )}
 
