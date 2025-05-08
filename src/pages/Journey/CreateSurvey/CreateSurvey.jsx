@@ -231,9 +231,14 @@ export default function CreateSurvey() {
           nameQuestion: question.name,
           description: question.description,
           typeQuestionId: question.typeId,
-          score: Array.isArray(question.stars)
-            ? question.stars.length
-            : question.stars,
+          score:
+          question.typeId === 5 // Estrellas
+            ? question.stars?.length || 3
+            : question.typeId === 3 // Opción múltiple con límite
+            ? Number(question.stars)
+            : question.typeId === 19 // Bipolar, tomar el primer valor del array
+            ? Number(Array.isArray(question.stars) ? question.stars[0] : question.stars)
+            : null,
           conditional: question.conditionalQuestion,
           textsBipolarBar: question.textsBipolarBar,
         },
