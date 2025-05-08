@@ -123,6 +123,21 @@ const EditForm = ({
     return filteredQuestions;
   };
 
+  const isLastQuestion =
+    questions.findIndex((q) => q.id === question.id) === questions.length - 1;
+
+  useEffect(() => {
+    const isLast =
+      questions.findIndex((q) => q.id === question.id) === questions.length - 1;
+
+    if (question.conditionalQuestion && isLast) {
+      setQuestion((prev) => ({
+        ...prev,
+        conditionalQuestion: false,
+      }));
+    }
+  }, [question.id, question.conditionalQuestion, questions]);
+
   useEffect(() => {
     if (question.limitType) {
       props.setLimitType(question.limitType); // sincroniza al cargar plantilla
@@ -286,48 +301,52 @@ const EditForm = ({
                         }
                       />
                     </div>
-                    {question.typeId === 8 && question.conditionalQuestion && (
-                      <Autocomplete
-                        key={key}
-                        disablePortal
-                        id={`autocomplete-${question.id}-${key}`}
-                        options={getFilteredOptions(
-                          `${question.id}-${key}`,
-                          question.questionNumber
-                        )}
-                        getOptionLabel={(option) =>
-                          `${option.questionNumber}. ${option.name}`
-                        }
-                        value={
-                          props.selections[`${question.id}-${key}`] || null
-                        }
-                        onChange={(event, value) => {
-                          // Crear un objeto que incluya el valor seleccionado y el número de la pregunta
-                          const dataToSend = {
-                            selectedValue: value,
-                            questionNumber: value ? value.questionNumber : null,
-                            index: key,
-                          };
-                          handleSelect(`${question.id}-${key}`, dataToSend);
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Preguntas"
-                            error={
-                              errorMessage.autocomplete &&
-                              !props.selections[`${question.id}-${key}`]
-                            }
-                            helperText={
-                              errorMessage.autocomplete &&
-                              !props.selections[`${question.id}-${key}`]
-                                ? helperText.autocomplete
-                                : ''
-                            }
-                          />
-                        )}
-                      />
-                    )}
+                    {question.typeId === 8 &&
+                      question.conditionalQuestion &&
+                      !isLastQuestion && (
+                        <Autocomplete
+                          key={key}
+                          disablePortal
+                          id={`autocomplete-${question.id}-${key}`}
+                          options={getFilteredOptions(
+                            `${question.id}-${key}`,
+                            question.questionNumber
+                          )}
+                          getOptionLabel={(option) =>
+                            `${option.questionNumber}. ${option.name}`
+                          }
+                          value={
+                            props.selections[`${question.id}-${key}`] || null
+                          }
+                          onChange={(event, value) => {
+                            // Crear un objeto que incluya el valor seleccionado y el número de la pregunta
+                            const dataToSend = {
+                              selectedValue: value,
+                              questionNumber: value
+                                ? value.questionNumber
+                                : null,
+                              index: key,
+                            };
+                            handleSelect(`${question.id}-${key}`, dataToSend);
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Preguntas"
+                              error={
+                                errorMessage.autocomplete &&
+                                !props.selections[`${question.id}-${key}`]
+                              }
+                              helperText={
+                                errorMessage.autocomplete &&
+                                !props.selections[`${question.id}-${key}`]
+                                  ? helperText.autocomplete
+                                  : ''
+                              }
+                            />
+                          )}
+                        />
+                      )}
                   </>
                 ))}
                 {question.customOptions.length < 10 && (
@@ -348,9 +367,7 @@ const EditForm = ({
                     variant="text"
                     startIcon={<AddCircleOutlineIcon />}
                     onClick={() =>
-                      handleRemoveOption(
-                        question.customOptions.length - 1
-                      )
+                      handleRemoveOption(question.customOptions.length - 1)
                     }
                     style={{ backgroundColor: '#F7F7F7', width: '255px' }}
                   >
@@ -736,11 +753,8 @@ const EditForm = ({
                 <Button
                   variant="text"
                   startIcon={<AddCircleOutlineIcon />}
-                  
                   onClick={() =>
-                    handleRemoveOption(
-                      question.customOptions.length - 1
-                    )
+                    handleRemoveOption(question.customOptions.length - 1)
                   }
                   style={{ backgroundColor: '#F7F7F7', width: '255px' }}
                 >
