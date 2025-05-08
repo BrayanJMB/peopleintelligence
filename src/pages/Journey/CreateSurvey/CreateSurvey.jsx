@@ -712,6 +712,12 @@ export default function CreateSurvey() {
     holder.splice(index, 1);
     setInformation({ ...information, customOptions: holder });
   };
+
+  const handleRemoveEditOption = (index) => {
+    let holder = [...question.customOptions];
+    holder.splice(index, 1);
+    setQuestion({ ...question, customOptions: holder });
+  };
   const handleeditaddoption = () => {
     let holder = [...question.customOptions];
     holder.push('');
@@ -1961,6 +1967,7 @@ export default function CreateSurvey() {
                     helperText={helperText}
                     handleInformationOptions={handleeditoption}
                     handleAddOption={handleeditaddoption}
+                    handleRemoveOption={handleRemoveEditOption}
                     handleAddStars={handleeditstars}
                     handleDeleteStars={handleeditdeletestars}
                     starMessage={starmsg}

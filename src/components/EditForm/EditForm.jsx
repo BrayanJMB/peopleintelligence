@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Autocomplete } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -41,6 +41,7 @@ const EditForm = ({
   errorMessage,
   helperText,
   handleAddOption,
+  handleRemoveOption,
   handleInformationOptions,
   handleDeleteStars,
   handleAddStars,
@@ -342,6 +343,20 @@ const EditForm = ({
                     Añadir opción
                   </Button>
                 )}
+                {question.customOptions.length >= 3 ? (
+                  <Button
+                    variant="text"
+                    startIcon={<AddCircleOutlineIcon />}
+                    onClick={() =>
+                      handleRemoveOption(
+                        question.customOptions.length - 1
+                      )
+                    }
+                    style={{ backgroundColor: '#F7F7F7', width: '255px' }}
+                  >
+                    Eliminar opción
+                  </Button>
+                ) : null}
               </div>
               {question.typeId === 3 && (
                 <div className={styles.input}>
@@ -721,12 +736,12 @@ const EditForm = ({
                 <Button
                   variant="text"
                   startIcon={<AddCircleOutlineIcon />}
-                  /*}
+                  
                   onClick={() =>
                     handleRemoveOption(
                       question.customOptions.length - 1
                     )
-                  }*/
+                  }
                   style={{ backgroundColor: '#F7F7F7', width: '255px' }}
                 >
                   Eliminar opción
