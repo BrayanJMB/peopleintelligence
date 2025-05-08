@@ -100,6 +100,7 @@ const SurveyForm = ({
   const [formValues, setFormValues] = useState(() => {
     return questions.map((question) => initializeFormValue(question));
   });
+  const formValuesRef = useRef(formValues);
 
   const [apiOptions, setApiOptions] = useState({});
   const [isZeroIndexActive, setIsZeroIndexActive] = useState(false);
@@ -433,8 +434,21 @@ const SurveyForm = ({
       newVisibleQuestions[k] = false;
     }
 
+    // Limpiar respuestas de preguntas que se ocultan
+    const updatedFormValues = [...formValuesRef.current];
+    for (let i = 0; i < newVisibleQuestions.length; i++) {
+      if (!newVisibleQuestions[i]) {
+        updatedFormValues[i] = initializeFormValue(questions[i]);
+      }
+    }
+
+    setFormValues(updatedFormValues);
     setVisibleQuestions(newVisibleQuestions);
   };
+
+  useEffect(() => {
+    formValuesRef.current = formValues;
+  }, [formValues]);
 
   useEffect(() => {
     if (isZeroIndexActive) {
@@ -578,7 +592,6 @@ const SurveyForm = ({
       return newFormValues;
     });
   };
-
 
   /**
    * Handles the change of the checkbox.
@@ -836,7 +849,6 @@ const SurveyForm = ({
       }
     }
   }, [activeStep]);
-  
 
   let firstUncheckedIndex = -1;
   let firstUnansweredQuestionIndex = unansweredQuestions[0];
@@ -1230,7 +1242,7 @@ const SurveyForm = ({
                   onChange={(event) => handleRadioChange(event, index)}
                   error={unansweredQuestions.includes(index)}
                 />
-                <Divider variant="middle" sx={{marginTop:'10px'}}/>
+                <Divider variant="middle" sx={{ marginTop: '10px' }} />
               </Fragment>
             )}
             {isInformativeText(typeQuestion) && (
@@ -1288,7 +1300,7 @@ const SurveyForm = ({
                 >
                   {description}
                 </Typography>
-                <Box width="100%" >
+                <Box width="100%">
                   <Slider
                     value={values[index] || 0}
                     min={0}
