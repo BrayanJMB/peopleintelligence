@@ -57,7 +57,7 @@ const EditForm = ({
   customOptionError,
   ...props
 }) => {
-  console.log(question.questionNumber);
+  console.log(question);
   const [categoryId, setCategoryId] = useState('');
   /**
    * Handle category id change.
@@ -407,7 +407,7 @@ const EditForm = ({
           )}
 
           {/* ratings */}
-          {question.type === 'Calificaciones' && (
+          {(question.type === 'Calificaciones' || question.typeId === 5) && (
             <Fragment>
               <div className={styles.stars}>
                 <Button
