@@ -1796,7 +1796,6 @@ export default function CreateSurvey() {
     }
     setData(dataCopy);
     let questionsCopy = [...questions];
-    console.log(template);
     // fill questions
     template.templatesQuestions.map((question) =>
       questionsCopy.push({
