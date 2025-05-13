@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Autocomplete } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -41,6 +41,7 @@ const EditForm = ({
   errorMessage,
   helperText,
   handleAddOption,
+  handleRemoveOption,
   handleInformationOptions,
   handleDeleteStars,
   handleAddStars,
@@ -56,6 +57,7 @@ const EditForm = ({
   customOptionError,
   ...props
 }) => {
+  console.log(question);
   const [categoryId, setCategoryId] = useState('');
   /**
    * Handle category id change.
@@ -120,6 +122,28 @@ const EditForm = ({
     filteredQuestions.push(preguntaFinal);
     return filteredQuestions;
   };
+
+  const isLastQuestion =
+    questions.findIndex((q) => q.id === question.id) === questions.length - 1;
+
+  useEffect(() => {
+    const isLast =
+      questions.findIndex((q) => q.id === question.id) === questions.length - 1;
+
+    if (question.conditionalQuestion && isLast) {
+      setQuestion((prev) => ({
+        ...prev,
+        conditionalQuestion: false,
+      }));
+    }
+  }, [question.id, question.conditionalQuestion, questions]);
+
+  useEffect(() => {
+    if (question.limitType) {
+      props.setLimitType(question.limitType); // sincroniza al cargar plantilla
+    }
+  }, [question.limitType]);
+
   return (
     <Fragment>
       <div className={styles.form}>
@@ -277,48 +301,52 @@ const EditForm = ({
                         }
                       />
                     </div>
-                    {question.typeId === 8 && question.conditionalQuestion && (
-                      <Autocomplete
-                        key={key}
-                        disablePortal
-                        id={`autocomplete-${question.id}-${key}`}
-                        options={getFilteredOptions(
-                          `${question.id}-${key}`,
-                          question.questionNumber
-                        )}
-                        getOptionLabel={(option) =>
-                          `${option.questionNumber}. ${option.name}`
-                        }
-                        value={
-                          props.selections[`${question.id}-${key}`] || null
-                        }
-                        onChange={(event, value) => {
-                          // Crear un objeto que incluya el valor seleccionado y el número de la pregunta
-                          const dataToSend = {
-                            selectedValue: value,
-                            questionNumber: value ? value.questionNumber : null,
-                            index: key,
-                          };
-                          handleSelect(`${question.id}-${key}`, dataToSend);
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Preguntas"
-                            error={
-                              errorMessage.autocomplete &&
-                              !props.selections[`${question.id}-${key}`]
-                            }
-                            helperText={
-                              errorMessage.autocomplete &&
-                              !props.selections[`${question.id}-${key}`]
-                                ? helperText.autocomplete
-                                : ''
-                            }
-                          />
-                        )}
-                      />
-                    )}
+                    {question.typeId === 8 &&
+                      question.conditionalQuestion &&
+                      !isLastQuestion && (
+                        <Autocomplete
+                          key={key}
+                          disablePortal
+                          id={`autocomplete-${question.id}-${key}`}
+                          options={getFilteredOptions(
+                            `${question.id}-${key}`,
+                            question.questionNumber
+                          )}
+                          getOptionLabel={(option) =>
+                            `${option.questionNumber}. ${option.name}`
+                          }
+                          value={
+                            props.selections[`${question.id}-${key}`] || null
+                          }
+                          onChange={(event, value) => {
+                            // Crear un objeto que incluya el valor seleccionado y el número de la pregunta
+                            const dataToSend = {
+                              selectedValue: value,
+                              questionNumber: value
+                                ? value.questionNumber
+                                : null,
+                              index: key,
+                            };
+                            handleSelect(`${question.id}-${key}`, dataToSend);
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Preguntas"
+                              error={
+                                errorMessage.autocomplete &&
+                                !props.selections[`${question.id}-${key}`]
+                              }
+                              helperText={
+                                errorMessage.autocomplete &&
+                                !props.selections[`${question.id}-${key}`]
+                                  ? helperText.autocomplete
+                                  : ''
+                              }
+                            />
+                          )}
+                        />
+                      )}
                   </>
                 ))}
                 {question.customOptions.length < 10 && (
@@ -334,6 +362,18 @@ const EditForm = ({
                     Añadir opción
                   </Button>
                 )}
+                {question.customOptions.length >= 3 ? (
+                  <Button
+                    variant="text"
+                    startIcon={<AddCircleOutlineIcon />}
+                    onClick={() =>
+                      handleRemoveOption(question.customOptions.length - 1)
+                    }
+                    style={{ backgroundColor: '#F7F7F7', width: '255px' }}
+                  >
+                    Eliminar opción
+                  </Button>
+                ) : null}
               </div>
               {question.typeId === 3 && (
                 <div className={styles.input}>
@@ -349,9 +389,15 @@ const EditForm = ({
                       labelId="limit-type-label"
                       value={props.limitType}
                       label="Tipo de límite"
-                      onChange={(event) =>
-                        props.setLimitType(event.target.value)
-                      }
+                      onChange={(event) => {
+                        const newValue = event.target.value;
+                        props.setLimitType(newValue); // actualiza estado externo
+                        setQuestion((prev) => ({
+                          ...prev,
+                          limitType: newValue, // actualiza en la pregunta
+                          stars: newValue === 'ilimitado' ? [] : prev.stars, // limpia si se cambia a ilimitado
+                        }));
+                      }}
                     >
                       <MenuItem value="ilimitado">Ilimitado</MenuItem>
                       <MenuItem value="fijo">Valor fijo</MenuItem>
@@ -378,7 +424,7 @@ const EditForm = ({
           )}
 
           {/* ratings */}
-          {question.type === 'Calificaciones' && (
+          {(question.type === 'Calificaciones' || question.typeId === 5) && (
             <Fragment>
               <div className={styles.stars}>
                 <Button
@@ -443,7 +489,7 @@ const EditForm = ({
           )}
 
           {/* ratings */}
-          {question.type === 'Relacional' && (
+          {(question.type === 'Relacional' || question.typeId == 15) && (
             <Fragment>
               <RelationalQuestionsEdit
                 question={question}
@@ -707,12 +753,9 @@ const EditForm = ({
                 <Button
                   variant="text"
                   startIcon={<AddCircleOutlineIcon />}
-                  /*}
                   onClick={() =>
-                    handleRemoveOption(
-                      question.customOptions.length - 1
-                    )
-                  }*/
+                    handleRemoveOption(question.customOptions.length - 1)
+                  }
                   style={{ backgroundColor: '#F7F7F7', width: '255px' }}
                 >
                   Eliminar opción

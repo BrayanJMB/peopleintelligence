@@ -345,7 +345,7 @@ const AnswerSurvey = () => {
     checkIfIsPersonal();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <div className={styles.AnswerSurvey} translate='no'>
+    <div className={styles.AnswerSurvey} translate="no">
       <div className={styles.AnswerSurvey__Background}></div>
       <div className={styles.AnswerSurvey__Content}>
         <Card
@@ -359,7 +359,11 @@ const AnswerSurvey = () => {
             {surveyStatus === 'failed' && isAlreadyResponse && (
               <SuccessMessage isAlreadyResponse={isAlreadyResponse} />
             )}
-            {surveyStatus === 'failed' && notFound && <NotFoundMessage infoMessage={'Lo sentimos esta encuesta no esta disponible :('}/>}
+            {surveyStatus === 'failed' && notFound && (
+              <NotFoundMessage
+                infoMessage={'Lo sentimos esta encuesta no esta disponible :('}
+              />
+            )}
             {exclusiviness && <NotExclusiviness />}
             {surveyStatus === 'succeeded' &&
               currentSurvey !== null &&
@@ -371,12 +375,21 @@ const AnswerSurvey = () => {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
+                      flexDirection: {
+                        xs: 'column-reverse', 
+                        sm: 'row',             
+                      },
                     }}
                   >
                     <Typography
                       variant="body1"
                       gutterBottom
-                      style={{ flex: '1 0 65%' }}
+                      style={{
+                        flex: '1 0 65%',
+                        fontSize: '25px',
+                        fontWeight: 'bold',
+                        fontStyle: 'italic',
+                      }}
                     >
                       {currentSurvey.response.surveyName}
                     </Typography>
@@ -448,7 +461,7 @@ const AnswerSurvey = () => {
                           }}
                           error={emailError}
                         >
-                          { currentSurvey.response.welcomeMessage}
+                          {currentSurvey.response.welcomeMessage}
                         </FormLabel>
                         <TextField
                           id="email"

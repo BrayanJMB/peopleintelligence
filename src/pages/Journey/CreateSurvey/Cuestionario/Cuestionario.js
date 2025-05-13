@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
@@ -15,10 +15,16 @@ import MyConfirmation from '../../../../components/MyConfirmation/MyConfirmation
 import styles from './Cuestionario.module.css';
 
 export default function Cuestionario(props) {
-  const anyConditional = props.questions.some(question => question.conditionalQuestion);
+  const anyConditional = props.questions.some(
+    (question) => question.conditionalQuestion
+  );
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [currentQuestionId, setCurrentQuestionId] = useState(null);
-  const [checked, setChecked] = useState(props.questions.map(() => false));
+  const [checked, setChecked] = useState(() =>
+    Object.fromEntries(
+      props.questions.map((q) => [q.id, q.conditionalQuestion || false])
+    )
+  );
   const [shouldEdit, setShouldEdit] = useState(false);
   const [editIndex, setEditIndex] = useState(-1);
   /**
@@ -48,43 +54,30 @@ export default function Cuestionario(props) {
     setDeleteDialogOpen(true);
   };
 
-  const handleChange = (e, index, idQuestion) => {
-    // Crea una copia del estado actual
-    const newChecked = [...checked];
-    // Cambia el valor del índice específico
-    newChecked[index] = e.target.checked;
-    if (newChecked[index]) {
-      props.setConditionalQuestion(true);
-      props.setQuestions(prevQuestions => {
-        return prevQuestions.map(question => {
-          // Verificar si es la pregunta que queremos actualizar
-          if (question.id === idQuestion) {
-            // Si es así, actualizar la propiedad específica
-            return { ...question, 'conditionalQuestion': true };
-          }
-          // Si no es la pregunta que estamos buscando, retornarla sin cambios
-          return question;
-        });
-      });
+  const handleChange = (e, idQuestion) => {
+    const isChecked = e.target.checked;
+  
+    setChecked((prev) => ({
+      ...prev,
+      [idQuestion]: isChecked,
+    }));
+  
+    props.setQuestions((prevQuestions) =>
+      prevQuestions.map((question) =>
+        question.id === idQuestion
+          ? { ...question, conditionalQuestion: isChecked }
+          : question
+      )
+    );
+  
+    props.setConditionalQuestion(isChecked);
+    if (isChecked) {
+      const index = props.questions.findIndex((q) => q.id === idQuestion);
       setShouldEdit(true);
       setEditIndex(index);
-    }else{
-      props.setConditionalQuestion(false);
-      props.setQuestions(prevQuestions => {
-        return prevQuestions.map(question => {
-          // Verificar si es la pregunta que queremos actualizar
-          if (question.id === idQuestion) {
-            // Si es así, actualizar la propiedad específica
-            return { ...question, 'conditionalQuestion': false };
-          }
-          // Si no es la pregunta que estamos buscando, retornarla sin cambios
-          return question;
-        });
-      });
     }
-    // Actualiza el estado con el nuevo arreglo
-    setChecked(newChecked);
   };
+  
 
   useEffect(() => {
     if (shouldEdit) {
@@ -146,7 +139,7 @@ export default function Cuestionario(props) {
                             key={val.id}
                             draggableId={val.id}
                             index={index}
-                            isDragDisabled={anyConditional} // Deshabilitar el drag si 'conditionalQuestion' es true
+                            //isDragDisabled={anyConditional} // Deshabilitar el drag si 'conditionalQuestion' es true
                           >
                             {(provided, snapshot) => {
                               return (
@@ -197,19 +190,23 @@ export default function Cuestionario(props) {
                                             />
                                           </IconButton>
                                           {/* Conditional */}
-                                          {val.typeId === 8 && (
-                                            <FormControlLabel
-                                              control={
-                                                <Switch
-                                                  checked={checked[index]} // Usa el índice para acceder al estado específico
-                                                  onChange={(e) =>
-                                                    handleChange(e, index, val.id)
-                                                  }
-                                                />
-                                              }
-                                              label="¿Es condicional?"
-                                            />
-                                          )}
+                                          {val.typeId === 8 &&
+                                            index !==
+                                              props.questions.length - 1 && (
+                                              <FormControlLabel
+                                                control={
+                                                  <Switch
+                                                    checked={
+                                                      checked[val.id] || false
+                                                    }
+                                                    onChange={(e) =>
+                                                      handleChange(e, val.id)
+                                                    }
+                                                  />
+                                                }
+                                                label="¿Es condicional?"
+                                              />
+                                            )}
                                         </div>
                                       </div>
                                     </div>

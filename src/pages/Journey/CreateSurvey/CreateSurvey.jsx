@@ -231,9 +231,14 @@ export default function CreateSurvey() {
           nameQuestion: question.name,
           description: question.description,
           typeQuestionId: question.typeId,
-          score: Array.isArray(question.stars)
-            ? question.stars.length
-            : question.stars,
+          score:
+          question.typeId === 5 // Estrellas
+            ? question.stars?.length || 3
+            : question.typeId === 3 // Opción múltiple con límite
+            ? Number(question.stars)
+            : question.typeId === 19 // Bipolar, tomar el primer valor del array
+            ? Number(Array.isArray(question.stars) ? question.stars[0] : question.stars)
+            : null,
           conditional: question.conditionalQuestion,
           textsBipolarBar: question.textsBipolarBar,
         },
@@ -712,6 +717,12 @@ export default function CreateSurvey() {
     holder.splice(index, 1);
     setInformation({ ...information, customOptions: holder });
   };
+
+  const handleRemoveEditOption = (index) => {
+    let holder = [...question.customOptions];
+    holder.splice(index, 1);
+    setQuestion({ ...question, customOptions: holder });
+  };
   const handleeditaddoption = () => {
     let holder = [...question.customOptions];
     holder.push('');
@@ -981,15 +992,24 @@ export default function CreateSurvey() {
 
   const handleAutocomplete = (val) => {
     setType(val);
-    setInformation((prevInfo) => {
-      let updatedOptions = prevInfo.options;
-      updatedOptions = getOptions(val.id); // Llama a tu función getOptions para obtener las nuevas opciones
-      return {
+  
+    if (!val) {
+      // Si el valor es null, probablemente quieras limpiar también las opciones
+      setInformation((prevInfo) => ({
         ...prevInfo,
-        options: updatedOptions, // Actualiza las options si es necesario
-      };
-    });
+        options: [],
+      }));
+      return;
+    }
+  
+    const updatedOptions = getOptions(val.id);
+  
+    setInformation((prevInfo) => ({
+      ...prevInfo,
+      options: updatedOptions,
+    }));
   };
+  
 
   function getOptions(lang) {
     if (lang === 16) {
@@ -1156,7 +1176,7 @@ export default function CreateSurvey() {
         }
       }
 
-      if (limitType === 'fijo' && type.id === 3) {
+      if (limitType === 'fijo' && question.typeId === 3) {
         if (question.stars.trim() === '') {
           setErrorMessage({
             ...errorMessage,
@@ -1776,7 +1796,6 @@ export default function CreateSurvey() {
     }
     setData(dataCopy);
     let questionsCopy = [...questions];
-
     // fill questions
     template.templatesQuestions.map((question) =>
       questionsCopy.push({
@@ -1793,6 +1812,23 @@ export default function CreateSurvey() {
         options: question.options.map((option) => option.templateOptionsName),
         questionOptions: question.options,
         stars: question.question.score,
+        selectOptions: question.selectOptions?.map((option) => option.selectOption),
+        questionNumber: question.question.numberQuestion,
+        childQuestionIds: [],
+        ...(question.question.textsBipolarBar && {
+          textsBipolarBar: {
+            leftText: question.question.textsBipolarBar.leftText,
+            rightText: question.question.textsBipolarBar.rightText,
+            valueRight: question.question.textsBipolarBar.valueRight,
+            valueLeft: question.question.textsBipolarBar.valueLeft,
+          },
+        }),
+        limitType:
+          Array.isArray(question.question.score) &&
+          question.question.score.length > 0
+            ? 'fijo'
+            : 'ilimitado',
+        secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
       })
     );
     setQuestions(questionsCopy);
@@ -1935,6 +1971,7 @@ export default function CreateSurvey() {
                     helperText={helperText}
                     handleInformationOptions={handleeditoption}
                     handleAddOption={handleeditaddoption}
+                    handleRemoveOption={handleRemoveEditOption}
                     handleAddStars={handleeditstars}
                     handleDeleteStars={handleeditdeletestars}
                     starMessage={starmsg}
