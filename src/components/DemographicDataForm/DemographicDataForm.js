@@ -97,6 +97,10 @@ const DemographicDataForm = ({
         options: newDemographicOptions,
       },
     ]);
+
+     // 🧹 Limpieza de campos
+    setNewDemographicName('');
+    setNewDemographicOptions(['', '', '']);
     setIsLoading(false);
     setOpenDialog(false);
   };
