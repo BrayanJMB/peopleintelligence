@@ -39,6 +39,7 @@ import {
 } from '../../../services/templates.service';
 import client from '../../../utils/axiosInstance';
 
+import { View360 } from './360Vista/View360.jsx';
 import Cuestionario from './Cuestionario/Cuestionario';
 import { Exclusiveness } from './Exclusividad/Exclusiveness.jsx';
 import { WhatsAppForSurvey } from './HasWhatsApp/WhatsAppForSurvey.jsx';
@@ -83,7 +84,9 @@ export default function CreateSurvey() {
       valueLeft: '0',
     },
     maximunValueOptions: null,
-    secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
+    secondSelectOptions: Array.from({ length: 9 }, (_, i) =>
+      (2 + i).toString()
+    ),
   });
   const [firstSelect, setFirstSelect] = useState(0);
   const [secondSelect, setSecondSelect] = useState(2);
@@ -102,6 +105,9 @@ export default function CreateSurvey() {
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [question, setQuestion] = useState();
   const [anonymous, setAnonymous] = useState(true);
+  const [view360, setView360] = useState([]);
+  const [isView360, setIsView360] = useState(false);
+  const [excelFile360, setExcelFile360] = useState(null);
   const [exclusiviness, setExclusiviness] = useState(true);
   const [hasWhatsApp, setHasWhatsApp] = useState(true);
   const [dayConcurrency, setDayConcurrency] = useState(1);
@@ -131,6 +137,7 @@ export default function CreateSurvey() {
   const steps = [
     'Introducción',
     //'WhatsApp',
+    'Vista 360',
     'Cuestionario',
     'Configuración',
     ...(!isTemplate ? ['Privacidad'] : []),
@@ -232,13 +239,17 @@ export default function CreateSurvey() {
           description: question.description,
           typeQuestionId: question.typeId,
           score:
-          question.typeId === 5 // Estrellas
-            ? question.stars?.length || 3
-            : question.typeId === 3 // Opción múltiple con límite
-            ? Number(question.stars)
-            : question.typeId === 19 // Bipolar, tomar el primer valor del array
-            ? Number(Array.isArray(question.stars) ? question.stars[0] : question.stars)
-            : null,
+            question.typeId === 5 // Estrellas
+              ? question.stars?.length || 3
+              : question.typeId === 3 // Opción múltiple con límite
+              ? Number(question.stars)
+              : question.typeId === 19 // Bipolar, tomar el primer valor del array
+              ? Number(
+                  Array.isArray(question.stars)
+                    ? question.stars[0]
+                    : question.stars
+                )
+              : null,
           conditional: question.conditionalQuestion,
           textsBipolarBar: question.textsBipolarBar,
         },
@@ -417,6 +428,16 @@ export default function CreateSurvey() {
     }
   };
 
+  const validateExcelFile360 = () => {
+    if (!excelFile360 && isView360) {
+      enqueueSnackbar('Debe ingresar el archivo 360.', {
+        variant: 'error',
+        autoHideDuration: 3000,
+      });
+      return true;
+    }
+  };
+
   /**
    * Handle next step.
    */
@@ -437,6 +458,12 @@ export default function CreateSurvey() {
         }
         break;
       case 1:
+        if (validateExcelFile360()) {
+          return;
+        }
+        setActiveStep((val) => val + 1);
+        break;
+      case 2:
         if (isUpdate && isTemplate) {
           await updateTemplate();
           navigate('/journey/survey-template');
@@ -466,13 +493,13 @@ export default function CreateSurvey() {
         }
         setActiveStep((val) => val + 1);
         break;*/
-      case 2:
-        setActiveStep((val) => val + 1);
-        break;
       case 3:
         setActiveStep((val) => val + 1);
         break;
       case 4:
+        setActiveStep((val) => val + 1);
+        break;
+      case 5:
         if (isEdit) {
           editSurvey();
         } else {
@@ -500,7 +527,7 @@ export default function CreateSurvey() {
    */
   const handleInformation = (event) => {
     const { name, value } = event.target;
-    
+
     if (name.includes('.')) {
       const [parentKey, childKey] = name.split('.');
 
@@ -533,7 +560,6 @@ export default function CreateSurvey() {
       }));
     }
   };
-  
 
   /**
    * Handle change for category id.
@@ -840,6 +866,10 @@ export default function CreateSurvey() {
     }
   };
 
+  const handleIsView360 = (event) => {
+    setIsView360(event.target.value === 'true');
+  };
+
   const renderSwitch = (activeStep) => {
     switch (activeStep) {
       case 0:
@@ -853,6 +883,16 @@ export default function CreateSurvey() {
             setMapsLoaded={setMapsLoaded}
           />
         );
+      case 1:
+        return (
+          <View360
+            isView360={isView360}
+            handleIsView360={handleIsView360}
+            excelFile360={excelFile360}
+            setExcelFile360={setExcelFile360}
+            setView360={setView360}
+          />
+        );
       /*
       case 1:
         return (
@@ -863,7 +903,7 @@ export default function CreateSurvey() {
             />
           </Box>
         );*/
-      case 1:
+      case 2:
         return (
           <Box width="100%">
             <DemographicDataForm
@@ -883,7 +923,7 @@ export default function CreateSurvey() {
             />
           </Box>
         );
-      case 2:
+      case 3:
         return (
           <Box width="100%">
             <MessagesSurvey
@@ -896,7 +936,7 @@ export default function CreateSurvey() {
             />
           </Box>
         );
-      case 3:
+      case 4:
         return (
           <div style={{ display: 'flex', width: '100%' }}>
             <Intimidad anonyme={anonymous} handleAnonyme={handleanonyme} />
@@ -907,7 +947,7 @@ export default function CreateSurvey() {
           </div>
         );
 
-      case 4:
+      case 5:
         return (
           <div
             style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
@@ -992,7 +1032,7 @@ export default function CreateSurvey() {
 
   const handleAutocomplete = (val) => {
     setType(val);
-  
+
     if (!val) {
       // Si el valor es null, probablemente quieras limpiar también las opciones
       setInformation((prevInfo) => ({
@@ -1001,15 +1041,14 @@ export default function CreateSurvey() {
       }));
       return;
     }
-  
+
     const updatedOptions = getOptions(val.id);
-  
+
     setInformation((prevInfo) => ({
       ...prevInfo,
       options: updatedOptions,
     }));
   };
-  
 
   function getOptions(lang) {
     if (lang === 16) {
@@ -1073,7 +1112,9 @@ export default function CreateSurvey() {
 
       if (
         question.customOptions !== null &&
-        (question.typeId === 3 || question.typeId === 8 || question.typeId === 24) &&
+        (question.typeId === 3 ||
+          question.typeId === 8 ||
+          question.typeId === 24) &&
         question.customOptions.some((option) => option === '')
       ) {
         setCustomOptionError(
@@ -1157,7 +1198,7 @@ export default function CreateSurvey() {
           return;
         }
       }
-      if( question.typeId === 22){
+      if (question.typeId === 22) {
         // Validación: extremos vacíos
         if (
           question.textsBipolarBar.leftText.trim() === '' ||
@@ -1439,7 +1480,6 @@ export default function CreateSurvey() {
     }
 
     if (type.id === 22) {
-
       // Validación: extremos vacíos
       if (
         information.textsBipolarBar.leftText.trim() === '' ||
@@ -1543,7 +1583,9 @@ export default function CreateSurvey() {
         name: information.name,
         description: information.description,
         textsBipolarBar: information.textsBipolarBar,
-        secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
+        secondSelectOptions: Array.from({ length: 9 }, (_, i) =>
+          (2 + i).toString()
+        ),
       });
     } else if (type.id === 24) {
       handleAddQuestion({
@@ -1570,15 +1612,15 @@ export default function CreateSurvey() {
         valueLeft: '0',
       },
       maximunValueOptions: '',
-      secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
-
+      secondSelectOptions: Array.from({ length: 9 }, (_, i) =>
+        (2 + i).toString()
+      ),
     });
     setQuestion(null);
     setType(null);
     setCategoryId(null);
     handleCloseModal();
   };
-  
 
   /**
    * Add new question.
@@ -1812,7 +1854,9 @@ export default function CreateSurvey() {
         options: question.options.map((option) => option.templateOptionsName),
         questionOptions: question.options,
         stars: question.question.score,
-        selectOptions: question.selectOptions?.map((option) => option.selectOption),
+        selectOptions: question.selectOptions?.map(
+          (option) => option.selectOption
+        ),
         questionNumber: question.question.numberQuestion,
         childQuestionIds: [],
         ...(question.question.textsBipolarBar && {
@@ -1828,7 +1872,9 @@ export default function CreateSurvey() {
           question.question.score.length > 0
             ? 'fijo'
             : 'ilimitado',
-        secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
+        secondSelectOptions: Array.from({ length: 9 }, (_, i) =>
+          (2 + i).toString()
+        ),
       })
     );
     setQuestions(questionsCopy);
