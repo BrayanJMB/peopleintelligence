@@ -208,6 +208,18 @@ export default function CreateSurvey() {
     return demographics;
   };
 
+  const getScore = (question) => {
+    if (question.typeId === 5) {
+      return question.stars?.length || 3;
+    } else if (question.typeId === 3) {
+      return Number(question.stars);
+    } else if (question.typeId === 19 || question.typeId === 24) {
+      return Number(Array.isArray(question.stars) ? question.stars[0] : question.stars);
+    } else {
+      return null;
+    }
+  };
+
   /**
    * Create survey.
    */
@@ -238,18 +250,7 @@ export default function CreateSurvey() {
           nameQuestion: question.name,
           description: question.description,
           typeQuestionId: question.typeId,
-          score:
-            question.typeId === 5 // Estrellas
-              ? question.stars?.length || 3
-              : question.typeId === 3 // Opción múltiple con límite
-              ? Number(question.stars)
-              : question.typeId === 19 // Bipolar, tomar el primer valor del array
-              ? Number(
-                  Array.isArray(question.stars)
-                    ? question.stars[0]
-                    : question.stars
-                )
-              : null,
+          score:getScore(question),
           conditional: question.conditionalQuestion,
           textsBipolarBar: question.textsBipolarBar,
         },
@@ -1592,6 +1593,7 @@ export default function CreateSurvey() {
         type: 'Suma Constante',
         name: information.name,
         description: information.description,
+        stars: information.barBipolarValue,
         customOptions: information.customOptions,
       });
     }
