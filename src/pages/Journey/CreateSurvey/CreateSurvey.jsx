@@ -57,7 +57,7 @@ export default function CreateSurvey() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const [activeStep, setActiveStep] = useState(3);
+  const [activeStep, setActiveStep] = useState(0);
   const [questionTypes, setQuestionTypes] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [target, setTarget] = useState("");
@@ -234,6 +234,10 @@ export default function CreateSurvey() {
         daysConcurrency: dayConcurrency,
         hasWhatsApp: hasWhatsApp,
         hasNumerationNumber: hasNumerationNumber,
+        settings: {
+          primaryColor: primaryColor,
+          secondaryColor: secondaryColor,
+        },
       },
       questions: questions.map((question) => ({
         question: {
@@ -936,12 +940,14 @@ export default function CreateSurvey() {
               hasNumerationNumber={hasNumerationNumber}
               setHasNumerationNumber={setHasNumerationNumber}
             />
-            <ColorSurvey
-              primaryColor={primaryColor}
-              setPrimaryColor={setPrimaryColor}
-              secondaryColor={secondaryColor}
-              setSecondaryColor={setSecondaryColor}
-            />
+            {!templateId && (
+              <ColorSurvey
+                primaryColor={primaryColor}
+                setPrimaryColor={setPrimaryColor}
+                secondaryColor={secondaryColor}
+                setSecondaryColor={setSecondaryColor}
+              />
+            )}
           </Box>
         );
       case 4:
@@ -2100,7 +2106,7 @@ export default function CreateSurvey() {
                       errorDayConcurrency
                     }
                   >
-                    {activeStep === 4 || (activeStep === 1 && isTemplate)
+                    {activeStep === 5 || (activeStep === 1 && isTemplate)
                       ? "Finalizar"
                       : "Continuar"}
                   </Button>

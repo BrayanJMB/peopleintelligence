@@ -1,36 +1,36 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import PollIcon from '@mui/icons-material/Poll';
-import { FormControl } from '@mui/material';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Divider from '@mui/material/Divider';
-import FormLabel from '@mui/material/FormLabel';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Stepper from '@mui/material/Stepper';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
+import React, { Fragment, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import PollIcon from "@mui/icons-material/Poll";
+import { FormControl } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Divider from "@mui/material/Divider";
+import FormLabel from "@mui/material/FormLabel";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import Stepper from "@mui/material/Stepper";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 
-import MyLoader from '../../components/MyLoader/MyLoader';
+import MyLoader from "../../components/MyLoader/MyLoader";
 import {
   fetchSurveyForAnswer,
   fetchSurveyForAnswerPersonal,
   selectCurrentSurveyForAnswer,
   selectSurveysStatus,
   storeSurvey,
-} from '../../features/surveys/surveysSlice';
-import client from '../../utils/axiosInstance';
+} from "../../features/surveys/surveysSlice";
+import client from "../../utils/axiosInstance";
 
-import NotExclusiviness from './components/NotExclusiviness/NotExclusiviness';
-import NotFoundMessage from './components/NotFoundMessage/NotFoundMessage';
-import SuccessMessage from './components/SuccessMessage/SuccessMessage';
-import SurveyForm from './components/SurveyForm/SurveyForm';
+import NotExclusiviness from "./components/NotExclusiviness/NotExclusiviness";
+import NotFoundMessage from "./components/NotFoundMessage/NotFoundMessage";
+import SuccessMessage from "./components/SuccessMessage/SuccessMessage";
+import SurveyForm from "./components/SurveyForm/SurveyForm";
 
-import styles from './AnswerSurvey.module.css';
+import styles from "./AnswerSurvey.module.css";
 /**
  * Answer survey page.
  *
@@ -42,16 +42,16 @@ const AnswerSurvey = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
   const [steps, setSteps] = useState([
-    'Datos demográficos',
-    'Encuesta',
-    'Finalizar',
+    "Datos demográficos",
+    "Encuesta",
+    "Finalizar",
   ]);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [stepsCompleted, setStepsCompleted] = useState([false, false, true]);
   const [answers, setAnswers] = useState([{}, {}]);
-  const [answerIdAPI, setAnswerIdAPI] = useState('');
+  const [answerIdAPI, setAnswerIdAPI] = useState("");
   const [demographicUserData, setDemographicUserData] = useState(null);
   const [isPersonal, setIsPersonal] = useState(false);
   const surveyStatus = useSelector((state) => selectSurveysStatus(state));
@@ -130,7 +130,7 @@ const AnswerSurvey = () => {
         });
         setExclusiviness(true);
       } else {
-        console.error('Se produjo un error al hacer la solicitud', error);
+        console.error("Se produjo un error al hacer la solicitud", error);
       }
     }
   };
@@ -208,7 +208,7 @@ const AnswerSurvey = () => {
 
       if (demographicUserData !== null) {
         if (
-          typeof demographicUserData === 'object' &&
+          typeof demographicUserData === "object" &&
           !Array.isArray(demographicUserData)
         ) {
           payload.demographics = [demographicUserData];
@@ -218,7 +218,7 @@ const AnswerSurvey = () => {
         payload.answers = answers[0];
       }
       dispatch(storeSurvey(payload));
-      localStorage.setItem('formValues', JSON.stringify([]));
+      localStorage.setItem("formValues", JSON.stringify([]));
     }
 
     if (activeStep + 1 === steps.length) {
@@ -246,7 +246,7 @@ const AnswerSurvey = () => {
     if (!isStepOptional(activeStep)) {
       // You probably want to guard against something like this,
       // it should never occur unless someone's actively trying to break something.
-      throw new Error('You can\'t skip a step that isn\'t optional.');
+      throw new Error("You can't skip a step that isn't optional.");
     }
 
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -316,7 +316,7 @@ const AnswerSurvey = () => {
       dispatch(
         fetchSurveyForAnswerPersonal({ surveyId, companyId, answerId })
       ).then((result) => {
-        if (result.error.message.includes('409')) {
+        if (result.error.message.includes("409")) {
           setIsAlreadyResponse(true);
           setNotFound(false);
         }
@@ -345,8 +345,21 @@ const AnswerSurvey = () => {
     checkIfIsPersonal();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <div className={styles.AnswerSurvey} translate="no">
-      <div className={styles.AnswerSurvey__Background}></div>
+    <div
+      className={styles.AnswerSurvey}
+      style={{
+        backgroundColor:
+          currentSurvey && currentSurvey.response.settings?.primaryColor,
+      }}
+      translate="no"
+    >
+      <div
+        className={styles.AnswerSurvey__Background}
+        style={{
+          backgroundColor:
+            currentSurvey && currentSurvey.response.settings?.secondaryColor,
+        }}
+      ></div>
       <div className={styles.AnswerSurvey__Content}>
         <Card
           sx={{
@@ -355,29 +368,29 @@ const AnswerSurvey = () => {
           }}
         >
           <CardContent>
-            {surveyStatus === 'loading' && <MyLoader />}
-            {surveyStatus === 'failed' && isAlreadyResponse && (
+            {surveyStatus === "loading" && <MyLoader />}
+            {surveyStatus === "failed" && isAlreadyResponse && (
               <SuccessMessage isAlreadyResponse={isAlreadyResponse} />
             )}
-            {surveyStatus === 'failed' && notFound && (
+            {surveyStatus === "failed" && notFound && (
               <NotFoundMessage
-                infoMessage={'Lo sentimos esta encuesta no esta disponible :('}
+                infoMessage={"Lo sentimos esta encuesta no esta disponible :("}
               />
             )}
             {exclusiviness && <NotExclusiviness />}
-            {surveyStatus === 'succeeded' &&
+            {surveyStatus === "succeeded" &&
               currentSurvey !== null &&
               !exclusiviness && (
                 <Fragment>
                   {/* company name */}
                   <Box
                     sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
                       flexDirection: {
-                        xs: 'column-reverse', 
-                        sm: 'row',             
+                        xs: "column-reverse",
+                        sm: "row",
                       },
                     }}
                   >
@@ -385,10 +398,10 @@ const AnswerSurvey = () => {
                       variant="body1"
                       gutterBottom
                       style={{
-                        flex: '1 0 65%',
-                        fontSize: '25px',
-                        fontWeight: 'bold',
-                        fontStyle: 'italic',
+                        flex: "1 0 65%",
+                        fontSize: "25px",
+                        fontWeight: "bold",
+                        fontStyle: "italic",
                       }}
                     >
                       {currentSurvey.response.surveyName}
@@ -397,8 +410,8 @@ const AnswerSurvey = () => {
                       variant="h5"
                       gutterBottom
                       style={{
-                        textAlign: 'right',
-                        flex: '1 0 35%', // Asegura que este elemento siempre toma el 50% del espacio
+                        textAlign: "right",
+                        flex: "1 0 35%", // Asegura que este elemento siempre toma el 50% del espacio
                       }}
                     >
                       {currentSurvey.logo !== null &&
@@ -407,8 +420,8 @@ const AnswerSurvey = () => {
                             src={currentSurvey.logo}
                             alt="Logotipo de la empresa"
                             style={{
-                              width: '1.5em',
-                              verticalAlign: 'middle',
+                              width: "1.5em",
+                              verticalAlign: "middle",
                             }}
                           />
                         )}
@@ -416,13 +429,13 @@ const AnswerSurvey = () => {
                         currentSurvey.logo.length === 0) && (
                         <PollIcon
                           style={{
-                            verticalAlign: 'middle',
-                            marginRight: '0.8em',
+                            verticalAlign: "middle",
+                            marginRight: "0.8em",
                           }}
                         />
                       )}
 
-                      <span style={{ verticalAlign: 'middle' }}>
+                      <span style={{ verticalAlign: "middle" }}>
                         {currentSurvey.empresa}
                       </span>
                     </Typography>
@@ -431,7 +444,7 @@ const AnswerSurvey = () => {
                   <Divider
                     variant="middle"
                     style={{
-                      margin: '1.3em 0',
+                      margin: "1.3em 0",
                     }}
                   />
 
@@ -439,25 +452,25 @@ const AnswerSurvey = () => {
                   {emailSubmitted === false && !answerId && (
                     <Box
                       sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        margin: '3em 0',
-                        flexDirection: 'column',
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        margin: "3em 0",
+                        flexDirection: "column",
                       }}
                     >
                       <FormControl
                         style={{
-                          width: '300px',
+                          width: "300px",
                         }}
                       >
                         <FormLabel
                           id="email"
                           sx={{
-                            textAlign: 'center',
-                            marginBottom: '1.3em',
-                            fontSize: '1.4em',
-                            fontWeight: 'bold',
+                            textAlign: "center",
+                            marginBottom: "1.3em",
+                            fontSize: "1.4em",
+                            fontWeight: "bold",
                           }}
                           error={emailError}
                         >
@@ -477,8 +490,8 @@ const AnswerSurvey = () => {
                           variant="contained"
                           onClick={handleEmailSubmit}
                           style={{
-                            marginTop: '1em',
-                            width: '300px',
+                            marginTop: "1em",
+                            width: "300px",
                           }}
                         >
                           Enviar
@@ -487,9 +500,9 @@ const AnswerSurvey = () => {
                       <Typography
                         variant="body1"
                         sx={{
-                          fontStyle: 'italic',
-                          fontWeight: 'bold', // Negrilla
-                          color: '#6c6c6c', // Gris oscuro
+                          fontStyle: "italic",
+                          fontWeight: "bold", // Negrilla
+                          color: "#6c6c6c", // Gris oscuro
                           marginTop: 2, // Margen superior (ajusta según sea necesario)
                         }}
                       >
@@ -502,7 +515,7 @@ const AnswerSurvey = () => {
                   {(emailSubmitted === true || answerId || !isPersonal) && (
                     <Fragment>
                       <Stepper
-                        style={{ marginTop: '2em' }}
+                        style={{ marginTop: "2em" }}
                         activeStep={activeStep}
                       >
                         {steps.map((label, index) => {
@@ -526,7 +539,7 @@ const AnswerSurvey = () => {
                         })}
                       </Stepper>
                       <React.Fragment>
-                        <div style={{ padding: '1em' }}>
+                        <div style={{ padding: "1em" }}>
                           {/* first step */}
                           {isDemographicStep() && (
                             <Fragment>
@@ -592,7 +605,7 @@ const AnswerSurvey = () => {
                         </div>
 
                         <Box
-                          sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}
+                          sx={{ display: "flex", flexDirection: "row", pt: 2 }}
                         >
                           {/*activeStep !== 0 && activeStep +1 !== steps.length && (
                           <Button
@@ -604,7 +617,7 @@ const AnswerSurvey = () => {
                             Atrás
                           </Button>
                         )*/}
-                          <Box sx={{ flex: '1 1 auto' }} />
+                          <Box sx={{ flex: "1 1 auto" }} />
                           {isStepOptional(activeStep) && (
                             <Button
                               color="inherit"
@@ -618,10 +631,10 @@ const AnswerSurvey = () => {
                             onClick={handleNext}
                             disabled={
                               !stepsCompleted[activeStep] ||
-                              surveyStatus === 'loading'
+                              surveyStatus === "loading"
                             }
                           >
-                            {activeStep === steps.length - 2 ? '' : ''}
+                            {activeStep === steps.length - 2 ? "" : ""}
                           </Button>
                         </Box>
                       </React.Fragment>
