@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { Box, TextField, IconButton, Popover, Typography } from "@mui/material";
-import ColorLensIcon from "@mui/icons-material/ColorLens";
-import { SketchPicker } from "react-color";
+import React, { useState } from 'react';
+import { SketchPicker } from 'react-color';
+import ColorLensIcon from '@mui/icons-material/ColorLens';
+import { Box, IconButton, Popover, TextField, Typography } from '@mui/material';
 
 export const ColorSurvey = ({
   primaryColor,
@@ -23,9 +23,9 @@ export const ColorSurvey = ({
   };
 
   const handleColorChange = (color) => {
-    if (activePicker === "primary") {
+    if (activePicker === 'primary') {
       setPrimaryColor(color.hex);
-    } else if (activePicker === "secondary") {
+    } else if (activePicker === 'secondary') {
       setSecondaryColor(color.hex);
     }
   };
@@ -38,9 +38,9 @@ export const ColorSurvey = ({
         <Typography
           variant="h6"
           style={{
-            fontWeight: "bold",
-            marginBottom: "15px",
-            marginTop: "15px",
+            fontWeight: 'bold',
+            marginBottom: '15px',
+            marginTop: '15px',
           }}
         >
           Colores encuesta:
@@ -52,9 +52,9 @@ export const ColorSurvey = ({
           Si no eliges ninguno, se aplicarán los colores por defecto.
         </Typography>
       </Box>
-      <Box sx={{ p: 2, display: "flex", gap: 4 }}>
+      <Box sx={{ p: 2, display: 'flex', gap: 4 }}>
         {/* Color Primario */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography>Color primario:</Typography>
           <TextField
             variant="outlined"
@@ -63,15 +63,15 @@ export const ColorSurvey = ({
             inputProps={{ maxLength: 7 }}
           />
           <IconButton
-            onClick={(e) => handleOpenPicker(e, "primary")}
+            onClick={(e) => handleOpenPicker(e, 'primary')}
             sx={{ backgroundColor: primaryColor }}
           >
-            <ColorLensIcon sx={{ color: "#fff" }} />
+            <ColorLensIcon sx={{ color: '#fff' }} />
           </IconButton>
         </Box>
 
         {/* Color Secundario */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography>Color secundario:</Typography>
           <TextField
             variant="outlined"
@@ -80,10 +80,10 @@ export const ColorSurvey = ({
             inputProps={{ maxLength: 7 }}
           />
           <IconButton
-            onClick={(e) => handleOpenPicker(e, "secondary")}
+            onClick={(e) => handleOpenPicker(e, 'secondary')}
             sx={{ backgroundColor: secondaryColor }}
           >
-            <ColorLensIcon sx={{ color: "#fff" }} />
+            <ColorLensIcon sx={{ color: '#fff' }} />
           </IconButton>
         </Box>
 
@@ -92,10 +92,10 @@ export const ColorSurvey = ({
           open={open}
           anchorEl={anchorEl}
           onClose={handleClose}
-          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         >
           <SketchPicker
-            color={activePicker === "primary" ? primaryColor : secondaryColor}
+            color={activePicker === 'primary' ? primaryColor : secondaryColor}
             onChangeComplete={handleColorChange}
           />
         </Popover>
