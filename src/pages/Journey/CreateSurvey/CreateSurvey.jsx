@@ -40,6 +40,7 @@ import {
 import client from '../../../utils/axiosInstance';
 
 import { View360 } from './360Vista/View360.jsx';
+import { ColorSurvey } from './ColorSurvey/ColorSurvey.jsx';
 import Cuestionario from './Cuestionario/Cuestionario';
 import { Exclusiveness } from './Exclusividad/Exclusiveness.jsx';
 import { WhatsAppForSurvey } from './HasWhatsApp/WhatsAppForSurvey.jsx';
@@ -123,6 +124,8 @@ export default function CreateSurvey() {
     confidentialityMessage:
       'Tus respuestas serán completamente confidenciales y no podrán ser vinculadas a tu identidad.',
   });
+  const [primaryColor, setPrimaryColor] = useState('#03aae4');
+  const [secondaryColor, setSecondaryColor] = useState('#f3f3f3');
   const [hasNumerationNumber, setHasNumerationNumber] = useState(true);
   const [errorDayConcurrency, setErrorDayConcurrency] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -232,6 +235,10 @@ export default function CreateSurvey() {
         daysConcurrency: dayConcurrency,
         hasWhatsApp: hasWhatsApp,
         hasNumerationNumber: hasNumerationNumber,
+        settings: {
+          primaryColor: primaryColor,
+          secondaryColor: secondaryColor,
+        },
       },
       questions: questions.map((question) => ({
         question: {
@@ -934,6 +941,14 @@ export default function CreateSurvey() {
               hasNumerationNumber={hasNumerationNumber}
               setHasNumerationNumber={setHasNumerationNumber}
             />
+            {!templateId && (
+              <ColorSurvey
+                primaryColor={primaryColor}
+                setPrimaryColor={setPrimaryColor}
+                secondaryColor={secondaryColor}
+                setSecondaryColor={setSecondaryColor}
+              />
+            )}
           </Box>
         );
       case 4:
@@ -2092,7 +2107,7 @@ export default function CreateSurvey() {
                       errorDayConcurrency
                     }
                   >
-                    {activeStep === 4 || (activeStep === 1 && isTemplate)
+                    {activeStep === 5 || (activeStep === 1 && isTemplate)
                       ? 'Finalizar'
                       : 'Continuar'}
                   </Button>

@@ -345,8 +345,21 @@ const AnswerSurvey = () => {
     checkIfIsPersonal();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <div className={styles.AnswerSurvey} translate="no">
-      <div className={styles.AnswerSurvey__Background}></div>
+    <div
+      className={styles.AnswerSurvey}
+      style={{
+        backgroundColor:
+          currentSurvey && currentSurvey.response.settings?.primaryColor,
+      }}
+      translate="no"
+    >
+      <div
+        className={styles.AnswerSurvey__Background}
+        style={{
+          backgroundColor:
+            currentSurvey && currentSurvey.response.settings?.secondaryColor,
+        }}
+      ></div>
       <div className={styles.AnswerSurvey__Content}>
         <Card
           sx={{
@@ -376,8 +389,8 @@ const AnswerSurvey = () => {
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       flexDirection: {
-                        xs: 'column-reverse', 
-                        sm: 'row',             
+                        xs: 'column-reverse',
+                        sm: 'row',
                       },
                     }}
                   >
