@@ -5,10 +5,12 @@ import { Autocomplete } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
@@ -695,6 +697,43 @@ const EditForm = ({
           {question.typeId === 24 && (
             <>
               <div className={styles.top}>
+                <FormControl component="fieldset" sx={{ mt: 2, mb: 4 }}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={question.autoValidate}
+                        onChange={handleInformation}
+                        name="autoValidate"
+                      />
+                    }
+                    label="¿Deseas que el valor de la escala se valide automáticamente?"
+                  />
+                  <FormHelperText>
+                    Si se activa, el sistema validará automaticamente que el
+                    valor esté dentro del rango esperado.
+                  </FormHelperText>
+                </FormControl>
+
+                <div
+                  style={{
+                    marginTop: '4px',
+                  }}
+                >
+                  <TextField
+                    label="Valor de la escala"
+                    type="number"
+                    inputProps={{ min: 0 }}
+                    value={question.stars}
+                    name="barBipolarValue"
+                    onChange={handleInformation}
+                    variant="standard"
+                    fullWidth
+                    error={errorMessage.bipolar}
+                    helperText={
+                      errorMessage.bipolar ? helperText.bipolar : ''
+                    }
+                  />
+                </div>
                 {question.customOptions.map((val, key) => {
                   return (
                     <div

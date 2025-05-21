@@ -88,6 +88,7 @@ export default function CreateSurvey() {
     secondSelectOptions: Array.from({ length: 9 }, (_, i) =>
       (2 + i).toString()
     ),
+    autoValidate: false,
   });
   const [firstSelect, setFirstSelect] = useState(0);
   const [secondSelect, setSecondSelect] = useState(2);
@@ -211,6 +212,20 @@ export default function CreateSurvey() {
     return demographics;
   };
 
+  const getScore = (question) => {
+    if (question.typeId === 5) {
+      return question.stars?.length || 3;
+    } else if (question.typeId === 3) {
+      return Number(question.stars);
+    } else if (question.typeId === 19 || question.typeId === 24) {
+      return Number(
+        Array.isArray(question.stars) ? question.stars[0] : question.stars
+      );
+    } else {
+      return null;
+    }
+  };
+
   /**
    * Create survey.
    */
@@ -245,20 +260,10 @@ export default function CreateSurvey() {
           nameQuestion: question.name,
           description: question.description,
           typeQuestionId: question.typeId,
-          score:
-            question.typeId === 5 // Estrellas
-              ? question.stars?.length || 3
-              : question.typeId === 3 // Opción múltiple con límite
-              ? Number(question.stars)
-              : question.typeId === 19 // Bipolar, tomar el primer valor del array
-              ? Number(
-                  Array.isArray(question.stars)
-                    ? question.stars[0]
-                    : question.stars
-                )
-              : null,
+          score: getScore(question),
           conditional: question.conditionalQuestion,
           textsBipolarBar: question.textsBipolarBar,
+          autoValidate: question.autoValidate,
         },
         options: question.customOptions?.map((option, index) => {
           return {
@@ -341,6 +346,10 @@ export default function CreateSurvey() {
       messageMail: data.mailingMessage,
       emailSubject: data.emailSubject,
       emailMask: data.emailMask,
+      settings:{
+        primaryColor: primaryColor,
+        secondaryColor: secondaryColor,
+      },
       isObligatory: !(data.surveyOrMap === 'survey'),
       questionSection: questions.map((question, index) => ({
         templateCategoryId: question.categoryId,
@@ -533,7 +542,7 @@ export default function CreateSurvey() {
    * @param {object} event
    */
   const handleInformation = (event) => {
-    const { name, value } = event.target;
+    const { name, value, type, checked } = event.target;
 
     if (name.includes('.')) {
       const [parentKey, childKey] = name.split('.');
@@ -563,7 +572,7 @@ export default function CreateSurvey() {
     } else {
       setInformation((prev) => ({
         ...prev,
-        [name]: value,
+        [name]: type === 'checkbox' ? checked : value,
       }));
     }
   };
@@ -941,14 +950,14 @@ export default function CreateSurvey() {
               hasNumerationNumber={hasNumerationNumber}
               setHasNumerationNumber={setHasNumerationNumber}
             />
-            {!templateId && (
               <ColorSurvey
                 primaryColor={primaryColor}
                 setPrimaryColor={setPrimaryColor}
                 secondaryColor={secondaryColor}
                 setSecondaryColor={setSecondaryColor}
+                data={data}
               />
-            )}
+            
           </Box>
         );
       case 4:
@@ -1424,7 +1433,7 @@ export default function CreateSurvey() {
       return;
     }
     // ✅ Validación escala bipolar
-    if (type.id === 19) {
+    if (type.id === 19 || type.id === 24) {
       const value = Number(information.barBipolarValue);
       if (isNaN(value)) {
         setErrorMessage((prev) => ({
@@ -1464,7 +1473,7 @@ export default function CreateSurvey() {
       }
 
       // Validación: valor mayor a 10
-      if (value > 10) {
+      if (value > 10 && type.id !== 24) {
         setErrorMessage((prev) => ({
           ...prev,
           bipolar: true,
@@ -1478,8 +1487,9 @@ export default function CreateSurvey() {
 
       // Validación: extremos vacíos
       if (
-        information.textsBipolarBar.leftText.trim() === '' ||
-        information.textsBipolarBar.rightText.trim() === ''
+        (information.textsBipolarBar.leftText.trim() === '' ||
+          information.textsBipolarBar.rightText.trim() === '') &&
+        type.id !== 24
       ) {
         setErrorMessage((prev) => ({
           ...prev,
@@ -1607,7 +1617,9 @@ export default function CreateSurvey() {
         type: 'Suma Constante',
         name: information.name,
         description: information.description,
+        stars: information.barBipolarValue,
         customOptions: information.customOptions,
+        autoValidate: information.autoValidate,
       });
     }
 
@@ -1782,6 +1794,7 @@ export default function CreateSurvey() {
         mailingMessage: survey.response.emailMessage,
       };
     }
+
     setData(dataCopy);
 
     let questionsCopy = [...questions];
@@ -1851,6 +1864,13 @@ export default function CreateSurvey() {
         mailingMessage: template.template.messageMail,
       };
     }
+    if (template.template?.settings) {
+      const settings = JSON.parse(template.template.settings || '{}');
+      setPrimaryColor(settings.primaryColor);
+      setSecondaryColor(settings.secondaryColor);
+    }
+
+    console.log(template);
     setData(dataCopy);
     let questionsCopy = [...questions];
     // fill questions

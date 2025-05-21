@@ -110,6 +110,8 @@ const SurveyForm = ({
   const [values, setValues] = useState({});
   const isMobile = useIsMobile();
   const [verMas, setVerMas] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [sliderErrors, setSliderErrors] = useState({});
   const textoSinBr = descriptionSurvey
     ? descriptionSurvey.replace(/<br\/>/g, '\n')
     : '';
@@ -121,6 +123,42 @@ const SurveyForm = ({
   const [questionRefs, setQuestionRefs] = useState({});
 
   const handleNext = () => {
+    setSubmitAttempted(true);
+
+    const errors = {};
+    let firstErrorIndex = null;
+
+    formValues.forEach((formValue, idx) => {
+      const question = questions[idx];
+      if (isConstantAdd(formValue.questionType) && !question.autoValidate) {
+        const sum = Object.values(formValue.sliders || {}).reduce(
+          (a, b) => a + b,
+          0
+        );
+        const max = question.score ?? 100;
+        if (sum > max) {
+          errors[
+            idx
+          ] = `Te has excedido del límite permitido. Por favor, ajusta los valores para no superar ${max} puntos.`;
+          if (firstErrorIndex === null) firstErrorIndex = idx;
+        }
+      }
+    });
+
+    if (Object.keys(errors).length > 0) {
+      setSliderErrors(errors);
+
+      // Hacer scroll a la primera pregunta con error
+      const questionId = questions[firstErrorIndex].questionId;
+      questionRefs[questionId]?.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+
+      return;
+    }
+
+    setSliderErrors({});
     if (verifyCurrentStepAnswersSelected()) {
       if (activeStep + 1 !== totalOfSteps()) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -492,7 +530,12 @@ const SurveyForm = ({
           (a, b) => a + b,
           0
         );
-        isUnanswered = sum !== 100;
+        const maxScore = questions[globalIndex]?.score ?? 100;
+        if (questions[globalIndex].autoValidate) {
+          isUnanswered = sum !== maxScore;
+        } else {
+          isUnanswered = sum > maxScore; // sólo error si pasó
+        }
       } else {
         isUnanswered = formValue.value === null || formValue.value === '';
       }
@@ -540,56 +583,56 @@ const SurveyForm = ({
     });
   };
 
-  const handleSliderSumaConstante = (event, questionIndex, optionName) => {
-    const newValue = parseInt(event.target.value);
+  const handleSliderSumaConstante = (
+    rawValue, // <-- aquí llega el número puro
+    questionIndex,
+    optionName
+  ) => {
+    const pregunta = questions[questionIndex];
+    const maxScore = pregunta.score ?? 100;
 
-    setFormValues((prevFormValues) => {
-      const newFormValues = [...prevFormValues];
+    setFormValues((prev) =>
+      prev.map((fv, idx) => {
+        if (idx !== questionIndex) return fv;
 
-      const currentSliders = { ...newFormValues[questionIndex].sliders } || {};
-      const currentValues = { ...newFormValues[questionIndex].values } || {};
+        // Copy estado
+        const sliders = { ...fv.sliders };
+        const values = { ...fv.values };
 
-      const previousValue = currentSliders[optionName] ?? 0;
-      const totalActual = Object.values(currentSliders).reduce(
-        (a, b) => a + b,
-        0
-      );
+        // Suma de TODOS menos esta opción
+        const prevVal = sliders[optionName] || 0;
+        const totalSinEsta =
+          Object.values(sliders).reduce((a, b) => a + b, 0) - prevVal;
 
-      const nuevaSuma = totalActual - previousValue + newValue;
-
-      const finalValue =
-        nuevaSuma <= 100 ? newValue : 100 - (totalActual - previousValue);
-
-      // ✅ Guardar valor numérico incluso si es 0
-      currentSliders[optionName] = finalValue;
-
-      // ✅ Marcar como "respondido" incluso si se deja en 0
-      currentValues[optionName] = true;
-
-      newFormValues[questionIndex].sliders = currentSliders;
-      newFormValues[questionIndex].values = currentValues;
-
-      // Validar suma total
-      const sumaFinal = Object.values(currentSliders).reduce(
-        (a, b) => a + b,
-        0
-      );
-
-      setUnansweredQuestions((prev) => {
-        const yaMarcada = prev.includes(questionIndex);
-
-        if (sumaFinal === 100 && yaMarcada) {
-          return prev.filter((i) => i !== questionIndex);
+        // Calcula el valor “aplicado”
+        let applied = rawValue;
+        if (pregunta.autoValidate) {
+          const espacioRestante = maxScore - totalSinEsta;
+          applied = Math.max(0, Math.min(rawValue, espacioRestante));
         }
 
-        if (sumaFinal !== 100 && !yaMarcada) {
-          return [...prev, questionIndex];
-        }
+        // Asigna y marca como respondido
+        sliders[optionName] = applied;
+        values[optionName] = true;
 
-        return prev;
-      });
+        return { ...fv, sliders, values };
+      })
+    );
 
-      return newFormValues;
+    // 3) Actualiza inmediatamente el array de “unanswered”
+    setUnansweredQuestions((prevU) => {
+      const sum = Object.values(
+        formValuesRef.current[questionIndex].sliders || {}
+      ).reduce((a, b) => a + b, 0);
+
+      const hasError = pregunta.autoValidate
+        ? sum !== maxScore // con validación en caliente exige suma exacta
+        : sum > maxScore; // sin validación sólo error si pasa del límite
+
+      const already = prevU.includes(questionIndex);
+      if (hasError && !already) return [...prevU, questionIndex];
+      if (!hasError && already) return prevU.filter((i) => i !== questionIndex);
+      return prevU;
     });
   };
 
@@ -1788,10 +1831,14 @@ const SurveyForm = ({
                         <Slider
                           value={currentValue}
                           min={0}
-                          max={100}
+                          max={score}
                           step={1}
-                          onChange={(e) =>
-                            handleSliderSumaConstante(e, index, optionName)
+                          onChange={(e, newValue) =>
+                            handleSliderSumaConstante(
+                              newValue,
+                              index,
+                              optionName
+                            )
                           }
                           valueLabelDisplay="auto"
                         />
@@ -1799,15 +1846,21 @@ const SurveyForm = ({
                     );
                   })}
                 </Box>
-
+                {/*
                 <Typography variant="subtitle2" sx={{ mt: 1 }}>
-                  Total asignado:{' '}
+                  Total asignado:{" "}
                   {Object.values(formValues[index].sliders || {}).reduce(
                     (a, b) => a + b,
                     0
-                  )}{' '}
-                  / 100
-                </Typography>
+                  )}{" "}
+                  / {score}
+                </Typography>*/}
+
+                {submitAttempted && sliderErrors[index] && (
+                  <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                    {sliderErrors[index]}
+                  </Typography>
+                )}
 
                 <Divider variant="middle" />
               </Fragment>

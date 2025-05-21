@@ -349,7 +349,7 @@ const AnswerSurvey = () => {
       className={styles.AnswerSurvey}
       style={{
         backgroundColor:
-          currentSurvey && currentSurvey.response.settings?.primaryColor,
+          currentSurvey && currentSurvey.response.settings?.secondaryColor,
       }}
       translate="no"
     >
@@ -357,7 +357,7 @@ const AnswerSurvey = () => {
         className={styles.AnswerSurvey__Background}
         style={{
           backgroundColor:
-            currentSurvey && currentSurvey.response.settings?.secondaryColor,
+            currentSurvey && currentSurvey.response.settings?.primaryColor,
         }}
       ></div>
       <div className={styles.AnswerSurvey__Content}>
