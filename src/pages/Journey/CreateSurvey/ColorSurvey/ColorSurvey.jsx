@@ -8,7 +8,9 @@ export const ColorSurvey = ({
   setPrimaryColor,
   secondaryColor,
   setSecondaryColor,
+  data
 }) => {
+  console.log(data)
   const [anchorEl, setAnchorEl] = useState(null);
   const [activePicker, setActivePicker] = useState(null); // 'primary' or 'secondary'
 

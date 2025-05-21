@@ -10,7 +10,8 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextareaAutosize from "@mui/material/TextareaAutosize";
 import TextField from "@mui/material/TextField";
-
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
 import { RelationalQuestions } from "../Questions/RelationQuestion/RelationalQuestion";
 
 import styles from "./Form.module.css";
@@ -1089,6 +1090,23 @@ export default function Form(props) {
                 onChange={props.handleInformation}
               />
             </div>
+            <FormControl component="fieldset" sx={{ mt: 2, mb:4 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={props.information.autoValidate}
+                    onChange={props.handleInformation}
+                    name="autoValidate"
+                  />
+                }
+                label="¿Deseas que el valor de la escala se valide automáticamente?"
+              />
+              <FormHelperText>
+                Si se activa, el sistema validará automaticamente que el valor esté dentro del
+                rango esperado.
+              </FormHelperText>
+            </FormControl>
+
             <div
               style={{
                 marginTop: "4px",
@@ -1097,7 +1115,7 @@ export default function Form(props) {
               <TextField
                 label="Valor de la escala"
                 type="number"
-                inputProps={{ min: 0}}
+                inputProps={{ min: 0 }}
                 value={props.information.barBipolarValue}
                 name="barBipolarValue"
                 onChange={props.handleInformation}
