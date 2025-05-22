@@ -1,0 +1,30 @@
+.AnswerSurvey {
+    background-color: #f3f3f3;
+    width: 100%;
+    height: 100vh;
+    overflow: auto;
+}
+.AnswerSurvey__Background {
+    width: 100%;
+    height: 20%;
+    background-color: #03aae4;
+    text-align: center;
+    position: fixed;
+}
+.AnswerSurvey__Content {
+    position: relative;
+    z-index: 1;
+    padding: 1em;
+}
+.AnswerSurvey__DemographicsForm {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+@media screen and (min-width: 800px) {
+    .AnswerSurvey__Content {
+        top: 3em;
+        width: 800px;
+        margin: 0 auto;
+    }
+}
