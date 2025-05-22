@@ -21,6 +21,7 @@ import NoAccess from './pages/NoAccess/NoAccess';
 import Onas from './pages/Onas/Onas';
 import OnasDetails from './pages/OnasDetails/OnasDetails';
 import OnasTable from './pages/OnasTable/OnasTable';
+import { Panel360Survey } from './pages/Panel360Survey/Panel360Survey';
 import PowerBI from './pages/PowerBI/PowerBI';
 import PowerBiDashboard from './pages/PowerBiDashboard/PowerBiDashboard';
 import Questions from './pages/Questions/Questions';
@@ -53,6 +54,10 @@ export default function App() {
               <Route
                 path="/answer-survey/:surveyId/:companyId"
                 element={<AnswerSurvey />}
+              />
+              <Route
+                path="/control-panel-survey-360/:surveyId/:companyId/:token/"
+                element={<Panel360Survey />}
               />
               <Route
                 path="/answer-survey/:surveyId/:companyId/:answerId"

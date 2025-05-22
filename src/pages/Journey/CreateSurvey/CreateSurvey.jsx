@@ -250,6 +250,7 @@ export default function CreateSurvey() {
         daysConcurrency: dayConcurrency,
         hasWhatsApp: hasWhatsApp,
         hasNumerationNumber: hasNumerationNumber,
+        is360Survey: isView360,
         settings: {
           primaryColor: primaryColor,
           secondaryColor: secondaryColor,
@@ -285,6 +286,14 @@ export default function CreateSurvey() {
       `/createJourney/${currentCompany.id}`,
       newSurvey
     );
+    if (isView360) {
+      const payload = {
+        surveyId: createdJourney.id,
+        evaluators: view360,
+      };
+
+      await client.post('/Evaluators', payload);
+    }
 
     setLoading(false);
     navigate(`/journey/survey/${createdJourney.id}/detail?sendMail=true`);
@@ -346,7 +355,7 @@ export default function CreateSurvey() {
       messageMail: data.mailingMessage,
       emailSubject: data.emailSubject,
       emailMask: data.emailMask,
-      settings:{
+      settings: {
         primaryColor: primaryColor,
         secondaryColor: secondaryColor,
       },
@@ -950,14 +959,13 @@ export default function CreateSurvey() {
               hasNumerationNumber={hasNumerationNumber}
               setHasNumerationNumber={setHasNumerationNumber}
             />
-              <ColorSurvey
-                primaryColor={primaryColor}
-                setPrimaryColor={setPrimaryColor}
-                secondaryColor={secondaryColor}
-                setSecondaryColor={setSecondaryColor}
-                data={data}
-              />
-            
+            <ColorSurvey
+              primaryColor={primaryColor}
+              setPrimaryColor={setPrimaryColor}
+              secondaryColor={secondaryColor}
+              setSecondaryColor={setSecondaryColor}
+              data={data}
+            />
           </Box>
         );
       case 4:
