@@ -42,7 +42,7 @@ export const View360 = (props) => {
       formData.append('file', file);
 
       const response = await fetch(
-        'https://localhost:7018/WeatherForecast/validate',
+        'https://peopleintelligence-api-test.azurewebsites.net/api/validateExcel',
         {
           method: 'POST',
           body: formData,
@@ -83,7 +83,7 @@ export const View360 = (props) => {
         enqueueSnackbar(result.message ?? 'Validación completada.', {
           variant: 'success',
         });
-        props.setView360(result.data360);
+        props.setView360(result.filas);
       } else {
         enqueueSnackbar('Respuesta inesperada del servidor.', {
           variant: 'error',
