@@ -1,44 +1,44 @@
-import { useEffect } from "react";
-import { Provider } from "react-redux";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { SnackbarProvider } from "notistack";
+import { useEffect } from 'react';
+import { Provider } from 'react-redux';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { SnackbarProvider } from 'notistack';
 
-import { Moderator } from "./components/Build/Moderator/Moderator";
-import AnswerSurvey from "./pages/AnswerSurvey/AnswerSurvey";
-import Bancolombia from "./pages/Bancolombia/Bancolombia";
-import { CMI } from "./pages/CMI/CMI";
-import Conversation from "./pages/Conversation/Conversation";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import Error from "./pages/Error/Error";
-import Home from "./pages/Home/Home";
-import InfoAdmin from "./pages/InfoAdmin/InfoAdmin";
-import CreateSurvey from "./pages/Journey/CreateSurvey/CreateSurvey";
-import Journey from "./pages/Journey/Journey";
-import Template from "./pages/Journey/Template/Template";
-import JourneySettingsPage from "./pages/JourneySettingsPage/JourneySettingsPage";
-import NoAccess from "./pages/NoAccess/NoAccess";
-import Onas from "./pages/Onas/Onas";
-import OnasDetails from "./pages/OnasDetails/OnasDetails";
-import OnasTable from "./pages/OnasTable/OnasTable";
-import PowerBI from "./pages/PowerBI/PowerBI";
-import PowerBiDashboard from "./pages/PowerBiDashboard/PowerBiDashboard";
-import Questions from "./pages/Questions/Questions";
-import Register from "./pages/Register/Register";
-import Roles from "./pages/Roles/Roles";
-import SurveyDetailPage from "./pages/SurveyDetailPage/SurveyDetailPage";
-import { AssignUserCompany } from "./pages/userAdministrator/AssignUserCompany";
-import UserAdministrator from "./pages/userAdministrator/UserAdministrator";
-import { store } from "./redux/store";
-import IdleTimer from "./utils/IdleTimer";
-import PrivateRoutes from "./utils/PrivateRoutes";
-import { Panel360Survey } from "./pages/Panel360Survey/Panel360Survey";
+import { Moderator } from './components/Build/Moderator/Moderator';
+import AnswerSurvey from './pages/AnswerSurvey/AnswerSurvey';
+import Bancolombia from './pages/Bancolombia/Bancolombia';
+import { CMI } from './pages/CMI/CMI';
+import Conversation from './pages/Conversation/Conversation';
+import Dashboard from './pages/Dashboard/Dashboard';
+import Error from './pages/Error/Error';
+import Home from './pages/Home/Home';
+import InfoAdmin from './pages/InfoAdmin/InfoAdmin';
+import CreateSurvey from './pages/Journey/CreateSurvey/CreateSurvey';
+import Journey from './pages/Journey/Journey';
+import Template from './pages/Journey/Template/Template';
+import JourneySettingsPage from './pages/JourneySettingsPage/JourneySettingsPage';
+import NoAccess from './pages/NoAccess/NoAccess';
+import Onas from './pages/Onas/Onas';
+import OnasDetails from './pages/OnasDetails/OnasDetails';
+import OnasTable from './pages/OnasTable/OnasTable';
+import { Panel360Survey } from './pages/Panel360Survey/Panel360Survey';
+import PowerBI from './pages/PowerBI/PowerBI';
+import PowerBiDashboard from './pages/PowerBiDashboard/PowerBiDashboard';
+import Questions from './pages/Questions/Questions';
+import Register from './pages/Register/Register';
+import Roles from './pages/Roles/Roles';
+import SurveyDetailPage from './pages/SurveyDetailPage/SurveyDetailPage';
+import { AssignUserCompany } from './pages/userAdministrator/AssignUserCompany';
+import UserAdministrator from './pages/userAdministrator/UserAdministrator';
+import { store } from './redux/store';
+import IdleTimer from './utils/IdleTimer';
+import PrivateRoutes from './utils/PrivateRoutes';
 
 // custom theme
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#03aae4",
+      main: '#03aae4',
     },
   },
 });
