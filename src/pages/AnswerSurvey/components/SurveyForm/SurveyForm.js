@@ -464,7 +464,7 @@ const SurveyForm = ({
           }
         }
       } else {
-        newVisibleQuestions[i] = false;
+        newVisibleQuestions[i] = true;
       }
     }
 
