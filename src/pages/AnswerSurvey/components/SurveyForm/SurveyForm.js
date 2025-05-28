@@ -1,55 +1,55 @@
-import React, { Fragment, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import StarIcon from "@mui/icons-material/Star";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
-import { ToggleButton, ToggleButtonGroup } from "@mui/material";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
-import Divider from "@mui/material/Divider";
-import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormGroup from "@mui/material/FormGroup";
-import FormLabel from "@mui/material/FormLabel";
-import IconButton from "@mui/material/IconButton";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import MobileStepper from "@mui/material/MobileStepper";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import Select from "@mui/material/Select";
-import Slider from "@mui/material/Slider";
-import Stack from "@mui/material/Stack";
-import TextField from "@mui/material/TextField";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
-import axios from "axios";
-import dayjs from "dayjs";
-import PropTypes from "prop-types";
+import React, { Fragment, useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import FormLabel from '@mui/material/FormLabel';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import MobileStepper from '@mui/material/MobileStepper';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import Select from '@mui/material/Select';
+import Slider from '@mui/material/Slider';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+import axios from 'axios';
+import dayjs from 'dayjs';
+import PropTypes from 'prop-types';
 
-import Deacuerdo from "../../../../assets/icons/deacuerdo.svg";
-import EnDesacuerdo from "../../../../assets/icons/en desacuerdo.svg";
-import NiDeacuerdoNiEnDesacuerdo from "../../../../assets/icons/ni deacuerdo ni en desacuerdo.svg";
-import TotalmenteDeAcuerdo from "../../../../assets/icons/totalmente de acuerdo.svg";
-import TotalmenteEnDesacuerdo from "../../../../assets/icons/totalmente en desacuerdo.svg";
-import { storeSurvey } from "../../../../features/surveys/surveysSlice";
-import { RelationalQuestion } from "../Questions/RelationalQuestion/RelationalQuestion";
+import Deacuerdo from '../../../../assets/icons/deacuerdo.svg';
+import EnDesacuerdo from '../../../../assets/icons/en desacuerdo.svg';
+import NiDeacuerdoNiEnDesacuerdo from '../../../../assets/icons/ni deacuerdo ni en desacuerdo.svg';
+import TotalmenteDeAcuerdo from '../../../../assets/icons/totalmente de acuerdo.svg';
+import TotalmenteEnDesacuerdo from '../../../../assets/icons/totalmente en desacuerdo.svg';
+import { storeSurvey } from '../../../../features/surveys/surveysSlice';
+import { RelationalQuestion } from '../Questions/RelationalQuestion/RelationalQuestion';
 
-import styles from "./SurveyForm.module.css";
+import styles from './SurveyForm.module.css';
 
 const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return isMobile;
@@ -73,7 +73,7 @@ const SurveyForm = ({
     const base = {
       id: question.questionId,
       questionType: question.typeQuestion,
-      value: "",
+      value: '',
       values: {},
       selectionValues: {},
     };
@@ -113,8 +113,8 @@ const SurveyForm = ({
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [sliderErrors, setSliderErrors] = useState({});
   const textoSinBr = descriptionSurvey
-    ? descriptionSurvey.replace(/<br\/>/g, "\n")
-    : "";
+    ? descriptionSurvey.replace(/<br\/>/g, '\n')
+    : '';
   const textoAMostrar =
     !isMobile || verMas || !descriptionSurvey
       ? textoSinBr
@@ -151,8 +151,8 @@ const SurveyForm = ({
       // Hacer scroll a la primera pregunta con error
       const questionId = questions[firstErrorIndex].questionId;
       questionRefs[questionId]?.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
+        behavior: 'smooth',
+        block: 'center',
       });
 
       return;
@@ -196,7 +196,7 @@ const SurveyForm = ({
 
     setFormValues((prevFormValues) => {
       const newFormValues = [...prevFormValues];
-      newFormValues[index].value = newValue.format("YYYY-MM-DD"); // formato a string
+      newFormValues[index].value = newValue.format('YYYY-MM-DD'); // formato a string
       return newFormValues;
     });
 
@@ -228,11 +228,11 @@ const SurveyForm = ({
       values[index] === undefined ||
       (values[index] >= 0 && values[index] <= 6)
     ) {
-      return "red";
+      return 'red';
     } else if (values[index] >= 7 && values[index] <= 8) {
-      return "yellow";
+      return 'yellow';
     } else {
-      return "green";
+      return 'green';
     }
   };
 
@@ -245,7 +245,7 @@ const SurveyForm = ({
 
   const isRadioFace = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case "sentimental":
+      case 'sentimental':
         return true;
       default:
         return false;
@@ -260,9 +260,9 @@ const SurveyForm = ({
    */
   const isRadio = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case "selección":
-      case "escala likert":
-      case "escala likert -eng":
+      case 'selección':
+      case 'escala likert':
+      case 'escala likert -eng':
         return true;
       default:
         return false;
@@ -276,9 +276,9 @@ const SurveyForm = ({
    */
   const isCheckbox = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case "opción múltiple":
+      case 'opción múltiple':
         return true;
-      case "opcion multiple con imagenes":
+      case 'opcion multiple con imagenes':
         return true;
       default:
         return false;
@@ -293,7 +293,7 @@ const SurveyForm = ({
    */
   const isRange = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case "calificaciones":
+      case 'calificaciones':
         return true;
       default:
         return false;
@@ -302,7 +302,7 @@ const SurveyForm = ({
 
   function isConstantAdd(typeQuestion) {
     switch (typeQuestion.toLowerCase()) {
-      case "suma constante":
+      case 'suma constante':
         return true;
       default:
         return false;
@@ -317,7 +317,7 @@ const SurveyForm = ({
    */
   const isText = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case "texto":
+      case 'texto':
         return true;
       default:
         return false;
@@ -327,7 +327,7 @@ const SurveyForm = ({
   const isInformativeText = (typeQuestion) => {
     if (!typeQuestion) return false; // protección extra
     switch (typeQuestion.toLowerCase()) {
-      case "texto informativo":
+      case 'texto informativo':
         return true;
       default:
         return false;
@@ -342,7 +342,7 @@ const SurveyForm = ({
    */
   const isSelect = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case "select":
+      case 'select':
         return true;
       default:
         return false;
@@ -357,7 +357,7 @@ const SurveyForm = ({
    */
   const isRelational = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case "relacional":
+      case 'relacional':
         return true;
       default:
         return false;
@@ -372,7 +372,7 @@ const SurveyForm = ({
    */
   const isSlider = (typeQuestion) => {
     switch (typeQuestion) {
-      case "E-NPS":
+      case 'E-NPS':
         return true;
       default:
         return false;
@@ -381,7 +381,7 @@ const SurveyForm = ({
 
   const isENPSPromoter = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case "escala de opinión":
+      case 'escala de opinión':
         return true;
       default:
         return false;
@@ -396,7 +396,7 @@ const SurveyForm = ({
    */
   const isBipolarSlider = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case "escala bipolar":
+      case 'escala bipolar':
         return true;
       default:
         return false;
@@ -405,7 +405,7 @@ const SurveyForm = ({
 
   const isDate = (typeQuestion) => {
     switch (typeQuestion.toLowerCase()) {
-      case "fecha":
+      case 'fecha':
         return true;
       default:
         return false;
@@ -522,17 +522,17 @@ const SurveyForm = ({
 
       let isUnanswered = false;
 
-      if (formValue.questionType === "Opción Múltiple") {
+      if (formValue.questionType === 'Opción Múltiple') {
         isUnanswered =
           formValue.values === null ||
           Object.keys(formValue.values).length === 0 ||
           !Object.values(formValue.values).some((val) => val === true);
-      } else if (formValue.questionType === "Relacional") {
+      } else if (formValue.questionType === 'Relacional') {
         isUnanswered =
           formValue.selectionValues === null ||
           Object.keys(formValue.selectionValues).length === 0 ||
           Object.values(formValue.selectionValues).some(
-            (val) => val === "" || val === null
+            (val) => val === '' || val === null
           );
       } else if (isConstantAdd(formValue.questionType)) {
         const sum = Object.values(formValue.sliders || {}).reduce(
@@ -546,7 +546,7 @@ const SurveyForm = ({
           isUnanswered = sum > maxScore; // sólo error si pasó
         }
       } else {
-        isUnanswered = formValue.value === null || formValue.value === "";
+        isUnanswered = formValue.value === null || formValue.value === '';
       }
 
       if (isUnanswered) {
@@ -564,8 +564,8 @@ const SurveyForm = ({
         questionRefs[
           questions[firstUnanswered].questionId
         ]?.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
+          behavior: 'smooth',
+          block: 'center',
         });
       }
     }
@@ -692,19 +692,19 @@ const SurveyForm = ({
    * @returns {*|string}
    */
   const getLikertIcon = (value) => {
-    switch (value.toLowerCase().replace(/\s\s+/g, " ")) {
-      case "de acuerdo":
+    switch (value.toLowerCase().replace(/\s\s+/g, ' ')) {
+      case 'de acuerdo':
         return Deacuerdo;
-      case "en desacuerdo":
+      case 'en desacuerdo':
         return EnDesacuerdo;
-      case "ni de acuerdo ni en desacuerdo":
+      case 'ni de acuerdo ni en desacuerdo':
         return NiDeacuerdoNiEnDesacuerdo;
-      case "totalmente de acuerdo":
+      case 'totalmente de acuerdo':
         return TotalmenteDeAcuerdo;
-      case "totalmente en desacuerdo":
+      case 'totalmente en desacuerdo':
         return TotalmenteEnDesacuerdo;
       default:
-        return "";
+        return '';
     }
   };
 
@@ -733,7 +733,7 @@ const SurveyForm = ({
    */
   const fetchApiOptionsByParamId = async (paramName, paramId, options) => {
     for (const question of questions) {
-      const regex = new RegExp(`{${paramName}}`, "g");
+      const regex = new RegExp(`{${paramName}}`, 'g');
       const option = options.find((option) => option.optionName === paramId);
       if (question.api && question.api.match(regex)) {
         const url = question.api.replace(regex, option.numberOption);
@@ -766,25 +766,25 @@ const SurveyForm = ({
     if (!text) return null;
 
     const elements = [];
-    const lines = text.split("\n"); // Dividir primero por saltos de línea
+    const lines = text.split('\n'); // Dividir primero por saltos de línea
 
     lines.forEach((line, lineIndex) => {
       const parts = line.split(/(\*\*\*.*?\*\*\*|\*\*.*?\*\*|\*.*?\*)/g); // Formato dentro de cada línea
 
       parts.forEach((part, partIndex) => {
-        if (part.startsWith("***") && part.endsWith("***")) {
+        if (part.startsWith('***') && part.endsWith('***')) {
           const content = part.slice(3, -3);
           elements.push(
             <strong key={`${lineIndex}-${partIndex}`}>
               <em>{content}</em>
             </strong>
           );
-        } else if (part.startsWith("**") && part.endsWith("**")) {
+        } else if (part.startsWith('**') && part.endsWith('**')) {
           const content = part.slice(2, -2);
           elements.push(
             <strong key={`${lineIndex}-${partIndex}`}>{content}</strong>
           );
-        } else if (part.startsWith("*") && part.endsWith("*")) {
+        } else if (part.startsWith('*') && part.endsWith('*')) {
           const content = part.slice(1, -1);
           elements.push(<em key={`${lineIndex}-${partIndex}`}>{content}</em>);
         } else {
@@ -827,10 +827,10 @@ const SurveyForm = ({
           }));
         } else if (
           question.api &&
-          question.api.includes("{CompanyId}") &&
-          (question.urlParam === null || question.urlParam === "")
+          question.api.includes('{CompanyId}') &&
+          (question.urlParam === null || question.urlParam === '')
         ) {
-          let consumo = question.api.replace("{CompanyId}", companyId);
+          let consumo = question.api.replace('{CompanyId}', companyId);
           const { data } = await axios.get(consumo);
           setApiOptions((prevState) => ({
             ...prevState,
@@ -850,8 +850,8 @@ const SurveyForm = ({
 
   // watch changes in form values
   useEffect(() => {
-    if (nameStep && nameStep[activeStepper] === "Datos demográficos") {
-      localStorage.setItem("formValues", JSON.stringify(formValues));
+    if (nameStep && nameStep[activeStepper] === 'Datos demográficos') {
+      localStorage.setItem('formValues', JSON.stringify(formValues));
     }
     onAnswered(formValues);
   }, [formValues]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -883,7 +883,7 @@ const SurveyForm = ({
       prevFormValues.map((formValue, index) => ({
         ...formValue,
         selectionValues: questions[index].options.reduce((acc, option) => {
-          acc[option.optionName] = "";
+          acc[option.optionName] = '';
           return acc;
         }, {}),
       }))
@@ -900,8 +900,8 @@ const SurveyForm = ({
         const ref = questionRefs[question.questionId];
         if (ref?.current) {
           ref.current.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
+            behavior: 'smooth',
+            block: 'center',
           });
           break;
         }
@@ -950,19 +950,19 @@ const SurveyForm = ({
           <Typography
             variant="h6"
             style={{
-              whiteSpace: "pre-line",
-              textAlign: "justify",
-              fontSize: "15px",
-              display: "block",
-              fontStyle: "italic",
-              marginBottom: "50px",
+              whiteSpace: 'pre-line',
+              textAlign: 'justify',
+              fontSize: '15px',
+              display: 'block',
+              fontStyle: 'italic',
+              marginBottom: '50px',
             }}
           >
             {textoAMostrar}
           </Typography>
           {isMobile && (
             <Button onClick={() => setVerMas(!verMas)}>
-              {verMas ? "Ver menos" : "Ver más"}
+              {verMas ? 'Ver menos' : 'Ver más'}
             </Button>
           )}
         </>
@@ -992,20 +992,20 @@ const SurveyForm = ({
                 activeStep,
                 visibleQuestions
               )
-                ? "0"
-                : "2em",
-              marginBottom: "1.1em",
-              width: "100%",
+                ? '0'
+                : '2em',
+              marginBottom: '1.1em',
+              width: '100%',
               display:
                 index >= activeStep * 5 && index < (activeStep + 1) * 5
-                  ? "inherit"
-                  : "none",
+                  ? 'inherit'
+                  : 'none',
             }}
             className={
               visibleQuestions[index] &&
               index >= activeStep * 5 &&
               index < (activeStep + 1) * 5
-                ? ""
+                ? ''
                 : styles.hiddenQuestion
             }
           >
@@ -1014,19 +1014,19 @@ const SurveyForm = ({
                 <FormLabel
                   id={`${questionId}-${typeQuestion}`}
                   style={{
-                    fontSize: "1.1",
-                    fontWeight: "bold",
-                    marginBottom: "0.8m",
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '0.8m',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "rgba(0, 0, 0, 0.6)",
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
                   }}
                 >
                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
@@ -1045,10 +1045,10 @@ const SurveyForm = ({
                   }}
                   row
                   style={{
-                    margin: "1.2em 0",
+                    margin: '1.2em 0',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "inherit",
+                      ? 'red'
+                      : 'inherit',
                   }}
                 >
                   {options.map(({ numberOption, optionName }, indexOption) => (
@@ -1059,8 +1059,8 @@ const SurveyForm = ({
                       control={<Radio />}
                       label={<Box>{optionName}</Box>}
                       style={{
-                        fontSize: "0.5em !important",
-                        width: "100%",
+                        fontSize: '0.5em !important',
+                        width: '100%',
                       }}
                     />
                   ))}
@@ -1073,12 +1073,12 @@ const SurveyForm = ({
                 <FormLabel
                   id={`${questionId}-${typeQuestion}`}
                   style={{
-                    fontSize: "1.1",
-                    fontWeight: "bold",
-                    marginBottom: "0.8m",
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '0.8m',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "rgba(0, 0, 0, 0.6)",
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
                   }}
                   ref={questionRefs[questionId]}
                 >
@@ -1086,7 +1086,7 @@ const SurveyForm = ({
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
@@ -1095,8 +1095,8 @@ const SurveyForm = ({
                   onChange={(event) => handleRadioChange(event, index)}
                   row
                   style={{
-                    justifyContent: "center",
-                    margin: "1.2em 0",
+                    justifyContent: 'center',
+                    margin: '1.2em 0',
                   }}
                 >
                   {options.map(({ numberOption, optionName }) => (
@@ -1109,7 +1109,7 @@ const SurveyForm = ({
                       label={
                         <Box
                           sx={{
-                            textAlign: "center",
+                            textAlign: 'center',
                           }}
                         >
                           {getLikertIcon(optionName) && (
@@ -1118,8 +1118,8 @@ const SurveyForm = ({
                                 src={getLikertIcon(optionName)}
                                 alt={optionName}
                                 style={{
-                                  width: "3em",
-                                  verticalAlign: "middle",
+                                  width: '3em',
+                                  verticalAlign: 'middle',
                                 }}
                               />
                             </Tooltip>
@@ -1127,7 +1127,7 @@ const SurveyForm = ({
                         </Box>
                       }
                       style={{
-                        fontSize: "0.5em !important",
+                        fontSize: '0.5em !important',
                       }}
                     />
                   ))}
@@ -1139,19 +1139,19 @@ const SurveyForm = ({
               <Fragment>
                 <FormLabel
                   style={{
-                    fontSize: "1.1",
-                    fontWeight: "bold",
-                    marginBottom: "1.1em",
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '1.1em',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "rgba(0, 0, 0, 0.6)",
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
                   }}
                 >
                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
@@ -1185,8 +1185,8 @@ const SurveyForm = ({
                             disabled={disableCheckbox}
                             style={{
                               color: unansweredQuestions.includes(index)
-                                ? "red"
-                                : "#03aae4",
+                                ? 'red'
+                                : '#03aae4',
                             }}
                           />
                         }
@@ -1202,30 +1202,30 @@ const SurveyForm = ({
               <Fragment>
                 <FormLabel
                   style={{
-                    fontSize: "1.1",
-                    fontWeight: "bold",
-                    marginBottom: "0.8m",
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '0.8m',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "rgba(0, 0, 0, 0.6)",
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
                   }}
                 >
                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
                 <Box
                   sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    margin: "1.1em 0",
-                    overflow: "auto",
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '1.1em 0',
+                    overflow: 'auto',
                   }}
                 >
                   {[...Array(score).keys()].map((value, scoreIndex) => (
@@ -1240,8 +1240,8 @@ const SurveyForm = ({
                           onClick={() => handleRangeChange(value + 1, index)}
                           style={{
                             color: unansweredQuestions.includes(index)
-                              ? "red"
-                              : "#03aae4",
+                              ? 'red'
+                              : '#03aae4',
                           }}
                         >
                           {formValues[index].value >= value + 1 ? (
@@ -1258,7 +1258,7 @@ const SurveyForm = ({
                   variant="caption"
                   display="block"
                   gutterBottom
-                  style={{ textAlign: "center" }}
+                  style={{ textAlign: 'center' }}
                 >
                   {Number(formValues[index].value)} / {score}
                 </Typography>
@@ -1269,19 +1269,19 @@ const SurveyForm = ({
               <Fragment>
                 <FormLabel
                   style={{
-                    fontSize: "1.1",
-                    fontWeight: "bold",
-                    marginBottom: "1.1em",
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '1.1em',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "rgba(0, 0, 0, 0.6)",
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
                   }}
                 >
                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
@@ -1290,7 +1290,7 @@ const SurveyForm = ({
                   id={`${questionId}-${typeQuestion}`}
                   name={`${questionId}-${typeQuestion}`}
                   onKeyDown={(event) => {
-                    if (event.key === "Enter") {
+                    if (event.key === 'Enter') {
                       event.preventDefault();
                     }
                   }}
@@ -1301,25 +1301,25 @@ const SurveyForm = ({
                   onChange={(event) => handleRadioChange(event, index)}
                   error={unansweredQuestions.includes(index)}
                 />
-                <Divider variant="middle" sx={{ marginTop: "10px" }} />
+                <Divider variant="middle" sx={{ marginTop: '10px' }} />
               </Fragment>
             )}
             {isInformativeText(typeQuestion) && (
               <Fragment>
                 <div
                   style={{
-                    backgroundColor: "#f5f5f5", // gris claro
-                    padding: "1em",
-                    borderRadius: "8px",
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-                    marginBottom: "1.5em",
+                    backgroundColor: '#f5f5f5', // gris claro
+                    padding: '1em',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                    marginBottom: '1.5em',
                   }}
                 >
                   <FormLabel
                     style={{
-                      fontSize: "1.1rem",
-                      marginBottom: "0.5em",
-                      display: "block",
+                      fontSize: '1.1rem',
+                      marginBottom: '0.5em',
+                      display: 'block',
                     }}
                   >
                     {parseTextWithStyles(questionName)}
@@ -1327,8 +1327,8 @@ const SurveyForm = ({
                   <Typography
                     variant="caption"
                     style={{
-                      display: "block",
-                      color: "rgba(0, 0, 0, 0.7)",
+                      display: 'block',
+                      color: 'rgba(0, 0, 0, 0.7)',
                     }}
                   >
                     {parseTextWithStyles(description)}
@@ -1343,19 +1343,19 @@ const SurveyForm = ({
                   ref={questionRefs[questionId]}
                   id={`${questionId}-${typeQuestion}`}
                   style={{
-                    fontSize: "1.1",
-                    fontWeight: "bold",
-                    marginBottom: "1.1m",
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '1.1m',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "rgba(0, 0, 0, 0.6)",
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
                   }}
                 >
                   {questionName}
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
@@ -1374,10 +1374,10 @@ const SurveyForm = ({
                     marks={marks}
                     style={{ color: sliderColor(index) }}
                     sx={{
-                      "& .MuiSlider-track": {
+                      '& .MuiSlider-track': {
                         height: 10, // Cambia este valor para ajustar el tamaño del control deslizante
                       },
-                      "& .MuiSlider-rail": {
+                      '& .MuiSlider-rail': {
                         height: 10, // Cambia este valor para ajustar el tamaño del control deslizante
                       },
                     }}
@@ -1392,12 +1392,12 @@ const SurveyForm = ({
                 <FormLabel
                   id={`${questionId}-${typeQuestion}`}
                   style={{
-                    fontSize: "1.1",
-                    fontWeight: "bold",
-                    marginBottom: "1.1m",
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '1.1m',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "rgba(0, 0, 0, 0.6)",
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
                   }}
                   ref={questionRefs[questionId]}
                 >
@@ -1405,12 +1405,12 @@ const SurveyForm = ({
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
                 <Box
-                  display={{ xs: "flex", md: "none" }} // ✅ Solo visible en móvil
+                  display={{ xs: 'flex', md: 'none' }} // ✅ Solo visible en móvil
                   flexDirection="column"
                   width="100%"
                   maxWidth="600px"
@@ -1420,20 +1420,20 @@ const SurveyForm = ({
                   <Typography
                     variant="caption"
                     sx={{
-                      display: "flex", // ✅ Hace que la flecha y el texto estén en línea limpia
-                      alignItems: "center", // ✅ Centra verticalmente
+                      display: 'flex', // ✅ Hace que la flecha y el texto estén en línea limpia
+                      alignItems: 'center', // ✅ Centra verticalmente
                       gap: 1, // ✅ Pequeño espacio entre número, flecha y texto
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                      fontSize: "0.85rem", // ✅ Un poquito más grande para que se vea mejor
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      fontSize: '0.85rem', // ✅ Un poquito más grande para que se vea mejor
                       fontWeight: 500, // ✅ Un poco más de grosor
                     }}
                   >
                     {textBipolarBar.valueLeft}
                     <Box
                       component="span"
-                      sx={{ fontSize: "1rem", color: "primary.main" }}
+                      sx={{ fontSize: '1rem', color: 'primary.main' }}
                     >
                       ➔ {/* ✅ Una flechita bonita */}
                     </Box>
@@ -1442,20 +1442,20 @@ const SurveyForm = ({
                   <Typography
                     variant="caption"
                     sx={{
-                      display: "flex", // ✅ Hace que la flecha y el texto estén en línea limpia
-                      alignItems: "center", // ✅ Centra verticalmente
+                      display: 'flex', // ✅ Hace que la flecha y el texto estén en línea limpia
+                      alignItems: 'center', // ✅ Centra verticalmente
                       gap: 1, // ✅ Pequeño espacio entre número, flecha y texto
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                      fontSize: "0.85rem", // ✅ Un poquito más grande para que se vea mejor
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      fontSize: '0.85rem', // ✅ Un poquito más grande para que se vea mejor
                       fontWeight: 500, // ✅ Un poco más de grosor
                     }}
                   >
                     {textBipolarBar.valueRight}
                     <Box
                       component="span"
-                      sx={{ fontSize: "1rem", color: "primary.main" }}
+                      sx={{ fontSize: '1rem', color: 'primary.main' }}
                     >
                       ➔ {/* ✅ Una flechita bonita */}
                     </Box>
@@ -1478,9 +1478,9 @@ const SurveyForm = ({
                       handleChangeSlider(event, newValue, index)
                     }
                     sx={{
-                      flexWrap: "wrap", // ✅ Permite que los botones bajen de línea si no caben
-                      justifyContent: "center",
-                      width: "100%", // ✅ Para que sea fluido
+                      flexWrap: 'wrap', // ✅ Permite que los botones bajen de línea si no caben
+                      justifyContent: 'center',
+                      width: '100%', // ✅ Para que sea fluido
                     }}
                   >
                     {Array.from(
@@ -1500,9 +1500,9 @@ const SurveyForm = ({
                           height: { xs: 36, sm: 42, md: 48 },
                           m: 0.5, // Pequeño margen entre botones
                           borderRadius: 2,
-                          "&.Mui-selected": {
-                            backgroundColor: "#1976d2",
-                            color: "white",
+                          '&.Mui-selected': {
+                            backgroundColor: '#1976d2',
+                            color: 'white',
                           },
                         }}
                       >
@@ -1513,7 +1513,7 @@ const SurveyForm = ({
 
                   {/* Textos debajo */}
                   <Box
-                    display={{ xs: "none", md: "flex" }} // ✅ Solo visible en escritorio
+                    display={{ xs: 'none', md: 'flex' }} // ✅ Solo visible en escritorio
                     justifyContent="space-between"
                     width="100%"
                     maxWidth="600px"
@@ -1523,9 +1523,9 @@ const SurveyForm = ({
                     <Typography
                       variant="caption"
                       sx={{
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
                       }}
                     >
                       {textBipolarBar.leftText}
@@ -1533,10 +1533,10 @@ const SurveyForm = ({
                     <Typography
                       variant="caption"
                       sx={{
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        textAlign: "right",
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        textAlign: 'right',
                       }}
                     >
                       {textBipolarBar.rightText}
@@ -1546,7 +1546,7 @@ const SurveyForm = ({
                 <Divider
                   variant="middle"
                   sx={{
-                    marginTop: "5px",
+                    marginTop: '5px',
                   }}
                 />
               </>
@@ -1556,12 +1556,12 @@ const SurveyForm = ({
                 <FormLabel
                   id={`${questionId}-${typeQuestion}`}
                   style={{
-                    fontSize: "1.1rem",
-                    fontWeight: "bold",
-                    marginBottom: "1.1rem",
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                    marginBottom: '1.1rem',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "rgba(0, 0, 0, 0.6)",
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
                   }}
                   ref={questionRefs[questionId]}
                 >
@@ -1569,7 +1569,7 @@ const SurveyForm = ({
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
@@ -1588,33 +1588,33 @@ const SurveyForm = ({
                       value: -Math.abs(score),
                       label: String(-Math.abs(score)),
                     },
-                    { value: 0, label: "" },
+                    { value: 0, label: '' },
                     { value: Math.abs(score), label: String(Math.abs(score)) },
                   ]}
                   sx={{
-                    "& .MuiSlider-track": {
+                    '& .MuiSlider-track': {
                       backgroundColor:
-                        (values[index] || 0) === 0 ? "transparent" : "#0288d1", // solo azul
+                        (values[index] || 0) === 0 ? 'transparent' : '#0288d1', // solo azul
                       height: 8,
                       borderRadius: 4,
-                      border: "none", // ✅ quita borde
+                      border: 'none', // ✅ quita borde
                     },
-                    "& .MuiSlider-rail": {
-                      backgroundColor: "#b3e5fc", // azul clarito
+                    '& .MuiSlider-rail': {
+                      backgroundColor: '#b3e5fc', // azul clarito
                       height: 8,
                       borderRadius: 4,
-                      border: "none", // ✅ por si acaso
+                      border: 'none', // ✅ por si acaso
                     },
-                    "& .MuiSlider-thumb": {
+                    '& .MuiSlider-thumb': {
                       width: 20,
                       height: 20,
-                      border: "none", // ✅ sin borde también en el thumb
-                      boxShadow: "none", // ✅ sin sombra
+                      border: 'none', // ✅ sin borde también en el thumb
+                      boxShadow: 'none', // ✅ sin sombra
                     },
                   }}
                 />
                 <Box
-                  display={{ xs: "flex", md: "none" }} // ✅ Solo visible en móvil
+                  display={{ xs: 'flex', md: 'none' }} // ✅ Solo visible en móvil
                   flexDirection="column"
                   width="100%"
                   mt={1}
@@ -1623,16 +1623,16 @@ const SurveyForm = ({
                   <Typography
                     variant="caption"
                     style={{
-                      fontSize: "0.8rem",
-                      textAlign: "left",
-                      whiteSpace: "normal", // permite que el texto se divida en varias líneas
-                      wordBreak: "break-word", // rompe la palabra si es muy larga
+                      fontSize: '0.8rem',
+                      textAlign: 'left',
+                      whiteSpace: 'normal', // permite que el texto se divida en varias líneas
+                      wordBreak: 'break-word', // rompe la palabra si es muy larga
                     }}
                   >
                     {-Math.abs(score)}
                     <Box
                       component="span"
-                      sx={{ fontSize: "1rem", color: "primary.main" }}
+                      sx={{ fontSize: '1rem', color: 'primary.main' }}
                     >
                       ➔ {/* ✅ Una flechita bonita */}
                     </Box>
@@ -1642,15 +1642,15 @@ const SurveyForm = ({
                   <Typography
                     variant="caption"
                     style={{
-                      fontSize: "0.8rem",
-                      whiteSpace: "normal", // permite que el texto se divida en varias líneas
-                      wordBreak: "break-word", // rompe la palabra si es muy larga
+                      fontSize: '0.8rem',
+                      whiteSpace: 'normal', // permite que el texto se divida en varias líneas
+                      wordBreak: 'break-word', // rompe la palabra si es muy larga
                     }}
                   >
                     {Math.abs(score)}
                     <Box
                       component="span"
-                      sx={{ fontSize: "1rem", color: "primary.main" }}
+                      sx={{ fontSize: '1rem', color: 'primary.main' }}
                     >
                       ➔ {/* ✅ Una flechita bonita */}
                     </Box>
@@ -1659,19 +1659,19 @@ const SurveyForm = ({
                 </Box>
                 <Box
                   sx={{
-                    display: { xs: "none", md: "flex" }, // ✅ Responsive correcto
-                    justifyContent: "space-between",
-                    marginTop: "4px",
+                    display: { xs: 'none', md: 'flex' }, // ✅ Responsive correcto
+                    justifyContent: 'space-between',
+                    marginTop: '4px',
                   }}
                 >
                   <Typography
                     variant="caption"
                     style={{
-                      fontSize: "0.8rem",
-                      textAlign: "left",
-                      maxWidth: "20%",
-                      whiteSpace: "normal", // permite que el texto se divida en varias líneas
-                      wordBreak: "break-word", // rompe la palabra si es muy larga
+                      fontSize: '0.8rem',
+                      textAlign: 'left',
+                      maxWidth: '20%',
+                      whiteSpace: 'normal', // permite que el texto se divida en varias líneas
+                      wordBreak: 'break-word', // rompe la palabra si es muy larga
                     }}
                   >
                     {textBipolarBar.leftText}
@@ -1680,11 +1680,11 @@ const SurveyForm = ({
                   <Typography
                     variant="caption"
                     style={{
-                      fontSize: "0.8rem",
-                      textAlign: "right",
-                      maxWidth: "20%",
-                      whiteSpace: "normal", // permite que el texto se divida en varias líneas
-                      wordBreak: "break-word", // rompe la palabra si es muy larga
+                      fontSize: '0.8rem',
+                      textAlign: 'right',
+                      maxWidth: '20%',
+                      whiteSpace: 'normal', // permite que el texto se divida en varias líneas
+                      wordBreak: 'break-word', // rompe la palabra si es muy larga
                     }}
                   >
                     {textBipolarBar.rightText}
@@ -1693,7 +1693,7 @@ const SurveyForm = ({
                 <Divider
                   variant="middle"
                   sx={{
-                    marginTop: "5px",
+                    marginTop: '5px',
                   }}
                 />
               </>
@@ -1710,7 +1710,7 @@ const SurveyForm = ({
                 </InputLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
@@ -1746,12 +1746,12 @@ const SurveyForm = ({
                 <FormLabel
                   id={`${questionId}-${typeQuestion}`}
                   style={{
-                    fontSize: "1.1",
-                    fontWeight: "bold",
-                    marginBottom: "0.8m",
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '0.8m',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "rgba(0, 0, 0, 0.6)",
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
                   }}
                   ref={questionRefs[questionId]}
                 >
@@ -1759,11 +1759,11 @@ const SurveyForm = ({
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
-                <Box sx={{ marginTop: "10px" }}>
+                <Box sx={{ marginTop: '10px' }}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <Stack spacing={3}>
                       <DesktopDatePicker
@@ -1785,12 +1785,12 @@ const SurveyForm = ({
               <Fragment>
                 <FormLabel
                   style={{
-                    fontSize: "1.1",
-                    fontWeight: "bold",
-                    marginBottom: "1.1em",
+                    fontSize: '1.1',
+                    fontWeight: 'bold',
+                    marginBottom: '1.1em',
                     color: unansweredQuestions.includes(index)
-                      ? "red"
-                      : "rgba(0, 0, 0, 0.6)",
+                      ? 'red'
+                      : 'rgba(0, 0, 0, 0.6)',
                   }}
                   ref={questionRefs[questionId]}
                 >
@@ -1798,7 +1798,7 @@ const SurveyForm = ({
                 </FormLabel>
                 <Typography
                   variant="caption"
-                  style={{ display: "block", fontStyle: "italic" }}
+                  style={{ display: 'block', fontStyle: 'italic' }}
                 >
                   {description}
                 </Typography>
@@ -1809,22 +1809,22 @@ const SurveyForm = ({
                   indexQuestion={index}
                   unansweredQuestions={unansweredQuestions}
                 />
-                <Divider variant="middle" sx={{ marginTop: "10px" }} />
+                <Divider variant="middle" sx={{ marginTop: '10px' }} />
               </Fragment>
             )}
             {isConstantAdd(typeQuestion) && (
               <Fragment>
-                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Box>
                     <FormLabel
                       id={`${questionId}-${typeQuestion}`}
                       style={{
-                        fontSize: "1.1",
-                        fontWeight: "bold",
-                        marginBottom: "0.8m",
+                        fontSize: '1.1',
+                        fontWeight: 'bold',
+                        marginBottom: '0.8m',
                         color: unansweredQuestions.includes(index)
-                          ? "red"
-                          : "rgba(0, 0, 0, 0.6)",
+                          ? 'red'
+                          : 'rgba(0, 0, 0, 0.6)',
                       }}
                       ref={questionRefs[questionId]}
                     >
@@ -1832,21 +1832,21 @@ const SurveyForm = ({
                     </FormLabel>
                     <Typography
                       variant="caption"
-                      style={{ display: "block", fontStyle: "italic" }}
+                      style={{ display: 'block', fontStyle: 'italic' }}
                     >
                       {description}
                     </Typography>
                   </Box>
                   {/* Cuadros de resumen */}
-                  <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+                  <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
                     <Box
                       sx={{
                         flex: 1,
-                        backgroundColor: "#e3f2fd",
+                        backgroundColor: '#e3f2fd',
                         padding: 0.5,
                         borderRadius: 2,
-                        border: "1px solid #90caf9",
-                        textAlign: "center",
+                        border: '1px solid #90caf9',
+                        textAlign: 'center',
                       }}
                     >
                       <Typography variant="body2" fontWeight="bold">
@@ -1856,7 +1856,7 @@ const SurveyForm = ({
                         {Object.values(formValues[index].sliders || {}).reduce(
                           (a, b) => a + b,
                           0
-                        )}{" "}
+                        )}{' '}
                         / {score}
                       </Typography>
                     </Box>
@@ -1864,11 +1864,11 @@ const SurveyForm = ({
                     <Box
                       sx={{
                         flex: 1,
-                        backgroundColor: "#fce4ec",
+                        backgroundColor: '#fce4ec',
                         padding: 0.5,
                         borderRadius: 2,
-                        border: "1px solid #f48fb1",
-                        textAlign: "center",
+                        border: '1px solid #f48fb1',
+                        textAlign: 'center',
                       }}
                     >
                       <Typography variant="body2" fontWeight="bold">
@@ -1895,9 +1895,9 @@ const SurveyForm = ({
                     const restante = score - totalAsignado;
 
                     let sliderColor;
-                    if (restante === 0) sliderColor = "success"; // verde
-                    else if (restante < 0) sliderColor = "error"; // rojo
-                    else sliderColor = "primary"; // por defecto
+                    if (restante === 0) sliderColor = 'success'; // verde
+                    else if (restante < 0) sliderColor = 'error'; // rojo
+                    else sliderColor = 'primary'; // por defecto
 
                     return (
                       <Box key={optionName} sx={{ mb: 2 }}>
@@ -1955,14 +1955,14 @@ const SurveyForm = ({
         sx={{
           maxWidth: 400,
           flexGrow: 1,
-          margin: "0 auto",
+          margin: '0 auto',
         }}
         nextButton={
           <Button size="small" onClick={handleNext}>
-            {nameStep[activeStep] !== "Encuesta" &&
+            {nameStep[activeStep] !== 'Encuesta' &&
             activeStep + 1 === totalOfSteps()
-              ? "Finalizar"
-              : "Siguiente"}
+              ? 'Finalizar'
+              : 'Siguiente'}
             {<KeyboardArrowRight />}
           </Button>
         }

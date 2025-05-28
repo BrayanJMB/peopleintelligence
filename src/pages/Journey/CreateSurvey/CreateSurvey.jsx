@@ -1695,12 +1695,23 @@ export default function CreateSurvey() {
    * @param {number} id The id of the question to be deleted.
    */
   const handleDelete = async (id) => {
-    const question = questions.find((question) => question.id === id);
-    setQuestions((previousQuestions) =>
-      previousQuestions.filter((question) => question.id !== id)
-    );
+    const question = questions.find((q) => q.id === id);
 
-    await deleteTemplateQuestionAPI(question.id);
+    // 1. Eliminar la pregunta
+    const updatedQuestions = questions.filter((q) => q.id !== id);
+
+    // 2. Reorganizar los questionNumber
+    const reorderedQuestions = updatedQuestions.map((q, index) => ({
+      ...q,
+      questionNumber: index + 1,
+    }));
+
+    // 3. Actualizar el estado
+    setQuestions(reorderedQuestions);
+
+
+    // 5. Llamar al API
+    //await deleteTemplateQuestionAPI(question.id);
     enqueueSnackbar('Pregunta eliminada', { variant: 'success' });
   };
 

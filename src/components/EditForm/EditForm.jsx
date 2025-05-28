@@ -90,23 +90,19 @@ const EditForm = ({
     }
   };
 
+
   const getFilteredOptions = (uniqueId, questionNumber) => {
     const lastDashIndex = uniqueId.lastIndexOf('-');
     const currentQuestionId = uniqueId.substring(0, lastDashIndex);
-    // Extracción de todas las ids de preguntas ya seleccionadas, excluyendo la id de la pregunta actual
-    const selectedValues = Object.values(props.selections)
-      .map((value) => value?.id)
-      .filter((id) => id && id !== props.selections[uniqueId]?.id);
 
+    // Filtrar solo para quitar la pregunta actual, sin excluir las ya seleccionadas
     const filteredQuestions = questions.filter(
       (question) =>
         question.id !== currentQuestionId &&
-        !selectedValues.includes(question.id) &&
-        question.questionNumber > questionNumber
-      //&& !question.conditionalQuestion  // Solo incluye preguntas con un número mayor al actual
+        question.questionNumber > questionNumber // opcional si solo quieres preguntas posteriores
+      // && !question.conditionalQuestion // si quieres incluir condicionales también, quita esto
     );
 
-    // Definir el objeto "pregunta final"
     const preguntaFinal = {
       id: 'cc12a501-cf65-4f2f-bd23-44c79e5c4a64',
       categoryId: 6,
@@ -120,8 +116,8 @@ const EditForm = ({
       customOptions: undefined,
     };
 
-    // Añadir el objeto "pregunta final" al array filtrado
     filteredQuestions.push(preguntaFinal);
+
     return filteredQuestions;
   };
 
@@ -729,9 +725,7 @@ const EditForm = ({
                     variant="standard"
                     fullWidth
                     error={errorMessage.bipolar}
-                    helperText={
-                      errorMessage.bipolar ? helperText.bipolar : ''
-                    }
+                    helperText={errorMessage.bipolar ? helperText.bipolar : ''}
                   />
                 </div>
                 {question.customOptions.map((val, key) => {
