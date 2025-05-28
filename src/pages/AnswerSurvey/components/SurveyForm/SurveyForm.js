@@ -432,14 +432,13 @@ const SurveyForm = ({
     setUnansweredQuestions((prevUnanswered) =>
       prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
     );
-
     if (conditional) {
       updateVisibility(index, childrenQuestionNumber);
     }
   };
 
   const updateVisibility = (index, childrenQuestionNumber) => {
-    let newVisibleQuestions = [...visibleQuestions];
+    const newVisibleQuestions = [...visibleQuestions];
     const currentQuestion = questions[index];
     const selectedAnswer = formValuesRef.current[index]?.value;
     let questionNumber =
@@ -452,46 +451,45 @@ const SurveyForm = ({
     } else {
       setIsZeroIndexActive(false);
     }
-    // Obtener hijos válidos según la opción seleccionada
+    // 1. Obtener todas las hijas de la opción seleccionada
     const validChildren =
       currentQuestion.options
         ?.filter((opt) => opt.optionName === selectedAnswer)
         .map((opt) => parseInt(opt.childrenQuestionNumber)) || [];
-    console.log(questions);
+
+    // 2. Para cada hija encontrada, mostrar el rango hasta la siguiente madre o fin
     validChildren.forEach((childNumber) => {
       const startIndex = questions.findIndex(
         (q) => q.questionNumber === childNumber
       );
+
       if (startIndex !== -1) {
         for (let i = startIndex; i < questions.length; i++) {
           const q = questions[i];
 
-          // Validar si esta pregunta es hija de la madre actual (usando sus opciones)
-          const isChildOfCurrent = currentQuestion.options.some(
-            (opt) => parseInt(opt.childrenQuestionNumber) === q.questionNumber
-          );
+          // Mostrar mientras sea condicional
+          newVisibleQuestions[i] = true;
 
-          if (isChildOfCurrent) {
-            newVisibleQuestions[i] = true;
-          } else {
-            break; // Rompe si ya no pertenece a esta madre
-          }
+          // Si encontramos otra madre (es decir, otra pregunta con opciones que tienen children), paramos
+          const esOtraMadre = (q.options || []).some(
+            (opt) => opt.childrenQuestionNumber
+          );
+          if (i !== startIndex && esOtraMadre) break;
         }
       }
     });
-
     for (let k = index + 1; k < questionNumber - 1; k++) {
       newVisibleQuestions[k] = false;
     }
 
-    // Limpiar respuestas de preguntas que se ocultan
-    const updatedFormValues = [...formValuesRef.current];
-    for (let i = 0; i < newVisibleQuestions.length; i++) {
+    // 3. Ocultar lo que no se debe mostrar
+    for (let i = 0; i < questions.length; i++) {
       if (!newVisibleQuestions[i]) {
-        updatedFormValues[i] = initializeFormValue(questions[i]);
+        formValuesRef.current[i] = initializeFormValue(questions[i]);
       }
     }
-    setFormValues(updatedFormValues);
+
+    setFormValues([...formValuesRef.current]);
     setVisibleQuestions(newVisibleQuestions);
   };
 
@@ -858,35 +856,25 @@ const SurveyForm = ({
     onAnswered(formValues);
   }, [formValues]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /*useEffect(() => {
-    // Al iniciar, solo mostrar las preguntas no condicionales
-    let isConditional = true;
-    let isConditional2 = true;
-    const visibility = questions.map((question, index) => {
-      console.log(question.conditional)
-      isConditional = isConditional2;
-      if (question.conditional) {
-        isConditional2 = !isConditional; // Niega el valor de isConditional
-      }
-      return isConditional;
-    });
-    console.log(visibility)
-    setVisibleQuestions(visibility);
-  }, [questions]);*/
   useEffect(() => {
-    // 1. Recopilar todos los números de preguntas que son hijas (childrenQuestionNumber)
-    const allChildrenNumbers = new Set(
-      questions.flatMap((q) =>
-        (q.options || []).map((opt) => Number(opt.childrenQuestionNumber))
-      )
-    );
-
-    // 2. Mostrar si la pregunta NO es hija
-    const visibility = questions.map((q) => {
-      const isHija = allChildrenNumbers.has(q.questionNumber);
-      return !isHija; // Solo se ocultan las hijas
+    const childrenQuestionNumber = [];
+    questions.map((question, index) => {
+      if (question.conditional) {
+        let preguntas = [];
+        question.options.map((option, index) => {
+          preguntas.push(parseInt(option.childrenQuestionNumber));
+        });
+        for (let i = preguntas[0]; i <= preguntas[1]; i++) {
+          childrenQuestionNumber.push(i);
+        }
+      }
     });
-
+    const visibility = questions.map((question, index) => {
+      if (childrenQuestionNumber.includes(question.questionNumber)) {
+        return false;
+      }
+      return true;
+    });
     setVisibleQuestions(visibility);
   }, [questions]);
 
