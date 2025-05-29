@@ -10,6 +10,8 @@ export const RelationalQuestion = ({
   handleRelationalChange,
   indexQuestion,
   unansweredQuestions,
+  primaryColor,
+  secondaryColor,
 }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [questionOptionMap, setQuestionOptionMap] = useState({});
@@ -80,6 +82,8 @@ export const RelationalQuestion = ({
                 <ChipSelectionOption
                   selectedOption={selectedOption}
                   handleOptionDelete={handleOptionDelete}
+                  primaryColor={primaryColor}
+                  secondaryColor={secondaryColor}
                 />
               ) : (
                 <SelectOptions
@@ -88,6 +92,7 @@ export const RelationalQuestion = ({
                   handleOptionSelect={handleOptionSelect}
                   optionName={option.optionName} // Pasar el nombre de la opción actual
                   indexQuestion={indexQuestion}
+                  primaryColor={primaryColor}
                 />
               )}
             </Grid>

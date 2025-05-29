@@ -483,12 +483,45 @@ const AnswerSurvey = () => {
                           type="email"
                           onChange={handleEmailChange}
                           error={emailError}
+                          sx={{
+                            '& .MuiOutlinedInput-root': {
+                              '& fieldset': {
+                                borderColor:
+                                  currentSurvey?.response?.settings
+                                    ?.primaryColor || '#ccc',
+                              },
+                              '&:hover fieldset': {
+                                borderColor:
+                                  currentSurvey?.response?.settings
+                                    ?.primaryColor || '#888',
+                              },
+                              '&.Mui-focused fieldset': {
+                                borderColor:
+                                  currentSurvey?.response?.settings
+                                    ?.primaryColor || '#03aae4',
+                              },
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                              color:
+                                currentSurvey?.response?.settings
+                                  ?.primaryColor || '#03aae4',
+                            },
+                          }}
                         />
                       </FormControl>
                       <FormControl>
                         <Button
                           variant="contained"
                           onClick={handleEmailSubmit}
+                          sx={{
+                            backgroundColor:
+                              currentSurvey?.response?.settings?.primaryColor,
+                            '&:hover': {
+                              backgroundColor:
+                                currentSurvey?.response?.settings
+                                  ?.secondaryColor || '#0288d1', // Puedes usar otro color o el mismo con opacidad
+                            },
+                          }}
                           style={{
                             marginTop: '1em',
                             width: '300px',
@@ -533,7 +566,39 @@ const AnswerSurvey = () => {
                           }
                           return (
                             <Step key={label} {...stepProps}>
-                              <StepLabel {...labelProps}>{label}</StepLabel>
+                              <StepLabel
+                                {...labelProps}
+                                sx={{
+                                  '& .MuiStepIcon-root': {
+                                    color: ' #cfcfcf', // Cambia el fondo del círculo
+                                  },
+                                  '& .MuiStepIcon-text': {
+                                    fill: 'black', // Cambia el color del número
+                                  },
+                                  // Paso activo
+                                  '& .Mui-active .MuiStepIcon-root': {
+                                    color:
+                                      currentSurvey?.response?.settings
+                                        ?.primaryColor, // fondo del paso activo
+                                  },
+                                  '& .Mui-active .MuiStepIcon-text': {
+                                    fill: currentSurvey?.response?.settings
+                                      ?.secondaryColor, // número del paso activo
+                                  },
+                                  // Paso completado
+                                  '& .Mui-completed .MuiStepIcon-root': {
+                                    color:
+                                      currentSurvey?.response?.settings
+                                        ?.primaryColor, // fondo del paso completado
+                                  },
+                                  '& .Mui-completed .MuiStepIcon-text': {
+                                    fill: currentSurvey?.response?.settings
+                                      ?.secondaryColor, // número del paso completado
+                                  },
+                                }}
+                              >
+                                {label}{' '}
+                              </StepLabel>
                             </Step>
                           );
                         })}
@@ -577,6 +642,14 @@ const AnswerSurvey = () => {
                                 onAnswered={(answers) =>
                                   handleAnswered(answers, activeStep)
                                 }
+                                primaryColor={
+                                  currentSurvey?.response?.settings
+                                    ?.primaryColor
+                                }
+                                secondaryColor={
+                                  currentSurvey?.response?.settings
+                                    ?.secondaryColor
+                                }
                               />
                             </Fragment>
                           )}
@@ -594,6 +667,13 @@ const AnswerSurvey = () => {
                                 handleAnswered(answers, activeStep)
                               }
                               activeStepper={activeStep}
+                              primaryColor={
+                                currentSurvey?.response?.settings?.primaryColor
+                              }
+                              secondaryColor={
+                                currentSurvey?.response?.settings
+                                  ?.secondaryColor
+                              }
                             />
                           )}
                           {/* success message */}

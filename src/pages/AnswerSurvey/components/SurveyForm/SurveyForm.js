@@ -64,6 +64,8 @@ const SurveyForm = ({
   surveyId,
   handleNextAnswer,
   descriptionSurvey,
+  primaryColor,
+  secondaryColor,
 }) => {
   const [visibleQuestions, setVisibleQuestions] = useState(
     questions.map(() => true)
@@ -961,7 +963,7 @@ const SurveyForm = ({
             {textoAMostrar}
           </Typography>
           {isMobile && (
-            <Button onClick={() => setVerMas(!verMas)}>
+            <Button onClick={() => setVerMas(!verMas)} >
               {verMas ? 'Ver menos' : 'Ver más'}
             </Button>
           )}
@@ -1056,7 +1058,18 @@ const SurveyForm = ({
                       ref={indexOption === 0 ? questionRefs[questionId] : null}
                       key={numberOption}
                       value={optionName}
-                      control={<Radio />}
+                      control={
+                        <Radio
+                          sx={{
+                            color: unansweredQuestions.includes(index)
+                              ? 'red'
+                              : 'rgba(0, 0, 0, 0.6)',
+                            '&.Mui-checked': {
+                              color: primaryColor || '#1976d2', // reemplaza por tu color
+                            },
+                          }}
+                        />
+                      }
                       label={<Box>{optionName}</Box>}
                       style={{
                         fontSize: '0.5em !important',
@@ -1104,7 +1117,18 @@ const SurveyForm = ({
                       ref={questionRefs[questionId]}
                       key={numberOption}
                       value={optionName}
-                      control={<Radio />}
+                      control={
+                        <Radio
+                          sx={{
+                            color: unansweredQuestions.includes(index)
+                              ? 'red'
+                              : 'rgba(0, 0, 0, 0.6)',
+                            '&.Mui-checked': {
+                              color: primaryColor || '#1976d2', // reemplaza por tu color
+                            },
+                          }}
+                        />
+                      }
                       labelPlacement="bottom"
                       label={
                         <Box
@@ -1183,10 +1207,13 @@ const SurveyForm = ({
                               handleCheckboxChange(event, index)
                             }
                             disabled={disableCheckbox}
-                            style={{
+                            sx={{
                               color: unansweredQuestions.includes(index)
                                 ? 'red'
-                                : '#03aae4',
+                                : primaryColor,
+                              '&.Mui-checked': {
+                                color: primaryColor || '#03aae4', // Color personalizado al estar marcado
+                              },
                             }}
                           />
                         }
@@ -1241,7 +1268,7 @@ const SurveyForm = ({
                           style={{
                             color: unansweredQuestions.includes(index)
                               ? 'red'
-                              : '#03aae4',
+                              : primaryColor,
                           }}
                         >
                           {formValues[index].value >= value + 1 ? (
@@ -1300,6 +1327,16 @@ const SurveyForm = ({
                   fullWidth
                   onChange={(event) => handleRadioChange(event, index)}
                   error={unansweredQuestions.includes(index)}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '&.Mui-focused fieldset': {
+                        borderColor: primaryColor || '#03aae4',
+                      },
+                    },
+                    '& label.Mui-focused': {
+                      color: primaryColor || '#03aae4',
+                    },
+                  }}
                 />
                 <Divider variant="middle" sx={{ marginTop: '10px' }} />
               </Fragment>
@@ -1501,8 +1538,11 @@ const SurveyForm = ({
                           m: 0.5, // Pequeño margen entre botones
                           borderRadius: 2,
                           '&.Mui-selected': {
-                            backgroundColor: '#1976d2',
-                            color: 'white',
+                            backgroundColor: primaryColor || '#1976d2', // Usa tu color primario
+                            color: '#fff',
+                          },
+                          '&.Mui-selected:hover': {
+                            backgroundColor: primaryColor || '#1565c0', // Color al hacer hover estando seleccionado
                           },
                         }}
                       >
@@ -1594,13 +1634,15 @@ const SurveyForm = ({
                   sx={{
                     '& .MuiSlider-track': {
                       backgroundColor:
-                        (values[index] || 0) === 0 ? 'transparent' : '#0288d1', // solo azul
+                        (values[index] || 0) === 0
+                          ? 'transparent'
+                          : primaryColor, // solo azul
                       height: 8,
                       borderRadius: 4,
                       border: 'none', // ✅ quita borde
                     },
                     '& .MuiSlider-rail': {
-                      backgroundColor: '#b3e5fc', // azul clarito
+                      backgroundColor: primaryColor, // azul clarito
                       height: 8,
                       borderRadius: 4,
                       border: 'none', // ✅ por si acaso
@@ -1610,6 +1652,7 @@ const SurveyForm = ({
                       height: 20,
                       border: 'none', // ✅ sin borde también en el thumb
                       boxShadow: 'none', // ✅ sin sombra
+                      backgroundColor: primaryColor, // 👈 Aquí se aplica el color de la bolita
                     },
                   }}
                 />
@@ -1773,6 +1816,30 @@ const SurveyForm = ({
                         onChange={(newValue) =>
                           handleChangeDate(newValue, index)
                         }
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            color: 'rgba(0, 0, 0, 0.87)', // texto (gris oscuro por defecto)
+                            '& fieldset': {
+                              borderColor: 'rgba(0, 0, 0, 0.23)', // borde gris por defecto
+                            },
+                            '&.Mui-focused fieldset': {
+                              borderColor: primaryColor || '#03aae4', // borde al hacer focus
+                            },
+                          },
+                          '& .MuiInputLabel-root': {
+                            color: 'rgba(0, 0, 0, 0.6)', // label gris
+                            '&.Mui-focused': {
+                              color: primaryColor || '#03aae4', // label al hacer focus
+                            },
+                          },
+                          '& .MuiSvgIcon-root': {
+                            color: 'rgba(0, 0, 0, 0.6)', // ícono gris por defecto
+                          },
+                          '& .MuiOutlinedInput-root.Mui-focused .MuiSvgIcon-root':
+                            {
+                              color: primaryColor || '#03aae4', // ícono al hacer focus
+                            },
+                        }}
                         renderInput={(params) => <TextField {...params} />}
                       />
                     </Stack>
@@ -1808,6 +1875,8 @@ const SurveyForm = ({
                   handleRelationalChange={handleRelationalChange}
                   indexQuestion={index}
                   unansweredQuestions={unansweredQuestions}
+                  primaryColor={primaryColor}
+                  secondaryColor={secondaryColor}
                 />
                 <Divider variant="middle" sx={{ marginTop: '10px' }} />
               </Fragment>
@@ -1958,7 +2027,16 @@ const SurveyForm = ({
           margin: '0 auto',
         }}
         nextButton={
-          <Button size="small" onClick={handleNext}>
+          <Button
+            size="small"
+            onClick={handleNext}
+            sx={{
+              color: primaryColor, // Color del texto
+              '&:hover': {
+                backgroundColor: secondaryColor, // Cambia esto si quieres otro hover
+              },
+            }}
+          >
             {nameStep[activeStep] !== 'Encuesta' &&
             activeStep + 1 === totalOfSteps()
               ? 'Finalizar'
@@ -1967,7 +2045,17 @@ const SurveyForm = ({
           </Button>
         }
         backButton={
-          <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+          <Button
+            size="small"
+            onClick={handleBack}
+            disabled={activeStep === 0}
+            sx={{
+              color: primaryColor, // Color del texto
+              '&:hover': {
+                backgroundColor: secondaryColor, // Cambia esto si quieres otro hover
+              },
+            }}
+          >
             {<KeyboardArrowLeft />}
             Atrás
           </Button>
