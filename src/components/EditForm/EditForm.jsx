@@ -60,6 +60,7 @@ const EditForm = ({
   ...props
 }) => {
   console.log(question);
+  console.log(props);
   const [categoryId, setCategoryId] = useState('');
   /**
    * Handle category id change.
@@ -491,12 +492,15 @@ const EditForm = ({
             <Fragment>
               <RelationalQuestionsEdit
                 question={question}
+                setQuestion={setQuestion}
                 handleInformationOptions={handleInformationOptions}
                 handleInformationRelationalOptions={
                   handleInformationRelationalOptions
                 }
                 optionRelationalError={optionRelationalError}
                 customOptionError={customOptionError}
+                type={question.typeId}
+                handleaddoption={handleAddOption}
               />
             </Fragment>
           )}

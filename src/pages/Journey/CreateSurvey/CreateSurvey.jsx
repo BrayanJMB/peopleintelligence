@@ -747,6 +747,7 @@ export default function CreateSurvey() {
 
   const handleaddoption = (type) => {
     if (type === 15) {
+      console.log('entro aca');
       let holder = [...information.customOptions];
       holder.push('');
       let holder2 = [...information.opcionesInputs];
@@ -774,10 +775,22 @@ export default function CreateSurvey() {
     holder.splice(index, 1);
     setQuestion({ ...question, customOptions: holder });
   };
-  const handleeditaddoption = () => {
-    let holder = [...question.customOptions];
-    holder.push('');
-    setQuestion({ ...question, customOptions: holder });
+  const handleeditaddoption = (type) => {
+    if (type === 15) {
+      let holder = [...question.customOptions];
+      holder.push('');
+      let holder2 = [...question.selectOptions];
+      holder2.push('');
+      setQuestion({
+        ...question,
+        customOptions: holder,
+        selectOptions: holder2,
+      });
+    } else {
+      let holder = [...question.customOptions];
+      holder.push('');
+      setQuestion({ ...question, customOptions: holder });
+    }
   };
   const handleAdd = () => {
     setOpen(true);
@@ -1250,7 +1263,7 @@ export default function CreateSurvey() {
       }
 
       if (limitType === 'fijo' && question.typeId === 3) {
-        if (question.stars.trim() === '') {
+        if (question.stars.toString().trim() === '') {
           setErrorMessage({
             ...errorMessage,
             maximunValueOptions: true,
@@ -1708,7 +1721,6 @@ export default function CreateSurvey() {
 
     // 3. Actualizar el estado
     setQuestions(reorderedQuestions);
-
 
     // 5. Llamar al API
     //await deleteTemplateQuestionAPI(question.id);
