@@ -64,6 +64,8 @@ const SurveyForm = ({
   surveyId,
   handleNextAnswer,
   descriptionSurvey,
+  primaryColor,
+  secondaryColor,
 }) => {
   const [visibleQuestions, setVisibleQuestions] = useState(
     questions.map(() => true)
@@ -110,6 +112,8 @@ const SurveyForm = ({
   const [values, setValues] = useState({});
   const isMobile = useIsMobile();
   const [verMas, setVerMas] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [sliderErrors, setSliderErrors] = useState({});
   const textoSinBr = descriptionSurvey
     ? descriptionSurvey.replace(/<br\/>/g, '\n')
     : '';
@@ -121,6 +125,42 @@ const SurveyForm = ({
   const [questionRefs, setQuestionRefs] = useState({});
 
   const handleNext = () => {
+    setSubmitAttempted(true);
+
+    const errors = {};
+    let firstErrorIndex = null;
+
+    formValues.forEach((formValue, idx) => {
+      const question = questions[idx];
+      if (isConstantAdd(formValue.questionType) && !question.autoValidate) {
+        const sum = Object.values(formValue.sliders || {}).reduce(
+          (a, b) => a + b,
+          0
+        );
+        const max = question.score ?? 100;
+        if (sum > max) {
+          errors[
+            idx
+          ] = `Te has excedido del límite permitido. Por favor, ajusta los valores para no superar ${max} puntos.`;
+          if (firstErrorIndex === null) firstErrorIndex = idx;
+        }
+      }
+    });
+
+    if (Object.keys(errors).length > 0) {
+      setSliderErrors(errors);
+
+      // Hacer scroll a la primera pregunta con error
+      const questionId = questions[firstErrorIndex].questionId;
+      questionRefs[questionId]?.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+
+      return;
+    }
+
+    setSliderErrors({});
     if (verifyCurrentStepAnswersSelected()) {
       if (activeStep + 1 !== totalOfSteps()) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -394,16 +434,15 @@ const SurveyForm = ({
     setUnansweredQuestions((prevUnanswered) =>
       prevUnanswered.filter((unansweredIndex) => unansweredIndex !== index)
     );
-
     if (conditional) {
       updateVisibility(index, childrenQuestionNumber);
     }
   };
 
   const updateVisibility = (index, childrenQuestionNumber) => {
-    let newVisibleQuestions = [...visibleQuestions];
-
-    // Mostrar preguntas desde el índice de childrenQuestionNumber
+    const newVisibleQuestions = [...visibleQuestions];
+    const currentQuestion = questions[index];
+    const selectedAnswer = formValuesRef.current[index]?.value;
     let questionNumber =
       parseInt(childrenQuestionNumber) === 0
         ? questions.length + 1
@@ -414,35 +453,45 @@ const SurveyForm = ({
     } else {
       setIsZeroIndexActive(false);
     }
-    for (let i = questionNumber - 1; i < questions.length; i++) {
-      if (questions[i].questionNumber >= parseInt(questionNumber)) {
-        newVisibleQuestions[i] = true;
-        // Si la pregunta es condicional, ocultar las preguntas hijas de esta
-        if (questions[i].conditional) {
-          for (let j = i + 1; j < questions.length; j++) {
-            if (questions[j].conditional) {
-              newVisibleQuestions[j] = false;
-            }
-          }
-        }
-      } else {
-        newVisibleQuestions[i] = false;
-      }
-    }
+    // 1. Obtener todas las hijas de la opción seleccionada
+    const validChildren =
+      currentQuestion.options
+        ?.filter((opt) => opt.optionName === selectedAnswer)
+        .map((opt) => parseInt(opt.childrenQuestionNumber)) || [];
 
+    // 2. Para cada hija encontrada, mostrar el rango hasta la siguiente madre o fin
+    validChildren.forEach((childNumber) => {
+      const startIndex = questions.findIndex(
+        (q) => q.questionNumber === childNumber
+      );
+
+      if (startIndex !== -1) {
+        for (let i = startIndex; i < questions.length; i++) {
+          const q = questions[i];
+
+          // Mostrar mientras sea condicional
+          newVisibleQuestions[i] = true;
+
+          // Si encontramos otra madre (es decir, otra pregunta con opciones que tienen children), paramos
+          const esOtraMadre = (q.options || []).some(
+            (opt) => opt.childrenQuestionNumber
+          );
+          if (i !== startIndex && esOtraMadre) break;
+        }
+      }
+    });
     for (let k = index + 1; k < questionNumber - 1; k++) {
       newVisibleQuestions[k] = false;
     }
 
-    // Limpiar respuestas de preguntas que se ocultan
-    const updatedFormValues = [...formValuesRef.current];
-    for (let i = 0; i < newVisibleQuestions.length; i++) {
+    // 3. Ocultar lo que no se debe mostrar
+    for (let i = 0; i < questions.length; i++) {
       if (!newVisibleQuestions[i]) {
-        updatedFormValues[i] = initializeFormValue(questions[i]);
+        formValuesRef.current[i] = initializeFormValue(questions[i]);
       }
     }
 
-    setFormValues(updatedFormValues);
+    setFormValues([...formValuesRef.current]);
     setVisibleQuestions(newVisibleQuestions);
   };
 
@@ -492,7 +541,12 @@ const SurveyForm = ({
           (a, b) => a + b,
           0
         );
-        isUnanswered = sum !== 100;
+        const maxScore = questions[globalIndex]?.score ?? 100;
+        if (questions[globalIndex].autoValidate) {
+          isUnanswered = sum !== maxScore;
+        } else {
+          isUnanswered = sum > maxScore; // sólo error si pasó
+        }
       } else {
         isUnanswered = formValue.value === null || formValue.value === '';
       }
@@ -540,56 +594,56 @@ const SurveyForm = ({
     });
   };
 
-  const handleSliderSumaConstante = (event, questionIndex, optionName) => {
-    const newValue = parseInt(event.target.value);
+  const handleSliderSumaConstante = (
+    rawValue, // <-- aquí llega el número puro
+    questionIndex,
+    optionName
+  ) => {
+    const pregunta = questions[questionIndex];
+    const maxScore = pregunta.score ?? 100;
 
-    setFormValues((prevFormValues) => {
-      const newFormValues = [...prevFormValues];
+    setFormValues((prev) =>
+      prev.map((fv, idx) => {
+        if (idx !== questionIndex) return fv;
 
-      const currentSliders = { ...newFormValues[questionIndex].sliders } || {};
-      const currentValues = { ...newFormValues[questionIndex].values } || {};
+        // Copy estado
+        const sliders = { ...fv.sliders };
+        const values = { ...fv.values };
 
-      const previousValue = currentSliders[optionName] ?? 0;
-      const totalActual = Object.values(currentSliders).reduce(
-        (a, b) => a + b,
-        0
-      );
+        // Suma de TODOS menos esta opción
+        const prevVal = sliders[optionName] || 0;
+        const totalSinEsta =
+          Object.values(sliders).reduce((a, b) => a + b, 0) - prevVal;
 
-      const nuevaSuma = totalActual - previousValue + newValue;
-
-      const finalValue =
-        nuevaSuma <= 100 ? newValue : 100 - (totalActual - previousValue);
-
-      // ✅ Guardar valor numérico incluso si es 0
-      currentSliders[optionName] = finalValue;
-
-      // ✅ Marcar como "respondido" incluso si se deja en 0
-      currentValues[optionName] = true;
-
-      newFormValues[questionIndex].sliders = currentSliders;
-      newFormValues[questionIndex].values = currentValues;
-
-      // Validar suma total
-      const sumaFinal = Object.values(currentSliders).reduce(
-        (a, b) => a + b,
-        0
-      );
-
-      setUnansweredQuestions((prev) => {
-        const yaMarcada = prev.includes(questionIndex);
-
-        if (sumaFinal === 100 && yaMarcada) {
-          return prev.filter((i) => i !== questionIndex);
+        // Calcula el valor “aplicado”
+        let applied = rawValue;
+        if (pregunta.autoValidate) {
+          const espacioRestante = maxScore - totalSinEsta;
+          applied = Math.max(0, Math.min(rawValue, espacioRestante));
         }
 
-        if (sumaFinal !== 100 && !yaMarcada) {
-          return [...prev, questionIndex];
-        }
+        // Asigna y marca como respondido
+        sliders[optionName] = applied;
+        values[optionName] = true;
 
-        return prev;
-      });
+        return { ...fv, sliders, values };
+      })
+    );
 
-      return newFormValues;
+    // 3) Actualiza inmediatamente el array de “unanswered”
+    setUnansweredQuestions((prevU) => {
+      const sum = Object.values(
+        formValuesRef.current[questionIndex].sliders || {}
+      ).reduce((a, b) => a + b, 0);
+
+      const hasError = pregunta.autoValidate
+        ? sum !== maxScore // con validación en caliente exige suma exacta
+        : sum > maxScore; // sin validación sólo error si pasa del límite
+
+      const already = prevU.includes(questionIndex);
+      if (hasError && !already) return [...prevU, questionIndex];
+      if (!hasError && already) return prevU.filter((i) => i !== questionIndex);
+      return prevU;
     });
   };
 
@@ -805,17 +859,24 @@ const SurveyForm = ({
   }, [formValues]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    // Al iniciar, solo mostrar las preguntas no condicionales
-    let isConditional = true;
-    let isConditional2 = true;
-    const visibility = questions.map((question, index) => {
-      isConditional = isConditional2;
+    const childrenQuestionNumber = [];
+    questions.map((question, index) => {
       if (question.conditional) {
-        isConditional2 = !isConditional; // Niega el valor de isConditional
+        let preguntas = [];
+        question.options.map((option, index) => {
+          preguntas.push(parseInt(option.childrenQuestionNumber));
+        });
+        for (let i = preguntas[0]; i <= preguntas[1]; i++) {
+          childrenQuestionNumber.push(i);
+        }
       }
-      return isConditional;
     });
-
+    const visibility = questions.map((question, index) => {
+      if (childrenQuestionNumber.includes(question.questionNumber)) {
+        return false;
+      }
+      return true;
+    });
     setVisibleQuestions(visibility);
   }, [questions]);
 
@@ -902,7 +963,7 @@ const SurveyForm = ({
             {textoAMostrar}
           </Typography>
           {isMobile && (
-            <Button onClick={() => setVerMas(!verMas)}>
+            <Button onClick={() => setVerMas(!verMas)} >
               {verMas ? 'Ver menos' : 'Ver más'}
             </Button>
           )}
@@ -997,7 +1058,18 @@ const SurveyForm = ({
                       ref={indexOption === 0 ? questionRefs[questionId] : null}
                       key={numberOption}
                       value={optionName}
-                      control={<Radio />}
+                      control={
+                        <Radio
+                          sx={{
+                            color: unansweredQuestions.includes(index)
+                              ? 'red'
+                              : 'rgba(0, 0, 0, 0.6)',
+                            '&.Mui-checked': {
+                              color: primaryColor || '#1976d2', // reemplaza por tu color
+                            },
+                          }}
+                        />
+                      }
                       label={<Box>{optionName}</Box>}
                       style={{
                         fontSize: '0.5em !important',
@@ -1045,7 +1117,18 @@ const SurveyForm = ({
                       ref={questionRefs[questionId]}
                       key={numberOption}
                       value={optionName}
-                      control={<Radio />}
+                      control={
+                        <Radio
+                          sx={{
+                            color: unansweredQuestions.includes(index)
+                              ? 'red'
+                              : 'rgba(0, 0, 0, 0.6)',
+                            '&.Mui-checked': {
+                              color: primaryColor || '#1976d2', // reemplaza por tu color
+                            },
+                          }}
+                        />
+                      }
                       labelPlacement="bottom"
                       label={
                         <Box
@@ -1124,10 +1207,13 @@ const SurveyForm = ({
                               handleCheckboxChange(event, index)
                             }
                             disabled={disableCheckbox}
-                            style={{
+                            sx={{
                               color: unansweredQuestions.includes(index)
                                 ? 'red'
-                                : '#03aae4',
+                                : primaryColor,
+                              '&.Mui-checked': {
+                                color: primaryColor || '#03aae4', // Color personalizado al estar marcado
+                              },
                             }}
                           />
                         }
@@ -1182,7 +1268,7 @@ const SurveyForm = ({
                           style={{
                             color: unansweredQuestions.includes(index)
                               ? 'red'
-                              : '#03aae4',
+                              : primaryColor,
                           }}
                         >
                           {formValues[index].value >= value + 1 ? (
@@ -1241,6 +1327,16 @@ const SurveyForm = ({
                   fullWidth
                   onChange={(event) => handleRadioChange(event, index)}
                   error={unansweredQuestions.includes(index)}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '&.Mui-focused fieldset': {
+                        borderColor: primaryColor || '#03aae4',
+                      },
+                    },
+                    '& label.Mui-focused': {
+                      color: primaryColor || '#03aae4',
+                    },
+                  }}
                 />
                 <Divider variant="middle" sx={{ marginTop: '10px' }} />
               </Fragment>
@@ -1442,8 +1538,11 @@ const SurveyForm = ({
                           m: 0.5, // Pequeño margen entre botones
                           borderRadius: 2,
                           '&.Mui-selected': {
-                            backgroundColor: '#1976d2',
-                            color: 'white',
+                            backgroundColor: primaryColor || '#1976d2', // Usa tu color primario
+                            color: '#fff',
+                          },
+                          '&.Mui-selected:hover': {
+                            backgroundColor: primaryColor || '#1565c0', // Color al hacer hover estando seleccionado
                           },
                         }}
                       >
@@ -1535,13 +1634,15 @@ const SurveyForm = ({
                   sx={{
                     '& .MuiSlider-track': {
                       backgroundColor:
-                        (values[index] || 0) === 0 ? 'transparent' : '#0288d1', // solo azul
+                        (values[index] || 0) === 0
+                          ? 'transparent'
+                          : primaryColor, // solo azul
                       height: 8,
                       borderRadius: 4,
                       border: 'none', // ✅ quita borde
                     },
                     '& .MuiSlider-rail': {
-                      backgroundColor: '#b3e5fc', // azul clarito
+                      backgroundColor: primaryColor, // azul clarito
                       height: 8,
                       borderRadius: 4,
                       border: 'none', // ✅ por si acaso
@@ -1551,6 +1652,7 @@ const SurveyForm = ({
                       height: 20,
                       border: 'none', // ✅ sin borde también en el thumb
                       boxShadow: 'none', // ✅ sin sombra
+                      backgroundColor: primaryColor, // 👈 Aquí se aplica el color de la bolita
                     },
                   }}
                 />
@@ -1714,6 +1816,30 @@ const SurveyForm = ({
                         onChange={(newValue) =>
                           handleChangeDate(newValue, index)
                         }
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            color: 'rgba(0, 0, 0, 0.87)', // texto (gris oscuro por defecto)
+                            '& fieldset': {
+                              borderColor: 'rgba(0, 0, 0, 0.23)', // borde gris por defecto
+                            },
+                            '&.Mui-focused fieldset': {
+                              borderColor: primaryColor || '#03aae4', // borde al hacer focus
+                            },
+                          },
+                          '& .MuiInputLabel-root': {
+                            color: 'rgba(0, 0, 0, 0.6)', // label gris
+                            '&.Mui-focused': {
+                              color: primaryColor || '#03aae4', // label al hacer focus
+                            },
+                          },
+                          '& .MuiSvgIcon-root': {
+                            color: 'rgba(0, 0, 0, 0.6)', // ícono gris por defecto
+                          },
+                          '& .MuiOutlinedInput-root.Mui-focused .MuiSvgIcon-root':
+                            {
+                              color: primaryColor || '#03aae4', // ícono al hacer focus
+                            },
+                        }}
                         renderInput={(params) => <TextField {...params} />}
                       />
                     </Stack>
@@ -1749,36 +1875,98 @@ const SurveyForm = ({
                   handleRelationalChange={handleRelationalChange}
                   indexQuestion={index}
                   unansweredQuestions={unansweredQuestions}
+                  primaryColor={primaryColor}
+                  secondaryColor={secondaryColor}
                 />
                 <Divider variant="middle" sx={{ marginTop: '10px' }} />
               </Fragment>
             )}
             {isConstantAdd(typeQuestion) && (
               <Fragment>
-                <FormLabel
-                  id={`${questionId}-${typeQuestion}`}
-                  style={{
-                    fontSize: '1.1',
-                    fontWeight: 'bold',
-                    marginBottom: '0.8m',
-                    color: unansweredQuestions.includes(index)
-                      ? 'red'
-                      : 'rgba(0, 0, 0, 0.6)',
-                  }}
-                  ref={questionRefs[questionId]}
-                >
-                  {questionName}
-                </FormLabel>
-                <Typography
-                  variant="caption"
-                  style={{ display: 'block', fontStyle: 'italic' }}
-                >
-                  {description}
-                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Box>
+                    <FormLabel
+                      id={`${questionId}-${typeQuestion}`}
+                      style={{
+                        fontSize: '1.1',
+                        fontWeight: 'bold',
+                        marginBottom: '0.8m',
+                        color: unansweredQuestions.includes(index)
+                          ? 'red'
+                          : 'rgba(0, 0, 0, 0.6)',
+                      }}
+                      ref={questionRefs[questionId]}
+                    >
+                      {questionName}
+                    </FormLabel>
+                    <Typography
+                      variant="caption"
+                      style={{ display: 'block', fontStyle: 'italic' }}
+                    >
+                      {description}
+                    </Typography>
+                  </Box>
+                  {/* Cuadros de resumen */}
+                  <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                    <Box
+                      sx={{
+                        flex: 1,
+                        backgroundColor: '#e3f2fd',
+                        padding: 0.5,
+                        borderRadius: 2,
+                        border: '1px solid #90caf9',
+                        textAlign: 'center',
+                      }}
+                    >
+                      <Typography variant="body2" fontWeight="bold">
+                        Asignados
+                      </Typography>
+                      <Typography variant="caption">
+                        {Object.values(formValues[index].sliders || {}).reduce(
+                          (a, b) => a + b,
+                          0
+                        )}{' '}
+                        / {score}
+                      </Typography>
+                    </Box>
+
+                    <Box
+                      sx={{
+                        flex: 1,
+                        backgroundColor: '#fce4ec',
+                        padding: 0.5,
+                        borderRadius: 2,
+                        border: '1px solid #f48fb1',
+                        textAlign: 'center',
+                      }}
+                    >
+                      <Typography variant="body2" fontWeight="bold">
+                        Restantes
+                      </Typography>
+                      <Typography variant="caption">
+                        {score -
+                          Object.values(formValues[index].sliders || {}).reduce(
+                            (a, b) => a + b,
+                            0
+                          )}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
                 <Box sx={{ mt: 2 }}>
                   {options.map(({ optionName }) => {
                     const currentValue =
                       formValues[index].sliders?.[optionName] ?? 0;
+
+                    const totalAsignado = Object.values(
+                      formValues[index].sliders || {}
+                    ).reduce((a, b) => a + b, 0);
+                    const restante = score - totalAsignado;
+
+                    let sliderColor;
+                    if (restante === 0) sliderColor = 'success'; // verde
+                    else if (restante < 0) sliderColor = 'error'; // rojo
+                    else sliderColor = 'primary'; // por defecto
 
                     return (
                       <Box key={optionName} sx={{ mb: 2 }}>
@@ -1788,26 +1976,38 @@ const SurveyForm = ({
                         <Slider
                           value={currentValue}
                           min={0}
-                          max={100}
+                          max={score}
                           step={1}
-                          onChange={(e) =>
-                            handleSliderSumaConstante(e, index, optionName)
+                          onChange={(e, newValue) =>
+                            handleSliderSumaConstante(
+                              newValue,
+                              index,
+                              optionName
+                            )
                           }
                           valueLabelDisplay="auto"
+                          color={sliderColor}
                         />
                       </Box>
                     );
                   })}
                 </Box>
 
+                {/*
                 <Typography variant="subtitle2" sx={{ mt: 1 }}>
-                  Total asignado:{' '}
+                  Total asignado:{" "}
                   {Object.values(formValues[index].sliders || {}).reduce(
                     (a, b) => a + b,
                     0
-                  )}{' '}
-                  / 100
-                </Typography>
+                  )}{" "}
+                  / {score}
+                </Typography>*/}
+
+                {submitAttempted && sliderErrors[index] && (
+                  <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                    {sliderErrors[index]}
+                  </Typography>
+                )}
 
                 <Divider variant="middle" />
               </Fragment>
@@ -1827,7 +2027,16 @@ const SurveyForm = ({
           margin: '0 auto',
         }}
         nextButton={
-          <Button size="small" onClick={handleNext}>
+          <Button
+            size="small"
+            onClick={handleNext}
+            sx={{
+              color: primaryColor, // Color del texto
+              '&:hover': {
+                backgroundColor: secondaryColor, // Cambia esto si quieres otro hover
+              },
+            }}
+          >
             {nameStep[activeStep] !== 'Encuesta' &&
             activeStep + 1 === totalOfSteps()
               ? 'Finalizar'
@@ -1836,7 +2045,17 @@ const SurveyForm = ({
           </Button>
         }
         backButton={
-          <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+          <Button
+            size="small"
+            onClick={handleBack}
+            disabled={activeStep === 0}
+            sx={{
+              color: primaryColor, // Color del texto
+              '&:hover': {
+                backgroundColor: secondaryColor, // Cambia esto si quieres otro hover
+              },
+            }}
+          >
             {<KeyboardArrowLeft />}
             Atrás
           </Button>

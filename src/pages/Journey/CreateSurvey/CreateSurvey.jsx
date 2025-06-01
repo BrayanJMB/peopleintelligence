@@ -39,6 +39,8 @@ import {
 } from '../../../services/templates.service';
 import client from '../../../utils/axiosInstance';
 
+import { View360 } from './360Vista/View360.jsx';
+import { ColorSurvey } from './ColorSurvey/ColorSurvey.jsx';
 import Cuestionario from './Cuestionario/Cuestionario';
 import { Exclusiveness } from './Exclusividad/Exclusiveness.jsx';
 import { WhatsAppForSurvey } from './HasWhatsApp/WhatsAppForSurvey.jsx';
@@ -83,7 +85,10 @@ export default function CreateSurvey() {
       valueLeft: '0',
     },
     maximunValueOptions: null,
-    secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
+    secondSelectOptions: Array.from({ length: 9 }, (_, i) =>
+      (2 + i).toString()
+    ),
+    autoValidate: false,
   });
   const [firstSelect, setFirstSelect] = useState(0);
   const [secondSelect, setSecondSelect] = useState(2);
@@ -102,6 +107,9 @@ export default function CreateSurvey() {
   const currentCompany = useSelector((state) => state.companies.currentCompany);
   const [question, setQuestion] = useState();
   const [anonymous, setAnonymous] = useState(true);
+  const [view360, setView360] = useState([]);
+  const [isView360, setIsView360] = useState(false);
+  const [excelFile360, setExcelFile360] = useState(null);
   const [exclusiviness, setExclusiviness] = useState(true);
   const [hasWhatsApp, setHasWhatsApp] = useState(true);
   const [dayConcurrency, setDayConcurrency] = useState(1);
@@ -117,6 +125,8 @@ export default function CreateSurvey() {
     confidentialityMessage:
       'Tus respuestas serán completamente confidenciales y no podrán ser vinculadas a tu identidad.',
   });
+  const [primaryColor, setPrimaryColor] = useState('#03aae4');
+  const [secondaryColor, setSecondaryColor] = useState('#f3f3f3');
   const [hasNumerationNumber, setHasNumerationNumber] = useState(true);
   const [errorDayConcurrency, setErrorDayConcurrency] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -131,6 +141,7 @@ export default function CreateSurvey() {
   const steps = [
     'Introducción',
     //'WhatsApp',
+    'Vista 360',
     'Cuestionario',
     'Configuración',
     ...(!isTemplate ? ['Privacidad'] : []),
@@ -201,6 +212,20 @@ export default function CreateSurvey() {
     return demographics;
   };
 
+  const getScore = (question) => {
+    if (question.typeId === 5) {
+      return question.stars?.length || 3;
+    } else if (question.typeId === 3) {
+      return Number(question.stars);
+    } else if (question.typeId === 19 || question.typeId === 24) {
+      return Number(
+        Array.isArray(question.stars) ? question.stars[0] : question.stars
+      );
+    } else {
+      return null;
+    }
+  };
+
   /**
    * Create survey.
    */
@@ -225,22 +250,21 @@ export default function CreateSurvey() {
         daysConcurrency: dayConcurrency,
         hasWhatsApp: hasWhatsApp,
         hasNumerationNumber: hasNumerationNumber,
+        is360Survey: isView360,
+        settings: {
+          primaryColor: primaryColor,
+          secondaryColor: secondaryColor,
+        },
       },
       questions: questions.map((question) => ({
         question: {
           nameQuestion: question.name,
           description: question.description,
           typeQuestionId: question.typeId,
-          score:
-          question.typeId === 5 // Estrellas
-            ? question.stars?.length || 3
-            : question.typeId === 3 // Opción múltiple con límite
-            ? Number(question.stars)
-            : question.typeId === 19 // Bipolar, tomar el primer valor del array
-            ? Number(Array.isArray(question.stars) ? question.stars[0] : question.stars)
-            : null,
+          score: getScore(question),
           conditional: question.conditionalQuestion,
           textsBipolarBar: question.textsBipolarBar,
+          autoValidate: question.autoValidate,
         },
         options: question.customOptions?.map((option, index) => {
           return {
@@ -262,6 +286,14 @@ export default function CreateSurvey() {
       `/createJourney/${currentCompany.id}`,
       newSurvey
     );
+    if (isView360) {
+      const payload = {
+        surveyId: createdJourney.id,
+        evaluators: view360,
+      };
+
+      await client.post('/Evaluators', payload);
+    }
 
     setLoading(false);
     navigate(`/journey/survey/${createdJourney.id}/detail?sendMail=true`);
@@ -323,6 +355,10 @@ export default function CreateSurvey() {
       messageMail: data.mailingMessage,
       emailSubject: data.emailSubject,
       emailMask: data.emailMask,
+      settings: {
+        primaryColor: primaryColor,
+        secondaryColor: secondaryColor,
+      },
       isObligatory: !(data.surveyOrMap === 'survey'),
       questionSection: questions.map((question, index) => ({
         templateCategoryId: question.categoryId,
@@ -417,6 +453,16 @@ export default function CreateSurvey() {
     }
   };
 
+  const validateExcelFile360 = () => {
+    if (!excelFile360 && isView360) {
+      enqueueSnackbar('Debe ingresar el archivo 360.', {
+        variant: 'error',
+        autoHideDuration: 3000,
+      });
+      return true;
+    }
+  };
+
   /**
    * Handle next step.
    */
@@ -437,6 +483,12 @@ export default function CreateSurvey() {
         }
         break;
       case 1:
+        if (validateExcelFile360()) {
+          return;
+        }
+        setActiveStep((val) => val + 1);
+        break;
+      case 2:
         if (isUpdate && isTemplate) {
           await updateTemplate();
           navigate('/journey/survey-template');
@@ -466,13 +518,13 @@ export default function CreateSurvey() {
         }
         setActiveStep((val) => val + 1);
         break;*/
-      case 2:
-        setActiveStep((val) => val + 1);
-        break;
       case 3:
         setActiveStep((val) => val + 1);
         break;
       case 4:
+        setActiveStep((val) => val + 1);
+        break;
+      case 5:
         if (isEdit) {
           editSurvey();
         } else {
@@ -499,8 +551,8 @@ export default function CreateSurvey() {
    * @param {object} event
    */
   const handleInformation = (event) => {
-    const { name, value } = event.target;
-    
+    const { name, value, type, checked } = event.target;
+
     if (name.includes('.')) {
       const [parentKey, childKey] = name.split('.');
 
@@ -529,11 +581,10 @@ export default function CreateSurvey() {
     } else {
       setInformation((prev) => ({
         ...prev,
-        [name]: value,
+        [name]: type === 'checkbox' ? checked : value,
       }));
     }
   };
-  
 
   /**
    * Handle change for category id.
@@ -696,6 +747,7 @@ export default function CreateSurvey() {
 
   const handleaddoption = (type) => {
     if (type === 15) {
+      console.log('entro aca');
       let holder = [...information.customOptions];
       holder.push('');
       let holder2 = [...information.opcionesInputs];
@@ -723,10 +775,22 @@ export default function CreateSurvey() {
     holder.splice(index, 1);
     setQuestion({ ...question, customOptions: holder });
   };
-  const handleeditaddoption = () => {
-    let holder = [...question.customOptions];
-    holder.push('');
-    setQuestion({ ...question, customOptions: holder });
+  const handleeditaddoption = (type) => {
+    if (type === 15) {
+      let holder = [...question.customOptions];
+      holder.push('');
+      let holder2 = [...question.selectOptions];
+      holder2.push('');
+      setQuestion({
+        ...question,
+        customOptions: holder,
+        selectOptions: holder2,
+      });
+    } else {
+      let holder = [...question.customOptions];
+      holder.push('');
+      setQuestion({ ...question, customOptions: holder });
+    }
   };
   const handleAdd = () => {
     setOpen(true);
@@ -840,6 +904,10 @@ export default function CreateSurvey() {
     }
   };
 
+  const handleIsView360 = (event) => {
+    setIsView360(event.target.value === 'true');
+  };
+
   const renderSwitch = (activeStep) => {
     switch (activeStep) {
       case 0:
@@ -853,6 +921,16 @@ export default function CreateSurvey() {
             setMapsLoaded={setMapsLoaded}
           />
         );
+      case 1:
+        return (
+          <View360
+            isView360={isView360}
+            handleIsView360={handleIsView360}
+            excelFile360={excelFile360}
+            setExcelFile360={setExcelFile360}
+            setView360={setView360}
+          />
+        );
       /*
       case 1:
         return (
@@ -863,7 +941,7 @@ export default function CreateSurvey() {
             />
           </Box>
         );*/
-      case 1:
+      case 2:
         return (
           <Box width="100%">
             <DemographicDataForm
@@ -883,7 +961,7 @@ export default function CreateSurvey() {
             />
           </Box>
         );
-      case 2:
+      case 3:
         return (
           <Box width="100%">
             <MessagesSurvey
@@ -894,9 +972,16 @@ export default function CreateSurvey() {
               hasNumerationNumber={hasNumerationNumber}
               setHasNumerationNumber={setHasNumerationNumber}
             />
+            <ColorSurvey
+              primaryColor={primaryColor}
+              setPrimaryColor={setPrimaryColor}
+              secondaryColor={secondaryColor}
+              setSecondaryColor={setSecondaryColor}
+              data={data}
+            />
           </Box>
         );
-      case 3:
+      case 4:
         return (
           <div style={{ display: 'flex', width: '100%' }}>
             <Intimidad anonyme={anonymous} handleAnonyme={handleanonyme} />
@@ -907,7 +992,7 @@ export default function CreateSurvey() {
           </div>
         );
 
-      case 4:
+      case 5:
         return (
           <div
             style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
@@ -992,7 +1077,7 @@ export default function CreateSurvey() {
 
   const handleAutocomplete = (val) => {
     setType(val);
-  
+
     if (!val) {
       // Si el valor es null, probablemente quieras limpiar también las opciones
       setInformation((prevInfo) => ({
@@ -1001,15 +1086,14 @@ export default function CreateSurvey() {
       }));
       return;
     }
-  
+
     const updatedOptions = getOptions(val.id);
-  
+
     setInformation((prevInfo) => ({
       ...prevInfo,
       options: updatedOptions,
     }));
   };
-  
 
   function getOptions(lang) {
     if (lang === 16) {
@@ -1073,7 +1157,9 @@ export default function CreateSurvey() {
 
       if (
         question.customOptions !== null &&
-        (question.typeId === 3 || question.typeId === 8 || question.typeId === 24) &&
+        (question.typeId === 3 ||
+          question.typeId === 8 ||
+          question.typeId === 24) &&
         question.customOptions.some((option) => option === '')
       ) {
         setCustomOptionError(
@@ -1157,7 +1243,7 @@ export default function CreateSurvey() {
           return;
         }
       }
-      if( question.typeId === 22){
+      if (question.typeId === 22) {
         // Validación: extremos vacíos
         if (
           question.textsBipolarBar.leftText.trim() === '' ||
@@ -1177,7 +1263,7 @@ export default function CreateSurvey() {
       }
 
       if (limitType === 'fijo' && question.typeId === 3) {
-        if (question.stars.trim() === '') {
+        if (question.stars.toString().trim() === '') {
           setErrorMessage({
             ...errorMessage,
             maximunValueOptions: true,
@@ -1368,7 +1454,7 @@ export default function CreateSurvey() {
       return;
     }
     // ✅ Validación escala bipolar
-    if (type.id === 19) {
+    if (type.id === 19 || type.id === 24) {
       const value = Number(information.barBipolarValue);
       if (isNaN(value)) {
         setErrorMessage((prev) => ({
@@ -1408,7 +1494,7 @@ export default function CreateSurvey() {
       }
 
       // Validación: valor mayor a 10
-      if (value > 10) {
+      if (value > 10 && type.id !== 24) {
         setErrorMessage((prev) => ({
           ...prev,
           bipolar: true,
@@ -1422,8 +1508,9 @@ export default function CreateSurvey() {
 
       // Validación: extremos vacíos
       if (
-        information.textsBipolarBar.leftText.trim() === '' ||
-        information.textsBipolarBar.rightText.trim() === ''
+        (information.textsBipolarBar.leftText.trim() === '' ||
+          information.textsBipolarBar.rightText.trim() === '') &&
+        type.id !== 24
       ) {
         setErrorMessage((prev) => ({
           ...prev,
@@ -1439,7 +1526,6 @@ export default function CreateSurvey() {
     }
 
     if (type.id === 22) {
-
       // Validación: extremos vacíos
       if (
         information.textsBipolarBar.leftText.trim() === '' ||
@@ -1543,14 +1629,18 @@ export default function CreateSurvey() {
         name: information.name,
         description: information.description,
         textsBipolarBar: information.textsBipolarBar,
-        secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
+        secondSelectOptions: Array.from({ length: 9 }, (_, i) =>
+          (2 + i).toString()
+        ),
       });
     } else if (type.id === 24) {
       handleAddQuestion({
         type: 'Suma Constante',
         name: information.name,
         description: information.description,
+        stars: information.barBipolarValue,
         customOptions: information.customOptions,
+        autoValidate: information.autoValidate,
       });
     }
 
@@ -1570,15 +1660,15 @@ export default function CreateSurvey() {
         valueLeft: '0',
       },
       maximunValueOptions: '',
-      secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
-
+      secondSelectOptions: Array.from({ length: 9 }, (_, i) =>
+        (2 + i).toString()
+      ),
     });
     setQuestion(null);
     setType(null);
     setCategoryId(null);
     handleCloseModal();
   };
-  
 
   /**
    * Add new question.
@@ -1618,12 +1708,22 @@ export default function CreateSurvey() {
    * @param {number} id The id of the question to be deleted.
    */
   const handleDelete = async (id) => {
-    const question = questions.find((question) => question.id === id);
-    setQuestions((previousQuestions) =>
-      previousQuestions.filter((question) => question.id !== id)
-    );
+    const question = questions.find((q) => q.id === id);
 
-    await deleteTemplateQuestionAPI(question.id);
+    // 1. Eliminar la pregunta
+    const updatedQuestions = questions.filter((q) => q.id !== id);
+
+    // 2. Reorganizar los questionNumber
+    const reorderedQuestions = updatedQuestions.map((q, index) => ({
+      ...q,
+      questionNumber: index + 1,
+    }));
+
+    // 3. Actualizar el estado
+    setQuestions(reorderedQuestions);
+
+    // 5. Llamar al API
+    //await deleteTemplateQuestionAPI(question.id);
     enqueueSnackbar('Pregunta eliminada', { variant: 'success' });
   };
 
@@ -1725,6 +1825,7 @@ export default function CreateSurvey() {
         mailingMessage: survey.response.emailMessage,
       };
     }
+
     setData(dataCopy);
 
     let questionsCopy = [...questions];
@@ -1794,6 +1895,13 @@ export default function CreateSurvey() {
         mailingMessage: template.template.messageMail,
       };
     }
+    if (template.template?.settings) {
+      const settings = JSON.parse(template.template.settings || '{}');
+      setPrimaryColor(settings.primaryColor);
+      setSecondaryColor(settings.secondaryColor);
+    }
+
+    console.log(template);
     setData(dataCopy);
     let questionsCopy = [...questions];
     // fill questions
@@ -1812,7 +1920,9 @@ export default function CreateSurvey() {
         options: question.options.map((option) => option.templateOptionsName),
         questionOptions: question.options,
         stars: question.question.score,
-        selectOptions: question.selectOptions?.map((option) => option.selectOption),
+        selectOptions: question.selectOptions?.map(
+          (option) => option.selectOption
+        ),
         questionNumber: question.question.numberQuestion,
         childQuestionIds: [],
         ...(question.question.textsBipolarBar && {
@@ -1828,7 +1938,9 @@ export default function CreateSurvey() {
           question.question.score.length > 0
             ? 'fijo'
             : 'ilimitado',
-        secondSelectOptions: Array.from({ length: 9 }, (_, i) => (2 + i).toString()),
+        secondSelectOptions: Array.from({ length: 9 }, (_, i) =>
+          (2 + i).toString()
+        ),
       })
     );
     setQuestions(questionsCopy);
@@ -2046,7 +2158,7 @@ export default function CreateSurvey() {
                       errorDayConcurrency
                     }
                   >
-                    {activeStep === 4 || (activeStep === 1 && isTemplate)
+                    {activeStep === 5 || (activeStep === 1 && isTemplate)
                       ? 'Finalizar'
                       : 'Continuar'}
                   </Button>

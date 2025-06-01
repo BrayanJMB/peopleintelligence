@@ -5,10 +5,12 @@ import { Autocomplete } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
@@ -58,6 +60,7 @@ const EditForm = ({
   ...props
 }) => {
   console.log(question);
+  console.log(props);
   const [categoryId, setCategoryId] = useState('');
   /**
    * Handle category id change.
@@ -88,23 +91,19 @@ const EditForm = ({
     }
   };
 
+
   const getFilteredOptions = (uniqueId, questionNumber) => {
     const lastDashIndex = uniqueId.lastIndexOf('-');
     const currentQuestionId = uniqueId.substring(0, lastDashIndex);
-    // Extracción de todas las ids de preguntas ya seleccionadas, excluyendo la id de la pregunta actual
-    const selectedValues = Object.values(props.selections)
-      .map((value) => value?.id)
-      .filter((id) => id && id !== props.selections[uniqueId]?.id);
 
+    // Filtrar solo para quitar la pregunta actual, sin excluir las ya seleccionadas
     const filteredQuestions = questions.filter(
       (question) =>
         question.id !== currentQuestionId &&
-        !selectedValues.includes(question.id) &&
-        question.questionNumber > questionNumber
-      //&& !question.conditionalQuestion  // Solo incluye preguntas con un número mayor al actual
+        question.questionNumber > questionNumber // opcional si solo quieres preguntas posteriores
+      // && !question.conditionalQuestion // si quieres incluir condicionales también, quita esto
     );
 
-    // Definir el objeto "pregunta final"
     const preguntaFinal = {
       id: 'cc12a501-cf65-4f2f-bd23-44c79e5c4a64',
       categoryId: 6,
@@ -118,8 +117,8 @@ const EditForm = ({
       customOptions: undefined,
     };
 
-    // Añadir el objeto "pregunta final" al array filtrado
     filteredQuestions.push(preguntaFinal);
+
     return filteredQuestions;
   };
 
@@ -493,12 +492,15 @@ const EditForm = ({
             <Fragment>
               <RelationalQuestionsEdit
                 question={question}
+                setQuestion={setQuestion}
                 handleInformationOptions={handleInformationOptions}
                 handleInformationRelationalOptions={
                   handleInformationRelationalOptions
                 }
                 optionRelationalError={optionRelationalError}
                 customOptionError={customOptionError}
+                type={question.typeId}
+                handleaddoption={handleAddOption}
               />
             </Fragment>
           )}
@@ -695,6 +697,41 @@ const EditForm = ({
           {question.typeId === 24 && (
             <>
               <div className={styles.top}>
+                <FormControl component="fieldset" sx={{ mt: 2, mb: 4 }}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={question.autoValidate}
+                        onChange={handleInformation}
+                        name="autoValidate"
+                      />
+                    }
+                    label="¿Deseas que el valor de la escala se valide automáticamente?"
+                  />
+                  <FormHelperText>
+                    Si se activa, el sistema validará automaticamente que el
+                    valor esté dentro del rango esperado.
+                  </FormHelperText>
+                </FormControl>
+
+                <div
+                  style={{
+                    marginTop: '4px',
+                  }}
+                >
+                  <TextField
+                    label="Valor de la escala"
+                    type="number"
+                    inputProps={{ min: 0 }}
+                    value={question.stars}
+                    name="barBipolarValue"
+                    onChange={handleInformation}
+                    variant="standard"
+                    fullWidth
+                    error={errorMessage.bipolar}
+                    helperText={errorMessage.bipolar ? helperText.bipolar : ''}
+                  />
+                </div>
                 {question.customOptions.map((val, key) => {
                   return (
                     <div

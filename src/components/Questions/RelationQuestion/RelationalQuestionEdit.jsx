@@ -10,7 +10,7 @@ import { RelationalOptions } from './RelationalOptions';
 import styles from '../../Form/Form.module.css';
 export const RelationalQuestionsEdit = (props) => {
   const addPreguntaOpcionInput = () => {
-    props.handleaddoption(props.type.id);
+    props.handleaddoption(props.type);
   };
 
   const removePreguntaOpcionInput = (index) => {
@@ -19,15 +19,15 @@ export const RelationalQuestionsEdit = (props) => {
     );
 
     // Actualiza opcionesInputs eliminando el elemento en el índice dado
-    const newOpcionesInputs = props.question.opcionesInputs.filter(
+    const newOpcionesInputs = props.question.selectOptions.filter(
       (_, i) => i !== index
     );
 
     // Establece el nuevo estado de information con las listas actualizadas
-    props.setInformation({
+    props.setQuestion({
       ...props.question,
       customOptions: newCustomOptions,
-      opcionesInputs: newOpcionesInputs,
+      selectOptions: newOpcionesInputs,
     });
   };
 

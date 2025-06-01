@@ -45,7 +45,22 @@
   border-radius: 0 0 8px 8px;
   height: 272px;
   justify-content: space-between;
+  overflow: hidden; /* asegúrate de que no se desborde */
 }
+
+.description {
+  padding: 24px 20px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #686d84;
+  font-weight: 300;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Limita a 3 líneas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 
 .title {
   background-color: #03aae4;
@@ -56,13 +71,7 @@
   gap: 1em;
   align-items: center;
 }
-.description {
-  padding: 24px 20px;
-  font-size: 14px;
-  line-height: 20px;
-  color: #686d84;
-  font-weight: 300;
-}
+
 .bottom {
   display: flex;
   padding: 24px 20px;
