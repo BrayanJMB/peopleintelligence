@@ -8,6 +8,7 @@ export const SelectOptions = ({
   handleOptionSelect,
   optionName,
   indexQuestion,
+  primaryColor,
 }) => {
   const handleFocus = (event) => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -30,6 +31,24 @@ export const SelectOptions = ({
           variant="outlined"
           error={unansweredQuestions.includes(indexQuestion)}
           onFocus={handleFocus}
+          sx={{
+            '& label.Mui-focused': {
+              color: primaryColor || '#03aae4', // Color del label al hacer focus
+            },
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: unansweredQuestions.includes(indexQuestion)
+                  ? 'red'
+                  : '#ccc', // Color normal del borde
+              },
+              '&:hover fieldset': {
+                borderColor: primaryColor || '#03aae4', // Hover
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: primaryColor || '#03aae4', // Borde al hacer focus
+              },
+            },
+          }}
         />
       )}
       renderTags={() => null}

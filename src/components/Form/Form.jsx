@@ -4,10 +4,12 @@ import { Slider } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 import TextField from '@mui/material/TextField';
 
@@ -1089,8 +1091,45 @@ export default function Form(props) {
                 onChange={props.handleInformation}
               />
             </div>
+            <FormControl component="fieldset" sx={{ mt: 2, mb:4 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={props.information.autoValidate}
+                    onChange={props.handleInformation}
+                    name="autoValidate"
+                  />
+                }
+                label="¿Deseas que el valor de la escala se valide automáticamente?"
+              />
+              <FormHelperText>
+                Si se activa, el sistema validará automaticamente que el valor esté dentro del
+                rango esperado.
+              </FormHelperText>
+            </FormControl>
+
+            <div
+              style={{
+                marginTop: '4px',
+              }}
+            >
+              <TextField
+                label="Valor de la escala"
+                type="number"
+                inputProps={{ min: 0 }}
+                value={props.information.barBipolarValue}
+                name="barBipolarValue"
+                onChange={props.handleInformation}
+                variant="standard"
+                fullWidth
+                error={props.errorMessage.bipolar}
+                helperText={
+                  props.errorMessage.bipolar ? props.helperText.bipolar : ''
+                }
+              />
+            </div>
             {/* Textos para los extremos de la escala */}
-            
+
             <div>
               {props.information.customOptions.map((val, key) => {
                 return (
