@@ -368,7 +368,13 @@ const AnswerSurvey = () => {
           }}
         >
           <CardContent>
-            {surveyStatus === 'loading' && <MyLoader />}
+            {surveyStatus === 'loading' && (
+              <MyLoader
+                color={
+                  currentSurvey && currentSurvey.response.settings?.primaryColor
+                }
+              />
+            )}
             {surveyStatus === 'failed' && isAlreadyResponse && (
               <SuccessMessage isAlreadyResponse={isAlreadyResponse} />
             )}
