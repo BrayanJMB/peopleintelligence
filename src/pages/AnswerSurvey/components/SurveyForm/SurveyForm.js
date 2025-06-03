@@ -963,7 +963,9 @@ const SurveyForm = ({
             {textoAMostrar}
           </Typography>
           {isMobile && (
-            <Button onClick={() => setVerMas(!verMas)} >
+            <Button onClick={() => setVerMas(!verMas)} sx={{
+              color: primaryColor,
+            }}>
               {verMas ? 'Ver menos' : 'Ver más'}
             </Button>
           )}
@@ -1470,7 +1472,7 @@ const SurveyForm = ({
                     {textBipolarBar.valueLeft}
                     <Box
                       component="span"
-                      sx={{ fontSize: '1rem', color: 'primary.main' }}
+                      sx={{ fontSize: '1rem', color: primaryColor }}
                     >
                       ➔ {/* ✅ Una flechita bonita */}
                     </Box>
@@ -1492,7 +1494,7 @@ const SurveyForm = ({
                     {textBipolarBar.valueRight}
                     <Box
                       component="span"
-                      sx={{ fontSize: '1rem', color: 'primary.main' }}
+                      sx={{ fontSize: '1rem', color: primaryColor }}
                     >
                       ➔ {/* ✅ Una flechita bonita */}
                     </Box>
@@ -1675,7 +1677,7 @@ const SurveyForm = ({
                     {-Math.abs(score)}
                     <Box
                       component="span"
-                      sx={{ fontSize: '1rem', color: 'primary.main' }}
+                      sx={{ fontSize: '1rem', color : primaryColor }}
                     >
                       ➔ {/* ✅ Una flechita bonita */}
                     </Box>
@@ -1693,7 +1695,7 @@ const SurveyForm = ({
                     {Math.abs(score)}
                     <Box
                       component="span"
-                      sx={{ fontSize: '1rem', color: 'primary.main' }}
+                      sx={{ fontSize: '1rem', color : primaryColor }}
                     >
                       ➔ {/* ✅ Una flechita bonita */}
                     </Box>
