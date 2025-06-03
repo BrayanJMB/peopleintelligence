@@ -15,7 +15,7 @@ const MyLoader = ({ color }) => (
         padding: '2em',
       }}
     >
-      <CircularProgress color={color} />
+      <CircularProgress sx={{color}} />
     </Box>
   </div>
 );
