@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ScheduleIcon from '@mui/icons-material/Schedule';
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+import { useDispatch } from 'react-redux';
+import { setToken } from "../../features/token360Slice";
 import {
   alpha,
   Box,
@@ -22,40 +24,40 @@ import {
   TableRow,
   TextField,
   Typography,
-} from '@mui/material';
-import { styled } from '@mui/material';
+} from "@mui/material";
+import { styled } from "@mui/material";
 
-import client from '../../utils/axiosInstance';
+import client from "../../utils/axiosInstance";
 
 // Estilos personalizados
 const SurveyContainer = styled(Box)(({ theme, bgcolor }) => ({
-  minHeight: '100vh',
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  minHeight: "100vh",
+  width: "100%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
   padding: theme.spacing(3),
-  backgroundColor: bgcolor || '#f5f5f4',
-  position: 'relative',
+  backgroundColor: bgcolor || "#f5f5f4",
+  position: "relative",
 }));
 
 const BackgroundHeader = styled(Box)(({ theme, bgcolor }) => ({
-  position: 'absolute',
+  position: "absolute",
   top: 0,
   left: 0,
-  width: '100%',
+  width: "100%",
   height: 160,
   backgroundColor: bgcolor || theme.palette.primary.main,
   zIndex: 0,
 }));
 
 const StyledCard = styled(Card)(({ theme }) => ({
-  width: '100%',
+  width: "100%",
   maxWidth: 900,
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[3],
   zIndex: 1,
-  overflow: 'visible',
+  overflow: "visible",
 }));
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
@@ -65,10 +67,10 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:hover': {
+  "&:hover": {
     backgroundColor: alpha(theme.palette.primary.main, 0.04),
   },
-  transition: 'background-color 0.2s ease',
+  transition: "background-color 0.2s ease",
 }));
 
 const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
@@ -77,14 +79,15 @@ const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const StatusCell = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
   gap: theme.spacing(0.75),
 }));
 
 export const Panel360Survey = () => {
   const { surveyId, companyId, token } = useParams();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [page, setPage] = useState(0);
@@ -92,9 +95,14 @@ export const Panel360Survey = () => {
   const [evaluados, setEvaluados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentSurvey, setCurrentSurvey] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
+  useEffect(() => {
+    if (token) {
+      dispatch(setToken(token));
+    }
+  }, [token, dispatch]);
   useEffect(() => {
     getListEvaluates();
   }, []);
@@ -109,7 +117,7 @@ export const Panel360Survey = () => {
         companyLogo: data.logo,
       });
     } catch (error) {
-      console.error('Error al obtener evaluados:', error);
+      console.error("Error al obtener evaluados:", error);
     } finally {
       setLoading(false);
     }
@@ -127,9 +135,9 @@ export const Panel360Survey = () => {
       .includes(searchTerm.toLowerCase());
 
     const matchStatus =
-      statusFilter === 'all' ||
-      (statusFilter === 'completed' && e.isCompleted) ||
-      (statusFilter === 'pending' && !e.isCompleted);
+      statusFilter === "all" ||
+      (statusFilter === "completed" && e.isCompleted) ||
+      (statusFilter === "pending" && !e.isCompleted);
 
     return matchName && matchStatus;
   });
@@ -155,21 +163,21 @@ export const Panel360Survey = () => {
         <CardContent sx={{ p: 3 }}>
           <Box
             style={{
-              display: 'flex',
-              justifyContent: 'space-between',
+              display: "flex",
+              justifyContent: "space-between",
             }}
           >
             <Typography
               variant="h5"
               sx={{
-                fontWeight: 'bold',
+                fontWeight: "bold",
                 mb: 2,
                 color: currentSurvey?.companyColors.primaryColor,
               }}
             >
               Panel de control 360° - {currentSurvey?.companyName}
             </Typography>
-            <img src={currentSurvey?.companyLogo} style={{ width: '2.5em' }} />
+            <img src={currentSurvey?.companyLogo} style={{ width: "2.5em" }} />
           </Box>
 
           <Divider sx={{ mb: 3 }} />
@@ -181,8 +189,8 @@ export const Panel360Survey = () => {
               {/* Filtros */}
               <Box
                 sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
+                  display: "flex",
+                  justifyContent: "space-between",
                   gap: 2,
                   mb: 2,
                 }}
@@ -197,13 +205,13 @@ export const Panel360Survey = () => {
                     setPage(0);
                   }}
                   sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '&.Mui-focused fieldset': {
+                    "& .MuiOutlinedInput-root": {
+                      "&.Mui-focused fieldset": {
                         borderColor: currentSurvey?.companyColors.primaryColor, // color del borde al hacer focus
                       },
                     },
-                    '& .MuiInputLabel-root': {
-                      '&.Mui-focused': {
+                    "& .MuiInputLabel-root": {
+                      "&.Mui-focused": {
                         color: currentSurvey?.companyColors.primaryColor, // color del label al hacer focus
                       },
                     },
@@ -219,13 +227,13 @@ export const Panel360Survey = () => {
                     setPage(0);
                   }}
                   sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '&.Mui-focused fieldset': {
+                    "& .MuiOutlinedInput-root": {
+                      "&.Mui-focused fieldset": {
                         borderColor: currentSurvey?.companyColors.primaryColor, // color del borde al hacer focus
                       },
                     },
-                    '& .MuiInputLabel-root': {
-                      '&.Mui-focused': {
+                    "& .MuiInputLabel-root": {
+                      "&.Mui-focused": {
                         color: currentSurvey?.companyColors.primaryColor, // color del label al hacer focus
                       },
                     },
@@ -241,7 +249,7 @@ export const Panel360Survey = () => {
                 <Typography
                   variant="body1"
                   color="text.secondary"
-                  sx={{ py: 4, textAlign: 'center' }}
+                  sx={{ py: 4, textAlign: "center" }}
                 >
                   No se encontraron resultados con los filtros actuales.
                 </Typography>
@@ -282,7 +290,7 @@ export const Panel360Survey = () => {
                               <TableCell sx={{ fontWeight: 500 }}>
                                 {item.evaluadoNombre}
                               </TableCell>
-                              <TableCell sx={{ color: 'text.secondary' }}>
+                              <TableCell sx={{ color: "text.secondary" }}>
                                 {item.evaluadoEmail}
                               </TableCell>
                               <TableCell>
@@ -306,13 +314,13 @@ export const Panel360Survey = () => {
                                     <>
                                       <CheckCircleIcon
                                         fontSize="small"
-                                        sx={{ color: 'success.main' }}
+                                        sx={{ color: "success.main" }}
                                       />
                                       <Typography
                                         variant="body2"
                                         sx={{
                                           fontWeight: 600,
-                                          color: 'success.main',
+                                          color: "success.main",
                                         }}
                                       >
                                         Completado
@@ -321,27 +329,27 @@ export const Panel360Survey = () => {
                                   ) : (
                                     <Box
                                       sx={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
                                       }}
                                     >
                                       <Box
                                         sx={{
-                                          display: 'flex',
-                                          alignItems: 'center',
+                                          display: "flex",
+                                          alignItems: "center",
                                           gap: 1,
                                         }}
                                       >
                                         <ScheduleIcon
                                           fontSize="small"
-                                          sx={{ color: 'warning.main' }}
+                                          sx={{ color: "warning.main" }}
                                         />
                                         <Typography
                                           variant="body2"
                                           sx={{
                                             fontWeight: 600,
-                                            color: 'warning.main',
+                                            color: "warning.main",
                                           }}
                                         >
                                           Pendiente
@@ -385,16 +393,16 @@ export const Panel360Survey = () => {
                       rowsPerPageOptions={[5, 10, 25]}
                       sx={{
                         color: currentSurvey?.companyColors.primaryColor,
-                        '& .MuiTablePagination-actions button': {
+                        "& .MuiTablePagination-actions button": {
                           color: currentSurvey?.companyColors.primaryColor, // cambia color de los íconos
                         },
-                        '& .MuiSelect-root': {
+                        "& .MuiSelect-root": {
                           color: currentSurvey?.companyColors.primaryColor, // cambia color del selector
                         },
-                        '& .MuiTablePagination-selectLabel': {
+                        "& .MuiTablePagination-selectLabel": {
                           color: currentSurvey?.companyColors.primaryColor, // cambia color del texto "Filas por página"
                         },
-                        '& .MuiTablePagination-displayedRows': {
+                        "& .MuiTablePagination-displayedRows": {
                           color: currentSurvey?.companyColors.primaryColor, // cambia color del texto "1–5 de 20"
                         },
                       }}
