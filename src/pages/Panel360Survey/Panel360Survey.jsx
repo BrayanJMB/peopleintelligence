@@ -361,7 +361,7 @@ export const Panel360Survey = () => {
                                         }}
                                         onClick={() =>
                                           navigate(
-                                            `/answer-survey/${surveyId}/${companyId}/${item.id}`
+                                            `/answer-survey/${companyId}/${surveyId}/${item.id}`
                                           )
                                         } // 🔁 Personaliza esta URL
                                       >
