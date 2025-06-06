@@ -38,6 +38,7 @@ import styles from './AnswerSurvey.module.css';
  * @constructor
  */
 const AnswerSurvey = () => {
+  const token = useSelector((state) => state.token360.value);
   const { surveyId, companyId, answerId } = useParams();
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set());
@@ -376,7 +377,13 @@ const AnswerSurvey = () => {
               />
             )}
             {surveyStatus === 'failed' && isAlreadyResponse && (
-              <SuccessMessage isAlreadyResponse={isAlreadyResponse} />
+              <SuccessMessage
+                isAlreadyResponse={isAlreadyResponse}
+                isView360={currentSurvey.response.isView360}
+                surveyId={surveyId}
+                companyId={companyId}
+                token={token}
+              />
             )}
             {surveyStatus === 'failed' && notFound && (
               <NotFoundMessage
@@ -686,6 +693,10 @@ const AnswerSurvey = () => {
                           {isFinalStep() && (
                             <SuccessMessage
                               isAlreadyResponse={isAlreadyResponse}
+                              isView360={currentSurvey.response.isView360}
+                              surveyId={surveyId}
+                              companyId={companyId}
+                              token={token}
                             />
                           )}
                         </div>

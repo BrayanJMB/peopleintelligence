@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ScheduleIcon from '@mui/icons-material/Schedule';
@@ -25,6 +26,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material';
 
+import { setToken } from '../../features/token360Slice';
 import client from '../../utils/axiosInstance';
 
 // Estilos personalizados
@@ -85,6 +87,7 @@ const StatusCell = styled(Box)(({ theme }) => ({
 
 export const Panel360Survey = () => {
   const { surveyId, companyId, token } = useParams();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [page, setPage] = useState(0);
@@ -95,6 +98,11 @@ export const Panel360Survey = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  useEffect(() => {
+    if (token) {
+      dispatch(setToken(token));
+    }
+  }, [token, dispatch]);
   useEffect(() => {
     getListEvaluates();
   }, []);
