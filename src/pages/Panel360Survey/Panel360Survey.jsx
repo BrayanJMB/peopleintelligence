@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate,useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import {
@@ -92,7 +92,6 @@ export const Panel360Survey = () => {
   const [evaluados, setEvaluados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentSurvey, setCurrentSurvey] = useState(null);
-
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
@@ -103,8 +102,12 @@ export const Panel360Survey = () => {
   const getListEvaluates = async () => {
     try {
       const { data } = await client.get(`ShowListEvaluation/${token}`);
-      setEvaluados(data);
-      console.log(data);
+      setEvaluados(data.evaluaciones);
+      setCurrentSurvey({
+        companyColors: data.settings,
+        companyName: data.company,
+        companyLogo: data.logo,
+      });
     } catch (error) {
       console.error('Error al obtener evaluados:', error);
     } finally {
@@ -143,22 +146,31 @@ export const Panel360Survey = () => {
       ))}
     </Box>
   );
-
+  console.log(currentSurvey);
   return (
-    <SurveyContainer bgcolor={currentSurvey?.response.settings?.secondaryColor}>
-      <BackgroundHeader
-        bgcolor={currentSurvey?.response.settings?.primaryColor}
-      />
+    <SurveyContainer bgcolor={currentSurvey?.companyColors.secondaryColor}>
+      <BackgroundHeader bgcolor={currentSurvey?.companyColors.primaryColor} />
 
       <StyledCard>
         <CardContent sx={{ p: 3 }}>
-          <Typography
-            variant="h5"
-            color="primary"
-            sx={{ fontWeight: 'bold', mb: 2 }}
+          <Box
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
           >
-            Panel de control - Encuesta 360°
-          </Typography>
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 'bold',
+                mb: 2,
+                color: currentSurvey?.companyColors.primaryColor,
+              }}
+            >
+              Panel de control 360° - {currentSurvey?.companyName}
+            </Typography>
+            <img src={currentSurvey?.companyLogo} style={{ width: '2.5em' }} />
+          </Box>
 
           <Divider sx={{ mb: 3 }} />
 
@@ -184,6 +196,18 @@ export const Panel360Survey = () => {
                     setSearchTerm(e.target.value);
                     setPage(0);
                   }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '&.Mui-focused fieldset': {
+                        borderColor: currentSurvey?.companyColors.primaryColor, // color del borde al hacer focus
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      '&.Mui-focused': {
+                        color: currentSurvey?.companyColors.primaryColor, // color del label al hacer focus
+                      },
+                    },
+                  }}
                 />
                 <TextField
                   select
@@ -193,6 +217,18 @@ export const Panel360Survey = () => {
                   onChange={(e) => {
                     setStatusFilter(e.target.value);
                     setPage(0);
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '&.Mui-focused fieldset': {
+                        borderColor: currentSurvey?.companyColors.primaryColor, // color del borde al hacer focus
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      '&.Mui-focused': {
+                        color: currentSurvey?.companyColors.primaryColor, // color del label al hacer focus
+                      },
+                    },
                   }}
                 >
                   <MenuItem value="all">Todos</MenuItem>
@@ -254,7 +290,14 @@ export const Panel360Survey = () => {
                                   label={item.evaluadoCargo}
                                   variant="outlined"
                                   size="small"
-                                  sx={{ fontWeight: 400 }}
+                                  sx={{
+                                    fontWeight: 400,
+                                    borderColor:
+                                      currentSurvey?.companyColors
+                                        .secondaryColor,
+                                    color:
+                                      currentSurvey?.companyColors.primaryColor,
+                                  }}
                                 />
                               </TableCell>
                               <TableCell align="center">
@@ -307,7 +350,15 @@ export const Panel360Survey = () => {
                                       <Button
                                         size="small"
                                         variant="outlined"
-                                        sx={{ mt: 0.5 }}
+                                        sx={{
+                                          mt: 0.5,
+                                          color:
+                                            currentSurvey?.companyColors
+                                              .primaryColor,
+                                          borderColor:
+                                            currentSurvey?.companyColors
+                                              .primaryColor,
+                                        }}
                                         onClick={() =>
                                           navigate(
                                             `/answer-survey/${surveyId}/${companyId}/${item.id}`
@@ -332,6 +383,21 @@ export const Panel360Survey = () => {
                       rowsPerPage={rowsPerPage}
                       onRowsPerPageChange={handleChangeRowsPerPage}
                       rowsPerPageOptions={[5, 10, 25]}
+                      sx={{
+                        color: currentSurvey?.companyColors.primaryColor,
+                        '& .MuiTablePagination-actions button': {
+                          color: currentSurvey?.companyColors.primaryColor, // cambia color de los íconos
+                        },
+                        '& .MuiSelect-root': {
+                          color: currentSurvey?.companyColors.primaryColor, // cambia color del selector
+                        },
+                        '& .MuiTablePagination-selectLabel': {
+                          color: currentSurvey?.companyColors.primaryColor, // cambia color del texto "Filas por página"
+                        },
+                        '& .MuiTablePagination-displayedRows': {
+                          color: currentSurvey?.companyColors.primaryColor, // cambia color del texto "1–5 de 20"
+                        },
+                      }}
                     />
                   </StyledTableContainer>
                 </>
