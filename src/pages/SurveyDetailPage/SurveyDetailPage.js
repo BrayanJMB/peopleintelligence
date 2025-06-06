@@ -153,7 +153,6 @@ const SurveyDetailPage = () => {
   const [openDialogEmail, setOpenDialogEmail] = useState(false);
 
   const handleOpenDialogEmails = () => {
-    
     setOpenDialogEmail(true);
   };
 
@@ -201,7 +200,7 @@ const SurveyDetailPage = () => {
       handleOpenDialog(
         id,
         'El ejecutar esta opción se generará una plantilla para todas las empresas',
-        () =>{
+        () => {
           handleTemplateFromSurveyAll(
             currentSurvey.response.surveyId,
             currentCompany.id
@@ -787,23 +786,28 @@ const SurveyDetailPage = () => {
                         Resumen de respuesta
                       </Typography>
                       <div className={styles.SurveyDetailPage__resume__share}>
-                        <IconButton
-                          onClick={handleClickCopyUrl}
-                          disabled={!visibility}
-                        >
-                          <LinkIcon />
-                        </IconButton>
+                        {!currentSurvey.response.is360 && (
+                          <IconButton
+                            onClick={handleClickCopyUrl}
+                            disabled={!visibility}
+                          >
+                            <LinkIcon />
+                          </IconButton>
+                        )}
 
                         <IconButton onClick={handleClickDownload}>
                           <DownloadIcon />
                         </IconButton>
-                        <Button
-                          onClick={handleOpen}
-                          startIcon={<VisibilityIcon />}
-                          disabled={!visibility}
-                        >
-                          Ver Código QR
-                        </Button>
+                        {!currentSurvey.response.is360 && (
+                          <Button
+                            onClick={handleOpen}
+                            startIcon={<VisibilityIcon />}
+                            disabled={!visibility}
+                          >
+                            Ver Código QR
+                          </Button>
+                        )}
+
                         {userInfo?.role.findIndex(
                           (p) => p === 'Administrador'
                         ) > 0 && (

@@ -145,8 +145,9 @@ export default function CreateSurvey() {
     'Cuestionario',
     'Configuración',
     ...(!isTemplate ? ['Privacidad'] : []),
-    'Concurrencia',
+    ...(!isView360 ? ['Concurrencia'] : []),
   ];
+
   const { surveyId } = useParams();
   /**
    * Handle introduction change.
@@ -522,7 +523,15 @@ export default function CreateSurvey() {
         setActiveStep((val) => val + 1);
         break;
       case 4:
-        setActiveStep((val) => val + 1);
+        if (!isView360) {
+          setActiveStep((val) => val + 1);
+        } else {
+          if (isEdit) {
+            editSurvey();
+          } else {
+            createSurvey();
+          }
+        }
         break;
       case 5:
         if (isEdit) {
@@ -985,10 +994,12 @@ export default function CreateSurvey() {
         return (
           <div style={{ display: 'flex', width: '100%' }}>
             <Intimidad anonyme={anonymous} handleAnonyme={handleanonyme} />
-            <Exclusiveness
-              exclusiviness={exclusiviness}
-              handleExclusiviness={handleExclusiviness}
-            />
+            {!isView360 && (
+              <Exclusiveness
+                exclusiviness={exclusiviness}
+                handleExclusiviness={handleExclusiviness}
+              />
+            )}
           </div>
         );
 
@@ -1984,7 +1995,7 @@ export default function CreateSurvey() {
   useEffect(() => {
     fetchCategories();
   }, [currentCompany]); // eslint-disable-line react-hooks/exhaustive-deps
-
+  console.log(steps.length);
   return (
     <Box sx={{ display: 'flex' }}>
       <Dialog maxWidth="lg" open={open} onClose={handleCloseModal}>
@@ -2153,12 +2164,12 @@ export default function CreateSurvey() {
                     variant="contained"
                     onClick={handleNextStep}
                     disabled={
-                      ((activeStep !== 0 && questions.length === 0) ||
-                        loading === true) &&
-                      errorDayConcurrency
+                      (activeStep === 2 && questions.length === 0) ||
+                      (activeStep === 1 && view360.length === 0 && isView360)
                     }
                   >
-                    {activeStep === 5 || (activeStep === 1 && isTemplate)
+                    {activeStep === steps.length - 1 ||
+                    (activeStep === 1 && isTemplate)
                       ? 'Finalizar'
                       : 'Continuar'}
                   </Button>
