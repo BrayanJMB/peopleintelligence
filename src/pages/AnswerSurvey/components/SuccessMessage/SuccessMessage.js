@@ -37,17 +37,6 @@ const SuccessMessage = ({
           <Typography variant="h5" gutterBottom style={{ fontStyle: 'italic' }}>
             Recuerda que este link es personal e intransferible.
           </Typography>
-          {isView360 && (
-            <Button
-              onClick={() =>
-                navigate(
-                  `/control-panel-survey-360/${companyId}/${surveyId}/${token}`
-                )
-              }
-            >
-              Volver al panel de control
-            </Button>
-          )}
         </>
       ) : (
         <>
@@ -75,7 +64,5 @@ const SuccessMessage = ({
 };
 
 SuccessMessage.propTypes = {};
-
-SuccessMessage.defaultProps = {};
 
 export default SuccessMessage;

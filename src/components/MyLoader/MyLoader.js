@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import styles from './MyLoader.module.css';
 
 
-const MyLoader = ({ color }) => (
+const MyLoader = ({ color = 'primary' }) => (
   <div className={styles.MyLoader}>
     <Box
       sx={{
@@ -22,10 +22,6 @@ const MyLoader = ({ color }) => (
 
 MyLoader.propTypes = {
   color: PropTypes.string,
-};
-
-MyLoader.defaultProps = {
-  color: 'primary',
 };
 
 export default MyLoader;

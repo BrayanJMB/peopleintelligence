@@ -39,6 +39,4 @@ const NotFoundMessage = ({infoMessage}) => {
 
 NotFoundMessage.propTypes = {};
 
-NotFoundMessage.defaultProps = {};
-
 export default NotFoundMessage;
