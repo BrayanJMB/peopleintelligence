@@ -38,6 +38,7 @@ import styles from './AnswerSurvey.module.css';
  * @constructor
  */
 const AnswerSurvey = () => {
+  const [surveyInitialized, setSurveyInitialized] = useState(false);
   const token = useSelector((state) => state.token360.value);
   const { surveyId, companyId, answerId } = useParams();
   const [activeStep, setActiveStep] = useState(0);
@@ -317,6 +318,7 @@ const AnswerSurvey = () => {
       dispatch(
         fetchSurveyForAnswerPersonal({ surveyId, companyId, answerId })
       ).then((result) => {
+        console.log(result)
         if (result.error.message.includes('409')) {
           setIsAlreadyResponse(true);
           setNotFound(false);
@@ -329,7 +331,7 @@ const AnswerSurvey = () => {
 
   // watch currentSurvey changes
   useEffect(() => {
-    if (currentSurvey === null) {
+    if (currentSurvey === null || surveyInitialized) {
       return;
     }
 
@@ -339,10 +341,11 @@ const AnswerSurvey = () => {
       setStepsCompleted(stepsCompleted.slice(1));
       setAnswers(answers.slice(1));
     }
+      setSurveyInitialized(true); // 🚩 Marca como inicializado
   }, [currentSurvey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // component did mount
-  useEffect(() => {
+  useEffect(() => {      
     checkIfIsPersonal();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
