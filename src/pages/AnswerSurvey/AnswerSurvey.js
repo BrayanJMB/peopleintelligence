@@ -318,7 +318,7 @@ const AnswerSurvey = () => {
       dispatch(
         fetchSurveyForAnswerPersonal({ surveyId, companyId, answerId })
       ).then((result) => {
-        console.log(result)
+        console.log(result);
         if (result.error.message.includes('409')) {
           setIsAlreadyResponse(true);
           setNotFound(false);
