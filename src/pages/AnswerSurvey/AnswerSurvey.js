@@ -382,7 +382,7 @@ const AnswerSurvey = () => {
             {surveyStatus === 'failed' && isAlreadyResponse && (
               <SuccessMessage
                 isAlreadyResponse={isAlreadyResponse}
-                isView360={currentSurvey.response.isView360}
+                isView360={currentSurvey && currentSurvey.response.isView360}
                 surveyId={surveyId}
                 companyId={companyId}
                 token={token}
@@ -696,7 +696,7 @@ const AnswerSurvey = () => {
                           {isFinalStep() && (
                             <SuccessMessage
                               isAlreadyResponse={isAlreadyResponse}
-                              isView360={currentSurvey.response.isView360}
+                              isView360={currentSurvey && currentSurvey.response.isView360}
                               surveyId={surveyId}
                               companyId={companyId}
                               token={token}
